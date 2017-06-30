@@ -10,7 +10,7 @@ const propTypes = {
   location: PropTypes.object.isRequired
 };
 
-const PrivateRoute = ({ loggedIn, component, ...rest }) => {
+const PrivateRoute = ({ loggedIn, component, ...rest }) => (
   <Route
     {...rest}
     render={props => {
@@ -19,8 +19,8 @@ const PrivateRoute = ({ loggedIn, component, ...rest }) => {
       }
       return <Redirect to="/signin" />;
     }}
-  />;
-};
+  />
+);
 
 PrivateRoute.propTypes = propTypes;
 

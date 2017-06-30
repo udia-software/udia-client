@@ -81,7 +81,7 @@ class Signin extends Component {
           {!!error && <Message
             error={!!error}
             header={'Sign In Failed'}
-            ontent={error}
+            content={error}
           />}
           <Button type="submit">Submit</Button>
         </Form>

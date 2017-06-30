@@ -55,10 +55,8 @@ export function signout() {
  */
 export function signup(username, password) {
   return post('/users', {
-    user: {
-      username,
-      password
-    }
+    username,
+    password
   }).then((response) => {
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));

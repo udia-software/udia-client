@@ -26,7 +26,7 @@ function reducer(state = initialState, action) {
     case SET_USER:
       return {
         ...state,
-        currentlySending: action.sending,
+        currentUser: action.newUserState,
       };
     case SENDING_REQUEST:
       return {
