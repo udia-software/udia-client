@@ -1,14 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
 
-import registerServiceWorker from './registerServiceWorker';
-import reducer from './reducers';
-import rootSaga from './sagas';
-import App from './components/App';
+import reducer from '../reducers';
+import rootSaga from '../sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(reducer, applyMiddleware(sagaMiddleware));
@@ -16,13 +15,13 @@ const supportsHistory = 'pushState' in window.history;
 
 sagaMiddleware.run(rootSaga);
 
-ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter forceRefersh={!supportsHistory}>
-      <App />
-    </BrowserRouter>
-  </Provider>, 
-  document.getElementById('root')
-);
 
-registerServiceWorker();
+it('renders without crashing', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(
+    <Provider store={store}>
+      <BrowserRouter forceRefersh={!supportsHistory}>
+        <App />
+      </BrowserRouter>
+    </Provider>, div);
+});
