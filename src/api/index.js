@@ -3,7 +3,7 @@ let API = '/api';
 if (isDevelopment) {
   API = 'http://127.0.0.1:4000/api';
 } else {
-  API = 'https://a.udia.ca/api';
+  API = 'https://udia-staging.herokuapp.com/api';
 }
 
 // If testing, use localStorage polyfill, else use browser localStorage
