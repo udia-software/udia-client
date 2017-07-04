@@ -1,5 +1,6 @@
 # Udia Client
 
+[![Build Status](https://travis-ci.org/udia-software/udia-client.svg?branch=master)](https://travis-ci.org/udia-software/udia-client)
 
 [![UDIA](logo.png)](http://a.udia.ca)
 
