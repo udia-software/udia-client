@@ -9,6 +9,7 @@ import registerServiceWorker from './registerServiceWorker';
 import reducer from './reducers';
 import rootSaga from './sagas';
 import App from './components/App';
+import './socket';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(reducer, applyMiddleware(sagaMiddleware));

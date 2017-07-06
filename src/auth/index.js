@@ -21,6 +21,13 @@ export function signedIn() {
 }
 
 /**
+ * Get the locally stored user token
+ */
+export function getToken() {
+  return localStorage.getItem('token');
+}
+
+/**
  * Logs a user in, returning a promise with `true` when done
  * @param  {string} username The username of the user
  * @param  {string} password The password of the user
