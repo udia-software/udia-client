@@ -6,6 +6,7 @@ import {
   CLEAR_ERROR
 } from '../actions/constants';
 import { me, signedIn } from '../auth';
+import { getSocket } from '../socket';
 
 // The initial application state
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   currentlySending: false,
   loggedIn: signedIn(),
   currentUser: me(),
+  socket: getSocket(),
 };
 
 // Takes care of changing the application state

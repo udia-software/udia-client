@@ -7,13 +7,6 @@ if (isDevelopment) {
   API_ENDPOINT = 'https://udia-staging.herokuapp.com/api';
 }
 
-export let SOCKET_ENDPOINT = '/socket';
-if (isDevelopment) {
-  SOCKET_ENDPOINT = 'ws://127.0.0.1:4000/socket';
-} else {
-  SOCKET_ENDPOINT = 'wss://udia-staging.herokuapp.com/socket';
-}
-
 // If testing, use localStorage polyfill, else use browser localStorage
 const localStorage = global.process && process.env.NODE_ENV === 'test' ?
   // eslint-disable-next-line import/no-extraneous-dependencies

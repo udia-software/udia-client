@@ -9,7 +9,6 @@ import registerServiceWorker from './registerServiceWorker';
 import reducer from './reducers';
 import rootSaga from './sagas';
 import App from './components/App';
-import './socket';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(reducer, applyMiddleware(sagaMiddleware));
@@ -17,13 +16,29 @@ const supportsHistory = 'pushState' in window.history;
 
 sagaMiddleware.run(rootSaga);
 
+const rootElement = document.getElementById('root');
+
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter forceRefersh={!supportsHistory}>
       <App />
     </BrowserRouter>
   </Provider>, 
-  document.getElementById('root')
+  rootElement
 );
+
+if (module.hot) {
+  module.hot.accept('./components/App', () => {
+    const NextApp = require('./components/App').default;
+    ReactDOM.render(
+      <Provider store={store}>
+        <BrowserRouter forceRefersh={!supportsHistory}>
+          <NextApp />
+        </BrowserRouter>
+      </Provider>, 
+      rootElement      
+    )
+  })
+}
 
 registerServiceWorker();

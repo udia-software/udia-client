@@ -1,7 +1,7 @@
 {
   "name": "udia-client",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "phoenix": "git://github.com/phoenixframework/phoenix.git#v1.3.0-rc.2",
     "prop-types": "^15.5.10",
