@@ -1,9 +1,10 @@
 const isDevelopment = process.env.NODE_ENV === 'development';
-let API = '/api';
+
+export let API_ENDPOINT = '/api';
 if (isDevelopment) {
-  API = 'http://127.0.0.1:4000/api';
+  API_ENDPOINT = 'http://127.0.0.1:4000/api';
 } else {
-  API = 'https://udia-staging.herokuapp.com/api';
+  API_ENDPOINT = 'https://a.udia.ca/api';
 }
 
 // If testing, use localStorage polyfill, else use browser localStorage
@@ -38,7 +39,7 @@ function queryString(params) {
 }
 
 export function get(url, params = {}) {
-  return fetch(`${API}${url}${queryString(params)}`, {
+  return fetch(`${API_ENDPOINT}${url}${queryString(params)}`, {
     method: 'GET',
     headers: headers()
   })
@@ -48,7 +49,7 @@ export function get(url, params = {}) {
 export function post(url, data) {
   const body = JSON.stringify(data);
 
-  return fetch(`${API}${url}`, {
+  return fetch(`${API_ENDPOINT}${url}`, {
     method: 'POST',
     headers: headers(),
     body
@@ -59,7 +60,7 @@ export function post(url, data) {
 export function patch(url, data) {
   const body = JSON.stringify(data);
 
-  return fetch(`${API}${url}`, {
+  return fetch(`${API_ENDPOINT}${url}`, {
     method: 'PATCH',
     headers: headers(),
     body
@@ -68,7 +69,7 @@ export function patch(url, data) {
 }
 
 export function del(url) {
-  return fetch(`${API}${url}`, {
+  return fetch(`${API_ENDPOINT}${url}`, {
     method: 'DELETE',
     headers: headers()
   })
