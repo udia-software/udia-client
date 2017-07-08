@@ -1,17 +1,12 @@
 import {
   SET_AUTH,
-  SET_USER,
-  SENDING_REQUEST,
-  REQUEST_ERROR,
-  CLEAR_ERROR
+  SET_USER
 } from '../actions/constants';
 import { me, signedIn } from '../auth';
 import { getSocket } from '../socket';
 
 // The initial application state
 const initialState = {
-  error: '',
-  currentlySending: false,
   loggedIn: signedIn(),
   currentUser: me(),
   socket: getSocket(),
@@ -29,21 +24,6 @@ function authReducer(state = initialState, action) {
       return {
         ...state,
         currentUser: action.newUserState,
-      };
-    case SENDING_REQUEST:
-      return {
-        ...state,
-        currentlySending: action.sending,
-      };
-    case REQUEST_ERROR:
-      return {
-        ...state,
-        error: action.error,
-      };
-    case CLEAR_ERROR:
-      return {
-        ...state,
-        error: ''
       };
     default:
      return state;

@@ -18,7 +18,7 @@ function postReducer(state = initialState, action) {
     case EDIT_POST_CONTENT:
       return {
         ...state,
-        title: action.content
+        content: action.content
       };
     default:
       return state;
