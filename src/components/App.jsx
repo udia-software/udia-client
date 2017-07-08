@@ -9,7 +9,7 @@ import Navbar from './Navbar';
 import Signin from './Signin';
 import Signup from './Signup';
 import Profile from './Profile';
-
+import CreatePost from './Post/CreatePost';
 
 const NoMatch = ({ location }) => (
   <div>
@@ -36,6 +36,7 @@ class App extends Component {
           <Route path='/signin' component={Signin} />
           <Route path='/signup' component={Signup} />
           <PrivateRoute path='/profile' component={Profile} />
+          <PrivateRoute path='/post/create' component={CreatePost} />
           <Route component={NoMatch} />
         </Switch>
       </div>

@@ -6,3 +6,5 @@ export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const LOGOUT = 'LOGOUT';
 export const REQUEST_ERROR = 'REQUEST_ERROR';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const EDIT_POST_TITLE = 'EDIT_POST_TITLE';
+export const EDIT_POST_CONTENT = 'EDIT_POST_CONTENT';

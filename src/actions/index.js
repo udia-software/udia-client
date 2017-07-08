@@ -11,7 +11,9 @@ import {
   REGISTER_REQUEST,
   LOGOUT,
   REQUEST_ERROR,
-  CLEAR_ERROR
+  CLEAR_ERROR,
+  EDIT_POST_TITLE,
+  EDIT_POST_CONTENT
 } from './constants';
 
 /**
@@ -95,5 +97,19 @@ export function requestError(error) {
 export function clearError() {
   return {
     type: CLEAR_ERROR
+  };
+}
+
+export function editPostTitle(title) {
+  return {
+    type: EDIT_POST_TITLE,
+    title
+  };
+}
+
+export function editPostContent(content) {
+  return {
+    type: EDIT_POST_CONTENT,
+    content
   };
 }
