@@ -13,7 +13,8 @@ const localStorage = global.process && process.env.NODE_ENV === 'test' ?
   require('localStorage') : global.window.localStorage;
 
 function headers() {
-  const token = JSON.parse(localStorage.getItem('token'));
+  const token = localStorage.getItem('token') || '';
+  console.log('token', token);
 
   return {
     Accept: 'application/json',

@@ -94,7 +94,11 @@ Signin.propTypes = propTypes;
 Signin.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return state;
+  return {
+    ...state.auth,
+    error: state.api.error,
+    currentlySending: state.api.currentlySending
+  }
 }
 
 export default connect(mapStateToProps)(Signin);

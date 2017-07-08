@@ -11,7 +11,10 @@ import {
   REGISTER_REQUEST,
   LOGOUT,
   REQUEST_ERROR,
-  CLEAR_ERROR
+  CLEAR_ERROR,
+  EDIT_POST_TITLE,
+  EDIT_POST_CONTENT,
+  CREATE_POST_REQUEST
 } from './constants';
 
 /**
@@ -96,4 +99,31 @@ export function clearError() {
   return {
     type: CLEAR_ERROR
   };
+}
+
+export function editPostTitle(title) {
+  return {
+    type: EDIT_POST_TITLE,
+    title
+  };
+}
+
+export function editPostContent(content) {
+  return {
+    type: EDIT_POST_CONTENT,
+    content
+  };
+}
+
+/**
+ * Tells the app we want to log in a user
+ * @param  {object} data          The data we're sending for log in
+ * @param  {string} data.title    The title of the post
+ * @param  {string} data.content  The content of the post
+ */
+export function createPostRequest(data) {
+  return {
+    type: CREATE_POST_REQUEST,
+    data
+  }
 }

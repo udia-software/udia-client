@@ -7,10 +7,12 @@ import {
   SET_AUTH,
   SET_USER,
   LOGOUT,
-  REQUEST_ERROR
+  REQUEST_ERROR,
+  CREATE_POST_REQUEST
 } from '../actions/constants';
 
 import { me, signup, signin, signout } from '../auth';
+import { createPost } from '../post';
 
 export function* register({
   username,
@@ -74,6 +76,31 @@ export function* logout() {
   try {
     const response = yield effects.call(signout);
     return response;
+  } catch (error) {
+    yield effects.put({
+      type: REQUEST_ERROR,
+      error: error.message
+    });
+    return false;
+  } finally {
+    yield effects.put({
+      type: SENDING_REQUEST,
+      sending: false
+    });
+  }
+}
+
+export function* createPostCall({
+  title,
+  content
+}) {
+  yield effects.put({
+    type: SENDING_REQUEST,
+    sending: true
+  });
+
+  try {
+    return yield effects.call(createPost, title, content);
   } catch (error) {
     yield effects.put({
       type: REQUEST_ERROR,
@@ -167,8 +194,41 @@ export function* registerFlow() {
   }
 }
 
+/*
+{
+      id,
+      title,
+      content,
+      type,
+      author,
+      inserted_at,
+      updated_at
+    }
+
+    */
+
+export function* createPostFlow() {
+  while (true) {
+    const request = yield effects.take(CREATE_POST_REQUEST);
+    const {
+      title,
+      content
+    } = request.data;
+
+    const wasSuccessful = yield effects.call(createPostCall, {
+      title,
+      content
+    });
+
+    if (wasSuccessful) {
+      console.log('create post successful', wasSuccessful);
+    }
+  }
+}
+
 export default function* root() {
   yield effects.fork(loginFlow);
   yield effects.fork(logoutFlow);
   yield effects.fork(registerFlow);
+  yield effects.fork(createPostFlow);
 }
