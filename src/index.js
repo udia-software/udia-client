@@ -22,7 +22,7 @@ const rootElement = document.getElementById('root');
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter forceRefersh={!supportsHistory}>
+    <BrowserRouter forceRefresh={!supportsHistory}>
       <App />
     </BrowserRouter>
   </Provider>, 
