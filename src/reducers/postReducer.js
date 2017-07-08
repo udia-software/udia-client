@@ -11,9 +11,15 @@ const initialState = {
 function postReducer(state = initialState, action) {
   switch (action.type) {
     case EDIT_POST_TITLE:
-      return action.title;
+      return {
+        ...state,
+        title: action.title
+      };
     case EDIT_POST_CONTENT:
-      return action.content;
+      return {
+        ...state,
+        title: action.content
+      };
     default:
       return state;
   }

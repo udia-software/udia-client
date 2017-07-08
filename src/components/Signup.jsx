@@ -96,7 +96,7 @@ Signup.propTypes = propTypes;
 Signup.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return state;
+  return state.auth;
 }
 
 export default connect(mapStateToProps)(Signup);

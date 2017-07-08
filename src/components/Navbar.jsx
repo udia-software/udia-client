@@ -50,6 +50,15 @@ class Navbar extends Component {
         {loggedIn && <Menu.Menu position="right">
           <Menu.Item
             as={Link}
+            to="/post/create"
+            name="createPost"
+            active={activeItem === 'createPost'}
+            onClick={this.handleItemClick}
+          >
+            Create Post
+          </Menu.Item>
+          <Menu.Item
+            as={Link}
             to="/profile"
             name="profile"
             active={activeItem === 'profile'}
@@ -93,7 +102,7 @@ class Navbar extends Component {
 Navbar.propTypes = propTypes;
 
 function mapStateToProps(state) {
-  return state;
+  return state.auth;
 }
 
 export default connect(mapStateToProps)(Navbar);

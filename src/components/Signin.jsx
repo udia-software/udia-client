@@ -94,7 +94,7 @@ Signin.propTypes = propTypes;
 Signin.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return state;
+  return state.auth;
 }
 
 export default connect(mapStateToProps)(Signin);
