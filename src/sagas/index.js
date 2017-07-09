@@ -12,7 +12,9 @@ import {
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
   GET_POSTS,
-  ADD_POST
+  ADD_POST,
+  EDIT_POST_TITLE,
+  EDIT_POST_CONTENT
 } from '../actions/constants';
 
 import { me } from '../auth';
@@ -108,6 +110,14 @@ export function* createPostFlow() {
       });
       yield effects.put({
         type: CLEAR_ERROR
+      });
+      yield effects.put({
+        type: EDIT_POST_TITLE,
+        title: ''
+      });
+      yield effects.put({
+        type: EDIT_POST_CONTENT,
+        content: ''
       });
     }
   }
