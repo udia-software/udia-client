@@ -125,10 +125,28 @@ export function* getUsersFlow() {
   }
 }
 
+export function* getPostsFlow() {
+  while (true) {
+    // TO DO add pagination
+    const request = yield effects.take(GET_POSTS);
+    const wasSuccessful = yield effects.call(getPosts);
+    if (wasSuccessful) {
+      const posts = wasSuccessful.data;
+      for (let i = 0; i < posts.length; i++) {
+        yield effects.put({
+          type: ADD_POST,
+          post: posts[i]
+        });
+      }
+    }
+  }
+}
+
 export default function* root() {
   yield effects.fork(loginFlow);
   yield effects.fork(logoutFlow);
   yield effects.fork(registerFlow);
   yield effects.fork(createPostFlow);
   yield effects.fork(getUsersFlow);
+  yield effects.fork(getPostsFlow);
 }

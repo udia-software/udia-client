@@ -15,7 +15,12 @@ import {
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
   CREATE_POST_REQUEST,
+<<<<<<< HEAD
   GET_USERS_REQUEST
+=======
+  ADD_POST,
+  GET_POSTS
+>>>>>>> Added get posts saga
 } from './constants';
 
 /**
@@ -143,5 +148,19 @@ export function createPostRequest(data) {
 export function getUsersRequest() {
   return {
     type: GET_USERS_REQUEST
+  }
+}
+
+export function addPosts(post) {
+  return {
+    type: ADD_POST,
+    post
+  }
+}
+
+export function getPosts() {
+  // TODO: add pagination
+  return {
+    type: GET_POSTS
   }
 }

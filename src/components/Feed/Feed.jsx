@@ -1,8 +1,12 @@
 import React from 'react';
+import CreatePost from './CreatePost';
+import PostList from './PostList';
+
 
 const Feed = () => (
     <div>
-        This is a feed.
+        <CreatePost />
+        <PostList />
     </div>
 );
 
