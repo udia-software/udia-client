@@ -1,4 +1,4 @@
-import { post } from '../api';
+import { get, post } from '../api';
 
 export function createPost(title, content) {
   return post('/posts', {
@@ -6,4 +6,8 @@ export function createPost(title, content) {
     title,
     content
   });
+}
+
+export function getPosts() {
+  return get('/posts/');
 }

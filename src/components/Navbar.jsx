@@ -36,7 +36,7 @@ class Navbar extends Component {
           active={activeItem === "home"}
           onClick={this.handleItemClick}
         >
-          UDIA
+          <strong>UDIA</strong>
         </Menu.Item>
         <Menu.Item
           as={Link}
