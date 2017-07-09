@@ -6,16 +6,16 @@
 
 **Universal Dream | Infinite Awareness**
 
-## Requirements
-
-This application was bootstrapped using [Create React App](https://github.com/facebookincubator/create-react-app).
+* The public client can be found at [https://www.udia.ca](https://www.udia.ca)
+* The public facing API is at [udia-software/udia](https://github.com/udia-software/udia) and can be found at [https://a.udia.ca/](https://a.udia.ca).
 
 ## Quickstart (Development)
 
 To start the client locally:
 
-  * Ensure the server is up and running locally [udia](https://github.com/udia-software/udia)
-  * Install dependencies with `npm install`
+  * Ensure the server is up and running locally!
+    * Server: [udia-software/udia](https://github.com/udia-software/udia)
+  * Install dependencies with `yarn install`
   * Run the client with `yarn start`
 
 Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
