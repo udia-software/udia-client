@@ -18,6 +18,7 @@ export function getSocket() {
   });
 
   socket.connect();
+  // TODO Wire up socket logic
   console.log(socket);
   return socket;
 }

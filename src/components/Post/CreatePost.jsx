@@ -2,13 +2,21 @@ import React, { Component } from 'react';
 import { Form, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { editPostTitle, editPostContent, createPostRequest } from '../../actions';
+import {
+  editPostTitle,
+  editPostContent,
+  createPostRequest,
+  clearError
+} from '../../actions';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
-  error: PropTypes.string,
+  error: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ]),
   currentlySending: PropTypes.bool
 };
 
@@ -20,10 +28,12 @@ const defaultProps = {
 class CreatePost extends Component {
   changeTitle = (event) => {
     this.props.dispatch(editPostTitle(event.target.value));
+    this.props.dispatch(clearError());
   }
 
   changeContent = (event) => {
     this.props.dispatch(editPostContent(event.target.value));
+    this.props.dispatch(clearError());
   }
 
   onSubmit = (event) => {
@@ -55,11 +65,19 @@ class CreatePost extends Component {
             placeholder="Write a post..."
             onChange={this.changeContent}
             value={content} />
-          {!!error &&
+          {!!error && typeof error !== "string" &&
             <Message
               error={!!error}
               header={'Create Post Failed'}
-              content={error} />}
+              list={Object.keys(error).map(p =>
+                <Message.Item key={p}> {p} {error[p]}</Message.Item>
+              )}
+           />}
+          {!!error && typeof error === "string" && <Message
+            error={!!error}
+            header="Create Post Failed"
+            content={error}
+          />}
           <Form.Button>Submit</Form.Button>
         </Form>
       </div>

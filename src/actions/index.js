@@ -9,7 +9,7 @@ import {
   SENDING_REQUEST,
   LOGIN_REQUEST,
   REGISTER_REQUEST,
-  LOGOUT,
+  LOGOUT_REQUEST,
   REQUEST_ERROR,
   CLEAR_ERROR,
   EDIT_POST_TITLE,
@@ -60,11 +60,11 @@ export function loginRequest(data) {
 }
 
 /**
- * Tells the app we want to log out a user
+ * Tells the app we want to log out our currently signed in user
  */
-export function logout() {
+export function logoutRequest() {
   return {
-    type: LOGOUT
+    type: LOGOUT_REQUEST
   };
 }
 

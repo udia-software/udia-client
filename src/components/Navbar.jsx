@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Menu } from "semantic-ui-react";
-import { logout } from "../actions";
+import { logoutRequest } from "../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -21,7 +21,7 @@ class Navbar extends Component {
   };
 
   handleSignOut = () => {
-    this.props.dispatch(logout());
+    this.props.dispatch(logoutRequest());
   };
 
   render() {

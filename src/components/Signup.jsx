@@ -8,7 +8,10 @@ import { clearError, registerRequest } from '../actions';
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   currentlySending: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ]),
   location: PropTypes.shape({
     state: PropTypes.shape({}),
   }),
@@ -78,12 +81,17 @@ class Signup extends Component {
               value={password}
             />
           </Form.Field>
-          {!!error && <Message
+          {!!error && typeof error !== "string" && <Message
             error={!!error}
             header="Sign Up Failed"
             list={Object.keys(error).map(p =>
               <Message.Item key={p}> {p} {error[p]}</Message.Item>
             )}
+          />}
+          {!!error && typeof error === "string" && <Message
+            error={!!error}
+            header="Sign Up Failed"
+            content={error}
           />}
           <Button type="submit">Submit</Button>
         </Form>
