@@ -12,3 +12,7 @@ export function getPosts() {
   // TO DO add pagination
   return get('/posts/');
 }
+
+export function getPostById(id) {
+  return get(`/posts/${id}`);
+}

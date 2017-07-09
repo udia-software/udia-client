@@ -39,15 +39,26 @@ class Navbar extends Component {
           <strong>UDIA</strong>
         </Menu.Item>
         {loggedIn &&
-          <Menu.Item
-            as={Link}
-            to="/feed"
-            name="feed"
-            active={activeItem === "feed"}
-            onClick={this.handleItemClick}
-          >
-            Feed
-          </Menu.Item>}
+          <Menu.Menu>
+            <Menu.Item
+              as={Link}
+              to="/posts"
+              name="posts"
+              active={activeItem === "posts"}
+              onClick={this.handleItemClick}
+            >
+              Posts
+            </Menu.Item>
+            <Menu.Item
+              as={Link}
+              to="/posts/create"
+              name="createPost"
+              active={activeItem === "createPost"}
+              onClick={this.handleItemClick}
+            >
+              Write Post
+            </Menu.Item>
+          </Menu.Menu> }
         {loggedIn &&
           <Menu.Menu position="right">
             <Dropdown

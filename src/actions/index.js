@@ -17,7 +17,9 @@ import {
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
   ADD_POST,
-  GET_POSTS
+  GET_POSTS_REQUEST,
+  GET_POST_BY_ID_REQUEST,
+  SET_POST
 } from './constants';
 
 /**
@@ -136,7 +138,7 @@ export function createPostRequest(data) {
   return {
     type: CREATE_POST_REQUEST,
     data
-  }
+  };
 }
 
 /**
@@ -145,19 +147,33 @@ export function createPostRequest(data) {
 export function getUsersRequest() {
   return {
     type: GET_USERS_REQUEST
-  }
+  };
 }
 
 export function addPosts(post) {
   return {
     type: ADD_POST,
     post
-  }
+  };
 }
 
 export function getPosts() {
   // TODO: add pagination
   return {
-    type: GET_POSTS
-  }
+    type: GET_POSTS_REQUEST
+  };
+}
+
+export function getPostById(id) {
+  return {
+    type: GET_POST_BY_ID_REQUEST,
+    id
+  };
+}
+
+export function setPost(post) {
+  return {
+    type: SET_POST,
+    post
+  };
 }

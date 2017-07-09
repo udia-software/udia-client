@@ -1,6 +1,6 @@
 import { effects } from 'redux-saga';
 import { login, logout, register } from './authSagas';
-import { createPostCall, getPostsCall } from './postSagas';
+import { createPostCall, getPostsCall, getPostByIdCall } from './postSagas';
 import { getUsersCall } from './userSagas';
 import {
   SET_AUTH,
@@ -11,10 +11,12 @@ import {
   LOGOUT_REQUEST,
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
-  GET_POSTS,
+  GET_POSTS_REQUEST,
   ADD_POST,
+  GET_POST_BY_ID_REQUEST,
+  SET_POST,
   EDIT_POST_TITLE,
-  EDIT_POST_CONTENT
+  EDIT_POST_CONTENT,
 } from '../actions/constants';
 
 import { me } from '../auth';
@@ -142,7 +144,7 @@ export function* getUsersFlow() {
 export function* getPostsFlow() {
   while (true) {
     // TO DO add pagination
-    const request = yield effects.take(GET_POSTS);
+    const request = yield effects.take(GET_POSTS_REQUEST);
     const wasSuccessful = yield effects.call(getPostsCall);
     if (wasSuccessful) {
       const posts = wasSuccessful.data;
@@ -156,6 +158,21 @@ export function* getPostsFlow() {
   }
 }
 
+export function* getPostByIdFlow() {
+  while (true) {
+    const request = yield effects.take(GET_POST_BY_ID_REQUEST);
+    const { id } = request;
+    const wasSuccessful = yield effects.call(getPostByIdCall, id);
+
+    if (wasSuccessful) {
+      yield effects.put({
+        type: SET_POST,
+        post: wasSuccessful.data
+      });
+    }
+  }
+}
+
 export default function* root() {
   yield effects.fork(loginFlow);
   yield effects.fork(logoutFlow);
@@ -163,4 +180,5 @@ export default function* root() {
   yield effects.fork(createPostFlow);
   yield effects.fork(getPostsFlow);
   yield effects.fork(getUsersFlow);
+  yield effects.fork(getPostByIdFlow);
 }

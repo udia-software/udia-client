@@ -1,28 +1,20 @@
 import {
-  EDIT_POST_TITLE,
-  EDIT_POST_CONTENT
+  SET_POST
 } from '../actions/constants';
 
 const initialState = {
-  title: '',
-  content: ''
+  post: null
 };
 
-function postReducer(state = initialState, action) {
+function postListReducer(state = initialState, action) {
   switch (action.type) {
-    case EDIT_POST_TITLE:
+    case SET_POST:
       return {
-        ...state,
-        title: action.title
-      };
-    case EDIT_POST_CONTENT:
-      return {
-        ...state,
-        content: action.content
+        post: action.post
       };
     default:
       return state;
   }
 }
 
-export default postReducer;
+export default postListReducer;
