@@ -1,13 +1,16 @@
 import { effects } from 'redux-saga';
 import { login, logout, register } from './authSagas';
 import { createPostCall } from './postSagas';
+import { getUsersCall } from './userSagas';
 import {
-  LOGIN_REQUEST,
-  REGISTER_REQUEST,
   SET_AUTH,
   SET_USER,
+  CLEAR_ERROR,
+  LOGIN_REQUEST,
+  REGISTER_REQUEST,
   LOGOUT_REQUEST,
-  CREATE_POST_REQUEST
+  CREATE_POST_REQUEST,
+  GET_USERS_REQUEST,
 } from '../actions/constants';
 
 import { me } from '../auth';
@@ -29,6 +32,9 @@ export function* loginFlow() {
       yield effects.put({
         type: SET_USER,
         newUserState: me()
+      });
+      yield effects.put({
+        type: CLEAR_ERROR
       });
     }
   }
@@ -73,6 +79,9 @@ export function* registerFlow() {
         type: SET_USER,
         newUserState: me()
       });
+      yield effects.put({
+        type: CLEAR_ERROR
+      });
     }
   }
 }
@@ -90,8 +99,28 @@ export function* createPostFlow() {
     });
 
     if (wasSuccessful) {
+      yield effects.put({
+        type: CLEAR_ERROR
+      });
       // TODO redirect to post page
       console.log('create post successful', wasSuccessful);
+    }
+  }
+}
+
+/**
+ * Saga for getting all users. Liste for GET_USERS_REQUEST action.
+ */
+export function* getUsersFlow() {
+  while(true) {
+    yield effects.take(GET_USERS_REQUEST);
+    const wasSuccessful = yield effects.call(getUsersCall, {});
+    console.log(wasSuccessful);
+
+    if (wasSuccessful) {
+      yield effects.put({
+        type: CLEAR_ERROR
+      });
     }
   }
 }
@@ -101,4 +130,5 @@ export default function* root() {
   yield effects.fork(logoutFlow);
   yield effects.fork(registerFlow);
   yield effects.fork(createPostFlow);
+  yield effects.fork(getUsersFlow);
 }

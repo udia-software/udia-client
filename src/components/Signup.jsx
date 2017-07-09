@@ -1,68 +1,78 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { clearError, registerRequest } from '../actions';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import PropTypes from "prop-types";
+import {
+  Button,
+  Container,
+  Form,
+  Header,
+  Input,
+  Message
+} from "semantic-ui-react";
+import { clearError, registerRequest } from "../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   currentlySending: PropTypes.bool,
-  error: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.object
-  ]),
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   location: PropTypes.shape({
-    state: PropTypes.shape({}),
+    state: PropTypes.shape({})
   }),
-  loggedIn: PropTypes.bool.isRequired,
+  loggedIn: PropTypes.bool.isRequired
 };
 
 const defaultProps = {
   currentlySending: false,
-  error: '',
-  location: { state: {} },
+  error: "",
+  location: { state: {} }
 };
 
 class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
+      username: "",
+      password: ""
     };
     this.props.dispatch(clearError());
   }
 
-  onSubmit = (event) => {
+  onSubmit = event => {
     event.preventDefault();
-    this.props.dispatch(registerRequest({
-      username: this.state.username,
-      password: this.state.password,
-    }));
-  }
+    this.props.dispatch(
+      registerRequest({
+        username: this.state.username,
+        password: this.state.password
+      })
+    );
+  };
 
-  changeUsername = (event) => {
+  changeUsername = event => {
     this.setState({ username: event.target.value });
-  }
+  };
 
-  changePassword = (event) => {
+  changePassword = event => {
     this.setState({ password: event.target.value });
-  }
+  };
 
   render() {
     const { username, password } = this.state;
     const { currentlySending, error } = this.props;
-    const { from } = this.props.location.state || { from: { pathname: '/'} };
+    const { from } = this.props.location.state || { from: { pathname: "/" } };
 
-    if ( this.props.loggedIn) {
+    if (this.props.loggedIn) {
       return <Redirect to={from} />;
     }
 
     return (
-      <div>
-        <h2>Sign Up</h2>
-        <Form onSubmit={this.onSubmit} loading={currentlySending} error={!!error}>
+      <Container>
+        <Header as='h2'>Sign Up</Header>
+        <Form
+          onSubmit={this.onSubmit}
+          loading={currentlySending}
+          error={!!error}
+        >
           <Form.Field>
             <Input
               label="Username"
@@ -81,21 +91,21 @@ class Signup extends Component {
               value={password}
             />
           </Form.Field>
-          {!!error && typeof error !== "string" && <Message
-            error={!!error}
-            header="Sign Up Failed"
-            list={Object.keys(error).map(p =>
-              <Message.Item key={p}> {p} {error[p]}</Message.Item>
-            )}
-          />}
-          {!!error && typeof error === "string" && <Message
-            error={!!error}
-            header="Sign Up Failed"
-            content={error}
-          />}
+          {!!error &&
+            typeof error !== "string" &&
+            <Message
+              error={!!error}
+              header="Sign Up Failed"
+              list={Object.keys(error).map(p => (
+                <Message.Item key={p}> {p} {error[p]}</Message.Item>
+              ))}
+            />}
+          {!!error &&
+            typeof error === "string" &&
+            <Message error={!!error} header="Sign Up Failed" content={error} />}
           <Button type="submit">Submit</Button>
         </Form>
-      </div>
+      </Container>
     );
   }
 }
@@ -108,7 +118,7 @@ function mapStateToProps(state) {
     ...state.auth,
     error: state.api.error,
     currentlySending: state.api.currentlySending
-  }
+  };
 }
 
 export default connect(mapStateToProps)(Signup);

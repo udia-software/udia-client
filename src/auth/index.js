@@ -71,6 +71,17 @@ export function signup(username, password) {
   });
 }
 
+/**
+ * Get the specified user
+ * @param {string} id The value of the user's ID (some integer)
+ */
 export function getUser(id) {
   return get(`/users/${id}`);
+}
+
+/**
+ * Get all of the users
+ */
+export function getUsers() {
+  return get('/users');
 }

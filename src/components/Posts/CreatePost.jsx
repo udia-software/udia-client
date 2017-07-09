@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Message } from 'semantic-ui-react';
+import { Container, Form, Header, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -47,8 +47,8 @@ class CreatePost extends Component {
   render = () => {
     const { title, content, currentlySending, error } = this.props;
     return (
-      <div style={{ padding: '40px' }}>
-        <h3>Write a Post</h3>
+      <Container>
+        <Header as='h3'>Create a Post</Header>
         <Form
           onSubmit={this.onSubmit}
           loading={currentlySending}
@@ -80,7 +80,7 @@ class CreatePost extends Component {
           />}
           <Form.Button>Submit</Form.Button>
         </Form>
-      </div>
+      </Container>
     );
   }
 }

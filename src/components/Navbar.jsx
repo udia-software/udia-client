@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { Menu } from "semantic-ui-react";
+import { Dropdown, Menu } from "semantic-ui-react";
 import { logoutRequest } from "../actions";
 
 const propTypes = {
@@ -26,7 +26,7 @@ class Navbar extends Component {
 
   render() {
     const { activeItem } = this.state;
-    const { loggedIn } = this.props;
+    const { loggedIn, currentUser } = this.props;
     return (
       <Menu>
         <Menu.Item
@@ -42,58 +42,79 @@ class Navbar extends Component {
           as={Link}
           to="/about"
           name="about"
-          active={activeItem === 'about'}
+          active={activeItem === "about"}
           onClick={this.handleItemClick}
         >
           About
         </Menu.Item>
-        {loggedIn && <Menu.Menu position="right">
-          <Menu.Item
-            as={Link}
-            to="/post/create"
-            name="createPost"
-            active={activeItem === 'createPost'}
-            onClick={this.handleItemClick}
-          >
-            Create Post
-          </Menu.Item>
-          <Menu.Item
-            as={Link}
-            to="/profile"
-            name="profile"
-            active={activeItem === 'profile'}
-            onClick={this.handleItemClick}
-          >
-            My Profile
-          </Menu.Item>
-          <Menu.Item
-            name="signout"
-            active={activeItem === 'signout'}
-            onClick={this.handleSignOut}
-          >
-            Sign Out
-          </Menu.Item>
-        </Menu.Menu>}
-        {!loggedIn && <Menu.Menu position="right">
-          <Menu.Item
-            as={Link}
-            to="/signin"
-            name="signin"
-            active={activeItem === 'signin'}
-            onClick={this.handleItemClick}
-          >
-            Sign In
-          </Menu.Item>
-          <Menu.Item
-            as={Link}
-            to="/signup"
-            name="signup"
-            active={activeItem === 'signup'}
-            onClick={this.handleItemClick}
-          >
-            Sign Up
-          </Menu.Item>
-        </Menu.Menu>}
+        {loggedIn &&
+          <Menu.Menu position="right">
+            <Dropdown
+              text={`Hello, ${currentUser.username}!`}
+              pointing
+              className="link item"
+            >
+              <Dropdown.Menu>
+                <Dropdown.Header>{currentUser.username}</Dropdown.Header>
+                <Dropdown.Item
+                  as={Link}
+                  to="/posts/create"
+                  name="createPost"
+                  active={activeItem === "createPost"}
+                  onClick={this.handleItemClick}
+                >
+                  Create Post
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as={Link}
+                  to="/users"
+                  name="listUsers"
+                  active={activeItem === "listUsers"}
+                  onClick={this.handleItemClick}
+                >
+                  List Users
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item
+                  as={Link}
+                  to="/profile"
+                  name="profile"
+                  active={activeItem === "profile"}
+                  onClick={this.handleItemClick}
+                >
+                  My Profile
+                </Dropdown.Item>
+                <Dropdown.Item
+                  name="signout"
+                  active={activeItem === "signout"}
+                  onClick={this.handleSignOut}
+                >
+                  Sign Out
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Menu.Menu>}
+        {!loggedIn &&
+          <Menu.Menu position="right">
+            <Menu.Item
+              as={Link}
+              to="/signin"
+              name="signin"
+              active={activeItem === "signin"}
+              onClick={this.handleItemClick}
+            >
+              Sign In
+            </Menu.Item>
+            <Menu.Item
+              as={Link}
+              to="/signup"
+              name="signup"
+              active={activeItem === "signup"}
+              onClick={this.handleItemClick}
+            >
+              Sign Up
+            </Menu.Item>
+          </Menu.Menu>}
       </Menu>
     );
   }

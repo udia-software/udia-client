@@ -9,6 +9,7 @@ const About = () => (
     <p>It is the natural exploration of solispsim taken to its extreme.</p>
     <Divider />
     <Header as='h2'>Technical</Header>
+    <p>You are visiting a prototype- an alpha of a site. Chances are good that any data entered will be wiped upon future releases.</p>
     <List>
       <List.Item>
         <List.Icon name='legal' />
