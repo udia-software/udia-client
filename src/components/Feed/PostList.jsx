@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getPosts } from '../../actions';
+import { Feed, Icon } from 'semantic-ui-react';
+import moment from 'moment';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -13,11 +15,33 @@ class PostList extends Component {
     super(props);
     this.props.dispatch(getPosts());
   }
-  render = () => (
-    <div>
-      This is a post list.
-    </div>
-  );
+  render = () => {
+    const { posts } = this.props;
+    console.log(posts)
+    return (
+      <div style={{ padding: '40px' }}>
+        <Feed>
+          {posts.map((post, index) => (
+            <Feed.Event key={index}>
+              <Feed.Label>
+                <Icon name='user' />
+              </Feed.Label>
+              <Feed.Content>
+                <Feed.Summary>
+                  <strong>{post.author.username}</strong> wrote{' '}
+                  <strong>{post.title}</strong>
+                  <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
+                </Feed.Summary>
+                <Feed.Extra text>
+                  {post.content}
+                </Feed.Extra>
+              </Feed.Content>
+            </Feed.Event>
+          ))}
+        </Feed>
+      </div>
+    );
+  }
 }
 
 PostList.propTypes = propTypes;

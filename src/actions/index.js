@@ -15,12 +15,9 @@ import {
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
   CREATE_POST_REQUEST,
-<<<<<<< HEAD
-  GET_USERS_REQUEST
-=======
+  GET_USERS_REQUEST,
   ADD_POST,
   GET_POSTS
->>>>>>> Added get posts saga
 } from './constants';
 
 /**

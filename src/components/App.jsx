@@ -9,7 +9,6 @@ import Navbar from './Navbar';
 import Signin from './Signin';
 import Signup from './Signup';
 import Profile from './Profile';
-import CreatePost from './Posts/CreatePost';
 import ListUsers from './Users/ListUsers';
 import Feed from './Feed/Feed';
 
