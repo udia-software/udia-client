@@ -14,7 +14,6 @@ const localStorage = global.process && process.env.NODE_ENV === 'test' ?
 
 function headers() {
   const token = localStorage.getItem('token') || '';
-  console.log('token', token);
 
   return {
     Accept: 'application/json',
@@ -44,7 +43,10 @@ export function get(url, params = {}) {
     method: 'GET',
     headers: headers()
   })
-  .then(parseResponse);
+  .then(parseResponse)
+  .catch(error => {
+    return Promise.reject(error);
+  });
 }
 
 export function post(url, data) {
@@ -55,7 +57,10 @@ export function post(url, data) {
     headers: headers(),
     body
   })
-  .then(parseResponse);
+  .then(parseResponse)
+  .catch(error => {
+    return Promise.reject(error);
+  });
 }
 
 export function patch(url, data) {
@@ -66,7 +71,10 @@ export function patch(url, data) {
     headers: headers(),
     body
   })
-  .then(parseResponse);
+  .then(parseResponse)
+  .catch(error => {
+    return Promise.reject(error);
+  });
 }
 
 export function del(url) {
@@ -74,5 +82,8 @@ export function del(url) {
     method: 'DELETE',
     headers: headers()
   })
-  .then(parseResponse);
+  .then(parseResponse)
+  .catch(error => {
+    return Promise.reject(error);
+  });
 }

@@ -15,8 +15,8 @@ class Profile extends Component {
   render() {
     const { currentUser } = this.props;
     return (
-      <Container text>
-        <Header as ="h2">Profile</Header>
+      <Container>
+        <Header as="h2">My Profile</Header>
         <p>Created At: { currentUser.inserted_at }</p>
         <p>Updated At: { currentUser.updated_at }</p>
         <p>Username: { currentUser.username }</p>

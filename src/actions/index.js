@@ -9,12 +9,13 @@ import {
   SENDING_REQUEST,
   LOGIN_REQUEST,
   REGISTER_REQUEST,
-  LOGOUT,
+  LOGOUT_REQUEST,
   REQUEST_ERROR,
   CLEAR_ERROR,
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
-  CREATE_POST_REQUEST
+  CREATE_POST_REQUEST,
+  GET_USERS_REQUEST
 } from './constants';
 
 /**
@@ -60,11 +61,11 @@ export function loginRequest(data) {
 }
 
 /**
- * Tells the app we want to log out a user
+ * Tells the app we want to log out our currently signed in user
  */
-export function logout() {
+export function logoutRequest() {
   return {
-    type: LOGOUT
+    type: LOGOUT_REQUEST
   };
 }
 
@@ -101,6 +102,10 @@ export function clearError() {
   };
 }
 
+/**
+ * Sets the title of the post currently being edited/created
+ * @param {string} title Title of the post currently being edited/created
+ */
 export function editPostTitle(title) {
   return {
     type: EDIT_POST_TITLE,
@@ -108,6 +113,10 @@ export function editPostTitle(title) {
   };
 }
 
+/**
+ * Sets the content for the post currently being edited/created
+ * @param {string} content Content of the post currently being edited/created
+ */
 export function editPostContent(content) {
   return {
     type: EDIT_POST_CONTENT,
@@ -116,7 +125,7 @@ export function editPostContent(content) {
 }
 
 /**
- * Tells the app we want to log in a user
+ * Tells the app we want to create a post
  * @param  {object} data          The data we're sending for log in
  * @param  {string} data.title    The title of the post
  * @param  {string} data.content  The content of the post
@@ -125,5 +134,14 @@ export function createPostRequest(data) {
   return {
     type: CREATE_POST_REQUEST,
     data
+  }
+}
+
+/**
+ * Tells the app we want to get a list of all the users
+ */
+export function getUsersRequest() {
+  return {
+    type: GET_USERS_REQUEST
   }
 }
