@@ -9,8 +9,10 @@ import Navbar from './Navbar';
 import Signin from './Signin';
 import Signup from './Signup';
 import Profile from './Profile';
-import CreatePost from './Posts/CreatePost';
 import ListUsers from './Users/ListUsers';
+import CreatePost from './Posts/CreatePost';
+import PostList from './Posts/PostList';
+import Post from './Posts/Post';
 
 const NoMatch = ({ location }) => (
   <div>
@@ -36,8 +38,10 @@ class App extends Component {
           <Route path='/about' component={About} />
           <Route path='/signin' component={Signin} />
           <Route path='/signup' component={Signup} />
-          <PrivateRoute path='/profile' component={Profile} />
+          <PrivateRoute exact path='/posts' component={PostList} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
+          <PrivateRoute path='/posts/:id' component={Post} />
+          <PrivateRoute path='/profile' component={Profile} />
           <PrivateRoute path='/users' component={ListUsers} />
           <Route component={NoMatch} />
         </Switch>

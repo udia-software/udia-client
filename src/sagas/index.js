@@ -1,6 +1,6 @@
 import { effects } from 'redux-saga';
 import { login, logout, register } from './authSagas';
-import { createPostCall } from './postSagas';
+import { createPostCall, getPostsCall, getPostByIdCall } from './postSagas';
 import { getUsersCall } from './userSagas';
 import {
   SET_AUTH,
@@ -11,6 +11,13 @@ import {
   LOGOUT_REQUEST,
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
+  GET_POSTS_REQUEST,
+  ADD_POST,
+  GET_POST_BY_ID_REQUEST,
+  SET_POST,
+  EDIT_POST_TITLE,
+  EDIT_POST_CONTENT,
+  CLEAR_POST_LIST
 } from '../actions/constants';
 
 import { me } from '../auth';
@@ -99,11 +106,22 @@ export function* createPostFlow() {
     });
 
     if (wasSuccessful) {
+      const post = wasSuccessful.data;
+      yield effects.put({
+        type: ADD_POST,
+        post
+      });
       yield effects.put({
         type: CLEAR_ERROR
       });
-      // TODO redirect to post page
-      console.log('create post successful', wasSuccessful);
+      yield effects.put({
+        type: EDIT_POST_TITLE,
+        title: ''
+      });
+      yield effects.put({
+        type: EDIT_POST_CONTENT,
+        content: ''
+      });
     }
   }
 }
@@ -115,11 +133,44 @@ export function* getUsersFlow() {
   while(true) {
     yield effects.take(GET_USERS_REQUEST);
     const wasSuccessful = yield effects.call(getUsersCall, {});
-    console.log(wasSuccessful);
 
     if (wasSuccessful) {
       yield effects.put({
         type: CLEAR_ERROR
+      });
+    }
+  }
+}
+
+export function* getPostsFlow() {
+  while (true) {
+    // TO DO add pagination
+    yield effects.take(GET_POSTS_REQUEST);
+    const wasSuccessful = yield effects.call(getPostsCall);
+    if (wasSuccessful) {
+      yield effects.put({
+        type: CLEAR_POST_LIST
+      });
+      const posts = wasSuccessful.data;
+      for (let i = 0; i < posts.length; i++) {
+        yield effects.put({
+          type: ADD_POST,
+          post: posts[i]
+        });
+      }
+    }
+  }
+}
+
+export function* getPostByIdFlow() {
+  while (true) {
+    const request = yield effects.take(GET_POST_BY_ID_REQUEST);
+    const { id } = request;
+    const wasSuccessful = yield effects.call(getPostByIdCall, id);
+    if (wasSuccessful) {
+      yield effects.put({
+        type: SET_POST,
+        post: wasSuccessful.data
       });
     }
   }
@@ -130,5 +181,7 @@ export default function* root() {
   yield effects.fork(logoutFlow);
   yield effects.fork(registerFlow);
   yield effects.fork(createPostFlow);
+  yield effects.fork(getPostsFlow);
   yield effects.fork(getUsersFlow);
+  yield effects.fork(getPostByIdFlow);
 }

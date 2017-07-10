@@ -90,7 +90,7 @@ CreatePost.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
   return {
-    ...state.post,
+    ...state.createPost,
     error: state.api.error,
     currentlySending: state.api.currentlySending
   };

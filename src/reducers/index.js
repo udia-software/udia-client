@@ -1,12 +1,16 @@
 import { combineReducers } from 'redux';
 import authReducer from './authReducer';
-import postReducer from './postReducer';
+import createPostReducer from './createPostReducer';
+import postListReducer from './postListReducer';
 import apiReducer from './apiReducer';
+import postReducer from './postReducer';
 
 const reducer = combineReducers({
   auth: authReducer,
-  post: postReducer,
-  api: apiReducer
+  createPost: createPostReducer,
+  api: apiReducer,
+  postList: postListReducer,
+  post: postReducer
 });
 
 export default reducer;

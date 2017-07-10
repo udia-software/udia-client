@@ -36,17 +36,29 @@ class Navbar extends Component {
           active={activeItem === "home"}
           onClick={this.handleItemClick}
         >
-          UDIA
+          <strong>UDIA</strong>
         </Menu.Item>
-        <Menu.Item
-          as={Link}
-          to="/about"
-          name="about"
-          active={activeItem === "about"}
-          onClick={this.handleItemClick}
-        >
-          About
-        </Menu.Item>
+        {loggedIn &&
+          <Menu.Menu>
+            <Menu.Item
+              as={Link}
+              to="/posts"
+              name="posts"
+              active={activeItem === "posts"}
+              onClick={this.handleItemClick}
+            >
+              Posts
+            </Menu.Item>
+            <Menu.Item
+              as={Link}
+              to="/posts/create"
+              name="createPost"
+              active={activeItem === "createPost"}
+              onClick={this.handleItemClick}
+            >
+              Write Post
+            </Menu.Item>
+          </Menu.Menu> }
         {loggedIn &&
           <Menu.Menu position="right">
             <Dropdown
@@ -58,15 +70,6 @@ class Navbar extends Component {
                 <Dropdown.Header>{currentUser.username}</Dropdown.Header>
                 <Dropdown.Item
                   as={Link}
-                  to="/posts/create"
-                  name="createPost"
-                  active={activeItem === "createPost"}
-                  onClick={this.handleItemClick}
-                >
-                  Create Post
-                </Dropdown.Item>
-                <Dropdown.Item
-                  as={Link}
                   to="/users"
                   name="listUsers"
                   active={activeItem === "listUsers"}
@@ -75,6 +78,15 @@ class Navbar extends Component {
                   List Users
                 </Dropdown.Item>
                 <Dropdown.Divider />
+                <Dropdown.Item
+                  as={Link}
+                  to="/about"
+                  name="about"
+                  active={activeItem === "about"}
+                  onClick={this.handleItemClick}
+                >
+                  About
+                </Dropdown.Item>
                 <Dropdown.Item
                   as={Link}
                   to="/profile"
