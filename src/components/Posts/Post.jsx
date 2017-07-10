@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { setPost, getPostById } from '../../actions';
-import { Container, Dimmer, Loader, Segment, Item } from 'semantic-ui-react';
+import { Container, Loader, Item } from 'semantic-ui-react';
 import moment from 'moment';
 
 const propTypes = {
@@ -29,8 +29,7 @@ class Post extends Component {
     this.props.dispatch(setPost(null));
   }
   render = () => {
-    const { post, error, currentlySending } = this.props;
-    console.log(post);
+    const { post, currentlySending } = this.props;
     return (
       <Container>
         <Loader active={currentlySending} inline='centered' />

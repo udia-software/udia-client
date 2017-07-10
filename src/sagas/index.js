@@ -145,7 +145,7 @@ export function* getUsersFlow() {
 export function* getPostsFlow() {
   while (true) {
     // TO DO add pagination
-    const request = yield effects.take(GET_POSTS_REQUEST);
+    yield effects.take(GET_POSTS_REQUEST);
     const wasSuccessful = yield effects.call(getPostsCall);
     if (wasSuccessful) {
       yield effects.put({
