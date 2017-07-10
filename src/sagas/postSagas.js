@@ -59,7 +59,7 @@ export function* getPostByIdCall(id) {
   });
 
   try {
-    return yield effects.call(getPostById(id));
+    return yield effects.call(getPostById, id);
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,

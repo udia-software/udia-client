@@ -1,5 +1,6 @@
 import {
-  ADD_POST
+  ADD_POST,
+  CLEAR_POST_LIST
 } from '../actions/constants';
 
 const initialState = {
@@ -10,7 +11,13 @@ function postListReducer(state = initialState, action) {
   switch (action.type) {
     case ADD_POST:
       return {
+        ...state,
         posts: [...state.posts, action.post]
+      };
+    case CLEAR_POST_LIST:
+      return {
+        ...state,
+        posts: []
       };
     default:
       return state;

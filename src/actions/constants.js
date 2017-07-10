@@ -8,6 +8,7 @@ export const EDIT_POST_TITLE = 'EDIT_POST_TITLE';
 export const EDIT_POST_CONTENT = 'EDIT_POST_CONTENT';
 export const ADD_POST = 'ADD_POST';
 export const SET_POST = 'SET_POST';
+export const CLEAR_POST_LIST = 'CLEAR_POST_LIST';
 
 // Saga Related Action Constants
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';

@@ -17,6 +17,7 @@ import {
   SET_POST,
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
+  CLEAR_POST_LIST
 } from '../actions/constants';
 
 import { me } from '../auth';
@@ -147,6 +148,9 @@ export function* getPostsFlow() {
     const request = yield effects.take(GET_POSTS_REQUEST);
     const wasSuccessful = yield effects.call(getPostsCall);
     if (wasSuccessful) {
+      yield effects.put({
+        type: CLEAR_POST_LIST
+      });
       const posts = wasSuccessful.data;
       for (let i = 0; i < posts.length; i++) {
         yield effects.put({
@@ -163,7 +167,6 @@ export function* getPostByIdFlow() {
     const request = yield effects.take(GET_POST_BY_ID_REQUEST);
     const { id } = request;
     const wasSuccessful = yield effects.call(getPostByIdCall, id);
-
     if (wasSuccessful) {
       yield effects.put({
         type: SET_POST,

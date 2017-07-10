@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getPosts } from '../../actions';
 import { Feed, Icon } from 'semantic-ui-react';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -29,7 +30,7 @@ class PostList extends Component {
               <Feed.Content>
                 <Feed.Summary>
                   <strong>{post.author.username}</strong> wrote{' '}
-                  <strong>{post.title}</strong>
+                  <Link to={`/posts/${post.id}`}>{post.title}</Link>
                   <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
                 </Feed.Summary>
                 <Feed.Extra text>
