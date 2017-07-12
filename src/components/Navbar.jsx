@@ -7,7 +7,20 @@ import { logoutRequest } from "../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  loggedIn: PropTypes.bool.isRequired
+  loggedIn: PropTypes.bool.isRequired,
+  currentUser: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    inserted_at: PropTypes.string.isRequired,
+    updated_at: PropTypes.string.isRequired,
+  })
+};
+
+const defaultProps = {
+  currentUser: {
+    username: "",
+    inserted_at: "",
+    updated_at: "",
+  }
 };
 
 class Navbar extends Component {
@@ -133,6 +146,7 @@ class Navbar extends Component {
 }
 
 Navbar.propTypes = propTypes;
+Navbar.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
   return state.auth;

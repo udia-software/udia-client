@@ -1,22 +1,29 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { setPost, getPostById } from '../../actions';
-import { Container, Loader, Item } from 'semantic-ui-react';
-import moment from 'moment';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { setPost, getPostById } from "../../actions";
+import { Container, Loader, Item } from "semantic-ui-react";
+import moment from "moment";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  post: PropTypes.object,
-  error: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.object
-  ]),
-  currentlySending: PropTypes.bool
-}
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  currentlySending: PropTypes.bool,
+  author: PropTypes.shape({
+    inserted_at: PropTypes.string,
+    updated_at: PropTypes.string,
+    username: PropTypes.string
+  }),
+  type: PropTypes.oneOf(["text"]),
+  title: PropTypes.string,
+  content: PropTypes.string,
+  id: PropTypes.number,
+  inserted_at: PropTypes.string,
+  updated_at: PropTypes.string
+};
 
 const defaultProps = {
-  error: '',
+  error: "",
   currentlySending: false
 };
 
@@ -24,35 +31,52 @@ class Post extends Component {
   componentWillMount = () => {
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostById(postId));
-  }
+  };
   componentWillUnmount = () => {
     this.props.dispatch(setPost(null));
-  }
+  };
   render = () => {
-    const { post, currentlySending } = this.props;
+    const {
+      id,
+      author,
+      title,
+      inserted_at,
+      updated_at,
+      content,
+      currentlySending
+    } = this.props;
     return (
       <Container>
-        <Loader active={currentlySending} inline='centered' />
-        {post ?
+        <Loader active={currentlySending} inline="centered" />
+        {id &&
           <Item>
             <Item.Content>
-              <Item.Header as='h3'>
-                {post.title}
+              <Item.Header as="h3">
+                {title}
               </Item.Header>
               <Item.Meta>
-                Written by {post.author.username} on {moment(post.inserted_at).format('MMMM D [at] h:mm a')}
+                Written by
+                {" "}
+                {author.username}
+                {" "}
+                on
+                {" "}
+                {moment(inserted_at).format("MMMM D [at] h:mm Z")}
+                {" "}
+                and last updated at
+                {" "}
+                {moment(updated_at).format("MMMM D [at] h:mm a Z")}
               </Item.Meta>
               <Item.Description>
-                <br/>
-                {post.content}
+                <br />
+                {content}
               </Item.Description>
-              <Item.Extra></Item.Extra>
+              <Item.Extra />
             </Item.Content>
-          </Item>
-          : null}
+          </Item>}
       </Container>
     );
-  }
+  };
 }
 
 Post.propTypes = propTypes;

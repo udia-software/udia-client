@@ -16,7 +16,7 @@ import {
   EDIT_POST_CONTENT,
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
-  ADD_POST,
+  ADD_POSTS,
   GET_POSTS_REQUEST,
   GET_POST_BY_ID_REQUEST,
   SET_POST
@@ -150,17 +150,17 @@ export function getUsersRequest() {
   };
 }
 
-export function addPosts(post) {
+export function addPosts(posts) {
   return {
-    type: ADD_POST,
-    post
+    type: ADD_POSTS,
+    posts
   };
 }
 
-export function getPosts() {
-  // TODO: add pagination
+export function getPosts(page) {
   return {
-    type: GET_POSTS_REQUEST
+    type: GET_POSTS_REQUEST,
+    page
   };
 }
 

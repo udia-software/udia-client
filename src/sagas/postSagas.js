@@ -30,14 +30,14 @@ export function* createPostCall({
   }
 }
 
-export function* getPostsCall() {
+export function* getPostsCall(page) {
   yield effects.put({
     type: SENDING_REQUEST,
     sending: true
   });
 
   try {
-    return yield effects.call(getPosts);
+    return yield effects.call(getPosts, page);
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,

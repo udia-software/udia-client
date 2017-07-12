@@ -6,8 +6,12 @@ export const REQUEST_ERROR = 'REQUEST_ERROR';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
 export const EDIT_POST_TITLE = 'EDIT_POST_TITLE';
 export const EDIT_POST_CONTENT = 'EDIT_POST_CONTENT';
-export const ADD_POST = 'ADD_POST';
 export const SET_POST = 'SET_POST';
+export const ADD_POSTS = 'ADD_POSTS';
+export const SET_POSTS_PAGE_NUMBER = 'SET_POSTS_PAGE_NUMBER';
+export const SET_POSTS_PAGE_SIZE = 'SET_POSTS_PAGE_SIZE';
+export const SET_POSTS_TOTAL_ENTRIES = 'SET_POSTS_TOTAL_ENTRIES';
+export const SET_POSTS_TOTAL_PAGES = 'SET_POSTS_TOTAL_PAGES';
 export const CLEAR_POST_LIST = 'CLEAR_POST_LIST';
 
 // Saga Related Action Constants
