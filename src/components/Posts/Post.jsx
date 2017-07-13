@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { setPost, getPostById } from "../../actions";
 import { Container, Loader, Item } from "semantic-ui-react";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -57,7 +58,7 @@ class Post extends Component {
               <Item.Meta>
                 Written by
                 {" "}
-                {author.username}
+                <Link to={`/users/${author.username}`}>{author.username}</Link>
                 {" "}
                 on
                 {" "}

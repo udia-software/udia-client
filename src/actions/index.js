@@ -17,9 +17,10 @@ import {
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
   ADD_POSTS,
+  SET_POST,
   GET_POSTS_REQUEST,
   GET_POST_BY_ID_REQUEST,
-  SET_POST
+  GET_USER_BY_USERNAME_REQUEST,
 } from './constants';
 
 /**
@@ -176,4 +177,11 @@ export function setPost(post) {
     type: SET_POST,
     post
   };
+}
+
+export function getUserByUsername(username) {
+  return {
+    type: GET_USER_BY_USERNAME_REQUEST,
+    username
+  }
 }

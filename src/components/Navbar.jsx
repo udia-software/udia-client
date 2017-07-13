@@ -83,16 +83,6 @@ class Navbar extends Component {
                 <Dropdown.Header>{currentUser.username}</Dropdown.Header>
                 <Dropdown.Item
                   as={Link}
-                  to="/users"
-                  name="listUsers"
-                  active={activeItem === "listUsers"}
-                  onClick={this.handleItemClick}
-                >
-                  List Users
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item
-                  as={Link}
                   to="/about"
                   name="about"
                   active={activeItem === "about"}

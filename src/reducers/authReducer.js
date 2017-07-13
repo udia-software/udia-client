@@ -1,6 +1,6 @@
 import {
   SET_AUTH,
-  SET_USER
+  SET_SELF_USER
 } from '../actions/constants';
 import { me, signedIn } from '../auth';
 import { getSocket } from '../socket';
@@ -20,7 +20,7 @@ function authReducer(state = initialState, action) {
         ...state,
         loggedIn: action.newAuthState,
       };
-    case SET_USER:
+    case SET_SELF_USER:
       return {
         ...state,
         currentUser: action.newUserState,

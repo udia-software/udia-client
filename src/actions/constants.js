@@ -1,5 +1,6 @@
 // Reducer Related Action Constants
 export const SET_AUTH = 'SET_AUTH';
+export const SET_SELF_USER = 'SET_SELF_USER';
 export const SET_USER = 'SET_USER';
 export const SENDING_REQUEST = 'SENDING_REQUEST';
 export const REQUEST_ERROR = 'REQUEST_ERROR';
@@ -22,3 +23,4 @@ export const CREATE_POST_REQUEST = 'CREATE_POST_REQUEST';
 export const GET_USERS_REQUEST = 'GET_USERS_REQUEST';
 export const GET_POSTS_REQUEST = 'GET_POSTS_REQUEST';
 export const GET_POST_BY_ID_REQUEST = 'GET_POST_BY_ID_REQUEST';
+export const GET_USER_BY_USERNAME_REQUEST = 'GET_USER_BY_USERNAME_REQUEST';

@@ -9,7 +9,7 @@ import Navbar from './Navbar';
 import Signin from './Signin';
 import Signup from './Signup';
 import Profile from './Profile';
-import ListUsers from './Users/ListUsers';
+import User from './Users/User';
 import CreatePost from './Posts/CreatePost';
 import PostList from './Posts/PostList';
 import Post from './Posts/Post';
@@ -38,11 +38,11 @@ class App extends Component {
           <Route path='/about' component={About} />
           <Route path='/signin' component={Signin} />
           <Route path='/signup' component={Signup} />
+          <Route path='/users/:username' component={User} />
           <PrivateRoute exact path='/posts' component={PostList} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
           <PrivateRoute path='/posts/:id' component={Post} />
           <PrivateRoute path='/profile' component={Profile} />
-          <PrivateRoute path='/users' component={ListUsers} />
           <Route component={NoMatch} />
         </Switch>
       </div>

@@ -76,7 +76,9 @@ class PostList extends Component {
                 </Feed.Label>
                 <Feed.Content>
                   <Feed.Summary>
-                    <strong>{post.author.username}</strong> wrote{" "}
+                    <strong>
+                      <Link to={`/users/${post.author.username}`}>{post.author.username}</Link>
+                    </strong> wrote{" "}
                     <Link to={`/posts/${post.id}`}>{post.title}</Link>
                     <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
                   </Feed.Summary>

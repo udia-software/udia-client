@@ -1,10 +1,10 @@
 import { effects } from "redux-saga";
 import { login, logout, register } from "./authSagas";
 import { createPostCall, getPostsCall, getPostByIdCall } from "./postSagas";
-import { getUsersCall } from "./userSagas";
+import { getUsersCall, getUserCall } from "./userSagas";
 import {
   SET_AUTH,
-  SET_USER,
+  SET_SELF_USER,
   CLEAR_ERROR,
   LOGIN_REQUEST,
   REGISTER_REQUEST,
@@ -18,6 +18,8 @@ import {
   SET_POSTS_TOTAL_ENTRIES,
   SET_POSTS_TOTAL_PAGES,
   GET_POST_BY_ID_REQUEST,
+  GET_USER_BY_USERNAME_REQUEST,
+  SET_USER,
   SET_POST,
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
@@ -41,7 +43,7 @@ export function* loginFlow() {
         newAuthState: true
       });
       yield effects.put({
-        type: SET_USER,
+        type: SET_SELF_USER,
         newUserState: me()
       });
       yield effects.put({
@@ -62,7 +64,7 @@ export function* logoutFlow() {
       newAuthState: false
     });
     yield effects.put({
-      type: SET_USER,
+      type: SET_SELF_USER,
       newUserState: me()
     });
     yield effects.call(logout);
@@ -87,7 +89,7 @@ export function* registerFlow() {
         newAuthState: true
       });
       yield effects.put({
-        type: SET_USER,
+        type: SET_SELF_USER,
         newUserState: me()
       });
       yield effects.put({
@@ -188,6 +190,20 @@ export function* getPostsFlow() {
   }
 }
 
+export function* getUserFlow() {
+  while (true) {
+    const request = yield effects.take(GET_USER_BY_USERNAME_REQUEST);
+    const { username } = request;
+    const wasSuccessful = yield effects.call(getUserCall, username);
+    if (wasSuccessful) {
+      yield effects.put({
+        type: SET_USER,
+        user: wasSuccessful.data,
+      });
+    }
+  }
+}
+
 export function* getPostByIdFlow() {
   while (true) {
     const request = yield effects.take(GET_POST_BY_ID_REQUEST);
@@ -209,5 +225,6 @@ export default function* root() {
   yield effects.fork(createPostFlow);
   yield effects.fork(getPostsFlow);
   yield effects.fork(getUsersFlow);
+  yield effects.fork(getUserFlow);
   yield effects.fork(getPostByIdFlow);
 }

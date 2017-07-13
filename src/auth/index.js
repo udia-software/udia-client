@@ -73,10 +73,10 @@ export function signup(username, password) {
 
 /**
  * Get the specified user
- * @param {string} id The value of the user's ID (some integer)
+ * @param {string} username The value of the user's username
  */
-export function getUser(id) {
-  return get(`/users/${id}`);
+export function getUser(username) {
+  return get(`/users/${username}`);
 }
 
 /**
