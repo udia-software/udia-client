@@ -2,17 +2,17 @@ import React, { Component } from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import PrivateRoute from './PrivateRoute';
+import PrivateRoute from './Auth/PrivateRoute';
+import Profile from './Auth/Profile';
+import Signin from './Auth/Signin';
+import Signup from './Auth/Signup';
+import CreatePost from './Posts/CreatePost';
+import Post from './Posts/Post';
+import PostList from './Posts/PostList';
+import User from './Users/User';
 import About from './About';
 import Home from './Home';
 import Navbar from './Navbar';
-import Signin from './Signin';
-import Signup from './Signup';
-import Profile from './Profile';
-import User from './Users/User';
-import CreatePost from './Posts/CreatePost';
-import PostList from './Posts/PostList';
-import Post from './Posts/Post';
 
 const NoMatch = ({ location }) => (
   <div>
@@ -39,9 +39,9 @@ class App extends Component {
           <Route path='/signin' component={Signin} />
           <Route path='/signup' component={Signup} />
           <Route path='/users/:username' component={User} />
-          <PrivateRoute exact path='/posts' component={PostList} />
+          <Route exact path='/posts' component={PostList} />
+          <Route path='/posts/:id' component={Post} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
-          <PrivateRoute path='/posts/:id' component={Post} />
           <PrivateRoute path='/profile' component={Profile} />
           <Route component={NoMatch} />
         </Switch>

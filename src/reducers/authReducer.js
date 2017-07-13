@@ -1,25 +1,16 @@
 import {
-  SET_AUTH,
   SET_SELF_USER
 } from '../actions/constants';
-import { me, signedIn } from '../auth';
-import { getSocket } from '../socket';
+import { me } from '../auth';
 
 // The initial application state
 const initialState = {
-  loggedIn: signedIn(),
   currentUser: me(),
-  socket: getSocket(),
 };
 
 // Takes care of changing the application state
 function authReducer(state = initialState, action) {
   switch (action.type) {
-    case SET_AUTH:
-      return {
-        ...state,
-        loggedIn: action.newAuthState,
-      };
     case SET_SELF_USER:
       return {
         ...state,

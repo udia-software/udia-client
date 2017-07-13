@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Container, Form, Header, Message } from "semantic-ui-react";
+import { Container, Form, Header } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
+import Error from "../Shared/Error";
 import {
   editPostTitle,
   editPostContent,
@@ -21,6 +22,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+  id: 0,
   error: "",
   currentlySending: false,
   title: "",
@@ -52,6 +54,9 @@ class CreatePost extends Component {
     const { id, title, content, currentlySending, error } = this.props;
     return (
       <Container>
+        {/* When creating a post, if the ID is set, post is created. */
+          !!id && <Redirect to={`/posts/${id}`} />
+        }
         <Header as="h3">Create a Post</Header>
         <Form
           onSubmit={this.onSubmit}
@@ -72,25 +77,9 @@ class CreatePost extends Component {
             onChange={this.changeContent}
             value={content}
           />
-          {!!error &&
-            typeof error !== "string" &&
-            <Message
-              error={!!error}
-              header={"Create Post Failed"}
-              list={Object.keys(error).map(p => (
-                <Message.Item key={p}> {p} {error[p]}</Message.Item>
-              ))}
-            />}
-          {!!error &&
-            typeof error === "string" &&
-            <Message
-              error={!!error}
-              header="Create Post Failed"
-              content={error}
-            />}
+          <Error header="Create Post Failed!" error={error} />
           <Form.Button>Submit</Form.Button>
         </Form>
-        {id && <Redirect to={`/posts/${id}`} />}
       </Container>
     );
   };

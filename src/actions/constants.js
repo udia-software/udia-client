@@ -1,5 +1,4 @@
 // Reducer Related Action Constants
-export const SET_AUTH = 'SET_AUTH';
 export const SET_SELF_USER = 'SET_SELF_USER';
 export const SET_USER = 'SET_USER';
 export const SENDING_REQUEST = 'SENDING_REQUEST';

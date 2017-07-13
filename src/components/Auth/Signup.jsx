@@ -2,24 +2,18 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
-import {
-  Button,
-  Container,
-  Form,
-  Header,
-  Input,
-  Message
-} from "semantic-ui-react";
-import { clearError, loginRequest } from "../actions";
+import { Button, Container, Form, Header, Input } from "semantic-ui-react";
+import Error from "../Shared/Error";
+import { clearError, registerRequest } from "../../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   currentlySending: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   location: PropTypes.shape({
     state: PropTypes.shape({})
   }),
-  loggedIn: PropTypes.bool.isRequired
+  currentUser: PropTypes.object
 };
 
 const defaultProps = {
@@ -28,7 +22,7 @@ const defaultProps = {
   location: { state: {} }
 };
 
-class Signin extends Component {
+class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,7 +35,7 @@ class Signin extends Component {
   onSubmit = event => {
     event.preventDefault();
     this.props.dispatch(
-      loginRequest({
+      registerRequest({
         username: this.state.username,
         password: this.state.password
       })
@@ -56,18 +50,16 @@ class Signin extends Component {
     this.setState({ password: event.target.value });
   };
 
-  render = () => {
+  render() {
     const { username, password } = this.state;
-    const { currentlySending, error } = this.props;
+    const { currentUser, currentlySending, error } = this.props;
     const { from } = this.props.location.state || { from: { pathname: "/" } };
-
-    if (this.props.loggedIn) {
-      return <Redirect to={from} />;
-    }
+    const loggedIn = !!Object.keys(currentUser || {}).length;
+    if (loggedIn) return <Redirect to={from} />;
 
     return (
       <Container>
-        <Header as='h2'>Sign In</Header>
+        <Header as="h2">Sign Up</Header>
         <Form
           onSubmit={this.onSubmit}
           loading={currentlySending}
@@ -91,21 +83,16 @@ class Signin extends Component {
               value={password}
             />
           </Form.Field>
-          {!!error &&
-            <Message
-              error={!!error}
-              header={"Sign In Failed"}
-              content={error}
-            />}
+          <Error error={error} header="Sign Up Failed!" />
           <Button type="submit">Submit</Button>
         </Form>
       </Container>
     );
-  };
+  }
 }
 
-Signin.propTypes = propTypes;
-Signin.defaultProps = defaultProps;
+Signup.propTypes = propTypes;
+Signup.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
   return {
@@ -115,4 +102,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Signin);
+export default connect(mapStateToProps)(Signup);

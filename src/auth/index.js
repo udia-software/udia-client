@@ -42,7 +42,7 @@ export function signin(username, password) {
     // Save token to local storage
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
-    return Promise.resolve(true);
+    return Promise.resolve(response);
   });
 }
 
@@ -67,7 +67,7 @@ export function signup(username, password) {
   }).then((response) => {
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
-    return Promise.resolve(true);
+    return Promise.resolve(response);
   });
 }
 

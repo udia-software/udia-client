@@ -1,5 +1,6 @@
 import { effects } from 'redux-saga';
 import { getUsers, getUser } from '../auth';
+import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_REQUEST,
   REQUEST_ERROR
@@ -16,7 +17,7 @@ export function* getUsersCall() {
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.error || 'API Server is down.'
+      error: exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {
@@ -38,7 +39,7 @@ export function* getUserCall(username) {
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.error || 'API Serveris down.'
+      error: exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {

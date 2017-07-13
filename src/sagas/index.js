@@ -3,7 +3,6 @@ import { login, logout, register } from "./authSagas";
 import { createPostCall, getPostsCall, getPostByIdCall } from "./postSagas";
 import { getUsersCall, getUserCall } from "./userSagas";
 import {
-  SET_AUTH,
   SET_SELF_USER,
   CLEAR_ERROR,
   LOGIN_REQUEST,
@@ -26,7 +25,7 @@ import {
   CLEAR_POST_LIST
 } from "../actions/constants";
 
-import { me } from "../auth";
+export const API_DOWN_MESSAGE = 'API Server is down.';
 
 /**
  * Saga for logging a user in. Listen for LOGIN_REQUEST action.
@@ -39,12 +38,8 @@ export function* loginFlow() {
 
     if (wasSuccessful) {
       yield effects.put({
-        type: SET_AUTH,
-        newAuthState: true
-      });
-      yield effects.put({
         type: SET_SELF_USER,
-        newUserState: me()
+        newUserState: wasSuccessful.user
       });
       yield effects.put({
         type: CLEAR_ERROR
@@ -60,12 +55,8 @@ export function* logoutFlow() {
   while (true) {
     yield effects.take(LOGOUT_REQUEST);
     yield effects.put({
-      type: SET_AUTH,
-      newAuthState: false
-    });
-    yield effects.put({
       type: SET_SELF_USER,
-      newUserState: me()
+      newUserState: null
     });
     yield effects.call(logout);
   }
@@ -85,12 +76,8 @@ export function* registerFlow() {
 
     if (wasSuccessful) {
       yield effects.put({
-        type: SET_AUTH,
-        newAuthState: true
-      });
-      yield effects.put({
         type: SET_SELF_USER,
-        newUserState: me()
+        newUserState: wasSuccessful.user
       });
       yield effects.put({
         type: CLEAR_ERROR

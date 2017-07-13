@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { setPost, getPostById } from "../../actions";
-import { Container, Loader, Item } from "semantic-ui-react";
+import { Container, Divider, Item, Segment } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import { setPost, getPostById } from "../../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -25,7 +25,8 @@ const propTypes = {
 
 const defaultProps = {
   error: "",
-  currentlySending: false
+  currentlySending: false,
+  id: 0,
 };
 
 class Post extends Component {
@@ -33,9 +34,11 @@ class Post extends Component {
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostById(postId));
   };
+
   componentWillUnmount = () => {
     this.props.dispatch(setPost(null));
   };
+
   render = () => {
     const {
       id,
@@ -46,35 +49,34 @@ class Post extends Component {
       content,
       currentlySending
     } = this.props;
+
     return (
       <Container>
-        <Loader active={currentlySending} inline="centered" />
-        {id &&
-          <Item>
-            <Item.Content>
-              <Item.Header as="h3">
-                {title}
-              </Item.Header>
-              <Item.Meta>
-                Written by
-                {" "}
-                <Link to={`/users/${author.username}`}>{author.username}</Link>
-                {" "}
-                on
-                {" "}
-                {moment(inserted_at).format("MMMM D [at] h:mm Z")}
-                {" "}
-                and last updated at
-                {" "}
-                {moment(updated_at).format("MMMM D [at] h:mm a Z")}
-              </Item.Meta>
-              <Item.Description>
-                <br />
-                {content}
-              </Item.Description>
-              <Item.Extra />
-            </Item.Content>
-          </Item>}
+        <Segment loading={currentlySending}>
+          {id &&
+            <Item>
+              <Item.Content>
+                <Item.Header as="h3">
+                  {title}
+                </Item.Header>
+                <Item.Description>
+                  {content.split('\n').map((item, key) => {
+                    return <span key={key}>{item}<br/></span>
+                  })}
+                </Item.Description>
+                <Divider />
+                <Item.Extra>
+                  <span>Submitted {moment(inserted_at).fromNow()} by </span>
+                  <Link to={`/users/${author.username}`}>
+                    {author.username}.
+                  </Link>
+                  {moment(inserted_at).format("X") !== moment(updated_at).format("X") &&
+                    <span>Last updated {moment(updated_at).fromNow()}.</span>
+                  }
+                </Item.Extra>
+              </Item.Content>
+            </Item>}
+        </Segment>
       </Container>
     );
   };

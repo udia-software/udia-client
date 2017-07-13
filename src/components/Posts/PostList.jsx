@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getPosts } from "../../actions";
-import { Feed, Icon, Visibility } from "semantic-ui-react";
+import { Container, Feed, Icon, Loader, Visibility } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
+  currentlySending: PropTypes.bool,
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   page_number: PropTypes.number,
   page_size: PropTypes.number,
   total_entries: PropTypes.number,
@@ -32,42 +34,38 @@ const propTypes = {
 class PostList extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      calculations: {
-        height: 0,
-        width: 0,
-        topPassed: false,
-        bottomPassed: false,
-        pixelsPassed: 0,
-        percentagePassed: 0,
-        topVisible: false,
-        bottomVisible: false,
-        fits: false,
-        passing: false,
-        onScreen: false,
-        offScreen: false
-      }
-    };
     this.props.dispatch(getPosts(1));
+    this.state = {
+      endOfFeed: false
+    };
   }
 
-  handleUpdate = (e, { calculations }) => this.setState({ calculations });
+  getNextPage = () => {
+    const { page_number, total_pages } = this.props;
+    console.log(page_number, total_pages)
+    if ((page_number || 0) < (total_pages || 0)) {
+      this.props.dispatch(getPosts(page_number + 1));
+    } else {
+      this.setState({ endOfFeed: true });
+    }
+  };
+
+  onVisibilityUpdate = (e, {calculations}) => {
+    if (calculations.bottomVisible || calculations.buttonPassed) {
+      this.getNextPage();
+    }
+  }
 
   render = () => {
-    const { page_number, total_pages, posts } = this.props;
-
-    const getNext =
-      (this.state.calculations.bottomVisible ||
-        this.state.calculations.bottomPassed) &&
-      (page_number || 0) < (total_pages || 0);
-    if (getNext) {
-      // dispatch pagination call next page
-      this.props.dispatch(getPosts(page_number + 1));
-    }
+    const { currentlySending, posts } = this.props;
+    const { endOfFeed } = this.state;
 
     return (
-      <div style={{ padding: "40px" }}>
-        <Visibility onUpdate={this.handleUpdate}>
+      <Container>
+        <Visibility
+          onBottomVisible={this.getNextPage}
+          onUpdate={this.onVisibilityUpdate}
+        >
           <Feed>
             {posts.map(post => (
               <Feed.Event key={post.id}>
@@ -76,25 +74,31 @@ class PostList extends Component {
                 </Feed.Label>
                 <Feed.Content>
                   <Feed.Summary>
-                    <strong>
-                      <Link to={`/users/${post.author.username}`}>{post.author.username}</Link>
-                    </strong> wrote{" "}
+                    <Feed.User as={Link} to={`/users/${post.author.username}`}>
+                      {post.author.username}
+                    </Feed.User>
+                    {" "}
+                    wrote
+                    {" "}
                     <Link to={`/posts/${post.id}`}>{post.title}</Link>
                     <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
                   </Feed.Summary>
                   <Feed.Extra text>
-                    {post.content}
+                    {post.content.split('\n').map((item, key) => {
+                      return <span key={key}>{item}<br/></span>
+                    })}
                   </Feed.Extra>
                 </Feed.Content>
               </Feed.Event>
             ))}
-            {page_number === total_pages &&
-              <div>
-                <p>End of feed.</p>
-              </div>}
+            <Loader active={currentlySending}/>
+            {endOfFeed &&
+              <Feed.Event>
+                <Feed.Content>End of feed.</Feed.Content>
+              </Feed.Event>}
           </Feed>
         </Visibility>
-      </div>
+      </Container>
     );
   };
 }
@@ -102,7 +106,11 @@ class PostList extends Component {
 PostList.propTypes = propTypes;
 
 function mapStateToProps(state) {
-  return state.postList;
+  return {
+    ...state.postList,
+    error: state.api.error,
+    currentlySending: state.api.currentlySending
+  };
 }
 
 export default connect(mapStateToProps)(PostList);
