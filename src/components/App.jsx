@@ -40,8 +40,8 @@ class App extends Component {
           <Route path='/signup' component={Signup} />
           <Route path='/users/:username' component={User} />
           <Route exact path='/posts' component={PostList} />
-          <Route path='/posts/:id' component={Post} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
+          <Route path='/posts/:id' component={Post} />
           <PrivateRoute path='/profile' component={Profile} />
           <Route component={NoMatch} />
         </Switch>
