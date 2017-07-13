@@ -50,15 +50,6 @@ class Navbar extends Component {
         </Menu.Item>
         <Menu.Item
           as={Link}
-          to="/about"
-          name="about"
-          active={activeItem === "about"}
-          onClick={this.handleItemClick}
-        >
-          About
-        </Menu.Item>
-        <Menu.Item
-          as={Link}
           to="/posts"
           name="posts"
           active={activeItem === "posts"}
@@ -66,16 +57,15 @@ class Navbar extends Component {
         >
           Posts
         </Menu.Item>
-        {loggedIn &&
-          <Menu.Item
-            as={Link}
-            to="/posts/create"
-            name="createPost"
-            active={activeItem === "createPost"}
-            onClick={this.handleItemClick}
-          >
-            Write Post
-          </Menu.Item>}
+        <Menu.Item
+          as={Link}
+          to="/about"
+          name="about"
+          active={activeItem === "about"}
+          onClick={this.handleItemClick}
+        >
+          About
+        </Menu.Item>
         {loggedIn &&
           <Menu.Menu position="right">
             <Dropdown
@@ -93,6 +83,15 @@ class Navbar extends Component {
                   onClick={this.handleItemClick}
                 >
                   My Profile
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as={Link}
+                  to="/posts/create"
+                  name="createPost"
+                  active={activeItem === "createPost"}
+                  onClick={this.handleItemClick}
+                >
+                  Write Post
                 </Dropdown.Item>
                 <Dropdown.Item
                   name="signout"
