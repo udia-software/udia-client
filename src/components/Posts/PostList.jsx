@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getPosts } from "../../actions";
 import { Container, Feed, Icon, Loader, Visibility } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import Error from "../Shared/Error";
+import { getPosts } from "../../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -57,7 +58,7 @@ class PostList extends Component {
   }
 
   render = () => {
-    const { currentlySending, posts } = this.props;
+    const { currentlySending, posts, error } = this.props;
     const { endOfFeed } = this.state;
 
     return (
@@ -98,6 +99,7 @@ class PostList extends Component {
               </Feed.Event>}
           </Feed>
         </Visibility>
+        <Error error={error} header="Get Posts Failed!" />
       </Container>
     );
   };

@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { Container, Divider, Item, Segment } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { setPost, getPostById } from "../../actions";
+import Error from "../Shared/Error";
+import { clearError, setPost, getPostById } from "../../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -37,6 +38,7 @@ class Post extends Component {
 
   componentWillUnmount = () => {
     this.props.dispatch(setPost(null));
+    this.props.dispatch(clearError());
   };
 
   render = () => {
@@ -47,11 +49,13 @@ class Post extends Component {
       inserted_at,
       updated_at,
       content,
-      currentlySending
+      currentlySending,
+      error
     } = this.props;
 
     return (
       <Container>
+        <Error error={error} header="Post Fetch Failed!" />
         <Segment loading={currentlySending}>
           {id &&
             <Item>

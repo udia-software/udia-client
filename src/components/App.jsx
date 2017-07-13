@@ -43,7 +43,7 @@ class App extends Component {
           <PrivateRoute path='/posts/create' component={CreatePost} />
           <Route path='/posts/:id' component={Post} />
           <PrivateRoute path='/profile' component={Profile} />
-          { /* <Route component={NoMatch} /> */}
+          <Route component={NoMatch} />
         </Switch>
       </div>
     );

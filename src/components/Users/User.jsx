@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Container, Dimmer, Header, List, Loader } from "semantic-ui-react";
 import moment from "moment";
 import { getUserByUsername } from "../../actions";
+import Error from "../Shared/Error";
 
 class User extends Component {
   componentWillMount = () => {
@@ -10,27 +11,37 @@ class User extends Component {
     this.props.dispatch(getUserByUsername(username));
   };
   render = () => {
-    const { username, inserted_at, updated_at, currentlySending } = this.props;
+    const {
+      username,
+      inserted_at,
+      updated_at,
+      currentlySending,
+      error
+    } = this.props;
     return (
       <Container>
+        <Error error={error} header="Get User Failed!" />
         <Dimmer active={currentlySending} inverted>
           <Loader />
         </Dimmer>
-        <Header as="h2">{username}</Header>
-        <List>
-          <List.Item>
-            <List.Header>Created At</List.Header>
-            <List.Description>
-              {moment(inserted_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
-            </List.Description>
-          </List.Item>
-          <List.Item>
-            <List.Header>Updated At</List.Header>
-            <List.Description>
-              {moment(updated_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
-            </List.Description>
-          </List.Item>
-        </List>
+        {username &&
+          <div>
+            <Header as="h2">{username}</Header>
+            <List>
+              <List.Item>
+                <List.Header>Created At</List.Header>
+                <List.Description>
+                  {moment(inserted_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                </List.Description>
+              </List.Item>
+              <List.Item>
+                <List.Header>Updated At</List.Header>
+                <List.Description>
+                  {moment(updated_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                </List.Description>
+              </List.Item>
+            </List>
+          </div>}
       </Container>
     );
   };
@@ -39,7 +50,8 @@ class User extends Component {
 function mapStateToProps(state) {
   return {
     ...state.user,
-    currentlySending: state.api.currentlySending
+    currentlySending: state.api.currentlySending,
+    error: state.api.error
   };
 }
 
