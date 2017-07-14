@@ -7,7 +7,15 @@ import { logoutRequest } from "../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  loggedIn: PropTypes.bool.isRequired
+  currentUser: PropTypes.shape({
+    username: PropTypes.string,
+    inserted_at: PropTypes.string,
+    updated_at: PropTypes.string
+  })
+};
+
+const defaultProps = {
+  currentUser: {}
 };
 
 class Navbar extends Component {
@@ -26,7 +34,9 @@ class Navbar extends Component {
 
   render() {
     const { activeItem } = this.state;
-    const { loggedIn, currentUser } = this.props;
+    const { currentUser } = this.props;
+    const loggedIn = !!Object.keys(currentUser || {}).length;
+
     return (
       <Menu>
         <Menu.Item
@@ -38,27 +48,24 @@ class Navbar extends Component {
         >
           <strong>UDIA</strong>
         </Menu.Item>
-        {loggedIn &&
-          <Menu.Menu>
-            <Menu.Item
-              as={Link}
-              to="/posts"
-              name="posts"
-              active={activeItem === "posts"}
-              onClick={this.handleItemClick}
-            >
-              Posts
-            </Menu.Item>
-            <Menu.Item
-              as={Link}
-              to="/posts/create"
-              name="createPost"
-              active={activeItem === "createPost"}
-              onClick={this.handleItemClick}
-            >
-              Write Post
-            </Menu.Item>
-          </Menu.Menu> }
+        <Menu.Item
+          as={Link}
+          to="/posts"
+          name="posts"
+          active={activeItem === "posts"}
+          onClick={this.handleItemClick}
+        >
+          Posts
+        </Menu.Item>
+        <Menu.Item
+          as={Link}
+          to="/about"
+          name="about"
+          active={activeItem === "about"}
+          onClick={this.handleItemClick}
+        >
+          About
+        </Menu.Item>
         {loggedIn &&
           <Menu.Menu position="right">
             <Dropdown
@@ -70,31 +77,21 @@ class Navbar extends Component {
                 <Dropdown.Header>{currentUser.username}</Dropdown.Header>
                 <Dropdown.Item
                   as={Link}
-                  to="/users"
-                  name="listUsers"
-                  active={activeItem === "listUsers"}
-                  onClick={this.handleItemClick}
-                >
-                  List Users
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item
-                  as={Link}
-                  to="/about"
-                  name="about"
-                  active={activeItem === "about"}
-                  onClick={this.handleItemClick}
-                >
-                  About
-                </Dropdown.Item>
-                <Dropdown.Item
-                  as={Link}
                   to="/profile"
                   name="profile"
                   active={activeItem === "profile"}
                   onClick={this.handleItemClick}
                 >
                   My Profile
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as={Link}
+                  to="/posts/create"
+                  name="createPost"
+                  active={activeItem === "createPost"}
+                  onClick={this.handleItemClick}
+                >
+                  Write Post
                 </Dropdown.Item>
                 <Dropdown.Item
                   name="signout"
@@ -133,6 +130,7 @@ class Navbar extends Component {
 }
 
 Navbar.propTypes = propTypes;
+Navbar.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
   return state.auth;

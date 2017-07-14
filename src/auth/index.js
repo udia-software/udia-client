@@ -42,7 +42,7 @@ export function signin(username, password) {
     // Save token to local storage
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
-    return Promise.resolve(true);
+    return Promise.resolve(response);
   });
 }
 
@@ -67,16 +67,16 @@ export function signup(username, password) {
   }).then((response) => {
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
-    return Promise.resolve(true);
+    return Promise.resolve(response);
   });
 }
 
 /**
  * Get the specified user
- * @param {string} id The value of the user's ID (some integer)
+ * @param {string} username The value of the user's username
  */
-export function getUser(id) {
-  return get(`/users/${id}`);
+export function getUser(username) {
+  return get(`/users/${username}`);
 }
 
 /**

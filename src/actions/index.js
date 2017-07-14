@@ -4,7 +4,6 @@
 
 // We import constants to name our actions' type
 import {
-  SET_AUTH,
   SET_USER,
   SENDING_REQUEST,
   LOGIN_REQUEST,
@@ -16,22 +15,13 @@ import {
   EDIT_POST_CONTENT,
   CREATE_POST_REQUEST,
   GET_USERS_REQUEST,
-  ADD_POST,
+  ADD_POSTS,
+  SET_POST,
   GET_POSTS_REQUEST,
   GET_POST_BY_ID_REQUEST,
-  SET_POST
+  GET_USER_BY_USERNAME_REQUEST,
 } from './constants';
 
-/**
- * Sets the authentication state of the application
- * @param  {boolean} newAuthState True means a user is logged in, false means no user is logged in
- */
-export function setAuthState(newAuthState) {
-  return {
-    type: SET_AUTH,
-    newAuthState
-  };
-}
 
 export function setUser(newUserState) {
   return {
@@ -150,17 +140,17 @@ export function getUsersRequest() {
   };
 }
 
-export function addPosts(post) {
+export function addPosts(posts) {
   return {
-    type: ADD_POST,
-    post
+    type: ADD_POSTS,
+    posts
   };
 }
 
-export function getPosts() {
-  // TODO: add pagination
+export function getPosts(page) {
   return {
-    type: GET_POSTS_REQUEST
+    type: GET_POSTS_REQUEST,
+    page
   };
 }
 
@@ -176,4 +166,11 @@ export function setPost(post) {
     type: SET_POST,
     post
   };
+}
+
+export function getUserByUsername(username) {
+  return {
+    type: GET_USER_BY_USERNAME_REQUEST,
+    username
+  }
 }

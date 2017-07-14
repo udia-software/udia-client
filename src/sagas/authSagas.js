@@ -1,5 +1,6 @@
 import { effects } from 'redux-saga';
 import { signup, signin, signout } from '../auth';
+import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_REQUEST,
   REQUEST_ERROR
@@ -20,7 +21,7 @@ export function* register({
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.errors || 'API Server is down.'
+      error: exception.errors || API_DOWN_MESSAGE
     });
     return false;
   } finally {
@@ -45,7 +46,7 @@ export function* login({
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.error || 'API Server is down.'
+      error: exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {
@@ -71,7 +72,7 @@ export function* logout() {
   } catch (error) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: error.message || 'API Server is down.'
+      error: error.message || API_DOWN_MESSAGE
     });
     return false;
   } finally {

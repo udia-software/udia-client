@@ -8,9 +8,8 @@ export function createPost(title, content) {
   });
 }
 
-export function getPosts() {
-  // TO DO add pagination
-  return get('/posts/');
+export function getPosts(page) {
+  return get('/posts/', {page});
 }
 
 export function getPostById(id) {

@@ -1,5 +1,6 @@
 import { effects } from 'redux-saga';
 import { createPost, getPosts, getPostById } from '../post';
+import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_REQUEST,
   REQUEST_ERROR
@@ -19,7 +20,7 @@ export function* createPostCall({
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.errors || exception.error || 'API Server is down.'
+      error: exception.errors || exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {
@@ -30,18 +31,18 @@ export function* createPostCall({
   }
 }
 
-export function* getPostsCall() {
+export function* getPostsCall(page) {
   yield effects.put({
     type: SENDING_REQUEST,
     sending: true
   });
 
   try {
-    return yield effects.call(getPosts);
+    return yield effects.call(getPosts, page);
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.errors || exception.error || 'API Server is down.'
+      error: exception.errors || exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {
@@ -63,7 +64,7 @@ export function* getPostByIdCall(id) {
   } catch (exception) {
     yield effects.put({
       type: REQUEST_ERROR,
-      error: exception.errors || exception.error || 'API Server is down.'
+      error: exception.errors || exception.error || API_DOWN_MESSAGE
     });
     return false;
   } finally {
