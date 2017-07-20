@@ -1,19 +1,15 @@
-import {
-  SET_USER
-} from '../actions/constants';
+import { SET_USER } from "./constants";
 
 const initialState = {
-  username: "",
-  updated_at: "",
-  inserted_at: "",
+  user: {}
 };
 
 function userReducer(state = initialState, action) {
   switch (action.type) {
     case SET_USER:
       return {
-        ...action.user,        
-      }
+        user: action.user
+      };
     default:
       return state;
   }

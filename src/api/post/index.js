@@ -1,4 +1,4 @@
-import { get, post } from '../api';
+import { get, post } from '../../api';
 
 export function createPost(title, content) {
   return post('/posts', {

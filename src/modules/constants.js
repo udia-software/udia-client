@@ -1,6 +1,8 @@
+import * as authConstants from './auth/constants';
+
+export default { authConstants };
+
 // Reducer Related Action Constants
-export const SET_SELF_USER = "SET_SELF_USER";
-export const SET_USER = "SET_USER";
 export const SENDING_REQUEST = "SENDING_REQUEST";
 export const REQUEST_ERROR = "REQUEST_ERROR";
 export const CLEAR_ERROR = "CLEAR_ERROR";
@@ -30,3 +32,4 @@ export const CREATE_COMMENT_REQUEST = "CREATE_COMMENT_REQUEST";
 export const SENDING_COMMENT_REQUEST = "SENDING_COMMENT_REQUEST";
 export const COMMENT_REQUEST_ERROR = "COMMENT_REQUEST_ERROR";
 export const GET_COMMENTS_REQUEST = "GET_COMMENTS_REQUEST";
+

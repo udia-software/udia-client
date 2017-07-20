@@ -1,5 +1,5 @@
 import { effects } from 'redux-saga';
-import { getUsers, getUser } from '../auth';
+import { getUsers, getUser } from '../api/auth';
 import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_REQUEST,

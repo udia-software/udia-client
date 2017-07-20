@@ -1,5 +1,5 @@
 import { effects } from 'redux-saga';
-import { createPost, getPosts, getPostById } from '../post';
+import { createPost, getPosts, getPostById } from '../api/post';
 import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_REQUEST,

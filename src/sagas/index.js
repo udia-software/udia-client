@@ -1,10 +1,8 @@
 import { effects } from "redux-saga";
-import { login, logout, register } from "./authSagas";
 import { createPostCall, getPostsCall, getPostByIdCall } from "./postSagas";
 import { getUserCall } from "./userSagas";
 import { createCommentCall, getCommentsCall } from "./commentSagas";
 import {
-  SET_SELF_USER,
   CLEAR_ERROR,
   LOGIN_REQUEST,
   REGISTER_REQUEST,
@@ -18,7 +16,6 @@ import {
   SET_POSTS_TOTAL_PAGES,
   GET_POST_BY_ID_REQUEST,
   GET_USER_BY_USERNAME_REQUEST,
-  SET_USER,
   SET_POST,
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
@@ -30,66 +27,10 @@ import {
   ADD_COMMENTS
 } from "../actions/constants";
 
+import { setSelfUser } from "../actions/auth";
+import { setUser } from "../actions/user";
+
 export const API_DOWN_MESSAGE = "API Server is down.";
-
-/**
- * Saga for logging a user in. Listen for LOGIN_REQUEST action.
- */
-export function* loginFlow() {
-  while (true) {
-    const request = yield effects.take(LOGIN_REQUEST);
-    const { username, password } = request.data;
-    const wasSuccessful = yield effects.call(login, { username, password });
-
-    if (wasSuccessful) {
-      yield effects.put({
-        type: SET_SELF_USER,
-        newUserState: wasSuccessful.user
-      });
-      yield effects.put({
-        type: CLEAR_ERROR
-      });
-    }
-  }
-}
-
-/**
- * Saga for logging out a user. Listen for LOGOUT_REQUEST action.
- */
-export function* logoutFlow() {
-  while (true) {
-    yield effects.take(LOGOUT_REQUEST);
-    yield effects.put({
-      type: SET_SELF_USER,
-      newUserState: null
-    });
-    yield effects.call(logout);
-  }
-}
-
-/**
- * Saga for registering a new user. Listen for REGISTER_REQUEST action.
- */
-export function* registerFlow() {
-  while (true) {
-    const request = yield effects.take(REGISTER_REQUEST);
-    const { username, password } = request.data;
-    const wasSuccessful = yield effects.call(register, {
-      username,
-      password
-    });
-
-    if (wasSuccessful) {
-      yield effects.put({
-        type: SET_SELF_USER,
-        newUserState: wasSuccessful.user
-      });
-      yield effects.put({
-        type: CLEAR_ERROR
-      });
-    }
-  }
-}
 
 /**
  * Saga for creating a new post. Listen for CREATE_POST_REQUEST action.
@@ -172,10 +113,7 @@ export function* getUserFlow() {
     const { username } = request;
     const wasSuccessful = yield effects.call(getUserCall, username);
     if (wasSuccessful) {
-      yield effects.put({
-        type: SET_USER,
-        user: wasSuccessful.data
-      });
+      yield effects.put(setUser(wasSuccessful.data));
     }
   }
 }
@@ -234,15 +172,12 @@ export function* getCommentsFlow() {
         parent_id: parent_id || null,
         comments: wasSuccessful.data,
         pagination: wasSuccessful.pagination
-      })
+      });
     }
   }
 }
 
 export default function* root() {
-  yield effects.fork(loginFlow);
-  yield effects.fork(logoutFlow);
-  yield effects.fork(registerFlow);
   yield effects.fork(createPostFlow);
   yield effects.fork(getPostsFlow);
   yield effects.fork(getUserFlow);

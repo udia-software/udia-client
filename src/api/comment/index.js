@@ -1,4 +1,4 @@
-import { get, post } from "../api";
+import { get, post } from "../../api";
 
 export function createComment(content, post_id, parent_id) {
   return post("/comments", {

@@ -1,5 +1,5 @@
 import { effects } from 'redux-saga';
-import { createComment, getComments } from '../comment';
+import { createComment, getComments } from '../api/comment';
 import { API_DOWN_MESSAGE } from '../sagas';
 import {
   SENDING_COMMENT_REQUEST,

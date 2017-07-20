@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Container, Header, List } from "semantic-ui-react";
+import { Button, Container, Header, List } from "semantic-ui-react";
 import moment from "moment";
+import { logoutRequest } from "../../modules/auth/sagas.actions";
 
 const propTypes = {
   currentUser: PropTypes.shape({
@@ -13,6 +14,10 @@ const propTypes = {
 };
 
 class Profile extends Component {
+  handleSignOut = () => {
+    this.props.dispatch(logoutRequest());
+  };
+
   render() {
     const { currentUser } = this.props;
     return (
@@ -28,17 +33,24 @@ class Profile extends Component {
           <List.Item>
             <List.Header>Created At</List.Header>
             <List.Description>
-              {moment(currentUser.inserted_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+              {moment(currentUser.inserted_at).format(
+                "dddd, MMMM Do YYYY, h:mm:ss a"
+              )}
             </List.Description>
           </List.Item>
           <List.Item>
             <List.Header>Updated At</List.Header>
             <List.Description>
-              {moment(currentUser.updated_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+              {moment(currentUser.updated_at).format(
+                "dddd, MMMM Do YYYY, h:mm:ss a"
+              )}
             </List.Description>
           </List.Item>
         </List>
         <p>TODO: email, password change, etc.</p>
+        <Button onClick={this.handleSignOut}>
+          Sign Out
+        </Button>
       </Container>
     );
   }

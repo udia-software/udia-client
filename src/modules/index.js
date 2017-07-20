@@ -4,7 +4,6 @@
 
 // We import constants to name our actions' type
 import {
-  SET_USER,
   SENDING_REQUEST,
   LOGIN_REQUEST,
   REGISTER_REQUEST,
@@ -24,14 +23,6 @@ import {
   GET_COMMENTS_REQUEST,
   CLEAR_COMMENTS_STATE
 } from './constants';
-
-
-export function setUser(newUserState) {
-  return {
-    type: SET_USER,
-    newUserState
-  };
-}
 
 /**
  * Sets the `currentlySending` state, which displays a loading indicator during requests
@@ -160,13 +151,6 @@ export function setPost(post) {
     type: SET_POST,
     post
   };
-}
-
-export function getUserByUsername(username) {
-  return {
-    type: GET_USER_BY_USERNAME_REQUEST,
-    username
-  }
 }
 
 /**
