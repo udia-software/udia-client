@@ -1,7 +1,8 @@
 import { effects } from "redux-saga";
 import { login, logout, register } from "./authSagas";
 import { createPostCall, getPostsCall, getPostByIdCall } from "./postSagas";
-import { getUsersCall, getUserCall } from "./userSagas";
+import { getUserCall } from "./userSagas";
+import { createCommentCall, getCommentsCall } from "./commentSagas";
 import {
   SET_SELF_USER,
   CLEAR_ERROR,
@@ -9,7 +10,6 @@ import {
   REGISTER_REQUEST,
   LOGOUT_REQUEST,
   CREATE_POST_REQUEST,
-  GET_USERS_REQUEST,
   GET_POSTS_REQUEST,
   ADD_POSTS,
   SET_POSTS_PAGE_NUMBER,
@@ -22,10 +22,15 @@ import {
   SET_POST,
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
-  CLEAR_POST_LIST
+  CLEAR_POST_LIST,
+  CREATE_COMMENT_REQUEST,
+  EDIT_COMMENT_CONTENT,
+  ADD_COMMENT,
+  GET_COMMENTS_REQUEST,
+  ADD_COMMENTS
 } from "../actions/constants";
 
-export const API_DOWN_MESSAGE = 'API Server is down.';
+export const API_DOWN_MESSAGE = "API Server is down.";
 
 /**
  * Saga for logging a user in. Listen for LOGIN_REQUEST action.
@@ -119,22 +124,6 @@ export function* createPostFlow() {
   }
 }
 
-/**
- * Saga for getting all users. Liste for GET_USERS_REQUEST action.
- */
-export function* getUsersFlow() {
-  while (true) {
-    yield effects.take(GET_USERS_REQUEST);
-    const wasSuccessful = yield effects.call(getUsersCall, {});
-
-    if (wasSuccessful) {
-      yield effects.put({
-        type: CLEAR_ERROR
-      });
-    }
-  }
-}
-
 export function* getPostsFlow() {
   while (true) {
     const request = yield effects.take(GET_POSTS_REQUEST);
@@ -185,7 +174,7 @@ export function* getUserFlow() {
     if (wasSuccessful) {
       yield effects.put({
         type: SET_USER,
-        user: wasSuccessful.data,
+        user: wasSuccessful.data
       });
     }
   }
@@ -205,13 +194,59 @@ export function* getPostByIdFlow() {
   }
 }
 
+export function* createCommentFlow() {
+  while (true) {
+    const request = yield effects.take(CREATE_COMMENT_REQUEST);
+    const { content, parent_id, post_id } = request.data;
+    const wasSuccessful = yield effects.call(createCommentCall, {
+      content,
+      parent_id,
+      post_id
+    });
+    if (wasSuccessful) {
+      const { parent_id } = wasSuccessful.data;
+      yield effects.put({
+        type: EDIT_COMMENT_CONTENT,
+        parent_id,
+        content: ""
+      });
+      yield effects.put({
+        type: ADD_COMMENT,
+        parent_id,
+        comment: wasSuccessful.data
+      });
+    }
+  }
+}
+
+export function* getCommentsFlow() {
+  while (true) {
+    const request = yield effects.take(GET_COMMENTS_REQUEST);
+    const { page, post_id, parent_id } = request.data;
+    const wasSuccessful = yield effects.call(getCommentsCall, {
+      page,
+      parent_id,
+      post_id
+    });
+    if (wasSuccessful) {
+      yield effects.put({
+        type: ADD_COMMENTS,
+        parent_id: parent_id || null,
+        comments: wasSuccessful.data,
+        pagination: wasSuccessful.pagination
+      })
+    }
+  }
+}
+
 export default function* root() {
   yield effects.fork(loginFlow);
   yield effects.fork(logoutFlow);
   yield effects.fork(registerFlow);
   yield effects.fork(createPostFlow);
   yield effects.fork(getPostsFlow);
-  yield effects.fork(getUsersFlow);
   yield effects.fork(getUserFlow);
   yield effects.fork(getPostByIdFlow);
+  yield effects.fork(createCommentFlow);
+  yield effects.fork(getCommentsFlow);
 }

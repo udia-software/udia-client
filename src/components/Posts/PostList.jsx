@@ -56,7 +56,7 @@ class PostList extends Component {
   };
 
   onVisibilityUpdate = (e, { calculations }) => {
-    if (calculations.bottomVisible || calculations.buttonPassed) {
+    if (calculations.bottomVisible || calculations.bottomPassed) {
       this.getNextPage();
     }
   };
@@ -75,7 +75,6 @@ class PostList extends Component {
     return (
       <Container>
         <Visibility
-          onBottomVisible={this.getNextPage}
           onUpdate={this.onVisibilityUpdate}
         >
           <Feed>

@@ -27,33 +27,32 @@ function headers() {
 const apiInstance = axios.create({
   baseURL: API_ENDPOINT,
   timeout: 3000,
-  headers: headers()
 });
 
 export function get(url, params = {}) {
   return apiInstance
-    .get(url, {params})
+    .get(url, {params, headers: headers()})
     .then(response => response.data)
     .catch(error => Promise.reject(error));
 }
 
 export function post(url, data) {
   return apiInstance
-    .post(url, data)
+    .post(url, data, {headers: headers()})
     .then(response => response.data)
     .catch(error => Promise.reject(error));
 }
 
 export function patch(url, data) {
   return apiInstance
-    .patch(url, data)
+    .patch(url, data, {headers: headers()})
     .then(response => response.data)
     .catch(error => Promise.reject(error));
 }
 
 export function del(url) {
   return apiInstance
-    .delete(url)
+    .delete(url, {headers: headers()})
     .then(response => response.data)
     .catch(error => Promise.reject(error));
 }

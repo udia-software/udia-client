@@ -6,6 +6,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
 import { clearError, setPost, getPostById } from "../../actions";
+import Comments from "./Comments";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -27,7 +28,7 @@ const propTypes = {
 const defaultProps = {
   error: "",
   currentlySending: false,
-  id: 0,
+  id: 0
 };
 
 class Post extends Component {
@@ -64,8 +65,8 @@ class Post extends Component {
                   {title}
                 </Item.Header>
                 <Item.Description>
-                  {content.split('\n').map((item, key) => {
-                    return <span key={key}>{item}<br/></span>
+                  {content.split("\n").map((item, key) => {
+                    return <span key={key}>{item}<br /></span>;
                   })}
                 </Item.Description>
                 <Divider />
@@ -74,13 +75,14 @@ class Post extends Component {
                   <Link to={`/users/${author.username}`}>
                     {author.username}.
                   </Link>
-                  {moment(inserted_at).format("X") !== moment(updated_at).format("X") &&
-                    <span>Last updated {moment(updated_at).fromNow()}.</span>
-                  }
+                  {moment(inserted_at).format("X") !==
+                    moment(updated_at).format("X") &&
+                    <span>Last updated {moment(updated_at).fromNow()}.</span>}
                 </Item.Extra>
               </Item.Content>
             </Item>}
         </Segment>
+        <Comments/>
       </Container>
     );
   };

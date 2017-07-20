@@ -14,12 +14,15 @@ import {
   EDIT_POST_TITLE,
   EDIT_POST_CONTENT,
   CREATE_POST_REQUEST,
-  GET_USERS_REQUEST,
   ADD_POSTS,
   SET_POST,
   GET_POSTS_REQUEST,
   GET_POST_BY_ID_REQUEST,
   GET_USER_BY_USERNAME_REQUEST,
+  CREATE_COMMENT_REQUEST,
+  EDIT_COMMENT_CONTENT,
+  GET_COMMENTS_REQUEST,
+  CLEAR_COMMENTS_STATE
 } from './constants';
 
 
@@ -131,15 +134,6 @@ export function createPostRequest(data) {
   };
 }
 
-/**
- * Tells the app we want to get a list of all the users
- */
-export function getUsersRequest() {
-  return {
-    type: GET_USERS_REQUEST
-  };
-}
-
 export function addPosts(posts) {
   return {
     type: ADD_POSTS,
@@ -172,5 +166,52 @@ export function getUserByUsername(username) {
   return {
     type: GET_USER_BY_USERNAME_REQUEST,
     username
+  }
+}
+
+/**
+ * Create a comment for a given post
+ * @param {object} data The data we're sending for comment creation
+ * @param {string} data.content Body of the comment to create
+ * @param {string|null} data.parent_id ID of the comment we are replying to (null for root)
+ * @param {string} data.post_id ID of the post we are commenting in
+ */
+export function createCommentRequest(data) {
+  return {
+    type: CREATE_COMMENT_REQUEST,
+    data
+  }
+}
+
+/**
+ * Edit the value for a comment currently being written
+ * @param {string|null} parent_id 
+ * @param {string} content 
+ */
+export function editCommentContent(parent_id, content) {
+  return {
+    type: EDIT_COMMENT_CONTENT,
+    parent_id,
+    content
+  }
+}
+
+/**
+ * Get the comments for a given post
+ * @param {*} data  object
+ * @param {string} data.page
+ * @param {string} data.post_id
+ * @param {string|null} data.parent_id
+ */
+export function getCommentsRequest(data) {
+  return {
+    type: GET_COMMENTS_REQUEST,
+    data
+  }
+}
+
+export function clearCommentsState() {
+  return {
+    type: CLEAR_COMMENTS_STATE
   }
 }
