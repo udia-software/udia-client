@@ -35,15 +35,14 @@ const propTypes = {
 class PostList extends Component {
   constructor(props) {
     super(props);
-    this.props.dispatch(getPosts(1));
     this.state = {
       endOfFeed: false
     };
+    this.props.dispatch(getPosts(1));
   }
 
   getNextPage = () => {
     const { page_number, total_pages } = this.props;
-    console.log(page_number, total_pages)
     if ((page_number || 0) < (total_pages || 0)) {
       this.props.dispatch(getPosts(page_number + 1));
     } else {
@@ -54,6 +53,13 @@ class PostList extends Component {
   onVisibilityUpdate = (e, {calculations}) => {
     if (calculations.bottomVisible || calculations.buttonPassed) {
       this.getNextPage();
+    }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { page_number, total_pages, posts } = nextProps;
+    if (page_number === total_pages || posts.length === 0) {
+      this.setState({ endOfFeed: true });
     }
   }
 
