@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "axios": "^0.16.2",
     "moment": "^2.18.1",
     "phoenix": "git://github.com/phoenixframework/phoenix.git#v1.3.0-rc.2",
     "prop-types": "^15.5.10",

@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Container, Feed, Icon, Loader, Visibility } from "semantic-ui-react";
+import {
+  Container,
+  Dimmer,
+  Feed,
+  Icon,
+  Loader,
+  Visibility
+} from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
@@ -45,23 +52,21 @@ class PostList extends Component {
     const { page_number, total_pages } = this.props;
     if ((page_number || 0) < (total_pages || 0)) {
       this.props.dispatch(getPosts(page_number + 1));
-    } else {
-      this.setState({ endOfFeed: true });
     }
   };
 
-  onVisibilityUpdate = (e, {calculations}) => {
+  onVisibilityUpdate = (e, { calculations }) => {
     if (calculations.bottomVisible || calculations.buttonPassed) {
       this.getNextPage();
     }
-  }
+  };
 
-  componentWillReceiveProps = (nextProps) => {
-    const { page_number, total_pages, posts } = nextProps;
-    if (page_number === total_pages || posts.length === 0) {
+  componentWillReceiveProps = nextProps => {
+    const { page_number, total_pages } = nextProps;
+    if (page_number !== 0 && page_number === total_pages) {
       this.setState({ endOfFeed: true });
     }
-  }
+  };
 
   render = () => {
     const { currentlySending, posts, error } = this.props;
@@ -91,17 +96,23 @@ class PostList extends Component {
                     <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
                   </Feed.Summary>
                   <Feed.Extra text>
-                    {post.content.split('\n').map((item, key) => {
-                      return <span key={key}>{item}<br/></span>
+                    {post.content.split("\n").map((item, key) => {
+                      return <span key={key}>{item}<br /></span>;
                     })}
                   </Feed.Extra>
                 </Feed.Content>
               </Feed.Event>
             ))}
-            <Loader active={currentlySending}/>
+            <Dimmer active={currentlySending} inverted>
+              <Loader />
+            </Dimmer>
             {endOfFeed &&
               <Feed.Event>
                 <Feed.Content>End of feed.</Feed.Content>
+              </Feed.Event>}
+            {!endOfFeed &&
+              <Feed.Event>
+                <Feed.Content><a onClick={this.getNextPage}>Load more posts</a></Feed.Content>
               </Feed.Event>}
           </Feed>
         </Visibility>
