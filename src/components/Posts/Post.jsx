@@ -59,7 +59,7 @@ class Post extends Component {
               </Item.Content>
             </Item>}
         </Segment>
-        {/*<Comments/>*/}
+        <Comments post_id={post.id}/>
       </Container>
     );
   };

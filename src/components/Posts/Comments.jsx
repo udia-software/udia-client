@@ -1,25 +1,38 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Button, Comment, Form, Header, Visibility } from "semantic-ui-react";
+import { Comment, Form, Header, Visibility } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import Error from "../Shared/Error";
 import {
   createCommentRequest,
-  editCommentContent,
-  getCommentsRequest,
+  getCommentsRequest
+} from "../../modules/comments/sagas.actions";
+import {
+  setCommentContent,
   clearCommentsState,
-} from "../../actions";
+  clearCommentError
+} from "../../modules/comments/reducer.actions";
+
+const propTypes = {
+  commentError: PropTypes.object.isRequired,
+  commentIsSending: PropTypes.object.isRequired,
+  commentProgress: PropTypes.object.isRequired,
+  commentPagination: PropTypes.object.isRequired,
+  comments: PropTypes.object.isRequired
+};
 
 class Comments extends Component {
   onSubmitComment = parent_id => {
     const { post_id } = this.props;
     const content = this.props.commentProgress[parent_id];
-
     this.props.dispatch(createCommentRequest({ parent_id, post_id, content }));
   };
 
   changeCommentProgress = (parent_id, content) => {
-    this.props.dispatch(editCommentContent(parent_id, content));
+    this.props.dispatch(setCommentContent(parent_id, content));
+    this.props.dispatch(clearCommentError(parent_id));
   };
 
   componentWillReceiveProps = nextProps => {
@@ -35,13 +48,14 @@ class Comments extends Component {
   };
 
   componentWillUnmount = () => {
-    this.props.dispatch(clearCommentsState())
-  }
+    this.props.dispatch(clearCommentsState());
+  };
 
   getNextPage = parent_id => {
-    const { page_number, total_pages } = this.props.commentMeta[parent_id];
+    const { page_number, total_pages } = this.props.commentPagination[
+      parent_id
+    ] || {};
     const { post_id } = this.props;
-    console.log(page_number, total_pages);
     if ((page_number || 0) < (total_pages || 0)) {
       this.props.dispatch(
         getCommentsRequest({
@@ -60,12 +74,15 @@ class Comments extends Component {
   };
 
   render = () => {
+    const { commentError, commentIsSending } = this.props;
     return (
       <Comment.Group>
         <Header as="h3" dividing>Comments</Header>
 
         <Form
           reply
+          error={!!commentError[null]}
+          loading={commentIsSending[null]}
           onSubmit={event => {
             event.preventDefault();
             this.onSubmitComment(null);
@@ -77,7 +94,9 @@ class Comments extends Component {
             }}
             value={this.props.commentProgress[null]}
           />
-          <Button
+          <Error header="Create Comment Failed!" error={commentError[null]} />
+
+          <Form.Button
             content="Add Reply"
             labelPosition="left"
             icon="edit"
@@ -85,7 +104,7 @@ class Comments extends Component {
             compact
           />
         </Form>
-
+        <br />
         <Visibility onUpdate={this.onVisibilityUpdate}>
           {(this.props.comments[null] || []).map(comment => (
             <Comment key={comment.id}>
@@ -99,7 +118,11 @@ class Comments extends Component {
                 <Comment.Metadata>
                   <div>{moment(comment.inserted_at).fromNow()}</div>
                 </Comment.Metadata>
-                <Comment.Text>{comment.content}</Comment.Text>
+                <Comment.Text>
+                  {comment.content.split("\n").map((item, key) => {
+                    return <span key={key}>{item}<br /></span>;
+                  })}
+                </Comment.Text>
               </Comment.Content>
             </Comment>
           ))}
@@ -109,10 +132,12 @@ class Comments extends Component {
   };
 }
 
-function mapStateToProps(state) {
+Comments.propTypes = propTypes;
+
+function mapStateToProps(state, props) {
   return {
     ...state.comments,
-    post_id: (state.post || {}).id
+    post_id: props.post_id
   };
 }
 

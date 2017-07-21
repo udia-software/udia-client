@@ -1,7 +1,7 @@
 import axios from "axios";
 const isDevelopment = process.env.NODE_ENV === "development";
 
-export let API_ENDPOINT = "/api";
+let API_ENDPOINT = "/api";
 if (isDevelopment) {
   API_ENDPOINT = "http://127.0.0.1:4000/api";
 } else {
