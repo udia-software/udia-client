@@ -1,6 +1,5 @@
 import { effects } from "redux-saga";
 import { createPostCall, getPostsCall, getPostByIdCall } from "./postSagas";
-import { getUserCall } from "./userSagas";
 import { createCommentCall, getCommentsCall } from "./commentSagas";
 import {
   CLEAR_ERROR,
@@ -65,16 +64,6 @@ export function* createPostFlow() {
   }
 }
 
-export function* getUserFlow() {
-  while (true) {
-    const request = yield effects.take(GET_USER_BY_USERNAME_REQUEST);
-    const { username } = request;
-    const wasSuccessful = yield effects.call(getUserCall, username);
-    if (wasSuccessful) {
-      yield effects.put(setUser(wasSuccessful.data));
-    }
-  }
-}
 
 export function* getPostByIdFlow() {
   while (true) {

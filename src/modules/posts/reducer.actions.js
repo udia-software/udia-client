@@ -17,6 +17,7 @@ export function isGettingPosts(sendingRequest) {
     data: sendingRequest
   }
 }
+
 /**
  * Reducer action for setting an error message in the posts functionality
  * @param {Object|String} exception - Exception object or string
