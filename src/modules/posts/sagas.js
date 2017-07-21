@@ -4,6 +4,7 @@ import { GET_POSTS_REQUEST } from "./constants";
 import {
   isGettingPosts,
   setPostsError,
+  clearPostsError,
   clearPosts,
   setPostsPagination,
   addPosts
@@ -39,6 +40,7 @@ export function* getPostsFlow() {
       if (page_number <= 1) yield effects.put(clearPosts());
       yield effects.put(setPostsPagination(wasSuccessful.pagination));
       yield effects.put(addPosts(wasSuccessful.data));
+      yield effects.put(clearPostsError());
     }
   }
 }

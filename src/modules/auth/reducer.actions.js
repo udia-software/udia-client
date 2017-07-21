@@ -21,7 +21,7 @@ export function isSendingAuth(sendingRequest) {
 
 /**
  * Reducer action for setting an error message in the signin/signup functionality
- * @param {Object|String} exception - Exception object or string
+ * @param {Object|string} exception - Exception object or string
  */
 export function setAuthError(exception) {
   let response = exception.response || {};

@@ -5,39 +5,31 @@ import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import Error from "../Shared/Error";
 import {
-  editPostTitle,
-  editPostContent,
-  createPostRequest,
-  clearError
-} from "../../actions";
-
+  setPostTitle,
+  setPostContent,
+  clearPostError
+} from "../../modules/post/reducer.actions";
+import { createPostRequest } from "../../modules/post/sagas.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  id: PropTypes.number,
-  title: PropTypes.string,
-  content: PropTypes.string,
-  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  currentlySending: PropTypes.bool
-};
-
-const defaultProps = {
-  id: 0,
-  error: "",
-  currentlySending: false,
-  title: "",
-  content: ""
+  sendingPostRequest: PropTypes.bool.isRequired,
+  postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
+  post: PropTypes.object.isRequired,
+  title: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired
 };
 
 class CreatePost extends Component {
   changeTitle = event => {
-    this.props.dispatch(editPostTitle(event.target.value));
-    this.props.dispatch(clearError());
+    this.props.dispatch(setPostTitle(event.target.value));
+    this.props.dispatch(clearPostError());
   };
 
   changeContent = event => {
-    this.props.dispatch(editPostContent(event.target.value));
-    this.props.dispatch(clearError());
+    this.props.dispatch(setPostContent(event.target.value));
+    this.props.dispatch(clearPostError());
   };
 
   onSubmit = event => {
@@ -51,17 +43,22 @@ class CreatePost extends Component {
   };
 
   render = () => {
-    const { id, title, content, currentlySending, error } = this.props;
+    const {
+      post,
+      title,
+      content,
+      sendingPostRequest,
+      postRequestError
+    } = this.props;
     return (
       <Container>
         {/* When creating a post, if the ID is set, post is created. */
-          !!id && <Redirect to={`/posts/${id}`} />
-        }
+        !!post.id && <Redirect to={`/posts/${post.id}`} />}
         <Header as="h3">Create a Post</Header>
         <Form
           onSubmit={this.onSubmit}
-          loading={currentlySending}
-          error={!!error}
+          loading={sendingPostRequest}
+          error={!!postRequestError}
         >
           <Form.Input
             label="Title"
@@ -77,7 +74,7 @@ class CreatePost extends Component {
             onChange={this.changeContent}
             value={content}
           />
-          <Error header="Create Post Failed!" error={error} />
+          <Error header="Create Post Failed!" error={postRequestError} />
           <Form.Button>Submit</Form.Button>
         </Form>
       </Container>
@@ -86,14 +83,9 @@ class CreatePost extends Component {
 }
 
 CreatePost.propTypes = propTypes;
-CreatePost.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return {
-    ...state.post,
-    error: state.api.error,
-    currentlySending: state.api.currentlySending
-  };
+  return state.post;
 }
 
 export default connect(mapStateToProps)(CreatePost);

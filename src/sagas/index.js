@@ -31,54 +31,6 @@ import { setUser } from "../actions/user";
 
 export const API_DOWN_MESSAGE = "API Server is down.";
 
-/**
- * Saga for creating a new post. Listen for CREATE_POST_REQUEST action.
- */
-export function* createPostFlow() {
-  while (true) {
-    const request = yield effects.take(CREATE_POST_REQUEST);
-    const { title, content } = request.data;
-    const wasSuccessful = yield effects.call(createPostCall, {
-      title,
-      content
-    });
-
-    if (wasSuccessful) {
-      yield effects.put({
-        type: CLEAR_ERROR
-      });
-      yield effects.put({
-        type: EDIT_POST_TITLE,
-        title: ""
-      });
-      yield effects.put({
-        type: EDIT_POST_CONTENT,
-        content: ""
-      });
-      yield effects.put({
-        type: SET_POST,
-        post: wasSuccessful.data
-      });
-      // TODO: Redirect to Post Page
-    }
-  }
-}
-
-
-export function* getPostByIdFlow() {
-  while (true) {
-    const request = yield effects.take(GET_POST_BY_ID_REQUEST);
-    const { id } = request;
-    const wasSuccessful = yield effects.call(getPostByIdCall, id);
-    if (wasSuccessful) {
-      yield effects.put({
-        type: SET_POST,
-        post: wasSuccessful.data
-      });
-    }
-  }
-}
-
 export function* createCommentFlow() {
   while (true) {
     const request = yield effects.take(CREATE_COMMENT_REQUEST);
