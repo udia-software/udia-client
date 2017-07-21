@@ -65,48 +65,6 @@ export function* createPostFlow() {
   }
 }
 
-export function* getPostsFlow() {
-  while (true) {
-    const request = yield effects.take(GET_POSTS_REQUEST);
-    const page = request.page;
-    const wasSuccessful = yield effects.call(getPostsCall, page);
-    if (wasSuccessful) {
-      const {
-        page_number,
-        page_size,
-        total_entries,
-        total_pages
-      } = wasSuccessful.pagination;
-
-      if (page_number <= 1) {
-        yield effects.put({
-          type: CLEAR_POST_LIST
-        });
-      }
-      yield effects.put({
-        type: SET_POSTS_PAGE_NUMBER,
-        page_number
-      });
-      yield effects.put({
-        type: SET_POSTS_PAGE_SIZE,
-        page_size
-      });
-      yield effects.put({
-        type: SET_POSTS_TOTAL_ENTRIES,
-        total_entries
-      });
-      yield effects.put({
-        type: SET_POSTS_TOTAL_PAGES,
-        total_pages
-      });
-      yield effects.put({
-        type: ADD_POSTS,
-        posts: wasSuccessful.data
-      });
-    }
-  }
-}
-
 export function* getUserFlow() {
   while (true) {
     const request = yield effects.take(GET_USER_BY_USERNAME_REQUEST);

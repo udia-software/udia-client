@@ -8,9 +8,6 @@ export function createPost(title, content) {
   });
 }
 
-export function getPosts(page) {
-  return get('/posts/', {page});
-}
 
 export function getPostById(id) {
   return get(`/posts/${id}`);

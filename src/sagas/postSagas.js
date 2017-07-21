@@ -31,28 +31,6 @@ export function* createPostCall({
   }
 }
 
-export function* getPostsCall(page) {
-  yield effects.put({
-    type: SENDING_REQUEST,
-    sending: true
-  });
-
-  try {
-    return yield effects.call(getPosts, page);
-  } catch (exception) {
-    yield effects.put({
-      type: REQUEST_ERROR,
-      error: exception.errors || exception.error || API_DOWN_MESSAGE
-    });
-    return false;
-  } finally {
-    yield effects.put({
-      type: SENDING_REQUEST,
-      sending: false
-    });
-  }
-}
-
 export function* getPostByIdCall(id) {
   yield effects.put({
     type: SENDING_REQUEST,
