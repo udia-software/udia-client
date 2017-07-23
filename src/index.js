@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
-// import { createLogger } from 'redux-logger';
+import { createLogger } from 'redux-logger';
 
 import { unregister } from './registerServiceWorker';
 import reducer from './modules/rootReducer';
@@ -13,9 +13,9 @@ import App from './components/App';
 
 const sagaMiddleware = createSagaMiddleware();
 // For debugging purposes
-// const logger = createLogger();
-// const store = createStore(reducer, applyMiddleware(logger, sagaMiddleware));
-const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+const logger = createLogger();
+const store = createStore(reducer, applyMiddleware(logger, sagaMiddleware));
+// const store = createStore(reducer, applyMiddleware(sagaMiddleware));
 const supportsHistory = 'pushState' in window.history;
 
 sagaMiddleware.run(rootSaga);

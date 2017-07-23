@@ -5,7 +5,7 @@ import { Container, Divider, Item, Segment } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
-import Comments from "./Comments";
+import CommentsContainer from "./CommentsContainer";
 import { getPostRequest } from "../../modules/post/sagas.actions";
 import { setPost, clearPostError } from "../../modules/post/reducer.actions";
 
@@ -59,7 +59,7 @@ class Post extends Component {
               </Item.Content>
             </Item>}
         </Segment>
-        <Comments post_id={post.id}/>
+        <CommentsContainer post_id={post.id}/>
       </Container>
     );
   };
