@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Comment, Form, Header, Visibility } from "semantic-ui-react";
-import moment from "moment";
-import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
 import {
   createCommentRequest,
@@ -14,13 +12,15 @@ import {
   clearCommentsState,
   clearCommentError
 } from "../../modules/comments/reducer.actions";
+import SubComment from "./SubComment";
 
 const propTypes = {
   commentError: PropTypes.object.isRequired,
   commentIsSending: PropTypes.object.isRequired,
   commentProgress: PropTypes.object.isRequired,
   commentPagination: PropTypes.object.isRequired,
-  comments: PropTypes.object.isRequired
+  comments: PropTypes.object.isRequired,
+  post_id: PropTypes.number
 };
 
 class Comments extends Component {
@@ -97,7 +97,7 @@ class Comments extends Component {
           <Error header="Create Comment Failed!" error={commentError[null]} />
 
           <Form.Button
-            content="Add Reply"
+            content="Comment"
             labelPosition="left"
             icon="edit"
             primary
@@ -106,26 +106,13 @@ class Comments extends Component {
         </Form>
         <br />
         <Visibility onUpdate={this.onVisibilityUpdate}>
-          {(this.props.comments[null] || []).map(comment => (
-            <Comment key={comment.id}>
-              <Comment.Content>
-                <Comment.Author
-                  as={Link}
-                  to={`/users/${comment.author.username}`}
-                >
-                  {comment.author.username}
-                </Comment.Author>
-                <Comment.Metadata>
-                  <div>{moment(comment.inserted_at).fromNow()}</div>
-                </Comment.Metadata>
-                <Comment.Text>
-                  {comment.content.split("\n").map((item, key) => {
-                    return <span key={key}>{item}<br /></span>;
-                  })}
-                </Comment.Text>
-              </Comment.Content>
-            </Comment>
-          ))}
+          {(this.props.comments[null] || [])
+            .map(comment => (
+              <SubComment
+                key={comment.id}
+                comment={comment}
+              />
+            ))}
         </Visibility>
       </Comment.Group>
     );
@@ -134,10 +121,10 @@ class Comments extends Component {
 
 Comments.propTypes = propTypes;
 
-function mapStateToProps(state, props) {
+function mapStateToProps(state, ownProps) {
   return {
     ...state.comments,
-    post_id: props.post_id
+    post_id: ownProps.post_id
   };
 }
 
