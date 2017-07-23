@@ -26,13 +26,6 @@ class SubCommentContainer extends Component {
     this.state = {
       showReplyBox: false
     };
-    this.props.dispatch(
-      getCommentsRequest({
-        page: 1,
-        post_id: props.comment.post_id,
-        parent_id: props.comment.id
-      })
-    );
   }
 
   toggleShowReplyBox = () => {
@@ -69,11 +62,21 @@ class SubCommentContainer extends Component {
   };
 
   onVisibilityUpdate = (e, { calculations }) => {
-    const { parent_id } = this.props;
+    const parent_id = this.props.comment.id;
     if (calculations.bottomVisible || calculations.bottomPassed) {
       this.getNextPage(parent_id);
     }
   };
+
+  loadCommentChildren = () => {
+    this.props.dispatch(
+      getCommentsRequest({
+        page: 1,
+        post_id: this.props.comment.post_id,
+        parent_id: this.props.comment.id
+      })
+    );
+  }
 
   render = () => {
     const {
@@ -96,6 +99,7 @@ class SubCommentContainer extends Component {
         commentProgress={commentProgress}
         onVisibilityUpdate={this.onVisibilityUpdate}
         comments={comments}
+        loadCommentChildren={this.loadCommentChildren}
       />
     );
   };
