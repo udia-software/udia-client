@@ -47,7 +47,7 @@ class PostList extends Component {
 
   componentWillReceiveProps = nextProps => {
     const { page_number, total_pages } = nextProps.postsPagination;
-    if (page_number !== 0 && page_number === total_pages) {
+    if (page_number >= 1 && page_number === total_pages) {
       this.setState({ endOfFeed: true });
     }
   };
