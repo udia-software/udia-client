@@ -1,6 +1,6 @@
 import { effects } from "redux-saga";
 import { createComment, getComments } from "./api";
-import { CREATE_COMMENT_REQUEST, GET_COMMENTS_REQUEST } from "./constants";
+import { CREATE_COMMENT_REQUEST } from "./constants";
 import {
   isSendingComment,
   setCommentError,
@@ -61,7 +61,7 @@ export function* createCommentFlow() {
     if (wasSuccessful) {
       yield effects.put(setCommentContent(parent_id, ""));
       yield effects.put(addComment(parent_id, wasSuccessful.data));
-      yield effects.put(clearCommentError(parent_id))
+      yield effects.put(clearCommentError(parent_id));
     }
   }
 }
@@ -69,16 +69,14 @@ export function* createCommentFlow() {
 /**
  * Saga for getting a list of comments. Listen for GET_COMMENTS_REQUEST action.
  */
-export function* getCommentsFlow() {
-  while (true) {
-    const request = yield effects.take(GET_COMMENTS_REQUEST);
-    const { parent_id } = request.data;
-    const wasSuccessful = yield effects.call(getCommentsCall, request.data);
-    if (wasSuccessful) {
-      yield effects.put(
-        addComments(parent_id, wasSuccessful.data, wasSuccessful.pagination)
-      );
-      yield effects.put(clearCommentError(parent_id))
-    }
+
+export function* getCommentsFlow(action) {
+  const { parent_id } = action.data;
+  const wasSuccessful = yield effects.call(getCommentsCall, action.data);
+  if (wasSuccessful) {
+    yield effects.put(
+      addComments(parent_id, wasSuccessful.data, wasSuccessful.pagination)
+    );
+    yield effects.put(clearCommentError(parent_id))
   }
 }

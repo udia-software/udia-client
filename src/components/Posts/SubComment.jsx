@@ -18,8 +18,8 @@ class SubComment extends Component {
       commentProgress,
       onVisibilityUpdate,
       comments,
-      loadCommentChildren
     } = this.props;
+
     return (
       <Comment>
         <Comment.Content>
@@ -38,10 +38,6 @@ class SubComment extends Component {
             <Comment.Action onClick={toggleShowReplyBox}>
               {showReplyBox ? "Hide Reply" : "Reply"}
             </Comment.Action>
-            {!comments[comment.id] &&
-              <Comment.Action onClick={loadCommentChildren}>
-                Load replies
-              </Comment.Action>}
           </Comment.Actions>
           {showReplyBox &&
             <Form
