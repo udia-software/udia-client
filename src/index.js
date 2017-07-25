@@ -7,8 +7,8 @@ import { Provider } from 'react-redux';
 // import { createLogger } from 'redux-logger';
 
 import { unregister } from './registerServiceWorker';
-import reducer from './reducers';
-import rootSaga from './sagas';
+import reducer from './modules/rootReducer';
+import rootSaga from './modules/rootSaga';
 import App from './components/App';
 
 const sagaMiddleware = createSagaMiddleware();

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Dropdown, Menu } from "semantic-ui-react";
-import { logoutRequest } from "../actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -28,10 +27,6 @@ class Navbar extends Component {
     this.setState({ activeItem: name });
   };
 
-  handleSignOut = () => {
-    this.props.dispatch(logoutRequest());
-  };
-
   render() {
     const { activeItem } = this.state;
     const { currentUser } = this.props;
@@ -47,15 +42,6 @@ class Navbar extends Component {
           onClick={this.handleItemClick}
         >
           <strong>UDIA</strong>
-        </Menu.Item>
-        <Menu.Item
-          as={Link}
-          to="/posts"
-          name="posts"
-          active={activeItem === "posts"}
-          onClick={this.handleItemClick}
-        >
-          Posts
         </Menu.Item>
         <Menu.Item
           as={Link}
@@ -92,13 +78,6 @@ class Navbar extends Component {
                   onClick={this.handleItemClick}
                 >
                   Write Post
-                </Dropdown.Item>
-                <Dropdown.Item
-                  name="signout"
-                  active={activeItem === "signout"}
-                  onClick={this.handleSignOut}
-                >
-                  Sign Out
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

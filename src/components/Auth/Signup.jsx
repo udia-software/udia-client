@@ -4,22 +4,21 @@ import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button, Container, Form, Header, Input } from "semantic-ui-react";
 import Error from "../Shared/Error";
-import { clearError, registerRequest } from "../../actions";
+import { registerRequest } from "../../modules/auth/sagas.actions";
+import {
+  clearAuthError,
+  setUsername,
+  setPassword
+} from "../../modules/auth/reducer.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  currentlySending: PropTypes.bool,
-  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  location: PropTypes.shape({
-    state: PropTypes.shape({})
-  }),
-  currentUser: PropTypes.object
-};
-
-const defaultProps = {
-  currentlySending: false,
-  error: "",
-  location: { state: {} }
+  sendingAuthRequest: PropTypes.bool.isRequired,
+  authError: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  currentUser: PropTypes.object,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  passwordConfirmation: PropTypes.string.isRequired
 };
 
 class Signup extends Component {
@@ -29,41 +28,44 @@ class Signup extends Component {
       username: "",
       password: ""
     };
-    this.props.dispatch(clearError());
+    this.props.dispatch(clearAuthError());
   }
 
   onSubmit = event => {
     event.preventDefault();
-    this.props.dispatch(
-      registerRequest({
-        username: this.state.username,
-        password: this.state.password
-      })
-    );
+    const { dispatch, username, password } = this.props;
+    dispatch(registerRequest({ username, password }));
   };
 
   changeUsername = event => {
-    this.setState({ username: event.target.value });
+    const { dispatch } = this.props;
+    dispatch(setUsername(event.target.value));
   };
 
   changePassword = event => {
-    this.setState({ password: event.target.value });
+    const { dispatch } = this.props;
+    dispatch(setPassword(event.target.value));
   };
 
   render() {
-    const { username, password } = this.state;
-    const { currentUser, currentlySending, error } = this.props;
-    const { from } = this.props.location.state || { from: { pathname: "/" } };
+    const {
+      sendingAuthRequest,
+      authError,
+      currentUser,
+      username,
+      password
+    } = this.props;
+
     const loggedIn = !!Object.keys(currentUser || {}).length;
-    if (loggedIn) return <Redirect to={from} />;
+    if (loggedIn) return <Redirect to={"/"} />;
 
     return (
       <Container>
         <Header as="h2">Sign Up</Header>
         <Form
           onSubmit={this.onSubmit}
-          loading={currentlySending}
-          error={!!error}
+          loading={sendingAuthRequest}
+          error={!!authError}
         >
           <Form.Field>
             <Input
@@ -83,7 +85,7 @@ class Signup extends Component {
               value={password}
             />
           </Form.Field>
-          <Error error={error} header="Sign Up Failed!" />
+          <Error error={authError} header="Sign Up Failed!" />
           <Button type="submit">Submit</Button>
         </Form>
       </Container>
@@ -92,14 +94,9 @@ class Signup extends Component {
 }
 
 Signup.propTypes = propTypes;
-Signup.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return {
-    ...state.auth,
-    error: state.api.error,
-    currentlySending: state.api.currentlySending
-  };
+  return { ...state.auth };
 }
 
 export default connect(mapStateToProps)(Signup);

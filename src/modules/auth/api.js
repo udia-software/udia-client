@@ -1,4 +1,4 @@
-import { get, del, post } from '../api';
+import { del, post } from '../baseApi';
 
 // If testing, use localStorage polyfill, else use browser localStorage
 const localStorage = global.process && process.env.NODE_ENV === 'test' ?
@@ -69,19 +69,4 @@ export function signup(username, password) {
     localStorage.setItem('currentUser', JSON.stringify(response.user));
     return Promise.resolve(response);
   });
-}
-
-/**
- * Get the specified user
- * @param {string} username The value of the user's username
- */
-export function getUser(username) {
-  return get(`/users/${username}`);
-}
-
-/**
- * Get all of the users
- */
-export function getUsers() {
-  return get('/users');
 }

@@ -11,7 +11,6 @@ import Post from './Posts/Post';
 import PostList from './Posts/PostList';
 import User from './Users/User';
 import About from './About';
-import Home from './Home';
 import Navbar from './Navbar';
 
 const NoMatch = ({ location }) => (
@@ -34,7 +33,7 @@ class App extends Component {
       <div>
         <Navbar />
         <Switch>
-          <Route exact path='/' component={Home} />
+          <Route exact path='/' component={PostList} />
           <Route path='/about' component={About} />
           <Route path='/signin' component={Signin} />
           <Route path='/signup' component={Signup} />

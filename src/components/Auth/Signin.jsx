@@ -1,70 +1,67 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Button, Container, Form, Header, Input } from "semantic-ui-react";
 import Error from "../Shared/Error";
-import { clearError, loginRequest } from "../../actions";
+import { loginRequest } from "../../modules/auth/sagas.actions";
+import {
+  clearAuthError,
+  setUsername,
+  setPassword
+} from "../../modules/auth/reducer.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  currentlySending: PropTypes.bool,
-  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  location: PropTypes.shape({
-    state: PropTypes.shape({})
-  }),
-  currentUser: PropTypes.object
-};
-
-const defaultProps = {
-  currentlySending: false,
-  error: "",
-  currentUser: {},
-  location: { state: {} }
+  sendingAuthRequest: PropTypes.bool.isRequired,
+  authError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
+  currentUser: PropTypes.object,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired
 };
 
 class Signin extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      username: "",
-      password: ""
-    };
-    this.props.dispatch(clearError());
+    this.props.dispatch(clearAuthError());
   }
 
   onSubmit = event => {
     event.preventDefault();
-    this.props.dispatch(
-      loginRequest({
-        username: this.state.username,
-        password: this.state.password
-      })
-    );
+    const { dispatch, username, password } = this.props;
+    dispatch(loginRequest({ username, password }));
   };
 
   changeUsername = event => {
-    this.setState({ username: event.target.value });
+    const { dispatch } = this.props;
+    dispatch(setUsername(event.target.value));
   };
 
   changePassword = event => {
-    this.setState({ password: event.target.value });
+    const { dispatch } = this.props;
+    dispatch(setPassword(event.target.value));
   };
 
   render = () => {
-    const { username, password } = this.state;
-    const { currentUser, currentlySending, error } = this.props;
-    const { from } = this.props.location.state || { from: { pathname: "/" } };
+    const {
+      sendingAuthRequest,
+      authError,
+      currentUser,
+      username,
+      password
+    } = this.props;
+
     const loggedIn = !!Object.keys(currentUser || {}).length;
-    if (loggedIn) return <Redirect to={from} />;
+    if (loggedIn) return <Redirect to={"/"} />;
 
     return (
       <Container>
         <Header as="h2">Sign In</Header>
         <Form
           onSubmit={this.onSubmit}
-          loading={currentlySending}
-          error={!!error}
+          loading={sendingAuthRequest}
+          error={!!authError}
         >
           <Form.Field>
             <Input
@@ -84,7 +81,7 @@ class Signin extends Component {
               value={password}
             />
           </Form.Field>
-          <Error header="Sign in failed!" error={error} />
+          <Error header="Sign in failed!" error={authError} />
           <Button type="submit">Submit</Button>
         </Form>
       </Container>
@@ -93,14 +90,9 @@ class Signin extends Component {
 }
 
 Signin.propTypes = propTypes;
-Signin.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return {
-    ...state.auth,
-    error: state.api.error,
-    currentlySending: state.api.currentlySending
-  };
+  return { ...state.auth };
 }
 
 export default connect(mapStateToProps)(Signin);

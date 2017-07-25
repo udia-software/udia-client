@@ -5,96 +5,70 @@ import { Container, Divider, Item, Segment } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
-import { clearError, setPost, getPostById } from "../../actions";
+import CommentsContainer from "./CommentsContainer";
+import { getPostRequest } from "../../modules/post/sagas.actions";
+import { setPost, clearPostError } from "../../modules/post/reducer.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
-  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  currentlySending: PropTypes.bool,
-  author: PropTypes.shape({
-    inserted_at: PropTypes.string,
-    updated_at: PropTypes.string,
-    username: PropTypes.string
-  }),
-  type: PropTypes.oneOf(["text"]),
-  title: PropTypes.string,
-  content: PropTypes.string,
-  id: PropTypes.number,
-  inserted_at: PropTypes.string,
-  updated_at: PropTypes.string
-};
-
-const defaultProps = {
-  error: "",
-  currentlySending: false,
-  id: 0,
+  sendingPostRequest: PropTypes.bool.isRequired,
+  postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
+  post: PropTypes.object.isRequired
 };
 
 class Post extends Component {
   componentWillMount = () => {
     const postId = this.props.match.params.id;
-    this.props.dispatch(getPostById(postId));
+    this.props.dispatch(getPostRequest({ id: postId }));
   };
 
   componentWillUnmount = () => {
-    this.props.dispatch(setPost(null));
-    this.props.dispatch(clearError());
+    this.props.dispatch(setPost({}));
+    this.props.dispatch(clearPostError());
   };
 
   render = () => {
-    const {
-      id,
-      author,
-      title,
-      inserted_at,
-      updated_at,
-      content,
-      currentlySending,
-      error
-    } = this.props;
+    const { sendingPostRequest, postRequestError, post } = this.props;
 
     return (
       <Container>
-        <Error error={error} header="Post Fetch Failed!" />
-        <Segment loading={currentlySending}>
-          {id &&
+        <Error error={postRequestError} header="Post Fetch Failed!" />
+        <Segment loading={sendingPostRequest}>
+          {post.id &&
             <Item>
               <Item.Content>
                 <Item.Header as="h3">
-                  {title}
+                  {post.title}
                 </Item.Header>
                 <Item.Description>
-                  {content.split('\n').map((item, key) => {
-                    return <span key={key}>{item}<br/></span>
+                  {post.content.split("\n").map((item, key) => {
+                    return <span key={key}>{item}<br /></span>;
                   })}
                 </Item.Description>
                 <Divider />
                 <Item.Extra>
-                  <span>Submitted {moment(inserted_at).fromNow()} by </span>
-                  <Link to={`/users/${author.username}`}>
-                    {author.username}.
+                  <span>Submitted {moment(post.inserted_at).fromNow()} by </span>
+                  <Link to={`/users/${post.author.username}`}>
+                    {post.author.username}.
                   </Link>
-                  {moment(inserted_at).format("X") !== moment(updated_at).format("X") &&
-                    <span>Last updated {moment(updated_at).fromNow()}.</span>
-                  }
+                  {moment(post.inserted_at).format("X") !==
+                    moment(post.updated_at).format("X") &&
+                    <span>Last updated {moment(post.updated_at).fromNow()}.</span>}
                 </Item.Extra>
               </Item.Content>
             </Item>}
         </Segment>
+        <CommentsContainer post_id={post.id}/>
       </Container>
     );
   };
 }
 
 Post.propTypes = propTypes;
-Post.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return {
-    ...state.post,
-    error: state.api.error,
-    currentlySending: state.api.currentlySending
-  };
+  return state.post;
 }
 
 export default connect(mapStateToProps)(Post);
