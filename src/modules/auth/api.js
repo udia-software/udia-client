@@ -1,4 +1,5 @@
 import { del, post } from '../baseApi';
+import { setSocket } from '../../socket';
 
 // If testing, use localStorage polyfill, else use browser localStorage
 const localStorage = global.process && process.env.NODE_ENV === 'test' ?
@@ -7,6 +8,7 @@ const localStorage = global.process && process.env.NODE_ENV === 'test' ?
 
 export function me() {
   const strCurrentUser = localStorage.getItem('currentUser');
+  setSocket(getToken());
   if (strCurrentUser) {
     return JSON.parse(strCurrentUser);
   }
@@ -42,6 +44,7 @@ export function signin(username, password) {
     // Save token to local storage
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
+    setSocket(getToken());
     return Promise.resolve(response);
   });
 }
@@ -52,6 +55,7 @@ export function signin(username, password) {
 export function signout() {
   localStorage.removeItem('token');
   localStorage.removeItem('currentUser');
+  setSocket(getToken());
   return del('/sessions').then(() => Promise.resolve(true));
 }
 
@@ -67,6 +71,7 @@ export function signup(username, password) {
   }).then((response) => {
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
+    setSocket(getToken());
     return Promise.resolve(response);
   });
 }
