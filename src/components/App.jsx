@@ -7,7 +7,7 @@ import Profile from './Auth/Profile';
 import Signin from './Auth/Signin';
 import Signup from './Auth/Signup';
 import CreatePost from './Posts/CreatePost';
-import Post from './Posts/Post';
+import PostContainer from './Posts/PostContainer';
 import PostList from './Posts/PostList';
 import User from './Users/User';
 import About from './About';
@@ -40,7 +40,7 @@ class App extends Component {
           <Route path='/users/:username' component={User} />
           <Route exact path='/posts' component={PostList} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
-          <Route path='/posts/:id' component={Post} />
+          <Route path='/posts/:id' component={PostContainer} />
           <PrivateRoute path='/profile' component={Profile} />
           <Route component={NoMatch} />
         </Switch>
