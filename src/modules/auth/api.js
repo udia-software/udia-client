@@ -1,14 +1,13 @@
-import { del, post } from '../baseApi';
-import { setSocket } from '../../socket';
+import { del, post } from "../baseApi";
 
 // If testing, use localStorage polyfill, else use browser localStorage
-const localStorage = global.process && process.env.NODE_ENV === 'test' ?
-  // eslint-disable-next-line import/no-extraneous-dependencies
-  require('localStorage') : global.window.localStorage;
+const localStorage = global.process && process.env.NODE_ENV === "test"
+  ? // eslint-disable-next-line import/no-extraneous-dependencies
+    require("localStorage")
+  : global.window.localStorage;
 
 export function me() {
-  const strCurrentUser = localStorage.getItem('currentUser');
-  setSocket(getToken());
+  const strCurrentUser = localStorage.getItem("currentUser");
   if (strCurrentUser) {
     return JSON.parse(strCurrentUser);
   }
@@ -19,14 +18,14 @@ export function me() {
  * Checks if a user is logged in
  */
 export function signedIn() {
-  return !!localStorage.getItem('token');
+  return !!localStorage.getItem("token");
 }
 
 /**
  * Get the locally stored user token
  */
 export function getToken() {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 }
 
 /**
@@ -37,14 +36,13 @@ export function getToken() {
 export function signin(username, password) {
   if (signedIn()) return Promise.resolve(true);
 
-  return post('/sessions', {
+  return post("/sessions", {
     username,
     password
-  }).then((response) => {
+  }).then(response => {
     // Save token to local storage
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('currentUser', JSON.stringify(response.user));
-    setSocket(getToken());
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("currentUser", JSON.stringify(response.user));
     return Promise.resolve(response);
   });
 }
@@ -53,10 +51,9 @@ export function signin(username, password) {
  * Logs the current user out
  */
 export function signout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('currentUser');
-  setSocket(getToken());
-  return del('/sessions').then(() => Promise.resolve(true));
+  localStorage.removeItem("token");
+  localStorage.removeItem("currentUser");
+  return del("/sessions").then(() => Promise.resolve(true));
 }
 
 /**
@@ -65,13 +62,12 @@ export function signout() {
  * @param  {string} password The password of the user
  */
 export function signup(username, password) {
-  return post('/users', {
+  return post("/users", {
     username,
     password
-  }).then((response) => {
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('currentUser', JSON.stringify(response.user));
-    setSocket(getToken());
+  }).then(response => {
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("currentUser", JSON.stringify(response.user));
     return Promise.resolve(response);
   });
 }

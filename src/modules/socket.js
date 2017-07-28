@@ -1,4 +1,5 @@
 import { Socket } from "phoenix";
+import { getToken } from "./auth/api";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -9,22 +10,13 @@ if (isDevelopment) {
   SOCKET_ENDPOINT = "wss://a.udia.ca/socket";
 }
 
-let socket;
-
 /**
- * Connects the websocket to the server
+ * Create a websocket
  * @param {string} token - The Guardian generated JWT string
  */
-export function setSocket(token) {
-  if (socket) {
-    socket.disconnect();
-  }
-  socket = new Socket(SOCKET_ENDPOINT, {
-    params: { guardian_token: token }
+export function getSocket(token) {
+  const socket = new Socket(SOCKET_ENDPOINT, {
+    params: { guardian_token: getToken() }
   });
-  socket.connect();
-  console.log(socket);
   return socket;
 }
-
-export default socket;
