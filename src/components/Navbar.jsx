@@ -32,6 +32,8 @@ class Navbar extends Component {
     const { currentUser } = this.props;
     const loggedIn = !!Object.keys(currentUser || {}).length;
 
+    console.log(currentUser)
+
     return (
       <Menu>
         <Menu.Item
@@ -63,12 +65,21 @@ class Navbar extends Component {
                 <Dropdown.Header>{currentUser.username}</Dropdown.Header>
                 <Dropdown.Item
                   as={Link}
-                  to="/profile"
+                  to={`/users/${currentUser.username}`}
                   name="profile"
                   active={activeItem === "profile"}
                   onClick={this.handleItemClick}
                 >
                   My Profile
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as={Link}
+                  to="/account"
+                  name="account"
+                  active={activeItem === "account"}
+                  onClick={this.handleItemClick}
+                >
+                  Account Settings
                 </Dropdown.Item>
                 <Dropdown.Item
                   as={Link}

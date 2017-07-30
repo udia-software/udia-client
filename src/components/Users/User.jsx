@@ -5,6 +5,7 @@ import { Container, Dimmer, Header, List, Loader } from "semantic-ui-react";
 import moment from "moment";
 import { getUserByUsernameRequest } from "../../modules/user/sagas.actions";
 import Error from "../Shared/Error";
+import JourneyList from "../Journeys/JourneyList";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -23,32 +24,15 @@ class User extends Component {
   render = () => {
     const { user, currentlyGettingUser, userRequestError } = this.props;
     return (
-      <Container>
+      <Container style={{marginTop: '30px'}}>
         <Error error={userRequestError} header="Get User Failed!" />
         <Dimmer active={currentlyGettingUser} inverted>
           <Loader />
         </Dimmer>
         {user.username &&
           <div>
-            <Header as="h2">{user.username}</Header>
-            <List>
-              <List.Item>
-                <List.Header>Created At</List.Header>
-                <List.Description>
-                  {moment(user.inserted_at).format(
-                    "dddd, MMMM Do YYYY, h:mm:ss a"
-                  )}
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                <List.Header>Updated At</List.Header>
-                <List.Description>
-                  {moment(user.updated_at).format(
-                    "dddd, MMMM Do YYYY, h:mm:ss a"
-                  )}
-                </List.Description>
-              </List.Item>
-            </List>
+            <Header as="h2" textAlign="center">{user.username}</Header>
+            <JourneyList />
           </div>}
       </Container>
     );
