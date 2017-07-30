@@ -12,7 +12,7 @@ const initialState = {
   journeyRequestError: "",
   journey: {},
   title: "",
-  content: ""
+  description: ""
 };
 
 function journeyReducer(state = initialState, action) {

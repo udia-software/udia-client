@@ -5,6 +5,8 @@ import { createCommentFlow, getCommentsFlow } from "./comments/sagas";
 import { getPostFlow, createPostFlow } from "./post/sagas";
 import { getPostsFlow } from "./posts/sagas";
 import { getUserFlow } from "./user/sagas";
+import { getJourneyFlow, createJourneyFlow } from './journey/sagas';
+import { getJourneysFlow } from "./journeys/sagas";
 
 export default function* root() {
   yield effects.all([
@@ -16,6 +18,9 @@ export default function* root() {
     yield effects.fork(getPostFlow),
     yield effects.fork(createPostFlow),
     yield effects.fork(getPostsFlow),
-    yield effects.fork(getUserFlow)
+    yield effects.fork(getUserFlow),
+    yield effects.fork(getJourneyFlow),
+    yield effects.fork(createJourneyFlow),
+    yield effects.fork(getJourneysFlow)
   ]);
 }

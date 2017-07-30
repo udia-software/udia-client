@@ -6,3 +6,7 @@ export function createJourney(title, description) {
       description
   });
 }
+
+export function getJourney(id) {
+  return get(`/journeys/${id}`);
+}

@@ -65,11 +65,11 @@ export function setJourneyTitle(title) {
 
 /**
  * Reducer action for setting the journey description on create/update.
- * @param {string} content - The content of the journey
+ * @param {string} description - The description of the journey
  */
-export function setJourneyContent(content) {
+export function setJourneyDescription(description) {
   return {
-    type: SET_JOURNEY_CONTENT,
-    data: content
+    type: SET_JOURNEY_DESCRIPTION,
+    data: description
   };
 }

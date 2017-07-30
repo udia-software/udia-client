@@ -18,9 +18,9 @@ import {
  */
 function* createJourneyCall(data) {
   yield effects.put(isSendingJourney(true));
-  const { title, content } = data;
+  const { title, description } = data;
   try {
-    return yield effects.call(createJourney, title, content);
+    return yield effects.call(createJourney, title, description);
   } catch (exception) {
     yield effects.put(setJourneyError(exception));
     return false;

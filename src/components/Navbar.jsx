@@ -79,6 +79,15 @@ class Navbar extends Component {
                 >
                   Write Post
                 </Dropdown.Item>
+                <Dropdown.Item
+                  as={Link}
+                  to="/journeys/create"
+                  name="createJourney"
+                  active={activeItem === "createJourney"}
+                  onClick={this.handleItemClick}
+                >
+                  Start Journey
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </Menu.Menu>}

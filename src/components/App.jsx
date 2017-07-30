@@ -9,6 +9,7 @@ import Signup from './Auth/Signup';
 import CreatePost from './Posts/CreatePost';
 import Post from './Posts/Post';
 import PostList from './Posts/PostList';
+import CreateJourney from './Journeys/CreateJourney';
 import User from './Users/User';
 import About from './About';
 import Navbar from './Navbar';
@@ -41,6 +42,7 @@ class App extends Component {
           <Route exact path='/posts' component={PostList} />
           <PrivateRoute path='/posts/create' component={CreatePost} />
           <Route path='/posts/:id' component={Post} />
+          <PrivateRoute path='/journeys/create' component={CreateJourney} />
           <PrivateRoute path='/profile' component={Profile} />
           <Route component={NoMatch} />
         </Switch>
