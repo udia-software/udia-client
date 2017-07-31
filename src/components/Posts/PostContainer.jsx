@@ -26,10 +26,10 @@ class PostContainer extends Component {
   constructor(props) {
     super(props);
     this.socket = getSocket();
-    this.props.dispatch(setEditPostSuccess(false));
   }
 
   componentWillMount = () => {
+    this.props.dispatch(setEditPostSuccess(false));
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostRequest({ id: postId }));
     this.socket.connect();

@@ -5,7 +5,12 @@ import {
   ADD_COMMENT,
   ADD_COMMENTS,
   CLEAR_COMMENTS_STATE,
-  SET_COMMENT_CONTENT
+  SET_COMMENT_CONTENT,
+  TOGGLE_COMMENT_REPLY_BOX,
+  TOGGLE_EDIT_COMMENT,
+  SET_EDIT_COMMENT_CONTENT,
+  CLEAR_EDIT_COMMENT,
+  REPLACE_COMMENT
 } from "./constants";
 
 const initialState = {
@@ -13,6 +18,8 @@ const initialState = {
   commentIsSending: {}, // Holds boolean for is sending on a comment ref'd by ID
   commentProgress: {}, // Holds text for while user writes a comment ref'd by ID
   commentPagination: {}, // Holds comment children pagination state ref'd by ID
+  commentReplyBox: {}, // Holds whether or not to show comment reply box
+  commentEditing: {}, // Holds whether or not the comment is being edited or not
   comments: {} // Holds comment data ref'd by ID
 };
 
@@ -71,6 +78,62 @@ function commentsReducer(state = initialState, action) {
         commentPagination: {
           ...state.commentPagination,
           [action.data.parent_id]: action.data.pagination
+        }
+      };
+    case TOGGLE_COMMENT_REPLY_BOX:
+      return {
+        ...state,
+        commentReplyBox: {
+          ...state.commentReplyBox,
+          [action.data]: !state.commentReplyBox[action.data]
+        }
+      };
+    case TOGGLE_EDIT_COMMENT:
+      return {
+        ...state,
+        commentEditing: {
+          ...state.commentEditing,
+          [action.data.comment_id]: {
+            isEditing: !(state.commentEditing[action.data.comment_id] || {})
+              .isEditing,
+            content: (state.commentEditing[action.data.comment_id] || {})
+              .content || action.data.content
+          }
+        }
+      };
+    case SET_EDIT_COMMENT_CONTENT:
+      return {
+        ...state,
+        commentEditing: {
+          ...state.commentEditing,
+          [action.data.comment_id]: {
+            ...state.commentEditing[action.data.comment_id],
+            content: action.data.content
+          }
+        }
+      };
+    case CLEAR_EDIT_COMMENT:
+      return {
+        ...state,
+        commentEditing: {
+          ...state.commentEditing,
+          [action.data]: null
+        }
+      };
+    case REPLACE_COMMENT:
+      let commentRep = [...(state.comments[action.data.parent_id] || [])];
+      for (let i = 0; i < commentRep.length; i++) {
+        let repComment = commentRep[i];
+        if (repComment.id === action.data.comment_id) {
+          commentRep[i] = action.data.comment;
+          break;
+        }
+      }
+      return {
+        ...state,
+        comments: {
+          ...state.comments,
+          [action.data.parent_id]: commentRep
         }
       };
     case CLEAR_COMMENTS_STATE:

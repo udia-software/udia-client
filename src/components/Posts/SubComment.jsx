@@ -18,7 +18,12 @@ class SubComment extends Component {
       changeCommentProgress,
       commentProgress,
       onVisibilityUpdate,
-      comments
+      comments,
+      commentEditing,
+      toggleEditComment,
+      onEditComment,
+      changeEditComment,
+      currentUsername
     } = this.props;
 
     return (
@@ -28,17 +33,63 @@ class SubComment extends Component {
             {comment.author.username}
           </Comment.Author>
           <Comment.Metadata>
-            <FromTime time={moment(comment.inserted_at)} />
+            <span>
+              {"commented "}
+              <FromTime time={moment(comment.inserted_at)} />
+              {"."}
+            </span>
+            {moment(comment.inserted_at).format("X") !==
+              moment(comment.updated_at).format("X") &&
+              <span>
+                {" Last updated "}
+                <FromTime time={moment(comment.updated_at)} />
+                .
+              </span>}
           </Comment.Metadata>
-          <Comment.Text>
-            {comment.content.split("\n").map((item, key) => {
-              return <span key={key}>{item}<br /></span>;
-            })}
-          </Comment.Text>
+          {!!(commentEditing[comment.id] || {}).isEditing &&
+            <Form
+              reply
+              error={!!commentError[comment.id]}
+              loading={commentIsSending[comment.id]}
+              onSubmit={event => {
+                event.preventDefault();
+                onEditComment(comment.id);
+              }}
+            >
+              <Form.TextArea
+                onChange={event => {
+                  changeEditComment(comment.id, event.target.value);
+                }}
+                value={commentEditing[comment.id].content}
+              />
+              <Error
+                header="Edit Comment Failed!"
+                error={commentError[comment.id]}
+              />
+              <Form.Button
+                content="Edit Comment"
+                labelPosition="left"
+                icon="edit"
+                primary
+                compact
+              />
+            </Form>}
+          {!!!(commentEditing[comment.id] || {}).isEditing &&
+            <Comment.Text>
+              {comment.content.split("\n").map((item, key) => {
+                return <span key={key}>{item}<br /></span>;
+              })}
+            </Comment.Text>}
           <Comment.Actions>
             <Comment.Action onClick={toggleShowReplyBox}>
               {showReplyBox ? "Hide Reply" : "Reply"}
             </Comment.Action>
+            {currentUsername === comment.author.username &&
+              <Comment.Action onClick={toggleEditComment}>
+                {!!(commentEditing[comment.id] || {}).isEditing
+                  ? "Cancel"
+                  : "Edit"}
+              </Comment.Action>}
           </Comment.Actions>
           {showReplyBox &&
             <Form

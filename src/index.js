@@ -6,7 +6,7 @@ import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
 // import { createLogger } from 'redux-logger';
 
-import { unregister } from './registerServiceWorker';
+import registerServiceWorker from './registerServiceWorker';
 import reducer from './modules/rootReducer';
 import rootSaga from './modules/rootSaga';
 import App from './components/App';
@@ -45,5 +45,4 @@ if (module.hot) {
   })
 }
 
-// unregister the service worker, disable client side caching
-unregister();
+registerServiceWorker();

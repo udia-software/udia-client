@@ -66,7 +66,9 @@ const Post = ({
                   {moment(post.inserted_at).format("X") !==
                     moment(post.updated_at).format("X") &&
                     <span>
-                     {" Last updated "}<FromTime time={moment(post.updated_at)} />.
+                      {" Last updated "}
+                      <FromTime time={moment(post.updated_at)} />
+                      .
                     </span>}
                 </p>{currentUsername === post.author.username &&
                   <p>
@@ -105,7 +107,7 @@ const Post = ({
           );
         })}
       </List>
-      <CommentsContainer post_id={post.id} />
+      {!!post.id && <CommentsContainer post_id={post.id} />}
     </Container>
   );
 };

@@ -5,7 +5,12 @@ import {
   ADD_COMMENT,
   ADD_COMMENTS,
   CLEAR_COMMENTS_STATE,
-  SET_COMMENT_CONTENT
+  SET_COMMENT_CONTENT,
+  TOGGLE_COMMENT_REPLY_BOX,
+  TOGGLE_EDIT_COMMENT,
+  SET_EDIT_COMMENT_CONTENT,
+  CLEAR_EDIT_COMMENT,
+  REPLACE_COMMENT
 } from "./constants";
 
 /**
@@ -95,5 +100,74 @@ export function setCommentContent(parent_id, content) {
   return {
     type: SET_COMMENT_CONTENT,
     data: { parent_id, content }
+  };
+}
+
+/**
+ * Reducer action for toggling the reply box of the comment
+ * @param {number} comment_id - ID of the comment user is replying to
+ */
+export function toggleCommentReplyBox(comment_id) {
+  return {
+    type: TOGGLE_COMMENT_REPLY_BOX,
+    data: comment_id
+  };
+}
+
+/**
+ * Reducer action for toggling the edit comment functionality
+ * @param {number} comment_id - ID of the comment user is editing
+ * @param {string} content - Content of the comment
+ */
+export function toggleEditComment(comment_id, content) {
+  return {
+    type: TOGGLE_EDIT_COMMENT,
+    data: {
+      comment_id,
+      content
+    }
+  };
+}
+
+/**
+ * Reducer action for changing the edit comment string
+ * @param {number} comment_id - ID of the comment user is editing
+ * @param {string} content - Content of the comment
+ */
+export function setEditCommentContent(comment_id, content) {
+  return {
+    type: SET_EDIT_COMMENT_CONTENT,
+    data: {
+      comment_id,
+      content
+    }
+  };
+}
+
+/**
+ * Reducer action for clearing the edit comment state
+ * @param {number} comment_id - ID of the edit comment state to clear
+ */
+export function clearEditComment(comment_id) {
+  return {
+    type: CLEAR_EDIT_COMMENT,
+    data: comment_id
+  };
+}
+
+/**
+ * Reducer action for replacing a comment object in the list of comments
+ * @param {number} parent_id - Parent ID of the comment we are replacing
+ * @param {number} comment_id - ID of the comment we are replacing
+ * @param {Object} comment - Object structure we are replacing the comment with
+ */
+export function replaceComment(parent_id, comment_id, comment) {
+  return {
+    type: REPLACE_COMMENT,
+    data: {
+      parent_id,
+      comment_id,
+      comment
+    }
   };
 }

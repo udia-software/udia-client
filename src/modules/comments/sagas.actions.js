@@ -1,4 +1,4 @@
-import { CREATE_COMMENT_REQUEST, GET_COMMENTS_REQUEST } from "./constants";
+import { CREATE_COMMENT_REQUEST, GET_COMMENTS_REQUEST, EDIT_COMMENT_REQUEST } from "./constants";
 
 /**
  * Saga action for triggering an async Create Comment HTTP request.
@@ -24,6 +24,19 @@ export function createCommentRequest(data) {
 export function getCommentsRequest(data) {
   return {
     type: GET_COMMENTS_REQUEST,
+    data
+  };
+}
+
+/**
+ * Saga action for triggering an async Edit Comment HTTP request
+ * @param {Object} data - Saga edit comment payload
+ * @param {string} data.comment_id - ID of the comment to be edited
+ * @param {string} data.content - New content of the comment
+ */
+export function editCommentRequest(data) {
+  return {
+    type: EDIT_COMMENT_REQUEST,
     data
   };
 }
