@@ -3,7 +3,7 @@ import { Route, Link, Switch } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import PrivateRoute from "./Auth/PrivateRoute";
-import Profile from "./Auth/Profile";
+import Account from "./Auth/Account";
 import Signin from "./Auth/Signin";
 import Signup from "./Auth/Signup";
 import CreatePost from "./Posts/CreatePost";
@@ -43,7 +43,7 @@ class App extends Component {
             <Route exact path="/posts" component={PostList} />
             <PrivateRoute path="/posts/create" component={CreatePost} />
             <Route path="/posts/:id" component={PostContainer} />
-            <PrivateRoute path="/profile" component={Profile} />
+            <PrivateRoute path="/account" component={Account} />
             <Route component={NoMatch} />
           </Switch>
         </div>
