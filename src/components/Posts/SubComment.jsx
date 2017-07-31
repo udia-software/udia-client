@@ -33,7 +33,18 @@ class SubComment extends Component {
             {comment.author.username}
           </Comment.Author>
           <Comment.Metadata>
-            <FromTime time={moment(comment.inserted_at)} />
+            <span>
+              {"commented "}
+              <FromTime time={moment(comment.inserted_at)} />
+              {"."}
+            </span>
+            {moment(comment.inserted_at).format("X") !==
+              moment(comment.updated_at).format("X") &&
+              <span>
+                {" Last updated "}
+                <FromTime time={moment(comment.updated_at)} />
+                .
+              </span>}
           </Comment.Metadata>
           {!!(commentEditing[comment.id] || {}).isEditing &&
             <Form

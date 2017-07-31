@@ -76,10 +76,24 @@ class PostList extends Component {
                     </Feed.Date>
                   </Feed.Summary>
                   <Feed.Extra text>
+                    <Segment compact>
                     {post.content.split("\n").map((item, key) => {
                       return <span key={key}>{item}<br /></span>;
                     })}
+                    </Segment>
                   </Feed.Extra>
+                  <Feed.Meta>
+                    {moment(post.inserted_at).format("X") !==
+                      moment(post.updated_at).format("X") &&
+                      <span>
+                        {"Last updated "}
+                        <FromTime time={moment(post.updated_at)} />
+                        .
+                      </span>}
+                    <Link to={`/posts/${post.id}`}>
+                      Show Post
+                    </Link>
+                  </Feed.Meta>
                 </Feed.Content>
               </Feed.Event>
             ))}
