@@ -7,19 +7,43 @@ import Error from "../Shared/Error";
 import {
   setPostTitle,
   setPostContent,
-  clearPostError
+  clearPostError,
+  setEditPostSuccess
 } from "../../modules/post/reducer.actions";
-import { createPostRequest } from "../../modules/post/sagas.actions";
+import {
+  getPostRequest,
+  editPostRequest
+} from "../../modules/post/sagas.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   sendingPostRequest: PropTypes.bool.isRequired,
   postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
-  post: PropTypes.object.isRequired
+  post: PropTypes.shape({
+    id: PropTypes.number,
+    title: PropTypes.string,
+    content: PropTypes.string
+  }),
+  editSuccess: PropTypes.bool
 };
 
-class CreatePost extends Component {
+const defaultProps = {
+  post: { id: 0, title: "", content: "" },
+  editSuccess: false
+};
+
+class EditPost extends Component {
+  constructor(props) {
+    super(props);
+    this.props.dispatch(setEditPostSuccess(false));
+  }
+
+  componentWillMount = () => {
+    const postId = this.props.match.params.id;
+    this.props.dispatch(getPostRequest({ id: postId }));
+  };
+
   changeTitle = event => {
     this.props.dispatch(setPostTitle(event.target.value));
     this.props.dispatch(clearPostError());
@@ -32,19 +56,30 @@ class CreatePost extends Component {
 
   onSubmit = event => {
     event.preventDefault();
-    this.props.dispatch(createPostRequest(this.props.post));
+    this.props.dispatch(
+      editPostRequest({
+        id: this.props.post.id,
+        title: this.props.post.title,
+        content: this.props.post.content
+      })
+    );
   };
 
   render = () => {
-    const { post, sendingPostRequest, postRequestError } = this.props;
+    const {
+      post,
+      sendingPostRequest,
+      postRequestError,
+      editSuccess
+    } = this.props;
 
-    if (!!post.id) {
+    if (!!editSuccess) {
       return <Redirect to={`/posts/${post.id}`} />;
     }
 
     return (
       <Container>
-        <Header as="h3">Create a Post</Header>
+        <Header as="h3">Edit Post</Header>
         <Form
           onSubmit={this.onSubmit}
           loading={sendingPostRequest}
@@ -55,16 +90,16 @@ class CreatePost extends Component {
             type="text"
             placeholder="Enter a title..."
             onChange={this.changeTitle}
-            value={post.title}
+            value={post.title || ""}
           />
           <Form.TextArea
             label="Content"
             type="text"
             placeholder="Write a post..."
             onChange={this.changeContent}
-            value={post.content}
+            value={post.content || ""}
           />
-          <Error header="Create Post Failed!" error={postRequestError} />
+          <Error header="Edit Post Failed!" error={postRequestError} />
           <Form.Button>Submit</Form.Button>
         </Form>
       </Container>
@@ -72,10 +107,13 @@ class CreatePost extends Component {
   };
 }
 
-CreatePost.propTypes = propTypes;
+EditPost.propTypes = propTypes;
+EditPost.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
-  return state.post;
+  return {
+    ...state.post
+  };
 }
 
-export default connect(mapStateToProps)(CreatePost);
+export default connect(mapStateToProps)(EditPost);

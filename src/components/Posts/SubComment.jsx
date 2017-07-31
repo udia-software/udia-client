@@ -3,6 +3,7 @@ import { Comment, Form, Visibility } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
+import FromTime from "../Shared/FromTime";
 import SubCommentContainer from "./SubCommentContainer";
 
 class SubComment extends Component {
@@ -17,7 +18,7 @@ class SubComment extends Component {
       changeCommentProgress,
       commentProgress,
       onVisibilityUpdate,
-      comments,
+      comments
     } = this.props;
 
     return (
@@ -27,7 +28,7 @@ class SubComment extends Component {
             {comment.author.username}
           </Comment.Author>
           <Comment.Metadata>
-            <div>{moment(comment.inserted_at).fromNow()}</div>
+            <FromTime time={moment(comment.inserted_at)} />
           </Comment.Metadata>
           <Comment.Text>
             {comment.content.split("\n").map((item, key) => {
@@ -68,14 +69,18 @@ class SubComment extends Component {
               />
             </Form>}
         </Comment.Content>
-        <Comment.Group>
-          <Visibility onUpdate={onVisibilityUpdate}>
-            {(comments[comment.id] || [])
-              .map(subComment => (
-                <SubCommentContainer key={subComment.id} comment={subComment} />
-              ))}
-          </Visibility>
-        </Comment.Group>
+        {(comments[comment.id] || []).length > 0 &&
+          <Comment.Group>
+            <Visibility onUpdate={onVisibilityUpdate}>
+              {(comments[comment.id] || [])
+                .map(subComment => (
+                  <SubCommentContainer
+                    key={subComment.id}
+                    comment={subComment}
+                  />
+                ))}
+            </Visibility>
+          </Comment.Group>}
       </Comment>
     );
   };

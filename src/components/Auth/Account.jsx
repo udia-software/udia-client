@@ -13,7 +13,7 @@ const propTypes = {
   }).isRequired
 };
 
-class Profile extends Component {
+class Account extends Component {
   handleSignOut = () => {
     this.props.dispatch(logoutRequest());
   };
@@ -22,7 +22,7 @@ class Profile extends Component {
     const { currentUser } = this.props;
     return (
       <Container>
-        <Header as="h2">My Profile</Header>
+        <Header as="h2">My Account</Header>
         <List>
           <List.Item>
             <List.Header>Username</List.Header>
@@ -56,10 +56,10 @@ class Profile extends Component {
   }
 }
 
-Profile.propTypes = propTypes;
+Account.propTypes = propTypes;
 
 function mapStateToProps(state) {
   return state.auth;
 }
 
-export default connect(mapStateToProps)(Profile);
+export default connect(mapStateToProps)(Account);

@@ -4,7 +4,8 @@ import {
   CLEAR_POST_ERROR,
   SET_POST,
   SET_POST_TITLE,
-  SET_POST_CONTENT
+  SET_POST_CONTENT,
+  SET_EDIT_POST_SUCCESS
 } from "./constants";
 
 /**
@@ -71,5 +72,16 @@ export function setPostContent(content) {
   return {
     type: SET_POST_CONTENT,
     data: content
+  };
+}
+
+/**
+ * Reducer actino for setting the post editing success value
+ * @param {boolean} successful - Whether or not the edit post request was successful
+ */
+export function setEditPostSuccess(successful) {
+  return {
+    type: SET_EDIT_POST_SUCCESS,
+    data: successful
   };
 }
