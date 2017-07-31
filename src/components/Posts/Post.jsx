@@ -17,17 +17,25 @@ import FromTime from "../Shared/FromTime";
 const propTypes = {
   postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   sendingPostRequest: PropTypes.bool,
-  post: PropTypes.object
+  post: PropTypes.object,
+  currentUsername: PropTypes.string
 };
 
 const defaultProps = {
   postRequestError: "",
   sendingPostRequest: true,
   post: {},
-  presence: {}
+  presence: {},
+  currentUsername: ""
 };
 
-const Post = ({ postRequestError, sendingPostRequest, post, presence }) => {
+const Post = ({
+  postRequestError,
+  sendingPostRequest,
+  post,
+  presence,
+  currentUsername
+}) => {
   return (
     <Container>
       <Segment loading={sendingPostRequest}>
@@ -45,17 +53,25 @@ const Post = ({ postRequestError, sendingPostRequest, post, presence }) => {
               </Item.Description>
               <Divider />
               <Item.Extra>
-                <span>
-                  Submitted <FromTime time={moment(post.inserted_at)}/>{" by "}
-                </span>
-                <Link to={`/users/${post.author.username}`}>
-                  {post.author.username}.
-                </Link>
-                {moment(post.inserted_at).format("X") !==
-                  moment(post.updated_at).format("X") &&
+                <p>
                   <span>
-                    Last updated <FromTime time={moment(post.updated_at)}/>.
-                  </span>}
+                    Submitted
+                    {" "}
+                    <FromTime time={moment(post.inserted_at)} />
+                    {" by "}
+                  </span>
+                  <Link to={`/users/${post.author.username}`}>
+                    {post.author.username}.
+                  </Link>
+                  {moment(post.inserted_at).format("X") !==
+                    moment(post.updated_at).format("X") &&
+                    <span>
+                     {" Last updated "}<FromTime time={moment(post.updated_at)} />.
+                    </span>}
+                </p>{currentUsername === post.author.username &&
+                  <p>
+                    <Link to={`/posts/${post.id}/edit`}>Edit</Link>
+                  </p>}
               </Item.Extra>
             </Item.Content>
           </Item>}
@@ -69,13 +85,17 @@ const Post = ({ postRequestError, sendingPostRequest, post, presence }) => {
                 <Popup
                   trigger={
                     !!username
-                      ? <Link to={`/users/${username}`}>{username} ({presence[username].metas.length})</Link>
-                      : <span>anonymous ({presence[username].metas.length})</span>
+                      ? <Link to={`/users/${username}`}>
+                          {username} ({presence[username].metas.length})
+                        </Link>
+                      : <span>
+                          anonymous ({presence[username].metas.length})
+                        </span>
                   }
                   content={presence[username].metas.map(meta => {
                     return (
                       <List.Item key={meta.phx_ref}>
-                        Joined <FromTime time={moment(meta.online_at, "X")}/>
+                        Joined <FromTime time={moment(meta.online_at, "X")} />
                       </List.Item>
                     );
                   })}

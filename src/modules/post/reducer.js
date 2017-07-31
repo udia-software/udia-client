@@ -4,15 +4,15 @@ import {
   CLEAR_POST_ERROR,
   SET_POST,
   SET_POST_TITLE,
-  SET_POST_CONTENT
+  SET_POST_CONTENT,
+  SET_EDIT_POST_SUCCESS
 } from "./constants";
 
 const initialState = {
   sendingPostRequest: false,
   postRequestError: "",
   post: {},
-  title: "",
-  content: ""
+  editSuccess: false
 };
 
 function postReducer(state = initialState, action) {
@@ -40,12 +40,23 @@ function postReducer(state = initialState, action) {
     case SET_POST_TITLE:
       return {
         ...state,
-        title: action.data
+        post: {
+          ...state.post,
+          title: action.data
+        }
       };
     case SET_POST_CONTENT:
       return {
         ...state,
-        content: action.data
+        post: {
+          ...state.post,
+          content: action.data
+        }
+      };
+    case SET_EDIT_POST_SUCCESS:
+      return {
+        ...state,
+        editSuccess: action.data
       };
     default:
       return state;

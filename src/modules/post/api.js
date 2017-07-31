@@ -1,4 +1,4 @@
-import { get, post } from "../baseApi";
+import { get, post, patch } from "../baseApi";
 
 export function createPost(title, content) {
   return post("/posts", {
@@ -10,4 +10,8 @@ export function createPost(title, content) {
 
 export function getPost(id) {
   return get(`/posts/${id}`);
+}
+
+export function editPost(id, payload) {
+  return patch(`/posts/${id}`, { post: payload });
 }

@@ -7,6 +7,7 @@ import Account from "./Auth/Account";
 import Signin from "./Auth/Signin";
 import Signup from "./Auth/Signup";
 import CreatePost from "./Posts/CreatePost";
+import EditPost from "./Posts/EditPost";
 import PostContainer from "./Posts/PostContainer";
 import PostList from "./Posts/PostList";
 import User from "./Users/User";
@@ -42,6 +43,7 @@ class App extends Component {
             <Route path="/users/:username" component={User} />
             <Route exact path="/posts" component={PostList} />
             <PrivateRoute path="/posts/create" component={CreatePost} />
+            <Route path="/posts/:id/edit" component={EditPost} />
             <Route path="/posts/:id" component={PostContainer} />
             <PrivateRoute path="/account" component={Account} />
             <Route component={NoMatch} />

@@ -1,4 +1,4 @@
-import { CREATE_POST_REQUEST, GET_POST_REQUEST } from "./constants";
+import { CREATE_POST_REQUEST, GET_POST_REQUEST, EDIT_POST_REQUEST } from "./constants";
 
 /**
  * Saga action for triggering an async Create Post HTTP request
@@ -23,4 +23,15 @@ export function getPostRequest(data) {
     type: GET_POST_REQUEST,
     data
   };
+}
+
+/**
+ * Saga action for triggering an async Edit Post HTTP request
+ * @param {Object} data - Saga edit post payload
+ */
+export function editPostRequest(data) {
+  return {
+    type: EDIT_POST_REQUEST,
+    data
+  }
 }
