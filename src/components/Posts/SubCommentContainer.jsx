@@ -3,12 +3,15 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   createCommentRequest,
-  getCommentsRequest
+  getCommentsRequest,
+  editCommentRequest
 } from "../../modules/comments/sagas.actions";
 import {
   setCommentContent,
   clearCommentError,
-  toggleCommentReplyBox
+  toggleCommentReplyBox,
+  toggleEditComment,
+  setEditCommentContent
 } from "../../modules/comments/reducer.actions";
 import SubComment from "./SubComment";
 
@@ -30,10 +33,16 @@ class SubCommentContainer extends Component {
         parent_id: this.props.comment.id
       })
     );
-  }
+  };
 
   toggleShowReplyBox = () => {
     this.props.dispatch(toggleCommentReplyBox(this.props.comment.id));
+  };
+
+  toggleEditComment = () => {
+    this.props.dispatch(
+      toggleEditComment(this.props.comment.id, this.props.comment.content)
+    );
   };
 
   onSubmitComment = parent_id => {
@@ -45,6 +54,16 @@ class SubCommentContainer extends Component {
   changeCommentProgress = (parent_id, content) => {
     this.props.dispatch(setCommentContent(parent_id, content));
     this.props.dispatch(clearCommentError(parent_id));
+  };
+
+  onEditComment = comment_id => {
+    const content = this.props.commentEditing[comment_id].content;
+    this.props.dispatch(editCommentRequest({ comment_id, content }));
+  };
+
+  changeEditComment = (comment_id, content) => {
+    this.props.dispatch(setEditCommentContent(comment_id, content));
+    this.props.dispatch(clearCommentError(comment_id));
   };
 
   getNextPage = parent_id => {
@@ -76,10 +95,12 @@ class SubCommentContainer extends Component {
       commentIsSending,
       commentProgress,
       commentReplyBox,
+      commentEditing,
       comments,
       comment
     } = this.props;
-    const showReplyBox = !!(commentReplyBox[comment.id]);
+    const showReplyBox = !!commentReplyBox[comment.id];
+    const currentUsername = (this.props.auth.currentUser || {}).username || "";
 
     return (
       <SubComment
@@ -93,6 +114,11 @@ class SubCommentContainer extends Component {
         commentProgress={commentProgress}
         onVisibilityUpdate={this.onVisibilityUpdate}
         comments={comments}
+        commentEditing={commentEditing}
+        toggleEditComment={this.toggleEditComment}
+        onEditComment={this.onEditComment}
+        changeEditComment={this.changeEditComment}
+        currentUsername={currentUsername}
       />
     );
   };
@@ -103,7 +129,8 @@ SubCommentContainer.propTypes = propTypes;
 function mapStateToProps(state, ownProps) {
   return {
     ...state.comments,
-    comment: ownProps.comment
+    comment: ownProps.comment,
+    auth: state.auth
   };
 }
 

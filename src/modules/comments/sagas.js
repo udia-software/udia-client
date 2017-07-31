@@ -1,6 +1,6 @@
 import { effects } from "redux-saga";
-import { createComment, getComments } from "./api";
-import { CREATE_COMMENT_REQUEST } from "./constants";
+import { createComment, editComment, getComments } from "./api";
+import { CREATE_COMMENT_REQUEST, EDIT_COMMENT_REQUEST } from "./constants";
 import {
   isSendingComment,
   setCommentError,
@@ -8,7 +8,9 @@ import {
   setCommentContent,
   addComment,
   addComments,
-  toggleCommentReplyBox
+  toggleCommentReplyBox,
+  clearEditComment,
+  replaceComment
 } from "./reducer.actions";
 
 /**
@@ -28,6 +30,25 @@ function* createCommentCall(data) {
     return false;
   } finally {
     yield effects.put(isSendingComment(parent_id, false));
+  }
+}
+
+/**
+ * Generator function for editing a comment.
+ * @param {Object} data - Saga edit comment payload
+ * @param {string} data.comment_id - ID of the comment to be edited
+ * @param {string} data.content - New content of the comment
+ */
+function* editCommentCall(data) {
+  const { comment_id, content } = data;
+  yield effects.put(isSendingComment(comment_id, true));
+  try {
+    return yield effects.call(editComment, comment_id, content);
+  } catch (exception) {
+    yield effects.put(setCommentError(comment_id, exception));
+    return false;
+  } finally {
+    yield effects.put(isSendingComment(comment_id, false));
   }
 }
 
@@ -63,7 +84,18 @@ export function* createCommentFlow() {
       yield effects.put(setCommentContent(parent_id, ""));
       yield effects.put(addComment(parent_id, wasSuccessful.data));
       yield effects.put(clearCommentError(parent_id));
-      yield effects.put(toggleCommentReplyBox(parent_id))
+      yield effects.put(toggleCommentReplyBox(parent_id));
+    }
+  }
+}
+
+export function* editCommentFlow() {
+  while (true) {
+    const request = yield effects.take(EDIT_COMMENT_REQUEST);
+    const wasSuccessful = yield effects.call(editCommentCall, request.data);
+    if (wasSuccessful) {
+      yield effects.put(clearEditComment(wasSuccessful.data.id));
+      yield effects.put(replaceComment(wasSuccessful.data.parent_id, wasSuccessful.data.id, wasSuccessful.data));
     }
   }
 }
@@ -79,6 +111,6 @@ export function* getCommentsFlow(action) {
     yield effects.put(
       addComments(parent_id, wasSuccessful.data, wasSuccessful.pagination)
     );
-    yield effects.put(clearCommentError(parent_id))
+    yield effects.put(clearCommentError(parent_id));
   }
 }
