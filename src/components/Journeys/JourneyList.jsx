@@ -34,7 +34,7 @@ class JourneyList extends Component {
   getNextPage = () => {
     const { page_number, total_pages } = this.props.journeysPagination;
     if ((page_number || 0) < (total_pages || 0)) {
-      this.props.dispatch(getJourneysRequest({ page: page_number + 1 }));
+      this.props.dispatch(getJourneysRequest({page: page_number + 1 }));
     }
   };
 

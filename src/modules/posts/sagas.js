@@ -17,9 +17,8 @@ import {
  */
 function* getPostsCall(data) {
   yield effects.put(isGettingPosts(true));
-  const { page } = data;
   try {
-    return yield effects.call(getPosts, page);
+    return yield effects.call(getPosts, data);
   } catch (exception) {
     yield effects.put(setPostsError(exception));
     return false;
