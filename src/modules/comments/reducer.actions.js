@@ -5,7 +5,8 @@ import {
   ADD_COMMENT,
   ADD_COMMENTS,
   CLEAR_COMMENTS_STATE,
-  SET_COMMENT_CONTENT
+  SET_COMMENT_CONTENT,
+  TOGGLE_COMMENT_REPLY_BOX
 } from "./constants";
 
 /**
@@ -96,4 +97,15 @@ export function setCommentContent(parent_id, content) {
     type: SET_COMMENT_CONTENT,
     data: { parent_id, content }
   };
+}
+
+/**
+ * Reducer action for toggling the reply box of the comment
+ * @param {number} comment_id - ID of the comment user is replying to
+ */
+export function toggleCommentReplyBox(comment_id) {
+  return {
+    type: TOGGLE_COMMENT_REPLY_BOX,
+    data: comment_id
+  }
 }

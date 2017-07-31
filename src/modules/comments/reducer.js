@@ -5,7 +5,8 @@ import {
   ADD_COMMENT,
   ADD_COMMENTS,
   CLEAR_COMMENTS_STATE,
-  SET_COMMENT_CONTENT
+  SET_COMMENT_CONTENT,
+  TOGGLE_COMMENT_REPLY_BOX
 } from "./constants";
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   commentIsSending: {}, // Holds boolean for is sending on a comment ref'd by ID
   commentProgress: {}, // Holds text for while user writes a comment ref'd by ID
   commentPagination: {}, // Holds comment children pagination state ref'd by ID
+  commentReplyBox: {}, // Holds whether or not to show comment reply box
   comments: {} // Holds comment data ref'd by ID
 };
 
@@ -73,6 +75,14 @@ function commentsReducer(state = initialState, action) {
           [action.data.parent_id]: action.data.pagination
         }
       };
+    case TOGGLE_COMMENT_REPLY_BOX:
+      return {
+        ...state,
+        commentReplyBox: {
+          ...state.commentReplyBox,
+          [action.data] : !state.commentReplyBox[action.data]
+        }
+      }
     case CLEAR_COMMENTS_STATE:
       return initialState;
     default:

@@ -33,17 +33,15 @@ class CommentsContainer extends Component {
     this.props.dispatch(clearCommentError(parent_id));
   };
 
-  componentWillReceiveProps = nextProps => {
-    if (this.props.post_id !== nextProps.post_id && nextProps.post_id) {
-      this.props.dispatch(
-        getCommentsRequest({
-          page: 1,
-          post_id: nextProps.post_id,
-          parent_id: null
-        })
-      );
-    }
-  };
+  componentWillMount = () => {
+    this.props.dispatch(
+      getCommentsRequest({
+        page: 1,
+        post_id: this.props.post_id,
+        parent_id: null
+      })
+    );
+  }
 
   componentWillUnmount = () => {
     this.props.dispatch(clearCommentsState());

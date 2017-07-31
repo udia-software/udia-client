@@ -7,7 +7,8 @@ import {
 } from "../../modules/comments/sagas.actions";
 import {
   setCommentContent,
-  clearCommentError
+  clearCommentError,
+  toggleCommentReplyBox
 } from "../../modules/comments/reducer.actions";
 import SubComment from "./SubComment";
 
@@ -21,11 +22,7 @@ const propTypes = {
 };
 
 class SubCommentContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showReplyBox: false
-    };
+  componentWillMount = () => {
     this.props.dispatch(
       getCommentsRequest({
         page: 1,
@@ -36,9 +33,7 @@ class SubCommentContainer extends Component {
   }
 
   toggleShowReplyBox = () => {
-    this.setState(prevState => {
-      return { showReplyBox: !prevState.showReplyBox };
-    });
+    this.props.dispatch(toggleCommentReplyBox(this.props.comment.id));
   };
 
   onSubmitComment = parent_id => {
@@ -80,10 +75,12 @@ class SubCommentContainer extends Component {
       commentError,
       commentIsSending,
       commentProgress,
+      commentReplyBox,
       comments,
       comment
     } = this.props;
-    const { showReplyBox } = this.state;
+    const showReplyBox = !!(commentReplyBox[comment.id]);
+
     return (
       <SubComment
         comment={comment}

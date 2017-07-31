@@ -7,7 +7,8 @@ import {
   clearCommentError,
   setCommentContent,
   addComment,
-  addComments
+  addComments,
+  toggleCommentReplyBox
 } from "./reducer.actions";
 
 /**
@@ -62,6 +63,7 @@ export function* createCommentFlow() {
       yield effects.put(setCommentContent(parent_id, ""));
       yield effects.put(addComment(parent_id, wasSuccessful.data));
       yield effects.put(clearCommentError(parent_id));
+      yield effects.put(toggleCommentReplyBox(parent_id))
     }
   }
 }
