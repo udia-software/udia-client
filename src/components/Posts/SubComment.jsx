@@ -69,14 +69,18 @@ class SubComment extends Component {
               />
             </Form>}
         </Comment.Content>
-        <Comment.Group>
-          <Visibility onUpdate={onVisibilityUpdate}>
-            {(comments[comment.id] || [])
-              .map(subComment => (
-                <SubCommentContainer key={subComment.id} comment={subComment} />
-              ))}
-          </Visibility>
-        </Comment.Group>
+        {(comments[comment.id] || []).length > 0 &&
+          <Comment.Group>
+            <Visibility onUpdate={onVisibilityUpdate}>
+              {(comments[comment.id] || [])
+                .map(subComment => (
+                  <SubCommentContainer
+                    key={subComment.id}
+                    comment={subComment}
+                  />
+                ))}
+            </Visibility>
+          </Comment.Group>}
       </Comment>
     );
   };

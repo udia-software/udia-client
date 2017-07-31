@@ -69,8 +69,8 @@ const Post = ({ postRequestError, sendingPostRequest, post, presence }) => {
                 <Popup
                   trigger={
                     !!username
-                      ? <Link to={`/users/${username}`}>{username}</Link>
-                      : "anonymous"
+                      ? <Link to={`/users/${username}`}>{username} ({presence[username].metas.length})</Link>
+                      : <span>anonymous ({presence[username].metas.length})</span>
                   }
                   content={presence[username].metas.map(meta => {
                     return (
