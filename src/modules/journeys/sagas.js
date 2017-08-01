@@ -17,9 +17,8 @@ import {
  */
 function* getJourneysCall(data) {
   yield effects.put(isGettingJourneys(true));
-  const { page } = data;
   try {
-    return yield effects.call(getJourneys, page);
+    return yield effects.call(getJourneys, data);
   } catch (exception) {
     yield effects.put(setJourneysError(exception));
     return false;

@@ -28,7 +28,8 @@ const propTypes = {
   postsRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
   postsPagination: PropTypes.object.isRequired,
-  posts: PropTypes.array.isRequired
+  posts: PropTypes.array.isRequired,
+  currentUser: PropTypes.object.isRequired
 };
 
 class Journey extends Component {

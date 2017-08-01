@@ -19,7 +19,8 @@ const propTypes = {
   journeysRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
   journeysPagination: PropTypes.object.isRequired,
-  journeys: PropTypes.array.isRequired
+  journeys: PropTypes.array.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 class JourneyList extends Component {
@@ -28,13 +29,23 @@ class JourneyList extends Component {
     this.state = {
       endOfFeed: false
     };
-    this.props.dispatch(getJourneysRequest({ page: 1 }));
+
+    const userId = this.props.user.id;
+    this.props.dispatch(getJourneysRequest({
+      page: 1,
+      explorer_id: userId
+    }));
   }
 
   getNextPage = () => {
     const { page_number, total_pages } = this.props.journeysPagination;
+    const userId = this.props.user.id;
+
     if ((page_number || 0) < (total_pages || 0)) {
-      this.props.dispatch(getJourneysRequest({page: page_number + 1 }));
+      this.props.dispatch(getJourneysRequest({
+        page: page_number + 1,
+        explorer_id: userId
+      }));
     }
   };
 
@@ -81,7 +92,7 @@ class JourneyList extends Component {
 JourneyList.propTypes = propTypes;
 
 function mapStateToProps(state) {
-  return state.journeys;
+  return Object.assign({}, state.journeys, state.user);
 }
 
 export default connect(mapStateToProps)(JourneyList);
