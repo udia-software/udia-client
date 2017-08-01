@@ -124,9 +124,9 @@ class Journey extends Component {
               </Grid>
             }
             <Visibility onUpdate={this.onVisibilityUpdate}>
-              <Card.Group>
+              <Card.Group style={{marginTop: '10px'}}>
                 {posts.map((post) => (
-                  <Card href={'/posts/' + post.id} key={post.id}>
+                  <Card href={`/posts/${post.id}`} key={post.id}>
                     <Card.Content>
                       <Card.Header>
                         {post.title}
