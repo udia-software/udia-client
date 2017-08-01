@@ -10,6 +10,7 @@ import {
   clearPostError
 } from "../../modules/post/reducer.actions";
 import { createPostRequest } from "../../modules/post/sagas.actions";
+import queryString from 'query-string';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -34,10 +35,14 @@ class CreatePost extends Component {
 
   onSubmit = event => {
     event.preventDefault();
+
+    const { location } = this.props;
+
     this.props.dispatch(
       createPostRequest({
         title: this.props.title,
-        content: this.props.content
+        content: this.props.content,
+        journey_id: queryString.parse(location.search).journey
       })
     );
   };
@@ -50,6 +55,7 @@ class CreatePost extends Component {
       sendingPostRequest,
       postRequestError
     } = this.props;
+
     return (
       <Container>
         {/* When creating a post, if the ID is set, post is created. */

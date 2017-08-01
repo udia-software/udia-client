@@ -18,9 +18,9 @@ import {
  */
 function* createPostCall(data) {
   yield effects.put(isSendingPost(true));
-  const { title, content } = data;
+  const { title, content, journey_id } = data;
   try {
-    return yield effects.call(createPost, title, content);
+    return yield effects.call(createPost, title, content, journey_id);
   } catch (exception) {
     yield effects.put(setPostError(exception));
     return false;

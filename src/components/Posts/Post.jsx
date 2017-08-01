@@ -19,6 +19,7 @@ const propTypes = {
 
 class Post extends Component {
   componentWillMount = () => {
+    console.log(this.props.match)
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostRequest({ id: postId }));
   };
@@ -27,6 +28,8 @@ class Post extends Component {
     this.props.dispatch(setPost({}));
     this.props.dispatch(clearPostError());
   };
+
+  // TO DO: when post loads, if journey id != nil, show journey of post
 
   render = () => {
     const { sendingPostRequest, postRequestError, post } = this.props;

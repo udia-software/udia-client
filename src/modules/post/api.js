@@ -1,10 +1,11 @@
 import { get, post } from "../baseApi";
 
-export function createPost(title, content) {
+export function createPost(title, content, journey_id) {
   return post("/posts", {
     type: "text",
     title,
-    content
+    content,
+    journey_id
   });
 }
 

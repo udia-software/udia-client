@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Container, Dimmer, Header, List, Loader } from "semantic-ui-react";
-import moment from "moment";
+import { Container, Dimmer, Header, Loader } from "semantic-ui-react";
 import { getUserByUsernameRequest } from "../../modules/user/sagas.actions";
 import Error from "../Shared/Error";
 import JourneyList from "../Journeys/JourneyList";

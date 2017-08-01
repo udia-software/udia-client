@@ -53,7 +53,6 @@ class JourneyList extends Component {
 
   render = () => {
     const { currentlyGettingJourneys, journeys, journeysRequestError } = this.props;
-    const { endOfFeed } = this.state;
 
     return (
       <Container style={{margin: '30px'}}>
