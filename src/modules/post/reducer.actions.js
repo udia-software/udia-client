@@ -4,7 +4,8 @@ import {
   CLEAR_POST_ERROR,
   SET_POST,
   SET_POST_TITLE,
-  SET_POST_CONTENT
+  SET_POST_CONTENT,
+  SET_EDIT_POST_SUCCESS
 } from "./constants";
 
 /**
@@ -25,7 +26,10 @@ export function isSendingPost(sendingRequest) {
 export function setPostError(exception) {
   let response = exception.response || {};
   let data = response.data || {};
-  let err = `${response.status} ${response.statusText}`;
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
   return {
     type: SET_POST_ERROR,
     data: data.errors || data.error || err
@@ -71,5 +75,16 @@ export function setPostContent(content) {
   return {
     type: SET_POST_CONTENT,
     data: content
+  };
+}
+
+/**
+ * Reducer actino for setting the post editing success value
+ * @param {boolean} successful - Whether or not the edit post request was successful
+ */
+export function setEditPostSuccess(successful) {
+  return {
+    type: SET_EDIT_POST_SUCCESS,
+    data: successful
   };
 }

@@ -2,16 +2,18 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  Button,
   Container,
   Dimmer,
   Feed,
-  Icon,
   Loader,
+  Segment,
   Visibility
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
+import FromTime from "../Shared/FromTime";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 
 const propTypes = {
@@ -62,41 +64,54 @@ class PostList extends Component {
           <Feed>
             {posts.map(post => (
               <Feed.Event key={post.id}>
-                <Feed.Label>
-                  <Icon name="user" />
-                </Feed.Label>
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.User as={Link} to={`/users/${post.author.username}`}>
                       {post.author.username}
                     </Feed.User>
-                    {" "}
-                    wrote
-                    {" "}
+                    {" wrote "}
                     <Link to={`/posts/${post.id}`}>{post.title}</Link>
-                    <Feed.Date>{moment(post.inserted_at).fromNow()}</Feed.Date>
+                    <Feed.Date>
+                      <FromTime time={moment(post.inserted_at)} />
+                    </Feed.Date>
                   </Feed.Summary>
                   <Feed.Extra text>
+                    <Segment compact>
                     {post.content.split("\n").map((item, key) => {
                       return <span key={key}>{item}<br /></span>;
                     })}
+                    </Segment>
                   </Feed.Extra>
+                  <Feed.Meta>
+                    {moment(post.inserted_at).format("X") !==
+                      moment(post.updated_at).format("X") &&
+                      <span>
+                        {"Last updated "}
+                        <FromTime time={moment(post.updated_at)} />
+                        .
+                      </span>}
+                    <Link to={`/posts/${post.id}`}>
+                      Show Post
+                    </Link>
+                  </Feed.Meta>
                 </Feed.Content>
               </Feed.Event>
             ))}
-            <Dimmer active={currentlyGettingPosts} inverted>
-              <Loader />
-            </Dimmer>
-            {endOfFeed &&
-              <Feed.Event>
-                <Feed.Content>End of feed.</Feed.Content>
-              </Feed.Event>}
-            {!endOfFeed &&
-              <Feed.Event>
-                <Feed.Content>
-                  <a onClick={this.getNextPage}>Load more posts</a>
-                </Feed.Content>
-              </Feed.Event>}
+            <Segment textAlign="center">
+              <Dimmer active={currentlyGettingPosts} inverted>
+                <Loader />
+              </Dimmer>
+              {endOfFeed &&
+                <Feed.Event>
+                  <Feed.Content>End of feed.</Feed.Content>
+                </Feed.Event>}
+              {!endOfFeed &&
+                <Feed.Event>
+                  <Feed.Content>
+                    <Button onClick={this.getNextPage}>Load More Posts</Button>
+                  </Feed.Content>
+                </Feed.Event>}
+            </Segment>
           </Feed>
         </Visibility>
         <Error error={postsRequestError} header="Get Posts Failed!" />

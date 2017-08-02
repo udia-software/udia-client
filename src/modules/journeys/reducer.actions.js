@@ -25,7 +25,10 @@ export function isGettingJourneys(sendingRequest) {
 export function setJourneysError(exception) {
   let response = exception.response || {};
   let data = response.data || {};
-  let err = `${response.status} ${response.statusText}`;
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
   return {
     type: SET_JOURNEYS_ERROR,
     data: data.errors || data.error || err

@@ -15,7 +15,7 @@ export function isGettingPosts(sendingRequest) {
   return {
     type: IS_GETTING_POSTS,
     data: sendingRequest
-  }
+  };
 }
 
 /**
@@ -23,9 +23,13 @@ export function isGettingPosts(sendingRequest) {
  * @param {Object|String} exception - Exception object or string
  */
 export function setPostsError(exception) {
+  console.log(exception);
   let response = exception.response || {};
   let data = response.data || {};
-  let err = `${response.status} ${response.statusText}`;
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
   return {
     type: SET_POSTS_ERROR,
     data: data.errors || data.error || err
@@ -49,7 +53,7 @@ export function addPosts(posts) {
   return {
     type: ADD_POSTS,
     data: posts
-  }
+  };
 }
 
 /**
@@ -58,7 +62,7 @@ export function addPosts(posts) {
 export function clearPosts() {
   return {
     type: CLEAR_POSTS
-  }
+  };
 }
 
 /**
@@ -69,5 +73,5 @@ export function setPostsPagination(pagination) {
   return {
     type: SET_POSTS_PAGINATION,
     data: pagination
-  }
+  };
 }

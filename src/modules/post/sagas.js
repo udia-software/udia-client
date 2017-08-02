@@ -1,13 +1,14 @@
 import { effects } from "redux-saga";
-import { createPost, getPost } from "./api";
-import { CREATE_POST_REQUEST, GET_POST_REQUEST } from "./constants";
+import { createPost, getPost, editPost } from "./api";
+import { CREATE_POST_REQUEST, GET_POST_REQUEST, EDIT_POST_REQUEST } from "./constants";
 import {
   isSendingPost,
   setPostError,
   clearPostError,
   setPost,
   setPostTitle,
-  setPostContent
+  setPostContent,
+  setEditPostSuccess
 } from "./reducer.actions";
 
 /**
@@ -48,6 +49,23 @@ function* getPostCall(data) {
 }
 
 /**
+ * Generator function for editing a post
+ * @param {Object} data - Edit post payload
+ */
+function* editPostCall(data) {
+  yield effects.put(isSendingPost(true));
+  const { id } = data;
+  try {
+    return yield effects.call(editPost, id, data)
+  } catch (exception) {
+    yield effects.put(setPostError(exception));
+    return false;
+  } finally {
+    yield effects.put(isSendingPost(false));
+  }
+}
+
+/**
  * Saga for creating a new post. Listen for CREATE_POST_REQUEST action.
  */
 export function* createPostFlow() {
@@ -60,7 +78,6 @@ export function* createPostFlow() {
       yield effects.put(setPostContent(""));
       yield effects.put(setPost(wasSuccessful.data));
       yield effects.put(clearPostError());
-      // TODO: Redirect to Post Page
     }
   }
 }
@@ -75,6 +92,19 @@ export function* getPostFlow() {
     if (wasSuccessful) {
       yield effects.put(setPost(wasSuccessful.data));
       yield effects.put(clearPostError());
+    }
+  }
+}
+
+export function* editPostFlow() {
+  while (true) {
+    const request = yield effects.take(EDIT_POST_REQUEST);
+    yield effects.put(setEditPostSuccess(false));
+    const wasSuccessful = yield effects.call(editPostCall, request.data);
+    if (wasSuccessful) {
+      yield effects.put(setPost(wasSuccessful.data));
+      yield effects.put(clearPostError());
+      yield effects.put(setEditPostSuccess(true));
     }
   }
 }
