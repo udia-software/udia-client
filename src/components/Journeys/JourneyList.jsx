@@ -30,21 +30,21 @@ class JourneyList extends Component {
       endOfFeed: false
     };
 
-    const userId = this.props.user.id;
+    const username = this.props.user.username;
     this.props.dispatch(getJourneysRequest({
       page: 1,
-      explorer_id: userId
+      username
     }));
   }
 
   getNextPage = () => {
     const { page_number, total_pages } = this.props.journeysPagination;
-    const userId = this.props.user.id;
+    const username = this.props.user.username;
 
     if ((page_number || 0) < (total_pages || 0)) {
       this.props.dispatch(getJourneysRequest({
         page: page_number + 1,
-        explorer_id: userId
+        username
       }));
     }
   };
