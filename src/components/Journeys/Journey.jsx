@@ -29,8 +29,12 @@ const propTypes = {
     .isRequired,
   postsPagination: PropTypes.object.isRequired,
   posts: PropTypes.array.isRequired,
-  currentUser: PropTypes.object.isRequired
+  currentUser: PropTypes.object
 };
+
+const defaultProps = {
+  currentUser: {}
+}
 
 class Journey extends Component {
   constructor(props) {
@@ -113,7 +117,7 @@ class Journey extends Component {
               </Header.Subheader>
             </Header>
             <Divider />
-            {journey.explorer && journey.explorer.username === currentUser.username &&
+            {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
               <Grid>
                 <Grid.Column textAlign='center'>
                   <Button
@@ -150,6 +154,7 @@ class Journey extends Component {
 }
 
 Journey.propTypes = propTypes;
+Journey.defaultProps = defaultProps;
 
 function mapStateToProps(state) {
   return Object.assign({}, state.journey, state.posts, state.auth);
