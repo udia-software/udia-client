@@ -26,7 +26,10 @@ export function isSendingPost(sendingRequest) {
 export function setPostError(exception) {
   let response = exception.response || {};
   let data = response.data || {};
-  let err = `${response.status} ${response.statusText}`;
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
   return {
     type: SET_POST_ERROR,
     data: data.errors || data.error || err

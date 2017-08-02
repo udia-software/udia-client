@@ -10,6 +10,7 @@ import {
   clearPostError
 } from "../../modules/post/reducer.actions";
 import { createPostRequest } from "../../modules/post/sagas.actions";
+import queryString from 'query-string';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -32,7 +33,14 @@ class CreatePost extends Component {
 
   onSubmit = event => {
     event.preventDefault();
-    this.props.dispatch(createPostRequest(this.props.post));
+    const { post, location } = this.props;
+
+    this.props.dispatch(
+      createPostRequest({
+        ...post,
+        journey_id: queryString.parse(location.search).journey
+      })
+    );
   };
 
   render = () => {

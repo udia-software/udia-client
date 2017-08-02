@@ -6,6 +6,8 @@ import PrivateRoute from "./Auth/PrivateRoute";
 import Account from "./Auth/Account";
 import Signin from "./Auth/Signin";
 import Signup from "./Auth/Signup";
+import CreateJourney from "./Journeys/CreateJourney";
+import Journey from "./Journeys/Journey";
 import CreatePost from "./Posts/CreatePost";
 import EditPost from "./Posts/EditPost";
 import PostContainer from "./Posts/PostContainer";
@@ -34,13 +36,15 @@ class App extends Component {
     return (
       <div>
         <Navbar />
-        <div style={{ minHeight: "86vh"}}>
+        <div style={{ minHeight: "86vh" }}>
           <Switch>
             <Route exact path="/" component={PostList} />
             <Route path="/about" component={About} />
             <Route path="/signin" component={Signin} />
             <Route path="/signup" component={Signup} />
             <Route path="/users/:username" component={User} />
+            <PrivateRoute path="/journeys/create" component={CreateJourney} />
+            <Route path="/journeys/:id" component={Journey} />
             <Route exact path="/posts" component={PostList} />
             <PrivateRoute path="/posts/create" component={CreatePost} />
             <Route path="/posts/:id/edit" component={EditPost} />

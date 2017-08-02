@@ -36,7 +36,10 @@ export function isSendingComment(parent_id, sendingRequest) {
 export function setCommentError(parent_id, exception) {
   let response = exception.response || {};
   let data = response.data || {};
-  let err = `${response.status} ${response.statusText}`;
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
   return {
     type: SET_COMMENT_ERROR,
     data: {

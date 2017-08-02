@@ -39,11 +39,17 @@ class Navbar extends Component {
             >
               <Dropdown.Menu>
                 <Dropdown.Header>{currentUser.username}</Dropdown.Header>
+                <Dropdown.Item as={Link} to={`/users/${currentUser.username}`}>
+                  My Profile
+                </Dropdown.Item>
                 <Dropdown.Item as={Link} to="/account" name="account">
-                  My Account
+                  Account Settings
                 </Dropdown.Item>
                 <Dropdown.Item as={Link} to="/posts/create" name="createPost">
                   Write Post
+                </Dropdown.Item>
+                <Dropdown.Item as={Link} to="/journeys/create">
+                  Start Journey
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

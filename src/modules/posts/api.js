@@ -1,5 +1,5 @@
 import { get } from "../baseApi";
 
-export function getPosts(page) {
-  return get("/posts/", { page });
+export function getPosts(params) {
+  return get("/posts/", params);
 }
