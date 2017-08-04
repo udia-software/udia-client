@@ -14,6 +14,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
 import FromTime from "../Shared/FromTime";
+import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 
 const propTypes = {
@@ -54,6 +55,10 @@ class PostList extends Component {
     }
   };
 
+  componentWillUnmount = () => {
+    this.props.dispatch(clearPosts());
+  }
+
   render = () => {
     const { currentlyGettingPosts, posts, postsRequestError } = this.props;
     const { endOfFeed } = this.state;
@@ -71,15 +76,21 @@ class PostList extends Component {
                     </Feed.User>
                     {" wrote "}
                     <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                    {post.journey &&
+                      <span>
+                        {" | "}
+                        <Link to={`/journeys/${post.journey.id}`}>{post.journey.title}</Link>
+                      </span>
+                    }
                     <Feed.Date>
                       <FromTime time={moment(post.inserted_at)} />
                     </Feed.Date>
                   </Feed.Summary>
                   <Feed.Extra text>
                     <Segment compact>
-                    {post.content.split("\n").map((item, key) => {
-                      return <span key={key}>{item}<br /></span>;
-                    })}
+                      {post.content.split("\n").map((item, key) => {
+                        return <span key={key}>{item}<br /></span>;
+                      })}
                     </Segment>
                   </Feed.Extra>
                   <Feed.Meta>

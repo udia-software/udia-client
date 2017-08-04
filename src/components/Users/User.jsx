@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Container, Dimmer, Header, Loader } from "semantic-ui-react";
+import { setUser } from "../../modules/user/reducer.actions";
 import { getUserByUsernameRequest } from "../../modules/user/sagas.actions";
 import Error from "../Shared/Error";
 import JourneyList from "../Journeys/JourneyList";
@@ -19,6 +20,10 @@ class User extends Component {
     const username = this.props.match.params.username;
     this.props.dispatch(getUserByUsernameRequest({ username }));
   };
+
+  componentWillUnmount = () => {
+    this.props.dispatch(setUser({}));
+  }
 
   render = () => {
     const { user, currentlyGettingUser, userRequestError } = this.props;

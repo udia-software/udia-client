@@ -6,7 +6,8 @@ import {
   Item,
   List,
   Popup,
-  Segment
+  Segment,
+  Icon
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -43,7 +44,14 @@ const Post = ({
         {post.id &&
           <Item>
             <Item.Content>
-              <Item.Header as="h3">
+              {post.journey &&
+                <Item.Meta>
+                  <Link to={`/journeys/${post.journey.id}`}>
+                    <Icon name="road" />{post.journey.title}
+                  </Link>
+                </Item.Meta>
+              }
+              <Item.Header as="h3" style={{ marginTop: '10px' }}>
                 {post.title}
               </Item.Header>
               <Item.Description>
@@ -88,10 +96,10 @@ const Post = ({
                   trigger={
                     !!username
                       ? <Link to={`/users/${username}`}>
-                          {username} ({presence[username].metas.length})
+                        {username} ({presence[username].metas.length})
                         </Link>
                       : <span>
-                          anonymous ({presence[username].metas.length})
+                        anonymous ({presence[username].metas.length})
                         </span>
                   }
                   content={presence[username].metas.map(meta => {
