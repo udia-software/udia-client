@@ -17,6 +17,7 @@ import Error from "../Shared/Error";
 import { getJourneyRequest } from "../../modules/journey/sagas.actions";
 import { setJourney, clearJourneyError } from "../../modules/journey/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
+import { clearPosts } from "../../modules/posts/reducer.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -56,6 +57,7 @@ class Journey extends Component {
   componentWillUnmount = () => {
     this.props.dispatch(setJourney({}));
     this.props.dispatch(clearJourneyError());
+    this.props.dispatch(clearPosts())
   };
 
   getNextPage = () => {

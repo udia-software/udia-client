@@ -11,6 +11,7 @@ import {
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
+import { clearJourneys } from "../../modules/journeys/reducer.actions";
 import { getJourneysRequest } from "../../modules/journeys/sagas.actions";
 
 const propTypes = {
@@ -61,6 +62,10 @@ class JourneyList extends Component {
       this.setState({ endOfFeed: true });
     }
   };
+
+  componentWillUnmount = () => {
+    this.props.dispatch(clearJourneys());
+  }
 
   render = () => {
     const { currentlyGettingJourneys, journeys, journeysRequestError } = this.props;
