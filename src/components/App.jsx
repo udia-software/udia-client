@@ -34,9 +34,15 @@ NoMatch.propTypes = {
 class App extends Component {
   render() {
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          flexDirection: "column"
+        }}
+      >
         <Navbar />
-        <div style={{ minHeight: "86vh" }}>
+        <div style={{ flex: "1" }}>
           <Switch>
             <Route exact path="/" component={PostList} />
             <Route path="/about" component={About} />
