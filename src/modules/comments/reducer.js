@@ -10,7 +10,13 @@ import {
   TOGGLE_EDIT_COMMENT,
   SET_EDIT_COMMENT_CONTENT,
   CLEAR_EDIT_COMMENT,
-  REPLACE_COMMENT
+  REPLACE_COMMENT,
+  IS_GETTING_USER_COMMENTS,
+  SET_USER_COMMENTS_ERROR,
+  CLEAR_USER_COMMENTS_ERROR,
+  ADD_USER_COMMENTS,
+  CLEAR_USER_COMMENTS,
+  SET_USER_COMMENTS_PAGINATION
 } from "./constants";
 
 const initialState = {
@@ -20,7 +26,13 @@ const initialState = {
   commentPagination: {}, // Holds comment children pagination state ref'd by ID
   commentReplyBox: {}, // Holds whether or not to show comment reply box
   commentEditing: {}, // Holds whether or not the comment is being edited or not
-  comments: {} // Holds comment data ref'd by ID
+  comments: {}, // Holds comment data ref'd by ID
+
+  // for user comments in profile page
+  currentlyGettingUserComments: false,
+  userCommentsRequestError: "",
+  userCommentsRequestPagination: "",
+  userComments: []
 };
 
 function commentsReducer(state = initialState, action) {
@@ -136,6 +148,38 @@ function commentsReducer(state = initialState, action) {
           [action.data.parent_id]: commentRep
         }
       };
+    case IS_GETTING_USER_COMMENTS:
+      return {
+        ...state,
+        currentlyGettingUserComments: action.data
+      };
+    case SET_USER_COMMENTS_ERROR:
+      return {
+        ...state,
+        userCommentsRequestError: action.data
+      };
+    case CLEAR_USER_COMMENTS_ERROR:
+      return {
+        ...state,
+        userCommentsRequestError: ""
+      };
+    case ADD_USER_COMMENTS:
+      return {
+        ...state,
+        userComments: state.userComments.concat(action.data)
+      };
+    case SET_USER_COMMENTS_PAGINATION:
+      return {
+        ...state,
+        userCommentsRequestPagination: action.data
+      }
+    case CLEAR_USER_COMMENTS:
+      return {
+        ...state,
+        userComments: [],
+        userCommentsRequestPagination: {},
+        userCommentsRequestError: ""
+      }
     case CLEAR_COMMENTS_STATE:
       return initialState;
     default:

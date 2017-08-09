@@ -1,11 +1,16 @@
 import { effects } from "redux-saga";
 import { loginFlow, logoutFlow, registerFlow } from "./auth/sagas";
 import { GET_COMMENTS_REQUEST } from "./comments/constants";
-import { createCommentFlow, getCommentsFlow, editCommentFlow } from "./comments/sagas";
+import {
+  createCommentFlow,
+  getCommentsFlow,
+  editCommentFlow,
+  getUserCommentsFlow
+} from "./comments/sagas";
 import { getPostFlow, createPostFlow, editPostFlow } from "./post/sagas";
 import { getPostsFlow } from "./posts/sagas";
 import { getUserFlow } from "./user/sagas";
-import { getJourneyFlow, createJourneyFlow } from './journey/sagas';
+import { getJourneyFlow, createJourneyFlow } from "./journey/sagas";
 import { getJourneysFlow } from "./journeys/sagas";
 
 export default function* root() {
@@ -15,6 +20,7 @@ export default function* root() {
     yield effects.fork(registerFlow),
     yield effects.fork(createCommentFlow),
     yield effects.takeEvery(GET_COMMENTS_REQUEST, getCommentsFlow),
+    yield effects.fork(getUserCommentsFlow),
     yield effects.fork(editCommentFlow),
     yield effects.fork(getPostFlow),
     yield effects.fork(createPostFlow),

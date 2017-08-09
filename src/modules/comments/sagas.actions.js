@@ -1,4 +1,9 @@
-import { CREATE_COMMENT_REQUEST, GET_COMMENTS_REQUEST, EDIT_COMMENT_REQUEST } from "./constants";
+import {
+  CREATE_COMMENT_REQUEST,
+  GET_COMMENTS_REQUEST,
+  EDIT_COMMENT_REQUEST,
+  GET_USER_COMMENTS_REQUEST
+} from "./constants";
 
 /**
  * Saga action for triggering an async Create Comment HTTP request.
@@ -37,6 +42,13 @@ export function getCommentsRequest(data) {
 export function editCommentRequest(data) {
   return {
     type: EDIT_COMMENT_REQUEST,
+    data
+  };
+}
+
+export function getUserCommentsRequest(data) {
+  return {
+    type: GET_USER_COMMENTS_REQUEST,
     data
   };
 }
