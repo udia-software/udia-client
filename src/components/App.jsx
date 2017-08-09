@@ -50,7 +50,10 @@ class App extends Component {
         <Navbar toggleSidebarVisibility={this.toggleVisibility} />
         <div style={containerStyle}>
           <Sidebar.Pushable style={{ flex: "1" }}>
-            <SidebarContainer visible={visible}/>
+            <SidebarContainer
+              visible={visible}
+              toggleSidebarVisibility={this.toggleVisibility}
+            />
             <Sidebar.Pusher style={{ margin: "1em 0" }}>
               <Switch>
                 <Route exact path="/" component={PostList} />

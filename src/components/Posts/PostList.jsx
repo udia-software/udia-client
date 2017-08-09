@@ -23,7 +23,8 @@ const propTypes = {
   postsRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
   postsPagination: PropTypes.object.isRequired,
-  posts: PropTypes.array.isRequired
+  posts: PropTypes.array.isRequired,
+  username: PropTypes.string
 };
 
 class PostList extends Component {
@@ -32,13 +33,28 @@ class PostList extends Component {
     this.state = {
       endOfFeed: false
     };
-    this.props.dispatch(getPostsRequest({ page: 1 }));
+    if (this.props.username) {
+      this.props.dispatch(
+        getPostsRequest({ page: 1, username: this.props.username })
+      );
+    } else {
+      this.props.dispatch(getPostsRequest({ page: 1 }));
+    }
   }
 
   getNextPage = () => {
     const { page_number, total_pages } = this.props.postsPagination;
     if ((page_number || 0) < (total_pages || 0)) {
-      this.props.dispatch(getPostsRequest({ page: page_number + 1 }));
+      if (this.props.username) {
+        this.props.dispatch(
+          getPostsRequest({
+            page: page_number + 1,
+            username: this.props.username
+          })
+        );
+      } else {
+        this.props.dispatch(getPostsRequest({ page: page_number + 1 }));
+      }
     }
   };
 
@@ -57,7 +73,7 @@ class PostList extends Component {
 
   componentWillUnmount = () => {
     this.props.dispatch(clearPosts());
-  }
+  };
 
   render = () => {
     const { currentlyGettingPosts, posts, postsRequestError } = this.props;
@@ -79,9 +95,10 @@ class PostList extends Component {
                     {post.journey &&
                       <span>
                         {" | "}
-                        <Link to={`/journeys/${post.journey.id}`}>{post.journey.title}</Link>
-                      </span>
-                    }
+                        <Link to={`/journeys/${post.journey.id}`}>
+                          {post.journey.title}
+                        </Link>
+                      </span>}
                     <Feed.Date>
                       <FromTime time={moment(post.inserted_at)} />
                     </Feed.Date>

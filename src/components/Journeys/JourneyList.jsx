@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  Button,
   Container,
   Dimmer,
   Item,
   Loader,
+  Segment,
   Visibility
 } from "semantic-ui-react";
 import moment from "moment";
@@ -17,8 +19,10 @@ import { getJourneysRequest } from "../../modules/journeys/sagas.actions";
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   currentlyGettingJourneys: PropTypes.bool.isRequired,
-  journeysRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
-    .isRequired,
+  journeysRequestError: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ]).isRequired,
   journeysPagination: PropTypes.object.isRequired,
   journeys: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired
@@ -32,10 +36,12 @@ class JourneyList extends Component {
     };
 
     const username = this.props.user.username;
-    this.props.dispatch(getJourneysRequest({
-      page: 1,
-      username
-    }));
+    this.props.dispatch(
+      getJourneysRequest({
+        page: 1,
+        username
+      })
+    );
   }
 
   getNextPage = () => {
@@ -43,10 +49,12 @@ class JourneyList extends Component {
     const username = this.props.user.username;
 
     if ((page_number || 0) < (total_pages || 0)) {
-      this.props.dispatch(getJourneysRequest({
-        page: page_number + 1,
-        username
-      }));
+      this.props.dispatch(
+        getJourneysRequest({
+          page: page_number + 1,
+          username
+        })
+      );
     }
   };
 
@@ -65,21 +73,32 @@ class JourneyList extends Component {
 
   componentWillUnmount = () => {
     this.props.dispatch(clearJourneys());
-  }
+  };
 
   render = () => {
-    const { currentlyGettingJourneys, journeys, journeysRequestError } = this.props;
+    const {
+      currentlyGettingJourneys,
+      journeys,
+      journeysRequestError
+    } = this.props;
+    const { endOfFeed } = this.state;
 
     return (
-      <Container style={{margin: '30px'}}>
+      <Container>
         <Visibility onUpdate={this.onVisibilityUpdate}>
           <Item.Group>
             {journeys.map(journey => (
               <Item key={journey.id}>
                 <Item.Content>
-                  <Item.Header as={Link} to={`/journeys/${journey.id}`}>{journey.title}</Item.Header>
+                  <Item.Header as={Link} to={`/journeys/${journey.id}`}>
+                    {journey.title}
+                  </Item.Header>
                   <Item.Meta>{journey.description}</Item.Meta>
-                  <Item.Extra>Created on {moment(journey.inserted_at).format('MMMM Do YYYY')}</Item.Extra>
+                  <Item.Extra>
+                    Created on
+                    {" "}
+                    {moment(journey.inserted_at).format("MMMM Do YYYY")}
+                  </Item.Extra>
                 </Item.Content>
               </Item>
             ))}
@@ -87,6 +106,21 @@ class JourneyList extends Component {
               <Loader />
             </Dimmer>
           </Item.Group>
+          <Segment textAlign="center">
+            <Dimmer active={currentlyGettingJourneys} inverted>
+              <Loader />
+            </Dimmer>
+            {endOfFeed &&
+              <Item>
+                <Item.Content>End of feed.</Item.Content>
+              </Item>}
+            {!endOfFeed &&
+              <Item>
+                <Item.Content>
+                  <Button onClick={this.getNextPage}>Load More Journeys</Button>
+                </Item.Content>
+              </Item>}
+          </Segment>
         </Visibility>
         <Error error={journeysRequestError} header="Get Journeys Failed!" />
       </Container>

@@ -1,6 +1,10 @@
 import { effects } from "redux-saga";
 import { createComment, editComment, getComments } from "./api";
-import { CREATE_COMMENT_REQUEST, EDIT_COMMENT_REQUEST } from "./constants";
+import {
+  CREATE_COMMENT_REQUEST,
+  EDIT_COMMENT_REQUEST,
+  GET_USER_COMMENTS_REQUEST
+} from "./constants";
 import {
   isSendingComment,
   setCommentError,
@@ -10,7 +14,13 @@ import {
   addComments,
   toggleCommentReplyBox,
   clearEditComment,
-  replaceComment
+  replaceComment,
+  isGettingUserComments,
+  setUserCommentsError,
+  clearUserCommentsError,
+  clearUserComments,
+  setUserCommentsPagination,
+  addUserComments
 } from "./reducer.actions";
 
 /**
@@ -60,15 +70,27 @@ function* editCommentCall(data) {
  * @param {string|null} data.parent_id - ID of the parent comment, or null if root
  */
 function* getCommentsCall(data) {
-  const { page, post_id, parent_id } = data;
+  const { parent_id } = data;
   yield effects.put(isSendingComment(parent_id, true));
   try {
-    return yield effects.call(getComments, page, post_id, parent_id);
+    return yield effects.call(getComments, data);
   } catch (exception) {
     yield effects.put(setCommentError(parent_id, exception));
     return false;
   } finally {
     yield effects.put(isSendingComment(parent_id, false));
+  }
+}
+
+function* getUserCommentsCall(data) {
+  yield effects.put(isGettingUserComments(true));
+  try {
+    return yield effects.call(getComments, data);
+  } catch (exception) {
+    yield effects.put(setUserCommentsError(exception));
+    return false;
+  } finally {
+    yield effects.put(isGettingUserComments(false));
   }
 }
 
@@ -95,7 +117,13 @@ export function* editCommentFlow() {
     const wasSuccessful = yield effects.call(editCommentCall, request.data);
     if (wasSuccessful) {
       yield effects.put(clearEditComment(wasSuccessful.data.id));
-      yield effects.put(replaceComment(wasSuccessful.data.parent_id, wasSuccessful.data.id, wasSuccessful.data));
+      yield effects.put(
+        replaceComment(
+          wasSuccessful.data.parent_id,
+          wasSuccessful.data.id,
+          wasSuccessful.data
+        )
+      );
     }
   }
 }
@@ -103,7 +131,6 @@ export function* editCommentFlow() {
 /**
  * Saga for getting a list of comments. Listen for GET_COMMENTS_REQUEST action.
  */
-
 export function* getCommentsFlow(action) {
   const { parent_id } = action.data;
   const wasSuccessful = yield effects.call(getCommentsCall, action.data);
@@ -112,5 +139,22 @@ export function* getCommentsFlow(action) {
       addComments(parent_id, wasSuccessful.data, wasSuccessful.pagination)
     );
     yield effects.put(clearCommentError(parent_id));
+  }
+}
+
+/**
+ * Saga for getting a list of comments (user profile). Listen for GET_USER_COMMENTS_REQUEST action.
+ */
+export function* getUserCommentsFlow(action) {
+  while (true) {
+    const request = yield effects.take(GET_USER_COMMENTS_REQUEST);
+    const wasSuccessful = yield effects.call(getUserCommentsCall, request.data);
+    if (wasSuccessful) {
+      const { page_number } = wasSuccessful.pagination;
+      if (page_number <= 1) yield effects.put(clearUserComments());
+      yield effects.put(setUserCommentsPagination(wasSuccessful.pagination));
+      yield effects.put(addUserComments(wasSuccessful.data));
+      yield effects.put(clearUserCommentsError());
+    }
   }
 }

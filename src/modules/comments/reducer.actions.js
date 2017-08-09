@@ -10,7 +10,13 @@ import {
   TOGGLE_EDIT_COMMENT,
   SET_EDIT_COMMENT_CONTENT,
   CLEAR_EDIT_COMMENT,
-  REPLACE_COMMENT
+  REPLACE_COMMENT,
+  IS_GETTING_USER_COMMENTS,
+  SET_USER_COMMENTS_ERROR,
+  CLEAR_USER_COMMENTS_ERROR,
+  ADD_USER_COMMENTS,
+  CLEAR_USER_COMMENTS,
+  SET_USER_COMMENTS_PAGINATION
 } from "./constants";
 
 /**
@@ -173,4 +179,72 @@ export function replaceComment(parent_id, comment_id, comment) {
       comment
     }
   };
+}
+
+/**
+ * Reducer action for setting loading in the user comments functionality
+ * @param {boolean} sendingRequest - Boolean for loading state
+ */
+export function isGettingUserComments(sendingRequest) {
+  return {
+    type: IS_GETTING_USER_COMMENTS,
+    data: sendingRequest
+  };
+}
+
+/**
+ * Reducer action for setting an error message in the user comments functionality
+ * @param {Object|String} exception - Exception object or string
+ */
+export function setUserCommentsError(exception) {
+  let response = exception.response || {};
+  let data = response.data || {};
+  let err = "" + exception;
+  if (response.status) {
+    err = `${response.status} ${response.statusText}`;
+  }
+  return {
+    type: SET_USER_COMMENTS_ERROR,
+    data: data.errors || data.error || err
+  };
+}
+
+/**
+ * Reducer action for clearing an error message in the user comments functionality
+ */
+export function clearUserCommentsError() {
+  return {
+    type: CLEAR_USER_COMMENTS_ERROR
+  };
+}
+
+/**
+ * Reducer action for adding comments to the user profile functionality
+ * @param {array} comments - Array of comment objects
+ */
+export function addUserComments(comments) {
+  return {
+    type: ADD_USER_COMMENTS,
+    data: comments
+  }
+}
+
+/**
+ * Reducer action for clearing all comments from the user profile functionality
+ */
+export function clearUserComments() {
+  return {
+    type: CLEAR_USER_COMMENTS
+  }
+}
+
+/**
+ * Reducer action for setting the user comments pagination data
+ * @param {Object} pagination - User Comments pagination data
+ */
+export function setUserCommentsPagination(pagination) {
+  return {
+    type: SET_USER_COMMENTS_PAGINATION,
+    data: pagination
+  }
 }
