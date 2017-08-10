@@ -13,6 +13,7 @@ import {
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
+import ContentText from "../Shared/ContentText";
 import FromTime from "../Shared/FromTime";
 import { clearUserComments } from "../../modules/comments/reducer.actions";
 import { getUserCommentsRequest } from "../../modules/comments/sagas.actions";
@@ -112,9 +113,7 @@ class CommentList extends Component {
                   </Feed.Summary>
                   <Feed.Extra text>
                     <Segment compact>
-                      {comment.content.split("\n").map((item, key) => {
-                        return <span key={key}>{item}<br /></span>;
-                      })}
+                      {comment.type === "text" && <ContentText content={comment.content} />}
                     </Segment>
                   </Feed.Extra>
                   <Feed.Meta>

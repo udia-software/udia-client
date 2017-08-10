@@ -8,7 +8,8 @@ import {
 import {
   setCommentContent,
   clearCommentsState,
-  clearCommentError
+  clearCommentError,
+  toggleCommentReplyBox
 } from "../../modules/comments/reducer.actions";
 import Comments from "./Comments";
 
@@ -18,7 +19,12 @@ const propTypes = {
   commentProgress: PropTypes.object.isRequired,
   commentPagination: PropTypes.object.isRequired,
   comments: PropTypes.object.isRequired,
+  currentUser: PropTypes.object,
   post_id: PropTypes.number
+};
+
+const defaultProps = {
+  currentUser: {}
 };
 
 class CommentsContainer extends Component {
@@ -41,7 +47,7 @@ class CommentsContainer extends Component {
         parent_id: null
       })
     );
-  }
+  };
 
   componentWillUnmount = () => {
     this.props.dispatch(clearCommentsState());
@@ -69,8 +75,20 @@ class CommentsContainer extends Component {
     }
   };
 
+  toggleShowReplyBox = () => {
+    this.props.dispatch(toggleCommentReplyBox(null));
+  };
+
   render = () => {
-    const { commentError, commentIsSending } = this.props;
+    const {
+      commentError,
+      commentIsSending,
+      currentUser,
+      commentReplyBox
+    } = this.props;
+    const showReplyBox = !!commentReplyBox[null];
+    const loggedIn = !!Object.keys(currentUser || {}).length;
+
     return (
       <Comments
         commentError={commentError}
@@ -80,16 +98,21 @@ class CommentsContainer extends Component {
         commentProgress={this.props.commentProgress}
         onVisibilityUpdate={this.onVisibilityUpdate}
         comments={this.props.comments}
+        loggedIn={loggedIn}
+        showReplyBox={showReplyBox}
+        toggleShowReplyBox={this.toggleShowReplyBox}
       />
     );
   };
 }
 
 CommentsContainer.propTypes = propTypes;
+CommentsContainer.defaultProps = defaultProps;
 
 function mapStateToProps(state, ownProps) {
   return {
     ...state.comments,
+    currentUser: state.auth.currentUser,
     post_id: ownProps.post_id
   };
 }

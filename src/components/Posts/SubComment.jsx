@@ -3,6 +3,7 @@ import { Comment, Form, Visibility } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
+import ContentText from "../Shared/ContentText";
 import FromTime from "../Shared/FromTime";
 import SubCommentContainer from "./SubCommentContainer";
 
@@ -76,14 +77,14 @@ class SubComment extends Component {
             </Form>}
           {!!!(commentEditing[comment.id] || {}).isEditing &&
             <Comment.Text>
-              {comment.content.split("\n").map((item, key) => {
-                return <span key={key}>{item}<br /></span>;
-              })}
+              {comment.type === "text" &&
+                <ContentText content={comment.content} />}
             </Comment.Text>}
           <Comment.Actions>
-            <Comment.Action onClick={toggleShowReplyBox}>
-              {showReplyBox ? "Hide Reply" : "Reply"}
-            </Comment.Action>
+            {currentUsername &&
+              <Comment.Action onClick={toggleShowReplyBox}>
+                {showReplyBox ? "Hide Reply" : "Reply"}
+              </Comment.Action>}
             {currentUsername === comment.author.username &&
               <Comment.Action onClick={toggleEditComment}>
                 {!!(commentEditing[comment.id] || {}).isEditing
