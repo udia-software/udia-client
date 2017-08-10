@@ -106,21 +106,15 @@ class JourneyList extends Component {
               <Loader />
             </Dimmer>
           </Item.Group>
-          <Segment textAlign="center">
-            <Dimmer active={currentlyGettingJourneys} inverted>
-              <Loader />
-            </Dimmer>
-            {endOfFeed &&
-              <Item>
-                <Item.Content>End of feed.</Item.Content>
-              </Item>}
-            {!endOfFeed &&
+          {!endOfFeed &&
+            <Segment>
               <Item>
                 <Item.Content>
                   <Button onClick={this.getNextPage}>Load More Journeys</Button>
                 </Item.Content>
-              </Item>}
-          </Segment>
+              </Item>
+            </Segment>
+          }
         </Visibility>
         <Error error={journeysRequestError} header="Get Journeys Failed!" />
       </Container>
