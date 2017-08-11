@@ -1,7 +1,12 @@
 import React, { Component } from "react";
-import { Container, Form, Header } from "semantic-ui-react";
+import { 
+  Container, 
+  Form, 
+  Header,
+  Icon
+} from "semantic-ui-react";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Error from "../Shared/Error";
 import {
@@ -10,6 +15,7 @@ import {
   clearPostError
 } from "../../modules/post/reducer.actions";
 import { createPostRequest } from "../../modules/post/sagas.actions";
+import { getJourneyRequest } from "../../modules/journey/sagas.actions";
 import queryString from 'query-string';
 import Editor from 'react-medium-editor';
 import 'medium-editor/dist/css/medium-editor.css';
@@ -20,10 +26,20 @@ const propTypes = {
   sendingPostRequest: PropTypes.bool.isRequired,
   postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
-  post: PropTypes.object.isRequired
+  post: PropTypes.object.isRequired,
+  sendingJourneyRequest: PropTypes.bool.isRequired,
+  journeyRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
+  journey: PropTypes.object.isRequired
 };
 
 class CreatePost extends Component {
+  componentWillMount = () => {
+    const { location } = this.props;
+    const journeyId = queryString.parse(location.search).journey;
+    this.props.dispatch(getJourneyRequest({ id: journeyId }));
+  }
+
   changeTitle = event => {
     this.props.dispatch(setPostTitle(event.target.value));
     this.props.dispatch(clearPostError());
@@ -47,7 +63,9 @@ class CreatePost extends Component {
   };
 
   render = () => {
-    const { post, sendingPostRequest, postRequestError } = this.props;
+    const { post, sendingPostRequest, postRequestError, journey } = this.props;
+
+    console.log(journey)
 
     if (!!post.id) {
       return <Redirect to={`/posts/${post.id}`} />;
@@ -61,6 +79,13 @@ class CreatePost extends Component {
           loading={sendingPostRequest}
           error={!!postRequestError}
         >
+          {journey.id &&
+            <Form.Field>
+              <Link to={`/journeys/${journey.id}`}>
+                <Icon name="road" />{journey.title}
+              </Link>
+            </Form.Field>
+          }
           <Form.Input
             label="Title"
             type="text"
@@ -95,7 +120,7 @@ class CreatePost extends Component {
 CreatePost.propTypes = propTypes;
 
 function mapStateToProps(state) {
-  return state.post;
+  return Object.assign({}, state.post, state.journey);
 }
 
 export default connect(mapStateToProps)(CreatePost);
