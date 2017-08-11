@@ -13,6 +13,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
 import ContentText from "../Shared/ContentText";
+import ContentHtml from "../Shared/ContentHtml";
 import CommentsContainer from "./CommentsContainer";
 import FromTime from "../Shared/FromTime";
 
@@ -57,6 +58,7 @@ const Post = ({
               </Item.Header>
               <Item.Description>
                 {post.type === "text" && <ContentText content={post.content} />}
+                {post.type === "html" && <ContentHtml content={post.content} />}
               </Item.Description>
               <Divider />
               <Item.Extra>

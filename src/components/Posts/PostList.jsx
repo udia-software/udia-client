@@ -16,6 +16,8 @@ import Error from "../Shared/Error";
 import FromTime from "../Shared/FromTime";
 import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
+import ContentText from "../Shared/ContentText";
+import ContentHtml from "../Shared/ContentHtml";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -105,9 +107,8 @@ class PostList extends Component {
                   </Feed.Summary>
                   <Feed.Extra text>
                     <Segment compact>
-                      {post.content.split("\n").map((item, key) => {
-                        return <span key={key}>{item}<br /></span>;
-                      })}
+                      {post.type === "text" && <ContentText content={post.content} />}
+                      {post.type === "html" && <ContentHtml content={post.content} />}
                     </Segment>
                   </Feed.Extra>
                   <Feed.Meta>

@@ -11,6 +11,9 @@ import {
 } from "../../modules/post/reducer.actions";
 import { createPostRequest } from "../../modules/post/sagas.actions";
 import queryString from 'query-string';
+import Editor from 'react-medium-editor';
+import 'medium-editor/dist/css/medium-editor.css';
+import 'medium-editor/dist/css/themes/bootstrap.css';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -26,8 +29,8 @@ class CreatePost extends Component {
     this.props.dispatch(clearPostError());
   };
 
-  changeContent = event => {
-    this.props.dispatch(setPostContent(event.target.value));
+  changeContent = text => {
+    this.props.dispatch(setPostContent(text));
     this.props.dispatch(clearPostError());
   };
 
@@ -65,13 +68,22 @@ class CreatePost extends Component {
             onChange={this.changeTitle}
             value={post.title}
           />
-          <Form.TextArea
-            label="Content"
-            type="text"
-            placeholder="Write a post..."
-            onChange={this.changeContent}
-            value={post.content}
-          />
+          <Form.Field>
+            <label>Content</label>
+            <Editor
+              name='text'
+              onChange={this.changeContent}
+              text={post.content}
+              options={{
+                toolbar: {
+                  buttons: ['bold', 'italic', 'underline', 'anchor']
+                },
+                placeholder: {
+                  text: 'Write a post...'
+                }
+              }}
+            />
+          </Form.Field>
           <Error header="Create Post Failed!" error={postRequestError} />
           <Form.Button>Submit</Form.Button>
         </Form>

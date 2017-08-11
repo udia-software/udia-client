@@ -19,6 +19,8 @@ import Navbar from "./Navbar";
 import SidebarContainer from "./SidebarContainer";
 import HomePage from "./Pages/HomePage";
 
+import './App.css';
+
 const NoMatch = ({ location }) => (
   <div>
     <h3>Page not found!</h3>
