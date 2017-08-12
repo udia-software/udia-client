@@ -16,6 +16,8 @@ import Error from "../Shared/Error";
 import FromTime from "../Shared/FromTime";
 import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
+import ContentText from "../Shared/ContentText";
+import ContentHtml from "../Shared/ContentHtml";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -105,9 +107,10 @@ class PostList extends Component {
                   </Feed.Summary>
                   <Feed.Extra text>
                     <Segment compact>
-                      {post.content.split("\n").map((item, key) => {
-                        return <span key={key}>{item}<br /></span>;
-                      })}
+                      {post.type === "text" &&
+                        <ContentText content={post.content} />}
+                      {post.type === "html" &&
+                        <ContentHtml content={post.content} />}
                     </Segment>
                   </Feed.Extra>
                   <Feed.Meta>
@@ -125,21 +128,17 @@ class PostList extends Component {
                 </Feed.Content>
               </Feed.Event>
             ))}
-            <Segment textAlign="center">
-              <Dimmer active={currentlyGettingPosts} inverted>
-                <Loader />
-              </Dimmer>
-              {endOfFeed &&
-                <Feed.Event>
-                  <Feed.Content>End of feed.</Feed.Content>
-                </Feed.Event>}
-              {!endOfFeed &&
+            {!endOfFeed &&
+              <Segment textAlign="center">
+                <Dimmer active={currentlyGettingPosts} inverted>
+                  <Loader />
+                </Dimmer>
                 <Feed.Event>
                   <Feed.Content>
                     <Button onClick={this.getNextPage}>Load More Posts</Button>
                   </Feed.Content>
-                </Feed.Event>}
-            </Segment>
+                </Feed.Event>
+              </Segment>}
           </Feed>
         </Visibility>
         <Error error={postsRequestError} header="Get Posts Failed!" />

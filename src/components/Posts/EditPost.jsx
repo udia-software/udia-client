@@ -14,6 +14,9 @@ import {
   getPostRequest,
   editPostRequest
 } from "../../modules/post/sagas.actions";
+import Editor from 'react-medium-editor';
+import 'medium-editor/dist/css/medium-editor.css';
+import 'medium-editor/dist/css/themes/bootstrap.css';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -49,8 +52,8 @@ class EditPost extends Component {
     this.props.dispatch(clearPostError());
   };
 
-  changeContent = event => {
-    this.props.dispatch(setPostContent(event.target.value));
+  changeContent = text => {
+    this.props.dispatch(setPostContent(text));
     this.props.dispatch(clearPostError());
   };
 
@@ -92,13 +95,22 @@ class EditPost extends Component {
             onChange={this.changeTitle}
             value={post.title || ""}
           />
-          <Form.TextArea
-            label="Content"
-            type="text"
-            placeholder="Write a post..."
-            onChange={this.changeContent}
-            value={post.content || ""}
-          />
+          <Form.Field>
+            <label>Content</label>
+            <Editor
+              name='text'
+              onChange={this.changeContent}
+              text={post.content}
+              options={{
+                toolbar: {
+                  buttons: ['bold', 'italic', 'underline', 'anchor']
+                },
+                placeholder: post.content !== "" ? false : {
+                  text: 'Write a post... (highlight text for formatting options)'
+                }
+              }}
+            />
+          </Form.Field>
           <Error header="Edit Post Failed!" error={postRequestError} />
           <Form.Button>Submit</Form.Button>
         </Form>

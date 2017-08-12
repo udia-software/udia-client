@@ -12,12 +12,14 @@ import Journey from "./Journeys/Journey";
 import CreatePost from "./Posts/CreatePost";
 import EditPost from "./Posts/EditPost";
 import PostContainer from "./Posts/PostContainer";
-import PostList from "./Posts/PostList";
 import User from "./Users/User";
 import About from "./About";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SidebarContainer from "./SidebarContainer";
+import HomePage from "./Pages/HomePage";
+
+import './App.css';
 
 const NoMatch = ({ location }) => (
   <div>
@@ -56,7 +58,7 @@ class App extends Component {
             />
             <Sidebar.Pusher style={{ margin: "1em 0" }}>
               <Switch>
-                <Route exact path="/" component={PostList} />
+                <Route exact path="/" component={HomePage} />
                 <Route path="/about" component={About} />
                 <Route path="/signin" component={Signin} />
                 <Route path="/signup" component={Signup} />
@@ -66,7 +68,7 @@ class App extends Component {
                   component={CreateJourney}
                 />
                 <Route path="/journeys/:id" component={Journey} />
-                <Route exact path="/posts" component={PostList} />
+                <PrivateRoute path="/posts/create/:journeyId" component={CreatePost} />
                 <PrivateRoute path="/posts/create" component={CreatePost} />
                 <Route path="/posts/:id/edit" component={EditPost} />
                 <Route path="/posts/:id" component={PostContainer} />
