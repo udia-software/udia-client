@@ -107,8 +107,10 @@ class PostList extends Component {
                   </Feed.Summary>
                   <Feed.Extra text>
                     <Segment compact>
-                      {post.type === "text" && <ContentText content={post.content} />}
-                      {post.type === "html" && <ContentHtml content={post.content} />}
+                      {post.type === "text" &&
+                        <ContentText content={post.content} />}
+                      {post.type === "html" &&
+                        <ContentHtml content={post.content} />}
                     </Segment>
                   </Feed.Extra>
                   <Feed.Meta>
@@ -136,12 +138,11 @@ class PostList extends Component {
                     <Button onClick={this.getNextPage}>Load More Posts</Button>
                   </Feed.Content>
                 </Feed.Event>
-              </Segment>
-            }
+              </Segment>}
           </Feed>
         </Visibility>
         <Error error={postsRequestError} header="Get Posts Failed!" />
-      </Container >
+      </Container>
     );
   };
 }

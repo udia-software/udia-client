@@ -14,5 +14,10 @@ export function getPost(id) {
 }
 
 export function editPost(id, payload) {
-  return patch(`/posts/${id}`, { post: payload });
+  return patch(`/posts/${id}`, {
+    post: {
+      ...payload,
+      type: "html"
+    }
+  });
 }

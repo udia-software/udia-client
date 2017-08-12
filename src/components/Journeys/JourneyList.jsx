@@ -25,7 +25,12 @@ const propTypes = {
   ]).isRequired,
   journeysPagination: PropTypes.object.isRequired,
   journeys: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  currentUser: PropTypes.object
+};
+
+const defaultProps = {
+  currentUser: {}
 };
 
 class JourneyList extends Component {
@@ -79,7 +84,8 @@ class JourneyList extends Component {
     const {
       currentlyGettingJourneys,
       journeys,
-      journeysRequestError
+      journeysRequestError,
+      currentUser
     } = this.props;
     const { endOfFeed } = this.state;
 
@@ -94,11 +100,17 @@ class JourneyList extends Component {
                     {journey.title}
                   </Item.Header>
                   <Item.Meta>{journey.description}</Item.Meta>
-                  <Item.Extra>
+                  <Item.Content>
                     Created on
                     {" "}
                     {moment(journey.inserted_at).format("MMMM Do YYYY")}
-                  </Item.Extra>
+                  </Item.Content>
+                  {currentUser.username === journey.explorer.username &&
+                    <Item.Extra>
+                      <Link to={`/posts/create/${journey.id}`}>
+                        Write Post
+                      </Link>
+                    </Item.Extra>}
                 </Item.Content>
               </Item>
             ))}
@@ -113,8 +125,7 @@ class JourneyList extends Component {
                   <Button onClick={this.getNextPage}>Load More Journeys</Button>
                 </Item.Content>
               </Item>
-            </Segment>
-          }
+            </Segment>}
         </Visibility>
         <Error error={journeysRequestError} header="Get Journeys Failed!" />
       </Container>
@@ -123,9 +134,14 @@ class JourneyList extends Component {
 }
 
 JourneyList.propTypes = propTypes;
+JourneyList.defaultProps = defaultProps;
 
-function mapStateToProps(state) {
-  return Object.assign({}, state.journeys, state.user);
+function mapStateToProps(state, ownProps) {
+  return {
+    ...state.journeys,
+    ...(ownProps.user || state.user),
+    ...state.auth
+  };
 }
 
 export default connect(mapStateToProps)(JourneyList);

@@ -106,7 +106,7 @@ class EditPost extends Component {
                   buttons: ['bold', 'italic', 'underline', 'anchor']
                 },
                 placeholder: post.content !== "" ? false : {
-                  text: 'Write a post...'
+                  text: 'Write a post... (highlight text for formatting options)'
                 }
               }}
             />

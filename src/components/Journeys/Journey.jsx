@@ -90,8 +90,7 @@ class Journey extends Component {
       journeyRequestError,
       journey,
       posts,
-      currentUser,
-      history
+      currentUser
     } = this.props;
 
     return (
@@ -122,8 +121,8 @@ class Journey extends Component {
             {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
               <Grid>
                 <Grid.Column textAlign='center'>
-                  <Button
-                    onClick={() => history.push(`/posts/create?journey=${journey.id}`)}
+                  <Button as={Link}
+                    to={`/posts/create/${journey.id}`}
                     content='Write a Post'
                     color='green'
                     icon='edit' />

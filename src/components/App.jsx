@@ -68,6 +68,7 @@ class App extends Component {
                   component={CreateJourney}
                 />
                 <Route path="/journeys/:id" component={Journey} />
+                <PrivateRoute path="/posts/create/:journeyId" component={CreatePost} />
                 <PrivateRoute path="/posts/create" component={CreatePost} />
                 <Route path="/posts/:id/edit" component={EditPost} />
                 <Route path="/posts/:id" component={PostContainer} />

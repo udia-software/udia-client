@@ -1,10 +1,5 @@
 import React, { Component } from "react";
-import { 
-  Container, 
-  Form, 
-  Header,
-  Icon
-} from "semantic-ui-react";
+import { Container, Form, Header, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { Redirect, Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -16,10 +11,10 @@ import {
 } from "../../modules/post/reducer.actions";
 import { createPostRequest } from "../../modules/post/sagas.actions";
 import { getJourneyRequest } from "../../modules/journey/sagas.actions";
-import queryString from 'query-string';
-import Editor from 'react-medium-editor';
-import 'medium-editor/dist/css/medium-editor.css';
-import 'medium-editor/dist/css/themes/bootstrap.css';
+import { setJourney } from "../../modules/journey/reducer.actions";
+import Editor from "react-medium-editor";
+import "medium-editor/dist/css/medium-editor.css";
+import "medium-editor/dist/css/themes/bootstrap.css";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -35,10 +30,12 @@ const propTypes = {
 
 class CreatePost extends Component {
   componentWillMount = () => {
-    const { location } = this.props;
-    const journeyId = queryString.parse(location.search).journey;
-    this.props.dispatch(getJourneyRequest({ id: journeyId }));
-  }
+    this.props.dispatch(setJourney({}));
+    const journeyId = this.props.match.params.journeyId;
+    if (journeyId) {
+      this.props.dispatch(getJourneyRequest({ id: journeyId }));
+    }
+  };
 
   changeTitle = event => {
     this.props.dispatch(setPostTitle(event.target.value));
@@ -52,20 +49,18 @@ class CreatePost extends Component {
 
   onSubmit = event => {
     event.preventDefault();
-    const { post, location } = this.props;
+    const { post, journey } = this.props;
 
     this.props.dispatch(
       createPostRequest({
         ...post,
-        journey_id: queryString.parse(location.search).journey
+        journey_id: journey.id
       })
     );
   };
 
   render = () => {
     const { post, sendingPostRequest, postRequestError, journey } = this.props;
-
-    console.log(journey)
 
     if (!!post.id) {
       return <Redirect to={`/posts/${post.id}`} />;
@@ -84,8 +79,7 @@ class CreatePost extends Component {
               <Link to={`/journeys/${journey.id}`}>
                 <Icon name="road" />{journey.title}
               </Link>
-            </Form.Field>
-          }
+            </Form.Field>}
           <Form.Input
             label="Title"
             type="text"
@@ -96,15 +90,15 @@ class CreatePost extends Component {
           <Form.Field>
             <label>Content</label>
             <Editor
-              name='text'
+              name="text"
               onChange={this.changeContent}
               text={post.content}
               options={{
                 toolbar: {
-                  buttons: ['bold', 'italic', 'underline', 'anchor']
+                  buttons: ["bold", "italic", "underline", "anchor"]
                 },
                 placeholder: {
-                  text: 'Write a post...'
+                  text: "Write a post... (highlight text for formatting options)"
                 }
               }}
             />
