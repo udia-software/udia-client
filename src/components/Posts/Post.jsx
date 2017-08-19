@@ -128,8 +128,8 @@ const Post = ({
                 <FromTime time={moment(perception.start_time)} />
                 {" watched for "}
                 <DiffTime
-                  startTime={perception.start_time}
-                  endTime={perception.end_time}
+                  startTime={moment(perception.start_time)}
+                  endTime={perception.end_time ? moment(perception.end_time) : null}
                 />
               </List.Content>
             </List.Item>

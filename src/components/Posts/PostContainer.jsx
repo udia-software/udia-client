@@ -26,15 +26,16 @@ const propTypes = {
 class PostContainer extends Component {
   constructor(props) {
     super(props);
-    this.socket = getSocket();
-  }
-
-  componentWillMount = () => {
     this.props.dispatch(setEditPostSuccess(false));
+    this.socket = getSocket();
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostRequest({ id: postId }));
     this.socket.connect();
     this.initializePostSocket(postId);
+  }
+
+  componentWillMount = () => {
+    const postId = this.props.match.params.id;
     this.props.dispatch(getPerceptionsRequest({
       post_id: postId
     }));

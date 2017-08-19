@@ -10,10 +10,9 @@ const propTypes = {
 class DiffTime extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props.endTime)
     this.state = {
       displayTime: this.props.endTime
-        ? moment(this.props.endTime).diff(this.props.startTime, "seconds")
+        ? this.props.endTime.diff(this.props.startTime, "seconds")
         : moment().diff(this.props.startTime, "seconds")
     };
   }
