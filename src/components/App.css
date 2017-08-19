@@ -1,3 +1,11 @@
 [contenteditable]:focus {
     outline: 0px solid transparent;
 }
+
+p {
+    font-size: 1.1em;
+}
+
+.ui.feed>.event>.content .extra.text {
+    max-width: 100% !important;
+}

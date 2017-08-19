@@ -29,12 +29,12 @@ class HomePage extends React.Component {
 
     return (
       <Container>
-        <Grid stackable reversed="mobile vertically" columns={loggedIn ? 2 : 1}>
-          <Grid.Column>
+        <Grid stackable reversed="mobile vertically">
+          <Grid.Column width={10}>
             <PostList />
           </Grid.Column>
           {loggedIn &&
-            <Grid.Column>
+            <Grid.Column width={6}>
               <Segment>
                 <Label color="blue" ribbon="right">My Journeys</Label>
                 <JourneyList user={currentUser} />

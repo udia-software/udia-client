@@ -86,19 +86,21 @@ class CreatePost extends Component {
             onChange={this.changeTitle}
             value={post.title}
           />
-          <label>Content</label>
-          <Editor
-            onChange={this.changeContent}
-            text={post.content}
-            options={{
-              toolbar: {
-                buttons: ["bold", "italic", "underline", "anchor"]
-              },
-              placeholder: {
-                text: "Write a post... (highlight text for formatting options)"
-              }
-            }}
-          />
+          <Form.Field>
+            <label>Content</label>
+            <Editor
+              onChange={this.changeContent}
+              text={post.content}
+              options={{
+                toolbar: {
+                  buttons: ["bold", "italic", "underline", "anchor"]
+                },
+                placeholder: {
+                  text: "Write a post... (highlight text for formatting options)"
+                }
+              }}
+            />
+          </Form.Field>
           <Error header="Create Post Failed!" error={postRequestError} />
           <Form.Button>Submit</Form.Button>
         </Form>
