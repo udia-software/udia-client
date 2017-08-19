@@ -16,6 +16,7 @@ import ContentText from "../Shared/ContentText";
 import ContentHtml from "../Shared/ContentHtml";
 import CommentsContainer from "./CommentsContainer";
 import FromTime from "../Shared/FromTime";
+import DiffTime from "../Shared/DiffTime";
 
 const propTypes = {
   postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
@@ -117,19 +118,18 @@ const Post = ({
           );
         })}
       </List>
-      <h4>Perceptions</h4>
+      <h4>Perceptions ({perceptions.length})</h4>
       <List>
         {perceptions.map(perception => {
           return (
             <List.Item key={perception.id}>
               <List.Content>
-                {perception.id} - {perception.user.username} :
+                {perception.user.username} :
                 <FromTime time={moment(perception.start_time)} />
-                {" to "}
-                <FromTime
-                  time={
-                    perception.end_time ? moment(perception.end_time) : moment()
-                  }
+                {" watched for "}
+                <DiffTime
+                  startTime={perception.start_time}
+                  endTime={perception.end_time}
                 />
               </List.Content>
             </List.Item>
