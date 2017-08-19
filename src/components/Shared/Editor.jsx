@@ -51,7 +51,6 @@ class Editor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.text !== this.state.text && !this._updated) {
-      console.log(nextProps.text)
       this.setState({ text: nextProps.text });
     }
 

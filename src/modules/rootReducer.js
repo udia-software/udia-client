@@ -7,6 +7,7 @@ import presenceReducer from "./presence/reducer";
 import userReducer from "./user/reducer";
 import journeyReducer from "./journey/reducer";
 import journeysReducer from "./journeys/reducer";
+import perceptionsReducer from "./perceptions/reducer";
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -16,7 +17,8 @@ const reducer = combineReducers({
   post: postReducer,
   posts: postsReducer,
   presence: presenceReducer,
-  user: userReducer
+  user: userReducer,
+  perceptions: perceptionsReducer
 });
 
 export default reducer;
