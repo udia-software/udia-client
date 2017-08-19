@@ -32,6 +32,10 @@ class Editor extends React.Component {
       this._updated = true;
     }
 
+    /**
+     * @TODO: When a large file is added, the blob preview is literally a text string 
+     * in the src attribute of the img tag. This causes lagging when typing.
+     */
     this.medium.subscribe('editableInput', (e) => {
       this._updated = true;
       var html = dom.innerHTML;

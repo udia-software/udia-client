@@ -1827,6 +1827,13 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
             return;
         }
 
+        /**
+         * Custom code to upload image to S3. I use xhr because jquery-file-upload
+         * doesn't upload in the format S3 expects (and I cannot find any workarounds.)
+         * @TODO: Currently this uploads directly to S3, and S3 is set to public access.
+         * We should make use of S3's presigned requests functionality to make this 
+         * secure.
+         */
         var uuid = guid();
         const xhr = new XMLHttpRequest();
         xhr.upload.onprogress = function(event) {
@@ -1843,6 +1850,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
         const url = 'https://udia-static.s3.amazonaws.com/' + uuid + '.' + extension;
         xhr.open('PUT', url);
         xhr.send(file);
+    
 
         this.core.hideButtons();
 
