@@ -4,26 +4,48 @@ import { Grid, Segment, Label, Container } from "semantic-ui-react";
 import PostList from "../Posts/PostList";
 import JourneyList from "../Journeys/JourneyList";
 
-const HomePage = auth => {
-  const { currentUser } = auth;
-  const loggedIn = !!Object.keys(currentUser || {}).length;
+import { getPresignedUrl } from '../../modules/upload/api';
 
-  return (
-    <Container>
-      <Grid stackable reversed="mobile vertically" columns={loggedIn ? 2 : 1}>
-        <Grid.Column>
-          <PostList />
-        </Grid.Column>
-        {loggedIn &&
+class HomePage extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      signedRequest: {}
+    };
+  }
+
+  getSignedUrl = (file, callback) => {
+    getPresignedUrl(file.name, file.type)
+      .then(data => {
+        this.setState({ signedRequest: data.credentials })
+        callback({ signedUrl: data.url });
+      })
+  }
+
+  render() {
+    const { currentUser } = this.props;
+    const loggedIn = !!Object.keys(currentUser || {}).length;
+
+    return (
+      <Container>
+        <Grid stackable reversed="mobile vertically" columns={loggedIn ? 2 : 1}>
           <Grid.Column>
-            <Segment>
-              <Label color="blue" ribbon="right">My Journeys</Label>
-              <JourneyList user={currentUser} />
-            </Segment>
-          </Grid.Column>}
-      </Grid>
-    </Container>
-  );
+            <PostList />
+          </Grid.Column>
+          {loggedIn &&
+            <Grid.Column>
+              <Segment>
+                <Label color="blue" ribbon="right">My Journeys</Label>
+                <JourneyList user={currentUser} />
+              </Segment>
+            </Grid.Column>}
+        </Grid>
+      </Container>
+    );
+
+  }
+
 };
 
 function mapStateToProps(state) {
