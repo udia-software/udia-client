@@ -12,9 +12,7 @@ import {
 import { createPostRequest } from "../../modules/post/sagas.actions";
 import { getJourneyRequest } from "../../modules/journey/sagas.actions";
 import { setJourney } from "../../modules/journey/reducer.actions";
-import Editor from "react-medium-editor";
-import "medium-editor/dist/css/medium-editor.css";
-import "medium-editor/dist/css/themes/bootstrap.css";
+import Editor from '../Shared/Editor';
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -68,12 +66,13 @@ class CreatePost extends Component {
 
     return (
       <Container>
-        <Header as="h3">Create a Post</Header>
         <Form
+          style={{ paddingLeft: '100px', paddingRight: '100px' }}
           onSubmit={this.onSubmit}
           loading={sendingPostRequest}
           error={!!postRequestError}
         >
+          <Header as="h3">Create a Post</Header>
           {journey.id &&
             <Form.Field>
               <Link to={`/journeys/${journey.id}`}>
@@ -90,7 +89,6 @@ class CreatePost extends Component {
           <Form.Field>
             <label>Content</label>
             <Editor
-              name="text"
               onChange={this.changeContent}
               text={post.content}
               options={{

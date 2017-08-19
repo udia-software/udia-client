@@ -14,9 +14,7 @@ import {
   getPostRequest,
   editPostRequest
 } from "../../modules/post/sagas.actions";
-import Editor from 'react-medium-editor';
-import 'medium-editor/dist/css/medium-editor.css';
-import 'medium-editor/dist/css/themes/bootstrap.css';
+import Editor from '../Shared/Editor';;
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -98,7 +96,6 @@ class EditPost extends Component {
           <Form.Field>
             <label>Content</label>
             <Editor
-              name='text'
               onChange={this.changeContent}
               text={post.content}
               options={{
