@@ -1,4 +1,4 @@
-import { get, post } from "../baseApi";
+import { get, post, del } from "../baseApi";
 
 export function createJourney(title, description) {
   return post("/journeys", {
@@ -9,4 +9,8 @@ export function createJourney(title, description) {
 
 export function getJourney(id) {
   return get(`/journeys/${id}`);
+}
+
+export function deleteJourney(id) {
+  return del(`/journeys/${id}`);
 }

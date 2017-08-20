@@ -9,12 +9,13 @@ import {
   Card,
   Button,
   Grid,
-  Visibility
+  Visibility,
+  Confirm
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
-import { getJourneyRequest } from "../../modules/journey/sagas.actions";
+import { getJourneyRequest, deleteJourneyRequest } from "../../modules/journey/sagas.actions";
 import { setJourney, clearJourneyError } from "../../modules/journey/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 import { clearPosts } from "../../modules/posts/reducer.actions";
@@ -30,7 +31,10 @@ const propTypes = {
     .isRequired,
   postsPagination: PropTypes.object.isRequired,
   posts: PropTypes.array.isRequired,
-  currentUser: PropTypes.object
+  currentUser: PropTypes.object,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const defaultProps = {
@@ -41,7 +45,8 @@ class Journey extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      endOfFeed: false
+      endOfFeed: false,
+      confirmModalOpen: false
     };
   }
 
@@ -83,6 +88,13 @@ class Journey extends Component {
       this.setState({ endOfFeed: true });
     }
   };
+
+  deleteJourney = () => {
+    const journeyId = this.props.match.params.id;
+    const { history } = this.props;
+    this.props.dispatch(deleteJourneyRequest({ id: journeyId }));
+    history.push('/');
+  }
 
   render = () => {
     const {
@@ -130,7 +142,7 @@ class Journey extends Component {
               </Grid>
             }
             <Visibility onUpdate={this.onVisibilityUpdate}>
-              <Card.Group style={{marginTop: '10px'}}>
+              <Card.Group style={{ marginTop: '10px' }}>
                 {posts.map((post) => (
                   <Card href={`/posts/${post.id}`} key={post.id}>
                     <Card.Content>
@@ -147,6 +159,26 @@ class Journey extends Component {
                 ))}
               </Card.Group>
             </Visibility>
+            {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
+              <div>
+                <Divider />
+                <Grid>
+                  <Grid.Column textAlign='center'>
+                    <Button
+                      onClick={() => this.setState({ confirmModalOpen: true })}
+                      content='Delete Journey'
+                      color='red'
+                      icon='delete' />
+                    <Confirm
+                      content="Are you sure you wish to delete this journey?"
+                      open={this.state.confirmModalOpen}
+                      onCancel={() => this.setState({ confirmModalOpen: false })}
+                      onConfirm={this.deleteJourney}
+                    />
+                  </Grid.Column>
+                </Grid>
+              </div>
+            }
           </div>
         }
       </div>

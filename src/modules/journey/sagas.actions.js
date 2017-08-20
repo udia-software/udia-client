@@ -1,4 +1,4 @@
-import { CREATE_JOURNEY_REQUEST, GET_JOURNEY_REQUEST } from "./constants";
+import { CREATE_JOURNEY_REQUEST, GET_JOURNEY_REQUEST, DELETE_JOURNEY_REQUEST } from "./constants";
 
 /**
  * Saga action for triggering an async Create Journey HTTP request
@@ -21,6 +21,18 @@ export function createJourneyRequest(data) {
 export function getJourneyRequest(data) {
   return {
     type: GET_JOURNEY_REQUEST,
+    data
+  };
+}
+
+/**
+ * Saga action for triggering an async Delete Journey HTTP request
+ * @param {Object} data - Saga delete journey payload
+ * @param {string} data.id - ID of journey to delete
+ */
+export function deleteJourneyRequest(data) {
+  return {
+    type: DELETE_JOURNEY_REQUEST,
     data
   };
 }
