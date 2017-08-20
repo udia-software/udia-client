@@ -16,6 +16,7 @@ import ContentText from "../Shared/ContentText";
 import ContentHtml from "../Shared/ContentHtml";
 import CommentsContainer from "./CommentsContainer";
 import FromTime from "../Shared/FromTime";
+import DiffTime from "../Shared/DiffTime";
 
 const propTypes = {
   postRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
@@ -29,7 +30,8 @@ const defaultProps = {
   sendingPostRequest: true,
   post: {},
   presence: {},
-  currentUsername: ""
+  currentUsername: "",
+  perceptions: {}
 };
 
 const Post = ({
@@ -37,7 +39,8 @@ const Post = ({
   sendingPostRequest,
   post,
   presence,
-  currentUsername
+  currentUsername,
+  perceptions
 }) => {
   return (
     <Container>
@@ -51,9 +54,8 @@ const Post = ({
                   <Link to={`/journeys/${post.journey.id}`}>
                     <Icon name="road" />{post.journey.title}
                   </Link>
-                </Item.Meta>
-              }
-              <Item.Header as="h3" style={{ marginTop: '10px' }}>
+                </Item.Meta>}
+              <Item.Header as="h3" style={{ marginTop: "10px" }}>
                 {post.title}
               </Item.Header>
               <Item.Description>
@@ -97,10 +99,10 @@ const Post = ({
                   trigger={
                     !!username
                       ? <Link to={`/users/${username}`}>
-                        {username} ({presence[username].metas.length})
+                          {username} ({presence[username].metas.length})
                         </Link>
                       : <span>
-                        anonymous ({presence[username].metas.length})
+                          anonymous ({presence[username].metas.length})
                         </span>
                   }
                   content={presence[username].metas.map(meta => {
@@ -110,6 +112,24 @@ const Post = ({
                       </List.Item>
                     );
                   })}
+                />
+              </List.Content>
+            </List.Item>
+          );
+        })}
+      </List>
+      <h4>Perceptions ({perceptions.length})</h4>
+      <List>
+        {perceptions.map(perception => {
+          return (
+            <List.Item key={perception.id}>
+              <List.Content>
+                {perception.user.username} :
+                <FromTime time={moment(perception.start_time)} />
+                {" watched for "}
+                <DiffTime
+                  startTime={moment(perception.start_time)}
+                  endTime={perception.end_time ? moment(perception.end_time) : null}
                 />
               </List.Content>
             </List.Item>

@@ -1,48 +1,48 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import { Provider } from 'react-redux';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { createStore, applyMiddleware } from "redux";
+import createSagaMiddleware from "redux-saga";
+import { Provider } from "react-redux";
 // import { createLogger } from 'redux-logger';
 
-import registerServiceWorker from './registerServiceWorker';
-import reducer from './modules/rootReducer';
-import rootSaga from './modules/rootSaga';
-import App from './components/App';
+import { unregister } from "./registerServiceWorker";
+import reducer from "./modules/rootReducer";
+import rootSaga from "./modules/rootSaga";
+import App from "./components/App";
 
 const sagaMiddleware = createSagaMiddleware();
 // For debugging purposes
 // const logger = createLogger();
 // const store = createStore(reducer, applyMiddleware(logger, sagaMiddleware));
 const store = createStore(reducer, applyMiddleware(sagaMiddleware));
-const supportsHistory = 'pushState' in window.history;
+const supportsHistory = "pushState" in window.history;
 
 sagaMiddleware.run(rootSaga);
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter forceRefresh={!supportsHistory}>
       <App />
     </BrowserRouter>
-  </Provider>, 
+  </Provider>,
   rootElement
 );
 
 if (module.hot) {
-  module.hot.accept('./components/App', () => {
-    const NextApp = require('./components/App').default;
+  module.hot.accept("./components/App", () => {
+    const NextApp = require("./components/App").default;
     ReactDOM.render(
       <Provider store={store}>
         <BrowserRouter forceRefersh={!supportsHistory}>
           <NextApp />
         </BrowserRouter>
-      </Provider>, 
-      rootElement      
-    )
-  })
+      </Provider>,
+      rootElement
+    );
+  });
 }
 
-registerServiceWorker();
+unregister();

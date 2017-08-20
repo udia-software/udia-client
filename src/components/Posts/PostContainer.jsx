@@ -12,6 +12,7 @@ import {
   handlePresenceDiff,
   clearPresenceState
 } from "../../modules/presence/reducer.actions";
+import { getPerceptionsRequest } from "../../modules/perceptions/sagas.actions";
 import { getSocket } from "../../modules/socket";
 import Post from "./Post";
 
@@ -25,15 +26,19 @@ const propTypes = {
 class PostContainer extends Component {
   constructor(props) {
     super(props);
-    this.socket = getSocket();
-  }
-
-  componentWillMount = () => {
     this.props.dispatch(setEditPostSuccess(false));
+    this.socket = getSocket();
     const postId = this.props.match.params.id;
     this.props.dispatch(getPostRequest({ id: postId }));
     this.socket.connect();
     this.initializePostSocket(postId);
+  }
+
+  componentWillMount = () => {
+    const postId = this.props.match.params.id;
+    this.props.dispatch(getPerceptionsRequest({
+      post_id: postId
+    }));
   };
 
   componentWillUnmount = () => {
@@ -61,6 +66,7 @@ class PostContainer extends Component {
 
   render = () => {
     const { sendingPostRequest, postRequestError, post } = this.props.post;
+    const { perceptions } = this.props.perceptions
     const { presence } = this.props.presence;
     const currentUsername = (this.props.auth.currentUser || {}).username || "";
     return (
@@ -70,6 +76,7 @@ class PostContainer extends Component {
         post={post}
         presence={presence}
         currentUsername={currentUsername}
+        perceptions={perceptions}
       />
     );
   };
@@ -81,7 +88,8 @@ function mapStateToProps(state) {
   return {
     post: state.post,
     presence: state.presence,
-    auth: state.auth
+    auth: state.auth,
+    perceptions: state.perceptions
   };
 }
 
