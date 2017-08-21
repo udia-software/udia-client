@@ -5,10 +5,13 @@ import {
   Button,
   Container,
   Dimmer,
-  Feed,
+  Card,
   Loader,
   Segment,
-  Visibility
+  Visibility,
+  Icon,
+  Grid,
+  Header
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -77,6 +80,19 @@ class PostList extends Component {
     this.props.dispatch(clearPosts());
   };
 
+  getTextFromHtml = (html) => {
+    let text = html.replace(/<(.|\n)*?>/g, '');
+    text = text.replace(/\s\s+/g, '');
+    text = text.replace(/(&nbsp;)+/g, ' ');
+    text = text.replace(/\?/g, '? ');
+    text = text.replace(/\./g, '. ');
+    text = text.replace(/,/g, ', ');
+    text = text.replace(/!/g, '! ');
+    text = text.replace(/;/g, '; ');
+    text = text.substring(0, 350) + '...';
+    return text;
+  };
+
   render = () => {
     const { currentlyGettingPosts, posts, postsRequestError } = this.props;
     const { endOfFeed } = this.state;
@@ -84,64 +100,51 @@ class PostList extends Component {
     return (
       <Container>
         <Visibility onUpdate={this.onVisibilityUpdate}>
-          <Feed>
+          <Card.Group>
             {posts.map(post => (
-              <Feed.Event key={post.id}>
-                <Feed.Content>
-                  <Feed.Summary>
-                    <Feed.User as={Link} to={`/users/${post.author.username}`}>
+              <Card key={post.id} fluid>
+                <Card.Content>
+                  <Grid verticalAlign='bottom'>
+                    <Grid.Row columns={2}>
+                      <Grid.Column>
+                        <Header as={Link} to={`/posts/${post.id}`}>
+                          {post.title}
+                        </Header>
+                      </Grid.Column>
+                      <Grid.Column textAlign='right'>
+                        <Header as={Link} to={`/posts/${post.id}`} style={{fontSize: '1em'}}>
+                          <Icon name="road" />{post.journey.title}
+                        </Header>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                  <Card.Meta>
+                    <FromTime time={moment(post.inserted_at)} />
+                  </Card.Meta>
+                </Card.Content>
+                <Card.Content>
+                  <Card.Description>
+                    {this.getTextFromHtml(post.content)}
+                  </Card.Description>
+                </Card.Content>
+                <Card.Content>
+                  <Card.Meta>
+                    <Icon name='user' />
+                    <Link to={`/users/${post.author.username}`}>
                       {post.author.username}
-                    </Feed.User>
-                    {" wrote "}
-                    <Link to={`/posts/${post.id}`}>{post.title}</Link>
-                    {post.journey &&
-                      <span>
-                        {" | "}
-                        <Link to={`/journeys/${post.journey.id}`}>
-                          {post.journey.title}
-                        </Link>
-                      </span>}
-                    <Feed.Date>
-                      <FromTime time={moment(post.inserted_at)} />
-                    </Feed.Date>
-                  </Feed.Summary>
-                  {/*}
-                  <Feed.Extra text>
-                    <Segment compact>
-                      {post.type === "text" &&
-                        <ContentText content={post.content} />}
-                      {post.type === "html" &&
-                        <ContentHtml content={post.content} />}
-                    </Segment>
-                  </Feed.Extra>
-                  {*/}
-                  <Feed.Meta>
-                    {moment(post.inserted_at).format("X") !==
-                      moment(post.updated_at).format("X") &&
-                      <span>
-                        {"Last updated "}
-                        <FromTime time={moment(post.updated_at)} />
-                        .
-                      </span>}
-                    <Link to={`/posts/${post.id}`}>
-                      Show Post
                     </Link>
-                  </Feed.Meta>
-                </Feed.Content>
-              </Feed.Event>
+                  </Card.Meta>
+                </Card.Content>
+              </Card>
             ))}
             {!endOfFeed &&
               <Segment textAlign="center">
                 <Dimmer active={currentlyGettingPosts} inverted>
                   <Loader />
                 </Dimmer>
-                <Feed.Event>
-                  <Feed.Content>
-                    <Button onClick={this.getNextPage}>Load More Posts</Button>
-                  </Feed.Content>
-                </Feed.Event>
+                <Button onClick={this.getNextPage}>Load More Posts</Button>
               </Segment>}
-          </Feed>
+          </Card.Group>
         </Visibility>
         <Error error={postsRequestError} header="Get Posts Failed!" />
       </Container>
