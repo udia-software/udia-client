@@ -52,7 +52,7 @@ class User extends Component {
       }
     ];
     return (
-      <Container style={{ marginTop: "30px" }}>
+      <Container>
         <Error error={userRequestError} header="Get User Failed!" />
         <Dimmer active={currentlyGettingUser} inverted>
           <Loader />

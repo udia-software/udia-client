@@ -10,7 +10,8 @@ import {
   Button,
   Grid,
   Visibility,
-  Confirm
+  Confirm,
+  Container
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -106,29 +107,50 @@ class Journey extends Component {
     } = this.props;
 
     return (
-      <div style={{ padding: '40px' }}>
+      <div className={'pad'}>
         <Error error={journeyRequestError} header="Journey Fetch Failed!" />
         <Loader active={sendingJourneyRequest} inline='centered' />
         {journey.id &&
-          <div>
-            <Header as='h1' icon textAlign="center">
-              <Icon name='road' circular />
-              {journey.title}
-              <Header.Subheader>
-                <Link to={`/users/${journey.explorer.username}`}>
-                  {journey.explorer.username}{' '}
-                </Link>
-                <span>started this journey on {moment(journey.start_date).format('MMMM Do, YYYY')}</span>
-                {moment(journey.inserted_at).format("X") !==
-                  moment(journey.updated_at).format("X") &&
-                  <span>Last updated {moment(journey.updated_at).fromNow()}.</span>}
-              </Header.Subheader>
-              <Header.Subheader style={{ paddingTop: '10px' }}>
+          <Container>
+            <Grid divided='vertically' verticalAlign='middle'>
+              <Grid.Row columns={3}>
+                <Grid.Column>
+                  <Header as='h1' icon textAlign="center">
+                    <Icon name='road' circular />
+                  </Header>
+                </Grid.Column>
+                <Grid.Column textAlign='center'>
+                  <Header as='h1' icon textAlign='center'>
+                    <Header.Content>
+                      {journey.title}
+                    </Header.Content>
+                  </Header>
+                </Grid.Column>
+                <Grid.Column textAlign='center'>
+                  <Header as='h3'>
+                    <Link to={`/users/${journey.explorer.username}`}>
+                      {journey.explorer.username}{' '}
+                    </Link>
+                  </Header>
+                  {journey.end_date ?
+                    <p>
+                      Journey travelled from {' '}
+                      {moment(journey.start_date).format('MMM D, YYYY')}
+                      {' to '}{moment(journey.end_date).format('MMM D, YYYY')}
+                    </p>
+                    :
+                    <p>Started journey {moment(journey.start_date).format('MMMM Do, YYYY')}</p>
+                  }
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+            <Container>
+              <p className={'pad-left pad-right'}>
                 {journey.description.split("\n").map((item, key) => {
                   return <span key={key}>{item}<br /></span>;
                 })}
-              </Header.Subheader>
-            </Header>
+              </p>
+            </Container>
             <Divider />
             {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
               <Grid>
@@ -185,7 +207,7 @@ class Journey extends Component {
                 </Grid>
               </div>
             }
-          </div>
+          </Container>
         }
       </div>
     );

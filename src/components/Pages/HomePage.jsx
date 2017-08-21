@@ -29,7 +29,7 @@ class HomePage extends React.Component {
     const loggedIn = !!Object.keys(currentUser || {}).length;
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         <Grid stackable reversed="mobile vertically">
           <Grid.Column width={10}>
             <PostList />

@@ -84,7 +84,7 @@ class CreateJourney extends Component {
     }
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         <Header as="h3">Edit a Journey</Header>
         <Form
           style={{ minHeight: '500px' }}

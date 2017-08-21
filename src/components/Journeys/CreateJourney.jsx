@@ -69,7 +69,7 @@ class CreateJourney extends Component {
     } = this.props;
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         {/* When creating a journey, if the ID is set, journey is created. */
           !!journey.id && <Redirect to={`/journeys/${journey.id}`} />}
         <Header as="h3">Start a Journey</Header>

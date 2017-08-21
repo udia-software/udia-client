@@ -9,3 +9,13 @@ p {
 .ui.feed>.event>.content .extra.text {
     max-width: 100% !important;
 }
+
+.pad-top {
+    padding-top: 30px;
+}
+
+.pad {
+    padding-top: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
