@@ -4,7 +4,9 @@ import {
   CLEAR_JOURNEY_ERROR,
   SET_JOURNEY,
   SET_JOURNEY_TITLE,
-  SET_JOURNEY_DESCRIPTION
+  SET_JOURNEY_DESCRIPTION,
+  SET_JOURNEY_START_DATE,
+  SET_JOURNEY_END_DATE
 } from "./constants";
 
 const initialState = {
@@ -12,7 +14,9 @@ const initialState = {
   journeyRequestError: "",
   journey: {},
   title: "",
-  description: ""
+  description: "",
+  start_date: new Date(),
+  end_date: null
 };
 
 function journeyReducer(state = initialState, action) {
@@ -46,6 +50,16 @@ function journeyReducer(state = initialState, action) {
       return {
         ...state,
         description: action.data
+      };
+    case SET_JOURNEY_START_DATE:
+      return {
+        ...state,
+        start_date: action.data
+      };
+    case SET_JOURNEY_END_DATE:
+      return {
+        ...state,
+        end_date: action.data
       };
     default:
       return state;

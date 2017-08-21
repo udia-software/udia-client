@@ -34,7 +34,7 @@ const propTypes = {
   currentUser: PropTypes.object,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
-  }).isRequired,
+  }).isRequired
 };
 
 const defaultProps = {
