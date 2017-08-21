@@ -118,7 +118,7 @@ class Journey extends Component {
                 <Link to={`/users/${journey.explorer.username}`}>
                   {journey.explorer.username}{' '}
                 </Link>
-                <span>started this journey on {moment(journey.inserted_at).format('MMMM Do, YYYY')}</span>
+                <span>started this journey on {moment(journey.start_date).format('MMMM Do, YYYY')}</span>
                 {moment(journey.inserted_at).format("X") !==
                   moment(journey.updated_at).format("X") &&
                   <span>Last updated {moment(journey.updated_at).fromNow()}.</span>}
@@ -175,6 +175,12 @@ class Journey extends Component {
                       onCancel={() => this.setState({ confirmModalOpen: false })}
                       onConfirm={this.deleteJourney}
                     />
+                    <Button
+                      as={Link}
+                      to={`/journeys/${journey.id}/edit`}
+                      content='Edit Journey'
+                      color='yellow'
+                      icon='edit' />
                   </Grid.Column>
                 </Grid>
               </div>

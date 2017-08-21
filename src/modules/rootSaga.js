@@ -10,7 +10,7 @@ import {
 import { getPostFlow, createPostFlow, editPostFlow } from "./post/sagas";
 import { getPostsFlow } from "./posts/sagas";
 import { getUserFlow } from "./user/sagas";
-import { getJourneyFlow, createJourneyFlow, deleteJourneyFlow } from "./journey/sagas";
+import { getJourneyFlow, createJourneyFlow, deleteJourneyFlow, editJourneyFlow } from "./journey/sagas";
 import { getJourneysFlow } from "./journeys/sagas";
 import { GET_PERCEPTIONS_REQUEST } from "./perceptions/constants";
 import { getPerceptionsFlow } from "./perceptions/sagas";
@@ -30,6 +30,7 @@ export default function* root() {
     yield effects.fork(getPostsFlow),
     yield effects.fork(getUserFlow),
     yield effects.fork(getJourneyFlow),
+    yield effects.fork(editJourneyFlow),
     yield effects.fork(createJourneyFlow),
     yield effects.fork(deleteJourneyFlow),
     yield effects.fork(getJourneysFlow),

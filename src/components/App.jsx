@@ -8,6 +8,7 @@ import Account from "./Auth/Account";
 import Signin from "./Auth/Signin";
 import Signup from "./Auth/Signup";
 import CreateJourney from "./Journeys/CreateJourney";
+import EditJourney from "./Journeys/EditJourney";
 import Journey from "./Journeys/Journey";
 import CreatePost from "./Posts/CreatePost";
 import EditPost from "./Posts/EditPost";
@@ -63,10 +64,8 @@ class App extends Component {
                 <Route path="/signin" component={Signin} />
                 <Route path="/signup" component={Signup} />
                 <Route path="/users/:username" component={User} />
-                <PrivateRoute
-                  path="/journeys/create"
-                  component={CreateJourney}
-                />
+                <PrivateRoute path="/journeys/create" component={CreateJourney} />
+                <PrivateRoute path="/journeys/:id/edit" component={EditJourney} />
                 <Route path="/journeys/:id" component={Journey} />
                 <PrivateRoute path="/posts/create/:journeyId" component={CreatePost} />
                 <PrivateRoute path="/posts/create" component={CreatePost} />

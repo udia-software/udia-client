@@ -1,13 +1,19 @@
 import { effects } from "redux-saga";
-import { createJourney, getJourney, deleteJourney } from "./api";
-import { CREATE_JOURNEY_REQUEST, GET_JOURNEY_REQUEST, DELETE_JOURNEY_REQUEST } from "./constants";
+import { createJourney, getJourney, deleteJourney, editJourney } from "./api";
+import { 
+  CREATE_JOURNEY_REQUEST, 
+  GET_JOURNEY_REQUEST, 
+  DELETE_JOURNEY_REQUEST, 
+  EDIT_JOURNEY_REQUEST 
+} from "./constants";
 import {
   isSendingJourney,
   setJourneyError,
   clearJourneyError,
   setJourney,
   setJourneyTitle,
-  setJourneyDescription
+  setJourneyDescription,
+  setEditJourneySuccess
 } from "./reducer.actions";
 
 /**
@@ -18,9 +24,9 @@ import {
  */
 function* createJourneyCall(data) {
   yield effects.put(isSendingJourney(true));
-  const { title, description } = data;
+  const { title, description, start_date, end_date } = data;
   try {
-    return yield effects.call(createJourney, title, description);
+    return yield effects.call(createJourney, title, description, start_date, end_date);
   } catch (exception) {
     yield effects.put(setJourneyError(exception));
     return false;
@@ -57,6 +63,23 @@ function* deleteJourneyCall(data) {
   const { id } = data;
   try {
     return yield effects.call(deleteJourney, id);
+  } catch (exception) {
+    yield effects.put(setJourneyError(exception));
+    return false;
+  } finally {
+    yield effects.put(isSendingJourney(false));
+  }
+}
+
+/**
+ * Generator function for editing a journey
+ * @param {Object} data - Edit journey payload
+ */
+function* editJourneyCall(data) {
+  yield effects.put(isSendingJourney(true));
+  const { id } = data;
+  try {
+    return yield effects.call(editJourney, id, data)
   } catch (exception) {
     yield effects.put(setJourneyError(exception));
     return false;
@@ -109,6 +132,19 @@ export function* deleteJourneyFlow() {
       yield effects.put(setJourney({}));
       yield effects.put(clearJourneyError());
       // TODO: Redirect to Journey Page
+    }
+  }
+}
+
+export function* editJourneyFlow() {
+  while (true) {
+    const request = yield effects.take(EDIT_JOURNEY_REQUEST);
+    yield effects.put(setEditJourneySuccess(false));
+    const wasSuccessful = yield effects.call(editJourneyCall, request.data);
+    if (wasSuccessful) {
+      yield effects.put(setJourney(wasSuccessful.data));
+      yield effects.put(clearJourneyError());
+      yield effects.put(setEditJourneySuccess(true));
     }
   }
 }
