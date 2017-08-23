@@ -80,16 +80,20 @@ class PostList extends Component {
     this.props.dispatch(clearPosts());
   };
 
-  getTextFromHtml = (html) => {
-    let text = html.replace(/<(.|\n)*?>/g, '');
-    text = text.replace(/\s\s+/g, '');
-    text = text.replace(/(&nbsp;)+/g, ' ');
-    text = text.replace(/\?/g, '? ');
-    text = text.replace(/\./g, '. ');
-    text = text.replace(/,/g, ', ');
-    text = text.replace(/!/g, '! ');
-    text = text.replace(/;/g, '; ');
-    text = text.substring(0, 350) + '...';
+  getTextFromHtml = html => {
+    let text = html.replace(/<(.|\n)*?>/g, "");
+    text = text.replace(/\s\s+/g, "");
+    text = text.replace(/(&nbsp;)+/g, " ");
+    text = text.replace(/\?/g, "? ");
+    text = text.replace(/\./g, ". ");
+    text = text.replace(/,/g, ", ");
+    text = text.replace(/!/g, "! ");
+    text = text.replace(/;/g, "; ");
+    if (text.length > 350) {
+      text = text.substring(0, 350) + "...";
+    } else {
+      text = text.substring(0, 350);
+    }
     return text;
   };
 
@@ -104,18 +108,23 @@ class PostList extends Component {
             {posts.map(post => (
               <Card key={post.id} fluid>
                 <Card.Content>
-                  <Grid verticalAlign='bottom'>
+                  <Grid verticalAlign="bottom">
                     <Grid.Row columns={2}>
                       <Grid.Column>
                         <Header as={Link} to={`/posts/${post.id}`}>
                           {post.title}
                         </Header>
                       </Grid.Column>
-                      <Grid.Column textAlign='right'>
-                        <Header as={Link} to={`/posts/${post.id}`} style={{fontSize: '1em'}}>
-                          <Icon name="road" />{post.journey.title}
-                        </Header>
-                      </Grid.Column>
+                      {post.journey &&
+                        <Grid.Column textAlign="right">
+                          <Header
+                            as={Link}
+                            to={`/posts/${post.id}`}
+                            style={{ fontSize: "1em" }}
+                          >
+                            <Icon name="road" />{post.journey.title}
+                          </Header>
+                        </Grid.Column>}
                     </Grid.Row>
                   </Grid>
                   <Card.Meta>
@@ -129,7 +138,7 @@ class PostList extends Component {
                 </Card.Content>
                 <Card.Content>
                   <Card.Meta>
-                    <Icon name='user' />
+                    <Icon name="user" />
                     <Link to={`/users/${post.author.username}`}>
                       {post.author.username}
                     </Link>
