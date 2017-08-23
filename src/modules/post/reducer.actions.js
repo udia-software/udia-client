@@ -79,7 +79,7 @@ export function setPostContent(content) {
 }
 
 /**
- * Reducer actino for setting the post editing success value
+ * Reducer action for setting the post editing success value
  * @param {boolean} successful - Whether or not the edit post request was successful
  */
 export function setEditPostSuccess(successful) {

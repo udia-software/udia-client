@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Grid, Segment, Label, Container } from "semantic-ui-react";
+import { Grid, Segment, Label, Container, Divider } from "semantic-ui-react";
+import { Link } from 'react-router-dom';
 import PostList from "../Posts/PostList";
 import JourneyList from "../Journeys/JourneyList";
 
@@ -28,7 +29,7 @@ class HomePage extends React.Component {
     const loggedIn = !!Object.keys(currentUser || {}).length;
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         <Grid stackable reversed="mobile vertically">
           <Grid.Column width={10}>
             <PostList />
@@ -36,8 +37,10 @@ class HomePage extends React.Component {
           {loggedIn &&
             <Grid.Column width={6}>
               <Segment>
-                <Label color="blue" ribbon="right">My Journeys</Label>
+                <Label color="blue" ribbon="right">My Journeys</Label>    
                 <JourneyList user={currentUser} />
+                <Divider />
+                <Link to={`/journeys/create`}>Start a New Journey</Link>
               </Segment>
             </Grid.Column>}
         </Grid>

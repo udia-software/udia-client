@@ -14,17 +14,24 @@ import {
   setJourneyEndDate,
   clearJourneyError
 } from "../../modules/journey/reducer.actions";
-import { createJourneyRequest } from "../../modules/journey/sagas.actions";
+import { getJourneyRequest, editJourneyRequest } from "../../modules/journey/sagas.actions";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   sendingJourneyRequest: PropTypes.bool.isRequired,
   journeyRequestError: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     .isRequired,
-  journey: PropTypes.object.isRequired
+  journey: PropTypes.object.isRequired,
+  editSuccess: PropTypes.bool
 };
 
 class CreateJourney extends Component {
+
+  componentWillMount = () => {
+    const journeyId = this.props.match.params.id;
+    this.props.dispatch(getJourneyRequest({ id: journeyId }));
+  }
+
   changeTitle = event => {
     this.props.dispatch(setJourneyTitle(event.target.value));
     this.props.dispatch(clearJourneyError());
@@ -41,8 +48,8 @@ class CreateJourney extends Component {
   }
 
   changeEndDate = date => {
-    const { journey } = this.props;
-    if (date < journey.start_date) {
+    const { start_date } = this.props;
+    if (date < start_date) {
       this.props.dispatch(setJourneyStartDate(date.toDate()));
     }
     this.props.dispatch(setJourneyEndDate(date.toDate()));
@@ -53,7 +60,9 @@ class CreateJourney extends Component {
     event.preventDefault();
     const { journey } = this.props;
 
-    this.props.dispatch(createJourneyRequest(journey));
+    console.log(journey)
+
+    this.props.dispatch(editJourneyRequest(journey));
   };
 
   toggleEndDateCheckbox = () => {
@@ -62,17 +71,21 @@ class CreateJourney extends Component {
   }
 
   render = () => {
+
     const {
       journey,
       sendingJourneyRequest,
-      journeyRequestError
+      journeyRequestError,
+      editSuccess
     } = this.props;
+    
+    if (!!editSuccess) {
+      return <Redirect to={`/journeys/${journey.id}`} />;
+    }
 
     return (
       <Container className={'pad-top'}>
-        {/* When creating a journey, if the ID is set, journey is created. */
-          !!journey.id && <Redirect to={`/journeys/${journey.id}`} />}
-        <Header as="h3">Start a Journey</Header>
+        <Header as="h3">Edit a Journey</Header>
         <Form
           style={{ minHeight: '500px' }}
           onSubmit={this.onSubmit}

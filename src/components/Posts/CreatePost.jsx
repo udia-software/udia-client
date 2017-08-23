@@ -65,14 +65,14 @@ class CreatePost extends Component {
     }
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         <Form
-          style={{ paddingLeft: '100px', paddingRight: '100px' }}
+          style={{ paddingLeft: '100px', paddingRight: '100px'}}
           onSubmit={this.onSubmit}
           loading={sendingPostRequest}
           error={!!postRequestError}
         >
-          <Header as="h3">Create a Post</Header>
+          <Header as="h3">Write a Post</Header>
           {journey.id &&
             <Form.Field>
               <Link to={`/journeys/${journey.id}`}>

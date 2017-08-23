@@ -79,7 +79,7 @@ class EditPost extends Component {
     }
 
     return (
-      <Container>
+      <Container className={'pad-top'}>
         <Header as="h3">Edit Post</Header>
         <Form
           onSubmit={this.onSubmit}

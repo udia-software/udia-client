@@ -9,12 +9,14 @@ import {
   Card,
   Button,
   Grid,
-  Visibility
+  Visibility,
+  Confirm,
+  Container
 } from "semantic-ui-react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Error from "../Shared/Error";
-import { getJourneyRequest } from "../../modules/journey/sagas.actions";
+import { getJourneyRequest, deleteJourneyRequest } from "../../modules/journey/sagas.actions";
 import { setJourney, clearJourneyError } from "../../modules/journey/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 import { clearPosts } from "../../modules/posts/reducer.actions";
@@ -30,7 +32,10 @@ const propTypes = {
     .isRequired,
   postsPagination: PropTypes.object.isRequired,
   posts: PropTypes.array.isRequired,
-  currentUser: PropTypes.object
+  currentUser: PropTypes.object,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired
 };
 
 const defaultProps = {
@@ -41,7 +46,8 @@ class Journey extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      endOfFeed: false
+      endOfFeed: false,
+      confirmModalOpen: false
     };
   }
 
@@ -84,6 +90,13 @@ class Journey extends Component {
     }
   };
 
+  deleteJourney = () => {
+    const journeyId = this.props.match.params.id;
+    const { history } = this.props;
+    this.props.dispatch(deleteJourneyRequest({ id: journeyId }));
+    history.push('/');
+  }
+
   render = () => {
     const {
       sendingJourneyRequest,
@@ -94,29 +107,50 @@ class Journey extends Component {
     } = this.props;
 
     return (
-      <div style={{ padding: '40px' }}>
+      <div className={'pad'}>
         <Error error={journeyRequestError} header="Journey Fetch Failed!" />
         <Loader active={sendingJourneyRequest} inline='centered' />
         {journey.id &&
-          <div>
-            <Header as='h1' icon textAlign="center">
-              <Icon name='road' circular />
-              {journey.title}
-              <Header.Subheader>
-                <Link to={`/users/${journey.explorer.username}`}>
-                  {journey.explorer.username}{' '}
-                </Link>
-                <span>started this journey on {moment(journey.inserted_at).format('MMMM Do, YYYY')}</span>
-                {moment(journey.inserted_at).format("X") !==
-                  moment(journey.updated_at).format("X") &&
-                  <span>Last updated {moment(journey.updated_at).fromNow()}.</span>}
-              </Header.Subheader>
-              <Header.Subheader style={{ paddingTop: '10px' }}>
+          <Container>
+            <Grid divided='vertically' verticalAlign='middle'>
+              <Grid.Row columns={3}>
+                <Grid.Column>
+                  <Header as='h1' icon textAlign="center">
+                    <Icon name='road' circular />
+                  </Header>
+                </Grid.Column>
+                <Grid.Column textAlign='center'>
+                  <Header as='h1' icon textAlign='center'>
+                    <Header.Content>
+                      {journey.title}
+                    </Header.Content>
+                  </Header>
+                </Grid.Column>
+                <Grid.Column textAlign='center'>
+                  <Header as='h3'>
+                    <Link to={`/users/${journey.explorer.username}`}>
+                      {journey.explorer.username}{' '}
+                    </Link>
+                  </Header>
+                  {journey.end_date ?
+                    <p>
+                      Journey travelled from {' '}
+                      {moment(journey.start_date).format('MMM D, YYYY')}
+                      {' to '}{moment(journey.end_date).format('MMM D, YYYY')}
+                    </p>
+                    :
+                    <p>Started journey {moment(journey.start_date).format('MMMM Do, YYYY')}</p>
+                  }
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+            <Container>
+              <p className={'pad-left pad-right'}>
                 {journey.description.split("\n").map((item, key) => {
                   return <span key={key}>{item}<br /></span>;
                 })}
-              </Header.Subheader>
-            </Header>
+              </p>
+            </Container>
             <Divider />
             {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
               <Grid>
@@ -130,7 +164,7 @@ class Journey extends Component {
               </Grid>
             }
             <Visibility onUpdate={this.onVisibilityUpdate}>
-              <Card.Group style={{marginTop: '10px'}}>
+              <Card.Group style={{ marginTop: '10px' }}>
                 {posts.map((post) => (
                   <Card href={`/posts/${post.id}`} key={post.id}>
                     <Card.Content>
@@ -147,7 +181,33 @@ class Journey extends Component {
                 ))}
               </Card.Group>
             </Visibility>
-          </div>
+            {currentUser && journey.explorer && journey.explorer.username === currentUser.username &&
+              <div>
+                <Divider />
+                <Grid>
+                  <Grid.Column textAlign='center'>
+                    <Button
+                      onClick={() => this.setState({ confirmModalOpen: true })}
+                      content='Delete Journey'
+                      color='red'
+                      icon='delete' />
+                    <Confirm
+                      content="Are you sure you wish to delete this journey?"
+                      open={this.state.confirmModalOpen}
+                      onCancel={() => this.setState({ confirmModalOpen: false })}
+                      onConfirm={this.deleteJourney}
+                    />
+                    <Button
+                      as={Link}
+                      to={`/journeys/${journey.id}/edit`}
+                      content='Edit Journey'
+                      color='yellow'
+                      icon='edit' />
+                  </Grid.Column>
+                </Grid>
+              </div>
+            }
+          </Container>
         }
       </div>
     );

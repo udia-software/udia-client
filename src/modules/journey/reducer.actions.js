@@ -4,7 +4,10 @@ import {
   CLEAR_JOURNEY_ERROR,
   SET_JOURNEY,
   SET_JOURNEY_TITLE,
-  SET_JOURNEY_DESCRIPTION
+  SET_JOURNEY_DESCRIPTION,
+  SET_JOURNEY_START_DATE,
+  SET_JOURNEY_END_DATE,
+  SET_EDIT_JOURNEY_SUCCESS
 } from "./constants";
 
 /**
@@ -74,5 +77,38 @@ export function setJourneyDescription(description) {
   return {
     type: SET_JOURNEY_DESCRIPTION,
     data: description
+  };
+}
+
+/**
+ * Reducer action for setting the journey start date on create/update.
+ * @param {string} date - The start date of the journey
+ */
+export function setJourneyStartDate(date) {
+  return {
+    type: SET_JOURNEY_START_DATE,
+    data: date
+  };
+}
+
+/**
+ * Reducer action for setting the journey end date on create/update.
+ * @param {string} date - The end date of the journey
+ */
+export function setJourneyEndDate(date) {
+  return {
+    type: SET_JOURNEY_END_DATE,
+    data: date
+  };
+}
+
+/**
+ * Reducer action for setting the journey editing success value
+ * @param {boolean} successful - Whether or not the edit journey request was successful
+ */
+export function setEditJourneySuccess(successful) {
+  return {
+    type: SET_EDIT_JOURNEY_SUCCESS,
+    data: successful
   };
 }

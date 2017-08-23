@@ -11,7 +11,10 @@ import {
 const initialState = {
   sendingPostRequest: false,
   postRequestError: "",
-  post: {},
+  post: {
+    title: "",
+    content: ""
+  },
   editSuccess: false
 };
 
