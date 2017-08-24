@@ -93,7 +93,7 @@ class CreatePost extends Component {
               text={post.content}
               options={{
                 toolbar: {
-                  buttons: ["bold", "italic", "underline", "anchor"]
+                  buttons: ["bold", "italic", "underline", "anchor", 'h2', 'h3', 'quote']
                 },
                 placeholder: {
                   text: "Write a post... (highlight text for formatting options)"

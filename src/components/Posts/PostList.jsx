@@ -119,7 +119,7 @@ class PostList extends Component {
                         <Grid.Column textAlign="right">
                           <Header
                             as={Link}
-                            to={`/posts/${post.id}`}
+                            to={`/journeys/${post.journey.id}`}
                             style={{ fontSize: "1em" }}
                           >
                             <Icon name="road" />{post.journey.title}
