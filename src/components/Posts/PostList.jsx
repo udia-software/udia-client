@@ -19,8 +19,7 @@ import Error from "../Shared/Error";
 import FromTime from "../Shared/FromTime";
 import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
-// import ContentText from "../Shared/ContentText";
-// import ContentHtml from "../Shared/ContentHtml";
+import ContentHtml from "../Shared/ContentHtml";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -81,6 +80,7 @@ class PostList extends Component {
   };
 
   getTextFromHtml = html => {
+    let iframes = /<(iframe).*?>/g.exec(html);
     let text = html.replace(/<(.|\n)*?>/g, "");
     text = text.replace(/\s\s+/g, "");
     text = text.replace(/(&nbsp;)+/g, " ");
@@ -93,6 +93,9 @@ class PostList extends Component {
       text = text.substring(0, 350) + "...";
     } else {
       text = text.substring(0, 350);
+    }
+    if (iframes && iframes[0]) {
+      text = '<p>' + text + '</p>' + iframes[0];
     }
     return text;
   };
@@ -119,7 +122,7 @@ class PostList extends Component {
                         <Grid.Column textAlign="right">
                           <Header
                             as={Link}
-                            to={`/posts/${post.id}`}
+                            to={`/journeys/${post.journey.id}`}
                             style={{ fontSize: "1em" }}
                           >
                             <Icon name="road" />{post.journey.title}
@@ -133,7 +136,7 @@ class PostList extends Component {
                 </Card.Content>
                 <Card.Content>
                   <Card.Description>
-                    {this.getTextFromHtml(post.content)}
+                    <ContentHtml content={this.getTextFromHtml(post.content)} />
                   </Card.Description>
                 </Card.Content>
                 <Card.Content>
