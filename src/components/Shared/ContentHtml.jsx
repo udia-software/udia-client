@@ -10,6 +10,7 @@ const defaultProps = {
 };
 
 const ContentHtml = ({ content }) => {
+  console.log(content)
   return (
     <div dangerouslySetInnerHTML={{ __html: content }} />
   );
