@@ -20,6 +20,7 @@ import FromTime from "../Shared/FromTime";
 import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 import ContentHtml from "../Shared/ContentHtml";
+const $ = window.$;
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -80,10 +81,9 @@ class PostList extends Component {
   };
 
   getTextFromHtml = html => {
-    let iframes = /<(iframe).*?>/g.exec(html);
-    let text = html.replace(/<(.|\n)*?>/g, "");
+    const $html = $(html)
+    let text = $html.text();
     text = text.replace(/\s\s+/g, "");
-    text = text.replace(/(&nbsp;)+/g, " ");
     text = text.replace(/\?/g, "? ");
     text = text.replace(/\./g, ". ");
     text = text.replace(/,/g, ", ");
@@ -94,8 +94,9 @@ class PostList extends Component {
     } else {
       text = text.substring(0, 350);
     }
-    if (iframes && iframes[0]) {
-      text = '<p>' + text + '</p>' + iframes[0];
+    const iframesAndImages = $html.filter(".medium-insert-embeds, .medium-insert-images");
+    if (iframesAndImages[0]) {
+      text = iframesAndImages[0].outerHTML + text;
     }
     return text;
   };
