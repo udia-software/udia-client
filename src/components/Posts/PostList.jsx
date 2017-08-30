@@ -20,6 +20,7 @@ import FromTime from "../Shared/FromTime";
 import { clearPosts } from "../../modules/posts/reducer.actions";
 import { getPostsRequest } from "../../modules/posts/sagas.actions";
 import ContentHtml from "../Shared/ContentHtml";
+import ContentText from "../Shared/ContentText";
 const $ = window.$;
 
 const propTypes = {
@@ -80,9 +81,8 @@ class PostList extends Component {
     this.props.dispatch(clearPosts());
   };
 
-  getTextFromHtml = html => {
-    const $html = $(html)
-    let text = $html.text();
+  formatText = text => {
+    text = text.replace(/\r?\n|\r/g, "");
     text = text.replace(/\s\s+/g, "");
     text = text.replace(/\?/g, "? ");
     text = text.replace(/\./g, ". ");
@@ -90,10 +90,16 @@ class PostList extends Component {
     text = text.replace(/!/g, "! ");
     text = text.replace(/;/g, "; ");
     if (text.length > 350) {
-      text = text.substring(0, 350) + "...";
+      return text.substring(0, 350) + "...";
     } else {
-      text = text.substring(0, 350);
+      return text.substring(0, 350);
     }
+  }
+
+  getTextFromHtml = html => {
+    const $html = $(html)
+    let text = $html.text();
+    text = this.formatText(text);
     const iframesAndImages = $html.filter(".medium-insert-embeds, .medium-insert-images");
     if (iframesAndImages[0]) {
       text = iframesAndImages[0].outerHTML + text;
@@ -137,7 +143,12 @@ class PostList extends Component {
                 </Card.Content>
                 <Card.Content>
                   <Card.Description>
-                    <ContentHtml content={this.getTextFromHtml(post.content)} />
+                    {post.type === 'html' &&
+                      <ContentHtml content={this.getTextFromHtml(post.content)} />
+                    }
+                    {post.type === 'text' &&
+                      <ContentText content={this.formatText(post.content)} />
+                    }
                   </Card.Description>
                 </Card.Content>
                 <Card.Content>
