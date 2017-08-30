@@ -12,7 +12,8 @@ import {
   setJourneyDescription,
   setJourneyStartDate,
   setJourneyEndDate,
-  clearJourneyError
+  clearJourneyError,
+  setEditJourneySuccess
 } from "../../modules/journey/reducer.actions";
 import { getJourneyRequest, editJourneyRequest } from "../../modules/journey/sagas.actions";
 
@@ -26,10 +27,13 @@ const propTypes = {
 };
 
 class CreateJourney extends Component {
-
   componentWillMount = () => {
     const journeyId = this.props.match.params.id;
     this.props.dispatch(getJourneyRequest({ id: journeyId }));
+  }
+
+  componentWillUnmount = () => {
+    this.props.dispatch(setEditJourneySuccess(false));
   }
 
   changeTitle = event => {
@@ -59,9 +63,6 @@ class CreateJourney extends Component {
   onSubmit = event => {
     event.preventDefault();
     const { journey } = this.props;
-
-    console.log(journey)
-
     this.props.dispatch(editJourneyRequest(journey));
   };
 
