@@ -5,7 +5,7 @@ let API_ENDPOINT = "/api";
 if (isDevelopment) {
   API_ENDPOINT = "http://127.0.0.1:4000/api";
 } else {
-  API_ENDPOINT = "https://a.udia.ca/api";
+  API_ENDPOINT = "https://udia.herokuapp.com/api";
 }
 
 // If testing, use localStorage polyfill, else use browser localStorage
