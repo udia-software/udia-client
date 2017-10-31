@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Button,
-  Container,
-  Divider,
-  Flag,
-  Grid,
-  Header,
-  Icon,
-  Segment
-} from "semantic-ui-react";
+import { Container, Grid, Header, Segment } from "semantic-ui-react";
 import Logo from "../Static/Logo";
 
 export const Home = () => {

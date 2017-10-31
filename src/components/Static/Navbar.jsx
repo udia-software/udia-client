@@ -23,8 +23,8 @@ const NavbarView = ({ isAuthenticated, user }) => (
       </Menu.Menu>}
     {!isAuthenticated &&
       <Menu.Menu position="right">
-        <Menu.Item>Sign In</Menu.Item>
-        <Menu.Item>Sign Up</Menu.Item>
+        <Menu.Item as={Link} to="/signin">Sign In</Menu.Item>
+        <Menu.Item as={Link} to="/signup">Sign Up</Menu.Item>
       </Menu.Menu>}
   </Menu>
 );

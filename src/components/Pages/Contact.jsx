@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Header, Icon, List } from "semantic-ui-react";
+import { Container, Header, List } from "semantic-ui-react";
 
 export const Contact = () => {
   document.title = "Contact - UDIA";

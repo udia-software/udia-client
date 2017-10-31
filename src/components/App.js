@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 
-import { Contact, Home, NoMatch } from "./Pages";
+import { Contact, Home, NoMatch, SignIn, SignUp } from "./Pages";
 import Footer from "./Static/Footer";
 import Navbar from "./Static/Navbar";
 
@@ -20,6 +20,8 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/contact" component={Contact} />
+            <Route exact path="/signin" component={SignIn} /> 
+            <Route exact path="/signup" component={SignUp} /> 
             <Route component={NoMatch} />
           </Switch>
         </div>
