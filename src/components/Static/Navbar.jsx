@@ -11,7 +11,7 @@ export class Navbar extends Component {
 }
 
 const NavbarView = ({ isAuthenticated, user }) => (
-  <Menu>
+  <Menu inverted>
     <Menu.Item as={Link} to="/">UDIA</Menu.Item>
     {isAuthenticated &&
       <Menu.Menu position="right">

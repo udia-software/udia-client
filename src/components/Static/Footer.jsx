@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Grid, Header, List, Segment } from "semantic-ui-react";
+import { animateScroll } from "react-scroll";
 import Logo from "./Logo";
 
 export const Footer = () => {
@@ -15,7 +16,12 @@ export const Footer = () => {
               <List.Item as={Link} to="/contact">Contact</List.Item>
             </List>
           </Grid.Column>
-          <Grid.Column mobile={16} tablet={3} computer={3}>
+          <Grid.Column
+            onClick={() => animateScroll.scrollToTop()}
+            mobile={16}
+            tablet={3}
+            computer={3}
+          >
             <Logo maxHeight={80} inverted={inverted} />
           </Grid.Column>
           <Grid.Column mobile={16} tablet={7} computer={7}>
