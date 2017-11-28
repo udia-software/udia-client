@@ -5,7 +5,7 @@ import Logo from "../Static/Logo";
 export const Home = () => {
   document.title = "UDIA";
   return (
-    <div>
+    <div style={{ flex: 1 }}>
       <Segment vertical>
         <Grid container stackable verticalAlign="middle">
           <Grid.Row>

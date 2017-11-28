@@ -12,7 +12,11 @@ class App extends Component {
       minHeight: "100vh",
       flexDirection: "column"
     };
-    const siteContentStyle = { flex: "1" };
+    const siteContentStyle = {
+      flex: "1",
+      display: "flex",
+      alignItems: "center"
+    };
     return (
       <div style={siteContainerStyle}>
         <Navbar />
@@ -20,8 +24,8 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/contact" component={Contact} />
-            <Route exact path="/signin" component={SignIn} /> 
-            <Route exact path="/signup" component={SignUp} /> 
+            <Route exact path="/signin" component={SignIn} />
+            <Route exact path="/signup" component={SignUp} />
             <Route component={NoMatch} />
           </Switch>
         </div>

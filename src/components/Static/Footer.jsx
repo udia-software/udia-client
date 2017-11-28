@@ -11,9 +11,19 @@ export const Footer = () => {
       <Grid>
         <Grid.Row>
           <Grid.Column mobile={16} tablet={6} computer={6}>
-            <Header as="h4" inverted={inverted}>Links</Header>
+            <Header as="h4" inverted={inverted} style={{ textAlign: "left" }}>
+              Udia Software Incorporated
+            </Header>
             <List inverted={inverted} link>
-              <List.Item as={Link} to="/contact">Contact</List.Item>
+              <List.Item
+                as="a"
+                href="https://goo.gl/maps/sXheMfn7PRE2"
+                style={{ textAlign: "left" }}
+              >
+                Unit 301 - 10359 104 Street NW <br />
+                Edmonton, AB T5J1B9 <br />
+                Canada
+              </List.Item>
             </List>
           </Grid.Column>
           <Grid.Column
@@ -21,19 +31,15 @@ export const Footer = () => {
             mobile={16}
             tablet={3}
             computer={3}
+            style={{ textAlign: "center" }}
           >
             <Logo maxHeight={80} inverted={inverted} />
           </Grid.Column>
           <Grid.Column mobile={16} tablet={7} computer={7}>
-            <Header as="h4" inverted={inverted}>
-              Udia Software Incorporated
-            </Header>
-            <List inverted={inverted} link>
-              <List.Item as="a" href="https://goo.gl/maps/sXheMfn7PRE2">
-                Unit 301 - 10359 104 Street NW <br />
-                Edmonton, AB T5J1B9 <br />
-                Canada
-              </List.Item>
+            <Header as="h4" inverted={inverted} style={{ textAlign: "right" }}>Links</Header>
+            <List inverted={inverted} link  style={{ textAlign: "right" }}>
+              <List.Item as={Link} to="/">Home</List.Item>
+              <List.Item as={Link} to="/contact">Contact</List.Item>
             </List>
           </Grid.Column>
         </Grid.Row>

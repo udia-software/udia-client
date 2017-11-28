@@ -14,7 +14,7 @@ import UdiaOfficeMap from "../Static/UdiaOfficeMap";
 export const Contact = () => {
   document.title = "Contact - UDIA";
   return (
-    <div>
+    <div style={{ flex: 1 }}>
       <Container>
         <Header as="h2">
           <Header.Content>Contact</Header.Content>
