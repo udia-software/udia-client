@@ -8,8 +8,8 @@ export const Footer = () => {
   const inverted = true;
   return (
     <Segment color="black" inverted={inverted} padded={true}>
-      <Grid>
-        <Grid.Row>
+      <Grid centered columns="equal">
+        <Grid.Row centered columns="equal">
           <Grid.Column mobile={16} tablet={6} computer={6}>
             <Header as="h4" inverted={inverted} style={{ textAlign: "left" }}>
               Udia Software Incorporated
@@ -29,13 +29,13 @@ export const Footer = () => {
           <Grid.Column
             onClick={() => animateScroll.scrollToTop()}
             mobile={16}
-            tablet={3}
-            computer={3}
+            tablet={4}
+            computer={4}
             style={{ textAlign: "center" }}
           >
             <Logo maxHeight={80} inverted={inverted} />
           </Grid.Column>
-          <Grid.Column mobile={16} tablet={7} computer={7}>
+          <Grid.Column mobile={16} tablet={6} computer={6}>
             <Header as="h4" inverted={inverted} style={{ textAlign: "right" }}>Links</Header>
             <List inverted={inverted} link  style={{ textAlign: "right" }}>
               <List.Item as={Link} to="/">Home</List.Item>

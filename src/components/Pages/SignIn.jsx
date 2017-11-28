@@ -13,7 +13,7 @@ import {
 export const SignIn = () => {
   document.title = "Sign In - UDIA";
   const inverted = true;
-  const WHITE_TEXT_STYLE = { color: "rgba(255,255,255,0.9)" }
+  const WHITE_TEXT_STYLE = inverted ? { color: "rgba(255,255,255,0.9)" } : null;
   // TODO: right text align the input element blinker on Password
   return (
     <Container
@@ -24,7 +24,12 @@ export const SignIn = () => {
         alignItems: "center"
       }}
     >
-      <Segment inverted={inverted} style={WHITE_TEXT_STYLE} circular size="huge">
+      <Segment
+        inverted={inverted}
+        style={WHITE_TEXT_STYLE}
+        circular
+        size="huge"
+      >
         <Header>Sign In</Header>
         <Form>
           <Form.Field inline>
@@ -32,11 +37,11 @@ export const SignIn = () => {
             <input placeholder="UDIA" />
           </Form.Field>
           <Form.Field inline>
-            <input placeholder="" type="password" />
+            <input placeholder="" type="password" style={{textAlign: "right"}}/>
             <label style={WHITE_TEXT_STYLE}>PASSWORD</label>
           </Form.Field>
           <Form.Field>
-            <Checkbox label={<label style={WHITE_TEXT_STYLE}>Hi.</label>}/>
+            <Checkbox label={<label style={WHITE_TEXT_STYLE}>Hi.</label>} />
           </Form.Field>
           <Button type="submit" inverted={inverted} fluid>Submit</Button>
         </Form>
