@@ -6,7 +6,9 @@ import {
   Container,
   Form,
   Header,
+  Input,
   List,
+  Popup,
   Segment
 } from "semantic-ui-react";
 
@@ -33,17 +35,40 @@ export const SignUp = () => {
         <Form>
           <Form.Field>
             <label style={WHITE_TEXT_STYLE}>EMAIL</label>
-            <input placeholder="u@di.ca" />
+            <Popup
+              style={{ textAlign: "center" }}
+              trigger={<input placeholder="u@di.ca" />}
+              header="Email"
+              content="This is kept hidden from other users."
+              on="focus"
+              position="top center"
+            />
           </Form.Field>
           <Form.Field inline>
             <label style={WHITE_TEXT_STYLE}>USERNAME</label>
-            <input placeholder="UDIA" />
+            <Popup
+              trigger={<input placeholder="UDIA" />}
+              header="Username"
+              content="This is your public facing ID."
+              on="focus"
+              position="left center"
+              style={{ textAlign: "right" }}
+            />
           </Form.Field>
           <Form.Field inline>
-            <input
-              placeholder=""
-              type="password"
-              style={{ textAlign: "right" }}
+            <Popup
+              trigger={
+                <input
+                  style={{ textAlign: "right" }}
+                  placeholder=""
+                  type="password"
+                />
+              }
+              style={{ textAlign: "left" }}
+              header="Password"
+              content="Secret! Don't tell anyone!"
+              on="focus"
+              position="right center"
             />
             <label style={WHITE_TEXT_STYLE}>PASSWORD</label>
           </Form.Field>

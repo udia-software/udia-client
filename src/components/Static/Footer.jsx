@@ -36,8 +36,10 @@ export const Footer = () => {
             <Logo maxHeight={80} inverted={inverted} />
           </Grid.Column>
           <Grid.Column mobile={16} tablet={6} computer={6}>
-            <Header as="h4" inverted={inverted} style={{ textAlign: "right" }}>Links</Header>
-            <List inverted={inverted} link  style={{ textAlign: "right" }}>
+            <Header as="h4" inverted={inverted} style={{ textAlign: "right" }}>
+              Links
+            </Header>
+            <List inverted={inverted} link style={{ textAlign: "right" }}>
               <List.Item as={Link} to="/">Home</List.Item>
               <List.Item as={Link} to="/contact">Contact</List.Item>
             </List>

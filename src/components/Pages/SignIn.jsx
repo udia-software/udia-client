@@ -37,7 +37,11 @@ export const SignIn = () => {
             <input placeholder="UDIA" />
           </Form.Field>
           <Form.Field inline>
-            <input placeholder="" type="password" style={{textAlign: "right"}}/>
+            <input
+              placeholder=""
+              type="password"
+              style={{ textAlign: "right" }}
+            />
             <label style={WHITE_TEXT_STYLE}>PASSWORD</label>
           </Form.Field>
           <Form.Field>

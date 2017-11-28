@@ -6,13 +6,17 @@ import {
   Dimmer,
   Header,
   List,
-  Loader
+  Loader,
+  Popup
 } from "semantic-ui-react";
+import moment from "moment";
+import FromTime from "../Static/FromTime";
 import Logo from "../Static/Logo";
 import UdiaOfficeMap from "../Static/UdiaOfficeMap";
 
 export const Contact = () => {
   document.title = "Contact - UDIA";
+  const ALEXANDER_WONG_UDIA_DATE = new moment("23-02-2016 12:14 -07:00", "DD-MM-YYYY HH:mm ZZ", true);
   return (
     <div style={{ flex: 1 }}>
       <Container>
@@ -26,7 +30,10 @@ export const Contact = () => {
       <UdiaOfficeMap
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjl_3CluAMqehsXlE0FNZ1OR4m9nmVi9I"
         loadingElement={
-          <Dimmer.Dimmable style={{ height: `400px`, padding: `15px 0px` }} dimmed>
+          <Dimmer.Dimmable
+            style={{ height: `400px`, padding: `15px 0px` }}
+            dimmed
+          >
             <Dimmer active><Loader active /></Dimmer>
           </Dimmer.Dimmable>
         }
@@ -55,9 +62,22 @@ export const Contact = () => {
                 Alexander Wong
               </Card.Header>
               <Card.Meta>
-                <span className="date">
-                  Founder, February 2016 - Current
-                </span>
+                <Popup
+                  inverted
+                  wide
+                  position="right center"
+                  content={"Founded UDIA on " + ALEXANDER_WONG_UDIA_DATE.format(
+                    "dddd, MMMM Do, YYYY HH:mm a ZZ"
+                  ) + "."}
+                  on="hover"
+                  trigger={
+                    <span className="date">
+                      Founder; {" "}
+                      <FromTime time={ALEXANDER_WONG_UDIA_DATE} />
+                      {" "} duty served.
+                    </span>
+                  }
+                />
               </Card.Meta>
               <Card.Description>
                 Alexander is a software developer contractor. He is currently on a contract for EPCOR as a Systems Analyst.
