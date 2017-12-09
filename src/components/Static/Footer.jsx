@@ -42,7 +42,8 @@ export const Footer = () => {
             <List inverted={inverted} link style={{ textAlign: "right" }}>
               <List.Item as={Link} to="/">Home</List.Item>
               <List.Item as={Link} to="/contact">Contact</List.Item>
-            </List>
+              <List.Item as={Link} to="/lesson">Fundamental Lesson</List.Item>
+              </List>
           </Grid.Column>
         </Grid.Row>
       </Grid>
