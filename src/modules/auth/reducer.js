@@ -5,7 +5,7 @@ export const AuthState = new Record({
   username: "",
   email: "",
   password: "",
-  passwordConfirm: "",
+  error: null,
   jwt: null
 });
 
@@ -19,6 +19,14 @@ export function authReducer(state = new AuthState(), { payload, type }) {
       return state.merge({
         password: payload
       });
+    case authActions.SET_FORM_EMAIL:
+      return state.merge({
+        email: payload
+      });
+    case authActions.SET_AUTH_ERROR:
+      return state.merge({
+        error: payload
+      })
     default:
       return state;
   }
