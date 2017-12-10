@@ -22,6 +22,7 @@ const propTypes = {
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   password: PropTypes.string.isRequired,
+  understoodLesson: PropTypes.bool.isRequired
 };
 
 class SignUp extends Component {
@@ -39,7 +40,6 @@ class SignUp extends Component {
     const { dispatch } = this.props;
     dispatch(authActions.setFormEmail(event.target.value));
     this.setState({ emailErrors: [] })
-
   }
 
   _changeFormUsername = event => {
@@ -54,6 +54,11 @@ class SignUp extends Component {
     this.setState({ passwordErrors: [] })
   }
 
+  _changeFormUnderstoodLesson = event => {
+    const { dispatch, understoodLesson } = this.props;
+    dispatch(authActions.setUnderstoodLesson(!understoodLesson));
+  }
+
   _submit = async event => {
     event.preventDefault();
     const { username, email, password } = this.props;
@@ -65,6 +70,7 @@ class SignUp extends Component {
       // todo persist token
       console.log(user, token)
     } catch (err) {
+      console.error(err);
       (err.graphQLErrors || []).forEach(graphqlError => {
         let { username, email, password } = graphqlError.state
         this.setState({
@@ -81,7 +87,7 @@ class SignUp extends Component {
     const WHITE_TEXT_STYLE = inverted ? { color: "rgba(255,255,255,0.9)" } : null;
     document.title = "Sign Up - UDIA";
 
-    const { email, username, password } = this.props;
+    const { email, username, password, understoodLesson } = this.props;
     const { usernameErrors, emailErrors, passwordErrors } = this.state;
 
     const emailError = emailErrors && emailErrors.length > 0
@@ -110,7 +116,6 @@ class SignUp extends Component {
             <Form.Field>
               <label style={WHITE_TEXT_STYLE}>EMAIL</label>
               <Popup
-                style={{ textAlign: "center" }}
                 trigger={
                   <Input
                     placeholder="u@di.ca"
@@ -165,13 +170,23 @@ class SignUp extends Component {
               <label style={WHITE_TEXT_STYLE}>PASSWORD</label>
             </Form.Field>
             <Form.Field>
-              <Checkbox label={
+              <Checkbox
+                checked={understoodLesson}
+                onChange={this._changeFormUnderstoodLesson}
+                label={
                   <label style={WHITE_TEXT_STYLE}>I have understood
                   the <Link to="/lesson">fundamental lesson</Link>.</label>
-              }
+                }
               />
             </Form.Field>
-            <Button type="submit" inverted={inverted} fluid>Submit</Button>
+            <Button
+              type="submit"
+              inverted={inverted}
+              disabled={!understoodLesson}
+              fluid
+            >
+              {understoodLesson ? "Submit" : "Observe the lesson."}
+            </Button>
           </Form>
           <List inverted={inverted} link>
             <List.Item as={Link} to="/signin">Sign In</List.Item>
@@ -204,6 +219,7 @@ function mapStateToProps(state) {
     email: state.auth.email,
     username: state.auth.username,
     password: state.auth.password,
+    understoodLesson: state.auth.understoodLesson,
     error: state.auth.error
   };
 }

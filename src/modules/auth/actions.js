@@ -6,6 +6,7 @@ export const authActions = {
   SET_FORM_PASSWORD: "SET_FORM_PASSWORD",
   SET_FORM_EMAIL: "SET_FORM_EMAIL",
   SET_AUTH_ERROR: "SET_AUTH_ERROR",
+  SET_UNDERSTOOD_LESSON: "SET_UNDERSTOOD_LESSON",
 
   setFormUsername: username => ({
     type: authActions.SET_FORM_USERNAME,
@@ -22,6 +23,10 @@ export const authActions = {
   setAuthError: error => ({
     type: authActions.SET_AUTH_ERROR,
     payload: error
+  }),
+  setUnderstoodLesson: understood => ({
+    type: authActions.SET_UNDERSTOOD_LESSON,
+    payload: understood
   }),
 
   //========

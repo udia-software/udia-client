@@ -5,6 +5,7 @@ export const AuthState = new Record({
   username: "",
   email: "",
   password: "",
+  understoodLesson: false,
   error: null,
   jwt: null
 });
@@ -26,6 +27,10 @@ export function authReducer(state = new AuthState(), { payload, type }) {
     case authActions.SET_AUTH_ERROR:
       return state.merge({
         error: payload
+      })
+    case authActions.SET_UNDERSTOOD_LESSON:
+      return state.merge({
+        understoodLesson: payload
       })
     default:
       return state;
