@@ -1,6 +1,8 @@
 import { Record } from "immutable";
 import { authActions } from "./actions";
 
+// Put that JWT into local storage.
+
 export const AuthState = new Record({
   username: "",
   email: "",
