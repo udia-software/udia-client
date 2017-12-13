@@ -28,6 +28,7 @@ class SignIn extends Component {
     this.state = {
       emailErrors: [],
       passwordErrors: [],
+      loading: false
     }
   }
 
@@ -46,6 +47,7 @@ class SignIn extends Component {
   _submit = async event => {
     event.preventDefault();
     const { email, password } = this.props
+    this.setState({ loading: true })
     try {
       const result = await this.props.signInUserMutation({
         variables: { email, password }
@@ -62,6 +64,8 @@ class SignIn extends Component {
           passwordErrors: password
         });
       })
+    } finally {
+      this.setState({ loading: false })
     }
   }
 
@@ -70,8 +74,7 @@ class SignIn extends Component {
     const inverted = true;
     const WHITE_TEXT_STYLE = inverted ? { color: "rgba(255,255,255,0.9)" } : null;
     const { email, password } = this.props;
-    const { emailErrors, passwordErrors } = this.state;
-
+    const { emailErrors, passwordErrors, loading } = this.state;
     const emailError = emailErrors && emailErrors.length > 0
     const passwordError = passwordErrors && passwordErrors > 0
 
@@ -95,6 +98,7 @@ class SignIn extends Component {
             onSubmit={this._submit}
             error={emailError || passwordError}
             inverted={inverted}
+            loading={loading}
           >
             <Form.Field>
               <label style={WHITE_TEXT_STYLE}>EMAIL</label>

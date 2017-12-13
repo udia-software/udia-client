@@ -26,13 +26,13 @@ const propTypes = {
 };
 
 class SignUp extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       usernameErrors: [],
       emailErrors: [],
-      passwordErrors: []
+      passwordErrors: [],
+      loading: false
     }
   }
 
@@ -62,6 +62,7 @@ class SignUp extends Component {
   _submit = async event => {
     event.preventDefault();
     const { username, email, password } = this.props;
+    this.setState({ loading: true });
     try {
       const result = await this.props.createUserMutation({
         variables: { username, email, password }
@@ -79,6 +80,8 @@ class SignUp extends Component {
           passwordErrors: password
         })
       });
+    } finally {
+      this.setState({ loading: false })
     }
   }
 
