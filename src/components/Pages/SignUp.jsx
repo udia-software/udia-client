@@ -16,6 +16,7 @@ import {
   Segment
 } from "semantic-ui-react";
 import { authActions } from "../../modules/auth/actions";
+import { isAuthenticated } from "../../modules/auth";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -33,6 +34,13 @@ class SignUp extends Component {
       emailErrors: [],
       passwordErrors: [],
       loading: false
+    }
+  }
+
+  componentDidMount() {
+    const { isAuthenticated, history } = this.props;
+    if (isAuthenticated) {
+      history.push(`/`);
     }
   }
 
@@ -61,15 +69,17 @@ class SignUp extends Component {
 
   _submit = async event => {
     event.preventDefault();
-    const { username, email, password } = this.props;
+    const { username, email, password, dispatch, history } = this.props;
     this.setState({ loading: true });
     try {
       const result = await this.props.createUserMutation({
         variables: { username, email, password }
       });
       const { user, token } = result.data.createUser;
-      // todo persist token
       console.log(user, token)
+      dispatch(authActions.setJWT(token))
+      dispatch(authActions.setAuthUser(user))
+      history.push(`/`);
     } catch (err) {
       console.error(err);
       (err.graphQLErrors || []).forEach(graphqlError => {
@@ -212,6 +222,7 @@ mutation CreateUserMutation($email: String!, $password: String!, $username: Stri
     token
     user {
       _id
+      username
     }
   }
 }
@@ -219,6 +230,7 @@ mutation CreateUserMutation($email: String!, $password: String!, $username: Stri
 
 function mapStateToProps(state) {
   return {
+    isAuthenticated: isAuthenticated(state),
     email: state.auth.email,
     username: state.auth.username,
     password: state.auth.password,

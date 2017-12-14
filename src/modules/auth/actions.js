@@ -7,6 +7,9 @@ export const authActions = {
   SET_FORM_EMAIL: "SET_FORM_EMAIL",
   SET_AUTH_ERROR: "SET_AUTH_ERROR",
   SET_UNDERSTOOD_LESSON: "SET_UNDERSTOOD_LESSON",
+  SET_JWT: "SET_JWT",
+  CLEAR_JWT: "CLEAR_JWT",
+  SET_AUTH_USER: "SET_AUTH_USER",
 
   setFormUsername: username => ({
     type: authActions.SET_FORM_USERNAME,
@@ -28,9 +31,15 @@ export const authActions = {
     type: authActions.SET_UNDERSTOOD_LESSON,
     payload: understood
   }),
-
-  //========
-  //  Saga
-  //========
-  SIGN_IN_REQUEST: "SIGN_IN_REQUEST"
+  setJWT: jwt => ({
+    type: authActions.SET_JWT,
+    payload: jwt
+  }),
+  clearJWT: () => ({
+    type: authActions.CLEAR_JWT
+  }),
+  setAuthUser: user => ({
+    type: authActions.SET_AUTH_USER,
+    payload: user
+  })
 };

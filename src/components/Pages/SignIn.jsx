@@ -15,12 +15,13 @@ import {
   Segment
 } from "semantic-ui-react";
 import { authActions } from "../../modules/auth/actions";
+import { isAuthenticated } from "../../modules/auth";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   password: PropTypes.string.isRequired
-}
+};
 
 class SignIn extends Component {
   constructor(props) {
@@ -29,32 +30,40 @@ class SignIn extends Component {
       emailErrors: [],
       passwordErrors: [],
       loading: false
+    };
+  }
+
+  componentDidMount() {
+    const { isAuthenticated, history } = this.props;
+    if (isAuthenticated) {
+      history.push(`/`);
     }
   }
 
   _changeFormEmail = event => {
     const { dispatch } = this.props;
     dispatch(authActions.setFormEmail(event.target.value));
-    this.setState({ emailErrors: [] })
-  }
+    this.setState({ emailErrors: [] });
+  };
 
   _changeFormPassword = event => {
     const { dispatch } = this.props;
     dispatch(authActions.setFormPassword(event.target.value));
-    this.setState({ passwordErrors: [] })
-  }
+    this.setState({ passwordErrors: [] });
+  };
 
   _submit = async event => {
     event.preventDefault();
-    const { email, password } = this.props
-    this.setState({ loading: true })
+    const { email, password, dispatch, history } = this.props;
+    this.setState({ loading: true });
     try {
       const result = await this.props.signInUserMutation({
         variables: { email, password }
       });
-      const { user, token } = result.data.createUser;
-      // todo persist token
-      console.log(user, token)
+      const { user, token } = result.data.signinUser;
+      dispatch(authActions.setJWT(token));
+      dispatch(authActions.setAuthUser(user));
+      history.push(`/`);
     } catch (err) {
       console.error(err);
       (err.graphQLErrors || []).forEach(graphqlError => {
@@ -63,20 +72,22 @@ class SignIn extends Component {
           emailErrors: email,
           passwordErrors: password
         });
-      })
+      });
     } finally {
-      this.setState({ loading: false })
+      this.setState({ loading: false });
     }
-  }
+  };
 
   render() {
     document.title = "Sign In - UDIA";
     const inverted = true;
-    const WHITE_TEXT_STYLE = inverted ? { color: "rgba(255,255,255,0.9)" } : null;
+    const WHITE_TEXT_STYLE = inverted
+      ? { color: "rgba(255,255,255,0.9)" }
+      : null;
     const { email, password } = this.props;
     const { emailErrors, passwordErrors, loading } = this.state;
-    const emailError = emailErrors && emailErrors.length > 0
-    const passwordError = passwordErrors && passwordErrors > 0
+    const emailError = emailErrors && emailErrors.length > 0;
+    const passwordError = passwordErrors && passwordErrors > 0;
 
     return (
       <Container
@@ -103,14 +114,16 @@ class SignIn extends Component {
             <Form.Field>
               <label style={WHITE_TEXT_STYLE}>EMAIL</label>
               <Popup
-                trigger={<Input
-                  placeholder="u@di.ca"
-                  onChange={this._changeFormEmail}
-                  value={email}
-                  error={emailError}
-                  icon={emailError ? { name: 'warning' } : null}
-                />}
-                style={{ textAlign: 'center' }}
+                trigger={
+                  <Input
+                    placeholder="u@di.ca"
+                    onChange={this._changeFormEmail}
+                    value={email}
+                    error={emailError}
+                    icon={emailError ? { name: "warning" } : null}
+                  />
+                }
+                style={{ textAlign: "center" }}
                 header="Email"
                 content={emailError ? emailErrors[0] : "Who are you?"}
                 on="focus"
@@ -124,56 +137,59 @@ class SignIn extends Component {
                   <Input
                     placeholder="••••••••"
                     type="password"
-                    style={{ textAlign: 'right' }}
+                    style={{ textAlign: "right" }}
                     onChange={this._changeFormPassword}
                     value={password}
                     error={passwordError}
-                    icon={passwordError ? { name: 'warning' } : null}
+                    icon={passwordError ? { name: "warning" } : null}
                   />
                 }
-                style={{ textAlign: 'center' }}
+                style={{ textAlign: "center" }}
                 header="Password"
-                content={passwordError ? passwordErrors[0] : "How do I know it's you?"}
+                content={
+                  passwordError ? passwordErrors[0] : "How do I know it's you?"
+                }
                 on="focus"
                 position="top center"
               />
             </Form.Field>
-            <Button type="submit" inverted={inverted} fluid>Submit</Button>
+            <Button type="submit" inverted={inverted} fluid>
+              Submit
+            </Button>
           </Form>
           <List inverted={inverted} link>
-            <List.Item as={Link} to="/signup">Sign Up</List.Item>
+            <List.Item as={Link} to="/signup">
+              Sign Up
+            </List.Item>
           </List>
         </Segment>
       </Container>
     );
-  };
+  }
 }
 
 SignIn.propTypes = propTypes;
 
 const SIGN_IN_MUTATION = gql`
-mutation SignInMutation($email: String!, $password: String!) {
-  signinUser(
-    email: {
-      email: $email,
-      password: $password  
-    }
-  ) {
-    token
-    user {
-      _id
+  mutation SignInMutation($email: String!, $password: String!) {
+    signinUser(email: { email: $email, password: $password }) {
+      token
+      user {
+        _id
+        username
+      }
     }
   }
-}
 `;
 
 function mapStateToProps(state) {
   return {
+    isAuthenticated: isAuthenticated(state),
     email: state.auth.email,
-    password: state.auth.password,
+    password: state.auth.password
   };
 }
 
-export default connect(mapStateToProps)(compose(
-  graphql(SIGN_IN_MUTATION, { name: "signInUserMutation" }),
-)(SignIn));
+export default connect(mapStateToProps)(
+  compose(graphql(SIGN_IN_MUTATION, { name: "signInUserMutation" }))(SignIn)
+);
