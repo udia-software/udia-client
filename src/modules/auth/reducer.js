@@ -34,19 +34,21 @@ export function authReducer(state = new AuthState(), { payload, type }) {
       return state.merge({
         understoodLesson: payload
       });
-    case authActions.SET_JWT:
-      localStorage.setItem(GC_AUTH_TOKEN, payload);
-      return state.merge({
-        jwt: payload
-      });
-    case authActions.CLEAR_JWT:
-      localStorage.removeItem(GC_AUTH_TOKEN);
-      return state.merge({
-        jwt: null
-      });
     case authActions.SET_AUTH_USER:
       return state.merge({
         authUser: payload
+      });
+    case authActions.SET_AUTH_DATA:
+      localStorage.setItem(GC_AUTH_TOKEN, payload.jwt);
+      return state.merge({
+        authUser: payload.user,
+        jwt: payload.jwt
+      });
+    case authActions.CLEAR_AUTH_DATA:
+      localStorage.removeItem(GC_AUTH_TOKEN);
+      return state.merge({
+        jwt: null,
+        authUser: null
       });
     default:
       return state;

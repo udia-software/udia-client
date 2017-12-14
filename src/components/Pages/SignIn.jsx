@@ -61,8 +61,7 @@ class SignIn extends Component {
         variables: { email, password }
       });
       const { user, token } = result.data.signinUser;
-      dispatch(authActions.setJWT(token));
-      dispatch(authActions.setAuthUser(user));
+      dispatch(authActions.setAuthData({ user, jwt: token }));
       history.push(`/`);
     } catch (err) {
       console.error(err);
