@@ -14,16 +14,22 @@ export class Navbar extends Component {
     dispatch(authActions.clearJWT());
   };
 
-  render() {
-    const { isAuthenticated, user, dispatch } = this.props;
-    // SPICY HACKS :D
-    if (!this.props.selfUserQuery.loading) {
-      if (!user && this.props.selfUserQuery.me) {
-        const { me } = this.props.selfUserQuery;
-        dispatch(authActions.setAuthUser(me));
+  componentWillReceiveProps(nextProps) {
+    const { user, isAuthenticated, selfUserQuery, dispatch } = nextProps;
+    if (!nextProps.selfUserQuery.loading) {
+      if (isAuthenticated && user) {
+        return;
+      }
+      else if (isAuthenticated && selfUserQuery.me) {
+        dispatch(authActions.setAuthUser(selfUserQuery.me));
+      } else if (isAuthenticated && selfUserQuery.me === null) {
+        dispatch(authActions.clearAuthData());
       }
     }
+  }
 
+  render() {
+    const { isAuthenticated, user } = this.props;
     return (
       <NavbarView
         isAuthenticated={isAuthenticated}
@@ -90,6 +96,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default graphql(SELF_USER_QUERY, { name: "selfUserQuery" })(
+export default graphql(SELF_USER_QUERY, {
+  name: "selfUserQuery"
+})(
   connect(mapStateToProps)(Navbar)
 );
