@@ -1,7 +1,6 @@
 import { Record } from "immutable";
 import { authActions } from "./actions";
-
-// Put that JWT into local storage.
+import { GC_AUTH_TOKEN } from "../../constants";
 
 export const AuthState = new Record({
   username: "",
@@ -9,7 +8,8 @@ export const AuthState = new Record({
   password: "",
   understoodLesson: false,
   error: null,
-  jwt: null
+  jwt: localStorage.getItem(GC_AUTH_TOKEN) || null,
+  authUser: null // this is not stored locally, but we will pull it using stored JWT
 });
 
 export function authReducer(state = new AuthState(), { payload, type }) {
@@ -29,11 +29,25 @@ export function authReducer(state = new AuthState(), { payload, type }) {
     case authActions.SET_AUTH_ERROR:
       return state.merge({
         error: payload
-      })
+      });
     case authActions.SET_UNDERSTOOD_LESSON:
       return state.merge({
         understoodLesson: payload
-      })
+      });
+    case authActions.SET_JWT:
+      localStorage.setItem(GC_AUTH_TOKEN, payload);
+      return state.merge({
+        jwt: payload
+      });
+    case authActions.CLEAR_JWT:
+      localStorage.removeItem(GC_AUTH_TOKEN);
+      return state.merge({
+        jwt: null
+      });
+    case authActions.SET_AUTH_USER:
+      return state.merge({
+        authUser: payload
+      });
     default:
       return state;
   }

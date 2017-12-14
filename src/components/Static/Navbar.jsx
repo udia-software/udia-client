@@ -1,33 +1,78 @@
 import React, { Component } from "react";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dropdown, Menu } from "semantic-ui-react";
+import { isAuthenticated } from "../../modules/auth";
+import { authActions } from "../../modules/auth/actions";
 
 export class Navbar extends Component {
+  signout = () => {
+    const { dispatch } = this.props;
+    dispatch(authActions.clearJWT());
+  };
+
   render() {
-    return <NavbarView />;
+    const { isAuthenticated, user, dispatch } = this.props;
+    // SPICY HACKS :D
+    if (!this.props.selfUserQuery.loading) {
+      if (!user && this.props.selfUserQuery.me) {
+        const { me } = this.props.selfUserQuery;
+        dispatch(authActions.setAuthUser(me));
+      }
+    }
+
+    return (
+      <NavbarView
+        isAuthenticated={isAuthenticated}
+        user={user}
+        signout={this.signout}
+      />
+    );
   }
 }
 
-const NavbarView = ({ isAuthenticated, user }) => (
+const NavbarView = ({ isAuthenticated, user, signout }) => (
   <Menu inverted>
-    <Menu.Item as={Link} to="/">UDIA</Menu.Item>
-    {isAuthenticated &&
+    <Menu.Item as={Link} to="/">
+      UDIA
+    </Menu.Item>
+    {isAuthenticated && (
       <Menu.Menu position="right">
-        <Dropdown item text={user.username || "..."}>
+        <Dropdown item text={!!user ? user.get("username") : "..."}>
           <Dropdown.Menu>
-            <Dropdown.Item>Sign Out</Dropdown.Item>
+            <Dropdown.Item onClick={signout}>Sign Out</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-      </Menu.Menu>}
-    {!isAuthenticated &&
+      </Menu.Menu>
+    )}
+    {!isAuthenticated && (
       <Menu.Menu position="right">
-        <Menu.Item as={Link} to="/signin">Sign In</Menu.Item>
-        <Menu.Item as={Link} to="/signup">Sign Up</Menu.Item>
-      </Menu.Menu>}
+        <Menu.Item as={Link} to="/signin">
+          Sign In
+        </Menu.Item>
+        <Menu.Item as={Link} to="/signup">
+          Sign Up
+        </Menu.Item>
+      </Menu.Menu>
+    )}
   </Menu>
 );
+
+const SELF_USER_QUERY = gql`
+  query selfUserQuery {
+    me {
+      _id
+      username
+      createdAt
+      updatedAt
+      email
+      passwordHash
+    }
+  }
+`;
 
 NavbarView.propTypes = {
   isAuthenticated: PropTypes.bool,
@@ -38,4 +83,13 @@ NavbarView.defaultProps = {
   user: {}
 };
 
-export default connect()(Navbar);
+function mapStateToProps(state) {
+  return {
+    isAuthenticated: isAuthenticated(state),
+    user: state.auth.authUser
+  };
+}
+
+export default graphql(SELF_USER_QUERY, { name: "selfUserQuery" })(
+  connect(mapStateToProps)(Navbar)
+);
