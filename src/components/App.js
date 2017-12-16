@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 
 import Footer from "./Static/Footer";
-import Navbar from "./Static/Navbar";
+import Navbar from "./Shared/Navbar";
+import AllNodes from "./Pages/AllNodes";
 import Contact from "./Pages/Contact";
+import CreateNode from "./Pages/CreateNode";
 import Home from "./Pages/Home";
 import NoMatch from "./Pages/NoMatch";
 import SignIn from "./Pages/SignIn";
@@ -32,6 +34,8 @@ class App extends Component {
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/all" component={AllNodes} />
+            <Route exact path="/create" component={CreateNode} />
             <Route component={NoMatch} />
           </Switch>
         </div>
@@ -40,6 +44,5 @@ class App extends Component {
     );
   }
 }
-
 
 export default App;

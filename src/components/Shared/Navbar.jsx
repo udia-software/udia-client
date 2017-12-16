@@ -11,7 +11,7 @@ import { authActions } from "../../modules/auth/actions";
 export class Navbar extends Component {
   signout = () => {
     const { dispatch } = this.props;
-    dispatch(authActions.clearJWT());
+    dispatch(authActions.clearAuthData());
   };
 
   componentWillReceiveProps(nextProps) {
@@ -19,8 +19,7 @@ export class Navbar extends Component {
     if (!nextProps.selfUserQuery.loading) {
       if (isAuthenticated && user) {
         return;
-      }
-      else if (isAuthenticated && selfUserQuery.me) {
+      } else if (isAuthenticated && selfUserQuery.me) {
         dispatch(authActions.setAuthUser(selfUserQuery.me));
       } else if (isAuthenticated && selfUserQuery.me === null) {
         dispatch(authActions.clearAuthData());
@@ -45,25 +44,29 @@ const NavbarView = ({ isAuthenticated, user, signout }) => (
     <Menu.Item as={Link} to="/">
       UDIA
     </Menu.Item>
-    {isAuthenticated && (
-      <Menu.Menu position="right">
-        <Dropdown item text={!!user ? user.get("username") : "..."}>
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={signout}>Sign Out</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Menu.Menu>
-    )}
-    {!isAuthenticated && (
-      <Menu.Menu position="right">
-        <Menu.Item as={Link} to="/signin">
-          Sign In
-        </Menu.Item>
-        <Menu.Item as={Link} to="/signup">
-          Sign Up
-        </Menu.Item>
-      </Menu.Menu>
-    )}
+    <Menu.Menu position="right">
+      <Menu.Item as={Link} to="/all">All Nodes</Menu.Item>
+      {isAuthenticated && (
+        <Menu.Menu position="right">
+          <Menu.Item as={Link} to="/create">Create Node</Menu.Item>
+          <Dropdown item text={!!user ? user.get("username") : "..."}>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={signout}>Sign Out</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Menu.Menu>
+      )}
+      {!isAuthenticated && (
+        <Menu.Menu position="right">
+          <Menu.Item as={Link} to="/signin">
+            Sign In
+          </Menu.Item>
+          <Menu.Item as={Link} to="/signup">
+            Sign Up
+          </Menu.Item>
+        </Menu.Menu>
+      )}
+    </Menu.Menu>
   </Menu>
 );
 
@@ -98,6 +101,4 @@ function mapStateToProps(state) {
 
 export default graphql(SELF_USER_QUERY, {
   name: "selfUserQuery"
-})(
-  connect(mapStateToProps)(Navbar)
-);
+})(connect(mapStateToProps)(Navbar));
