@@ -14,8 +14,7 @@ import {
   Popup,
   Segment
 } from "semantic-ui-react";
-import { authActions } from "../../modules/auth/actions";
-import { isAuthenticated } from "../../modules/auth";
+import { isAuthenticated, authActions } from "../../modules/auth";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,

@@ -7,7 +7,6 @@ export const AuthState = new Record({
   email: "",
   password: "",
   understoodLesson: false,
-  error: null,
   jwt: localStorage.getItem(GC_AUTH_TOKEN) || null,
   authUser: null // this is not stored locally, but we will pull it using stored JWT
 });
@@ -25,10 +24,6 @@ export function authReducer(state = new AuthState(), { payload, type }) {
     case authActions.SET_FORM_EMAIL:
       return state.merge({
         email: payload
-      });
-    case authActions.SET_AUTH_ERROR:
-      return state.merge({
-        error: payload
       });
     case authActions.SET_UNDERSTOOD_LESSON:
       return state.merge({
