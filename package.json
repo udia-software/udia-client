@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/googlemaps": "^3.30.0",
+    "@types/markerclustererplus": "^2.1.33",
+    "@types/react": "^16.0.27",
     "apollo-client": "^2.1.0",
     "apollo-client-preset": "^1.0.4",
     "apollo-link-ws": "^1.0.2",
     "classnames": "^2.2.5",
-    "graphql": "^0.11.7",
+    "graphql": "0.11",
     "graphql-tag": "^2.5.0",
     "history": "^4.7.2",
     "immutable": "^3.8.2",
@@ -25,7 +28,7 @@
     "react-scroll": "^1.6.7",
     "redux": "^3.7.2",
     "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.75.1",
+    "semantic-ui-react": "0.77.1",
     "subscriptions-transport-ws": "^0.9.3"
   },
   "scripts": {
@@ -34,10 +37,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "yarn run build && aws s3 sync build/ s3://udia-amazon --delete"
-  },
-  "devDependencies": {
-    "@types/googlemaps": "^3.30.0",
-    "@types/markerclustererplus": "^2.1.33",
-    "@types/react": "^16.0.27"
   }
 }
