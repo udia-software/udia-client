@@ -88,7 +88,6 @@ class SignUp extends Component {
           passwordErrors: password
         });
       });
-    } finally {
       this.setState({ loading: false });
     }
   };
