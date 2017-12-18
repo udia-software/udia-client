@@ -1,15 +1,22 @@
 import React, { Component } from "react";
-import { Container, Form, Header, TextArea } from "semantic-ui-react";
+import { graphql, compose } from "react-apollo";
 import { connect } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import {
+  Button,
+  Container,
+  Form,
+  Header,
+  Icon,
+  Input,
+  Label,
+  Popup,
+  TextArea
+} from "semantic-ui-react";
 import { nodeActions } from "../../modules/nodes";
 import { isAuthenticated } from "../../modules/auth";
-import Input from "semantic-ui-react/dist/commonjs/elements/Input/Input";
-import Label from "semantic-ui-react/dist/commonjs/elements/Label/Label";
-import Button from "semantic-ui-react/dist/commonjs/elements/Button/Button";
-import Icon from "semantic-ui-react/dist/commonjs/elements/Icon/Icon";
-import Popup from "semantic-ui-react/dist/commonjs/modules/Popup/Popup";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired
@@ -19,7 +26,9 @@ class CreateNode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nodeErrors: []
+      loading: false,
+      titleErrors: [],
+      contentErrors: []
     };
   }
 
@@ -33,9 +42,38 @@ class CreateNode extends Component {
     dispatch(nodeActions.setFormContent(event.target.value));
   };
 
+  _submit = async event => {
+    event.preventDefault();
+    const { title, content, dispatch, history } = this.props;
+    const type = "TEXT";
+    this.setState({ loading: true });
+    try {
+      const result = await this.props.createNodeMutation({
+        variables: { title, content, type }
+      });
+      dispatch(nodeActions.setFormTitle(""));
+      dispatch(nodeActions.setFormContent(""));
+      console.log(result.data.createNode);
+      history.push(`/all`);
+    } catch (err) {
+      console.error(err);
+      (err.graphQLErrors || []).forEach(graphqlError => {
+        let { title, content } = graphqlError.state;
+        this.setState({
+          titleErrors: title,
+          contentErrors: content
+        });
+      });
+      this.setState({ loading: false });
+    }
+  };
+
   render() {
     document.title = "Create Node - UDIA";
     const { title, content } = this.props;
+    const { titleErrors, contentErrors, loading } = this.state;
+    const titleError = titleErrors && titleErrors.length > 0;
+    const contentError = contentErrors && contentErrors.length > 0;
     return (
       <Container style={{ flex: 0.95 }}>
         <div stle={{ display: "block", wordWrap: "break-word" }}>
@@ -54,7 +92,11 @@ class CreateNode extends Component {
             </Label>
           )}
         </div>
-        <Form>
+        <Form
+          onSubmit={this._submit}
+          error={titleError || contentError}
+          loading={loading}
+        >
           <Input
             fluid
             label="Title"
@@ -62,7 +104,11 @@ class CreateNode extends Component {
             onChange={this._changeFormTitle}
             value={title}
             action={
-              content && title ? <Button color="green">Submit</Button> : null
+              content && title ? (
+                <Button disabeld={!loading} color="green">
+                  Submit
+                </Button>
+              ) : null
             }
           />
           <TextArea
@@ -80,7 +126,7 @@ class CreateNode extends Component {
           }
           position="bottom left"
         >
-        Try <code>**doing** __this__</code>.
+          Try <code>**doing** __this__</code>.
         </Popup>
       </Container>
     );
@@ -88,6 +134,26 @@ class CreateNode extends Component {
 }
 
 CreateNode.propTypes = propTypes;
+
+const CREATE_NODE_MUTATION = gql`
+  mutation CreateNodeMutation(
+    $type: NodeType!
+    $title: String!
+    $content: String!
+  ) {
+    createNode(type: $type, title: $title, content: $content) {
+      _id
+      type
+      title
+      content
+      createdAt
+      updatedAt
+      createdBy {
+        _id
+      }
+    }
+  }
+`;
 
 function mapStateToProps(state) {
   return {
@@ -97,4 +163,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(CreateNode);
+export default connect(mapStateToProps)(
+  compose(graphql(CREATE_NODE_MUTATION, { name: "createNodeMutation" }))(
+    CreateNode
+  )
+);

@@ -6,8 +6,8 @@ export const AuthState = {
   email: "",
   password: "",
   understoodLesson: false,
-  jwt: localStorage.getItem(GC_AUTH_TOKEN) || null,
-  authUser: null // this is not stored locally, but we will pull it using stored JWT
+  jwt: localStorage.getItem(GC_AUTH_TOKEN) || null, // Ignored by auto persist
+  authUser: null // ignored by auto persist
 };
 
 export function authReducer(state = { ...AuthState }, { payload, type }) {
@@ -41,6 +41,10 @@ export function authReducer(state = { ...AuthState }, { payload, type }) {
       localStorage.setItem(GC_AUTH_TOKEN, payload.jwt);
       return {
         ...state,
+        username: "",
+        email: "",
+        password: "",
+        understoodLesson: false,
         authUser: payload.user,
         jwt: payload.jwt
       };
