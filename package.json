@@ -13,7 +13,6 @@
     "graphql": "0.11",
     "graphql-tag": "^2.5.0",
     "history": "^4.7.2",
-    "immutable": "^3.8.2",
     "moment": "^2.19.2",
     "react": "^16.0.0",
     "react-apollo": "^2.0.1",
@@ -28,6 +27,7 @@
     "react-scroll": "^1.6.7",
     "redux": "^3.7.2",
     "redux-persist": "^5.4.0",
+    "redux-persist-transform-filter": "^0.0.16",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "0.77.1",
     "subscriptions-transport-ws": "^0.9.3"

@@ -1,50 +1,56 @@
-import { Record } from "immutable";
 import { authActions } from "./actions";
 import { GC_AUTH_TOKEN } from "../../constants";
 
-export const AuthState = new Record({
+export const AuthState = {
   username: "",
   email: "",
   password: "",
   understoodLesson: false,
   jwt: localStorage.getItem(GC_AUTH_TOKEN) || null,
   authUser: null // this is not stored locally, but we will pull it using stored JWT
-});
+};
 
-export function authReducer(state = new AuthState(), { payload, type }) {
+export function authReducer(state = { ...AuthState }, { payload, type }) {
   switch (type) {
     case authActions.SET_FORM_USERNAME:
-      return state.merge({
+      return {
+        ...state,
         username: payload
-      });
+      };
     case authActions.SET_FORM_PASSWORD:
-      return state.merge({
+      return {
+        ...state,
         password: payload
-      });
+      };
     case authActions.SET_FORM_EMAIL:
-      return state.merge({
+      return {
+        ...state,
         email: payload
-      });
+      };
     case authActions.SET_UNDERSTOOD_LESSON:
-      return state.merge({
+      return {
+        ...state,
         understoodLesson: payload
-      });
+      };
     case authActions.SET_AUTH_USER:
-      return state.merge({
+      return {
+        ...state,
         authUser: payload
-      });
+      };
     case authActions.SET_AUTH_DATA:
       localStorage.setItem(GC_AUTH_TOKEN, payload.jwt);
-      return state.merge({
+      return {
+        ...state,
         authUser: payload.user,
         jwt: payload.jwt
-      });
+      };
     case authActions.CLEAR_AUTH_DATA:
       localStorage.removeItem(GC_AUTH_TOKEN);
-      return state.merge({
+      return {
+        ...state,
         jwt: null,
         authUser: null
-      });
+      };
     default:
       return state;
   }
