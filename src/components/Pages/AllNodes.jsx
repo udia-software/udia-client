@@ -53,6 +53,12 @@ class AllNodes extends Component {
       <Container>
         <Header>All Nodes</Header>
         to do
+        {nodesToRender && nodesToRender.length > 0 && nodesToRender.map(nodeBlock => (
+          <div key={nodeBlock._id}>
+            {nodeBlock._id}<br/>
+            {nodeBlock.title}
+          </div>
+        ))}
       </Container>
     );
   }
