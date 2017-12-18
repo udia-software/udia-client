@@ -1,21 +1,22 @@
-import { Record } from "immutable";
 import { nodeActions } from "./actions";
 
-export const NodeState = new Record({
+export const NodeState = {
   title: "",
   content: ""
-});
+};
 
-export function nodesReducer(state = new NodeState(), { payload, type }) {
+export function nodesReducer(state = { ...NodeState }, { payload, type }) {
   switch (type) {
     case nodeActions.SET_FORM_TITLE:
-      return state.merge({
+      return {
+        ...state,
         title: payload
-      });
+      };
     case nodeActions.SET_FORM_CONTENT:
-      return state.merge({
+      return {
+        ...state,
         content: payload
-      });
+      };
     default:
       return state;
   }

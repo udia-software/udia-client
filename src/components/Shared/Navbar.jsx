@@ -49,7 +49,7 @@ const NavbarView = ({ isAuthenticated, user, signout }) => (
       {isAuthenticated && (
         <Menu.Menu position="right">
           <Menu.Item as={Link} to="/create">Create Node</Menu.Item>
-          <Dropdown item text={!!user ? user.get("username") : "..."}>
+          <Dropdown item text={!!user ? user["username"] : "..."}>
             <Dropdown.Menu>
               <Dropdown.Item onClick={signout}>Sign Out</Dropdown.Item>
             </Dropdown.Menu>
