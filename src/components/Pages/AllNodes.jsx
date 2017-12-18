@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { graphql, compose } from "react-apollo";
+import { connect } from "react-redux";
+import gql from "graphql-tag";
 import { Container, Header } from "semantic-ui-react";
 
 class AllNodes extends Component {
@@ -9,8 +12,43 @@ class AllNodes extends Component {
     };
   }
 
+  componentDidMount = () => {
+    this._subscribeToNewNodes();
+  }
+
+  _subscribeToNewNodes = () => {
+    this.props.allNodesQuery.subscribeToMore({
+      document: gql`
+        subscription {
+          Node(filter: {
+            mutation_in: [CREATED]
+          }) {
+            mutation
+            payload {m
+              _id
+              title
+              content
+              createdAt
+            }
+          }
+        }
+      `,
+      updateQuery: (previous, { subscriptionData }) => {
+        const newAllLinks = [...previous.allLinks, subscriptionData.Link.node];
+        const result = {
+          ...previous,
+          allLinks: newAllLinks
+        };
+        return result;
+      }
+    });
+  }
+
   render() {
     document.title = "All Nodes - UDIA";
+    console.log(this.props.allNodesQuery);
+    const nodesToRender = this.props.allNodesQuery.allNodes;
+    console.log(nodesToRender);
     return (
       <Container>
         <Header>All Nodes</Header>
@@ -20,4 +58,34 @@ class AllNodes extends Component {
   }
 }
 
-export default AllNodes;
+const ALL_NODES_QUERY = gql`
+  query AllNodesQuery(
+    $filter: NodeFilter
+    $orderBy: NodeOrderBy
+    $skip: Int
+    $first: Int
+  ) {
+    allNodes(filter: $filter, orderBy: $orderBy, skip: $skip, first: $first) {
+      _id
+      title
+      content
+      type
+      createdAt
+      createdBy {
+        username
+      }
+    }
+  }
+`;
+
+function mapStateToProps(state) {
+  return {
+    ...state
+  };
+}
+
+export default connect(mapStateToProps)(
+  compose(graphql(ALL_NODES_QUERY, { name: "allNodesQuery" }))(
+    AllNodes
+  )
+);
