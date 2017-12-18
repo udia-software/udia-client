@@ -32,6 +32,13 @@ class CreateNode extends Component {
     };
   }
 
+  componentDidMount = () => {
+    const { isAuthenticated, history } = this.props;
+    if (!isAuthenticated) {
+      history.push(`/`);
+    }
+  };
+
   _changeFormTitle = event => {
     const { dispatch } = this.props;
     dispatch(nodeActions.setFormTitle(event.target.value));
@@ -105,7 +112,7 @@ class CreateNode extends Component {
             value={title}
             action={
               content && title ? (
-                <Button disabeld={!loading} color="green">
+                <Button disabled={!!loading} color="green">
                   Submit
                 </Button>
               ) : null
