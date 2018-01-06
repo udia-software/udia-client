@@ -1,5 +1,7 @@
 # Udia Client
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/udia-software/udia-client.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/udia-software/udia-client.svg?branch=master)](https://travis-ci.org/udia-software/udia-client)
 [![Dependency Status](https://img.shields.io/david/udia-software/udia-client.svg)](https://david-dm.org/udia-software/udia-client)
 [![Dev-Dependency Status](https://img.shields.io/david/dev/udia-software/udia-client.svg)](https://david-dm.org/udia-software/udia-client#info=devDependencies)
