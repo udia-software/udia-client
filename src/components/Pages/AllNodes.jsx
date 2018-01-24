@@ -20,11 +20,11 @@ class AllNodes extends Component {
     this.props.allNodesQuery.subscribeToMore({
       document: gql`
         subscription {
-          Node(filter: {
+          NodeSubscription(filter: {
             mutation_in: [CREATED]
           }) {
             mutation
-            payload {m
+            node {
               _id
               title
               content
@@ -46,9 +46,7 @@ class AllNodes extends Component {
 
   render() {
     document.title = "All Nodes - UDIA";
-    console.log(this.props.allNodesQuery);
     const nodesToRender = this.props.allNodesQuery.allNodes;
-    console.log(nodesToRender);
     return (
       <Container>
         <Header>All Nodes</Header>
@@ -75,7 +73,8 @@ const ALL_NODES_QUERY = gql`
       _id
       title
       content
-      type
+      dataType
+      relationType
       createdAt
       createdBy {
         username
