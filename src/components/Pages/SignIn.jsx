@@ -3,7 +3,6 @@ import { graphql, compose } from "react-apollo";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
 import {
   Button,
   Container,
@@ -15,6 +14,7 @@ import {
   Segment
 } from "semantic-ui-react";
 import { isAuthenticated, authActions } from "../../modules/auth";
+import { SIGN_IN_MUTATION } from "../../constants";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -167,17 +167,6 @@ class SignIn extends Component {
 
 SignIn.propTypes = propTypes;
 
-const SIGN_IN_MUTATION = gql`
-  mutation SignInMutation($email: String!, $password: String!) {
-    signinUser(email: { email: $email, password: $password }) {
-      token
-      user {
-        _id
-        username
-      }
-    }
-  }
-`;
 
 function mapStateToProps(state) {
   return {

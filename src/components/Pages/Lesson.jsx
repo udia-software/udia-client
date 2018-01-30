@@ -14,10 +14,10 @@ export const Lesson = () => {
             The Fundamental Lesson
           </Header>
           <p style={TOC_STYLE}>
-            So, if I may start by insulting your intelligence, with what is called the most elementary lesson.
-            </p>
+            So, if I may start with what is called the most elementary lesson.
+          </p>
           <p style={TOC_STYLE}>
-            The thing that we should have learned before we learned:
+            This thing that we <em>should</em> have learned before learning:
           </p>
           <List style={TOC_STYLE} ordered>
             <List.Item>) One.</List.Item>
@@ -33,9 +33,6 @@ export const Lesson = () => {
             <List.Item>C.</List.Item>
           </List>
           <p style={TOC_STYLE}>
-            The lesson is quite simply this:
-          </p>
-          <p style={TOC_STYLE}>
             Any experience that we have through our senses, whether of sound or of light, or of touch, is
             a <strong>vibration</strong>.
             A vibration has two aspects, one called <code>on</code> and one called <code>off</code>.
@@ -48,16 +45,15 @@ export const Lesson = () => {
             Take, for instance, sound. Sound is not <i>pure</i> sound. It is a rapid alternation of sound and slience.
           </p>
           <p style={TOC_STYLE}>
-            This is simply the way things are! You must remember that the crest and the trough of the wave are
-            inseperable.
+            The crest and the trough of the wave are inseperable.
             Just like you don't encounter people with fronts but no backs.
             Just like you don't encounter coins with heads but no tails.
           </p>
           <p style={TOC_STYLE}>
             And although the heads and the tails; the fronts and the backs; the positives and the negatives are
-            different- they're are the same time one.
+            different- they are the same time <strong>one</strong>.
           </p>
-          <p style={{...TOC_STYLE, textAlign: 'right', paddingTop: '2em'}}>
+          <p style={{...TOC_STYLE, textAlign: 'center', paddingTop: '2em'}}>
             Different things can be inseperable.
           </p>
           <div style={{ textAlign: '-webkit-center', paddingBottom: '1em' }}>
@@ -78,7 +74,7 @@ export const Lesson = () => {
             </Header>
             </Segment>
           </div>
-          <p style={{...TOC_STYLE, textAlign: 'left', paddingBottom: '2em'}}>
+          <p style={{...TOC_STYLE, textAlign: 'center', paddingBottom: '2em'}}>
             What is explicitly two can, at the same time, be implicitly one.
           </p>
           <Logo />

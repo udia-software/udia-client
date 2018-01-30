@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import { connect } from "react-redux";
-import gql from "graphql-tag";
 import { Container, Header } from "semantic-ui-react";
+import { ALL_NODES_SUBSCRIPTION, ALL_NODES_QUERY } from "../../constants";
 
 class AllNodes extends Component {
   constructor(props) {
@@ -18,26 +18,12 @@ class AllNodes extends Component {
 
   _subscribeToNewNodes = () => {
     this.props.allNodesQuery.subscribeToMore({
-      document: gql`
-        subscription {
-          NodeSubscription(filter: {
-            mutation_in: [CREATED]
-          }) {
-            mutation
-            node {
-              _id
-              title
-              content
-              createdAt
-            }
-          }
-        }
-      `,
+      document: ALL_NODES_SUBSCRIPTION,
       updateQuery: (previous, { subscriptionData }) => {
-        const newAllLinks = [...previous.allLinks, subscriptionData.Link.node];
+        const newAllNodes = [...previous.allNodes, subscriptionData.data.NodeSubscription.node];
         const result = {
           ...previous,
-          allLinks: newAllLinks
+          allNodes: newAllNodes
         };
         return result;
       }
@@ -54,7 +40,7 @@ class AllNodes extends Component {
         {nodesToRender && nodesToRender.length > 0 && nodesToRender.map(nodeBlock => (
           <div key={nodeBlock._id}>
             {nodeBlock._id}<br/>
-            {nodeBlock.title}
+            {nodeBlock.title || "no title"}
           </div>
         ))}
       </Container>
@@ -62,26 +48,6 @@ class AllNodes extends Component {
   }
 }
 
-const ALL_NODES_QUERY = gql`
-  query AllNodesQuery(
-    $filter: NodeFilter
-    $orderBy: NodeOrderBy
-    $skip: Int
-    $first: Int
-  ) {
-    allNodes(filter: $filter, orderBy: $orderBy, skip: $skip, first: $first) {
-      _id
-      title
-      content
-      dataType
-      relationType
-      createdAt
-      createdBy {
-        username
-      }
-    }
-  }
-`;
 
 function mapStateToProps(state) {
   return {

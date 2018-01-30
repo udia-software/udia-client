@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { graphql } from "react-apollo";
-import gql from "graphql-tag";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dropdown, Menu } from "semantic-ui-react";
 import { isAuthenticated } from "../../modules/auth";
 import { authActions } from "../../modules/auth/actions";
+import { SELF_USER_QUERY } from "../../constants";
 
 export class Navbar extends Component {
   signout = () => {
@@ -70,18 +70,7 @@ const NavbarView = ({ isAuthenticated, user, signout }) => (
   </Menu>
 );
 
-const SELF_USER_QUERY = gql`
-  query selfUserQuery {
-    me {
-      _id
-      username
-      createdAt
-      updatedAt
-      email
-      passwordHash
-    }
-  }
-`;
+
 
 NavbarView.propTypes = {
   isAuthenticated: PropTypes.bool,
