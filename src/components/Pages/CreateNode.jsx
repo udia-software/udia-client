@@ -3,7 +3,6 @@ import { graphql, compose } from "react-apollo";
 import { connect } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
 import {
   Button,
   Container,
@@ -17,6 +16,7 @@ import {
 } from "semantic-ui-react";
 import { nodeActions } from "../../modules/nodes";
 import { isAuthenticated } from "../../modules/auth";
+import { CREATE_NODE_MUTATION } from "../../constants";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired
@@ -52,11 +52,12 @@ class CreateNode extends Component {
   _submit = async event => {
     event.preventDefault();
     const { title, content, dispatch, history } = this.props;
-    const type = "TEXT";
+    const dataType = "TEXT";
+    const relationType = "POST";
     this.setState({ loading: true });
     try {
       const result = await this.props.createNodeMutation({
-        variables: { title, content, type }
+        variables: { title, content, dataType, relationType }
       });
       dispatch(nodeActions.setFormTitle(""));
       dispatch(nodeActions.setFormContent(""));
@@ -141,26 +142,6 @@ class CreateNode extends Component {
 }
 
 CreateNode.propTypes = propTypes;
-
-const CREATE_NODE_MUTATION = gql`
-  mutation CreateNodeMutation(
-    $type: NodeType!
-    $title: String!
-    $content: String!
-  ) {
-    createNode(type: $type, title: $title, content: $content) {
-      _id
-      type
-      title
-      content
-      createdAt
-      updatedAt
-      createdBy {
-        _id
-      }
-    }
-  }
-`;
 
 function mapStateToProps(state) {
   return {

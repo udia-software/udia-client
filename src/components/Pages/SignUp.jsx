@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -17,6 +16,7 @@ import {
 } from "semantic-ui-react";
 import { authActions } from "../../modules/auth/actions";
 import { isAuthenticated } from "../../modules/auth";
+import { CREATE_USER_MUTATION } from "../../constants";
 
 const propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -230,21 +230,6 @@ class SignUp extends Component {
 
 SignUp.propTypes = propTypes;
 
-const CREATE_USER_MUTATION = gql`
-  mutation CreateUserMutation(
-    $email: String!
-    $password: String!
-    $username: String!
-  ) {
-    createUser(email: $email, username: $username, password: $password) {
-      token
-      user {
-        _id
-        username
-      }
-    }
-  }
-`;
 
 function mapStateToProps(state) {
   return {
