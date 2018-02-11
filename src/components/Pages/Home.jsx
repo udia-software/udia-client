@@ -4,20 +4,21 @@ import Logo from "../Static/Logo";
 
 export const Home = () => {
   document.title = "UDIA";
+  const inverted=true;
   return (
     <div style={{ flex: 1 }}>
       <Segment vertical>
         <Grid container stackable verticalAlign="middle">
           <Grid.Row>
             <Grid.Column width={10}>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Manifestation of the Four Definitions of Self
               </Header>
               <p>
                 UDIA is the understanding that self is simultaneously being one with the universe, being one with your
                 opposites, being one with your identity, and being one with awareness.
               </p>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Self-Reflection
               </Header>
               <p>
@@ -34,13 +35,13 @@ export const Home = () => {
         <Grid celled="internally" columns="equal" stackable>
           <Grid.Row textAlign="center">
             <Grid.Column style={{ paddingBottom: "3em", paddingTop: "3em" }}>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Universe
               </Header>
               <p>You are the Universe.</p>
             </Grid.Column>
             <Grid.Column style={{ paddingBottom: "3em", paddingTop: "3em" }}>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Diametric
               </Header>
               <p>You are the opposite of me.</p>
@@ -48,13 +49,13 @@ export const Home = () => {
           </Grid.Row>
           <Grid.Row textAlign="center">
             <Grid.Column style={{ paddingBottom: "3em", paddingTop: "3em" }}>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Identity
               </Header>
               <p>You are an individual.</p>
             </Grid.Column>
             <Grid.Column style={{ paddingBottom: "3em", paddingTop: "3em" }}>
-              <Header as="h3">
+              <Header as="h3" inverted={inverted}>
                 Awareness
               </Header>
               <p>You are aware.</p>
@@ -64,7 +65,7 @@ export const Home = () => {
       </Segment>
       <Segment style={{ padding: "8em 0em" }} vertical>
         <Container text>
-          <Header as="h2">
+          <Header as="h2" inverted={inverted}>
             Mission
           </Header>
           <p style={{ fontSize: "1.33em" }}>

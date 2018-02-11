@@ -16,15 +16,21 @@ import UdiaOfficeMap from "../Static/UdiaOfficeMap";
 
 export const Contact = () => {
   document.title = "Contact - UDIA";
-  const ALEXANDER_WONG_UDIA_DATE = new moment("23-02-2016 12:14 -07:00", "DD-MM-YYYY HH:mm ZZ", true);
+  const inverted = true;
+  const ALEXANDER_WONG_UDIA_DATE = new moment(
+    "23-02-2016 12:14 -07:00",
+    "DD-MM-YYYY HH:mm ZZ",
+    true
+  );
   return (
     <div style={{ flex: 1 }}>
       <Container>
-        <Header as="h2">
+        <Header as="h2" inverted={inverted}>
           <Header.Content>Contact</Header.Content>
         </Header>
         <p>
-          Headquarters is located in the Startup Edmonton office. The best way to contact UDIA is through email.
+          Headquarters is located in the Startup Edmonton office. The best way
+          to contact UDIA is through email.
         </p>
       </Container>
       <UdiaOfficeMap
@@ -34,7 +40,9 @@ export const Contact = () => {
             style={{ height: `400px`, padding: `15px 0px` }}
             dimmed
           >
-            <Dimmer active><Loader active /></Dimmer>
+            <Dimmer active>
+              <Loader active />
+            </Dimmer>
           </Dimmer.Dimmable>
         }
         containerElement={
@@ -58,31 +66,33 @@ export const Contact = () => {
               <Logo maxHeight={180} />
             </div>
             <Card.Content>
-              <Card.Header>
-                Alexander Wong
-              </Card.Header>
+              <Card.Header>Alexander Wong</Card.Header>
               <Card.Meta>
                 <Popup
                   inverted
                   wide
                   position="right center"
-                  content={"Founded UDIA on " + ALEXANDER_WONG_UDIA_DATE.format(
-                    "dddd, MMMM Do, YYYY HH:mm a ZZ"
-                  ) + "."}
+                  content={
+                    "Founded UDIA on " +
+                    ALEXANDER_WONG_UDIA_DATE.format(
+                      "dddd, MMMM Do, YYYY HH:mm a ZZ"
+                    ) +
+                    "."
+                  }
                   on="hover"
                   trigger={
                     <span className="date">
-                      Founder; {" "}
-                      <FromTime time={ALEXANDER_WONG_UDIA_DATE} />
-                      {" "} duty served.
+                      Founder; <FromTime time={ALEXANDER_WONG_UDIA_DATE} /> duty
+                      served.
                     </span>
                   }
                 />
               </Card.Meta>
               <Card.Description>
-                Alexander is a software developer contractor. He is currently on a contract for EPCOR as a Systems Analyst.
-                UDIA is an ongoing sideproject involving neural networks, particularly deep learning applications like
-                generative adversarial networks.
+                Alexander is a software developer contractor. He is currently on
+                a contract for EPCOR as a Systems Analyst. UDIA is an ongoing
+                sideproject involving neural networks, particularly deep
+                learning applications like generative adversarial networks.
               </Card.Description>
             </Card.Content>
             <Card.Content extra>
@@ -92,12 +102,8 @@ export const Contact = () => {
                 animated="fade"
                 attached="bottom"
               >
-                <Button.Content visible>
-                  Personal Domain
-                </Button.Content>
-                <Button.Content hidden>
-                  alexander-wong.com
-                </Button.Content>
+                <Button.Content visible>Personal Domain</Button.Content>
+                <Button.Content hidden>alexander-wong.com</Button.Content>
               </Button>
             </Card.Content>
           </Card>
