@@ -17,7 +17,9 @@ class App extends Component {
     const siteContainerStyle = {
       display: "flex",
       minHeight: "100vh",
-      flexDirection: "column"
+      flexDirection: "column",
+      backgroundColor: "#000",
+      color: "#fff"
     };
     const siteContentStyle = {
       flex: "1",
