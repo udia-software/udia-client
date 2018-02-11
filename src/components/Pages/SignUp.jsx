@@ -100,7 +100,7 @@ class SignUp extends Component {
     document.title = "Sign Up - UDIA";
 
     const { email, username, password, understoodLesson } = this.props;
-    const { usernameErrors, emailErrors, passwordErrors } = this.state;
+    const { usernameErrors, emailErrors, passwordErrors, loading } = this.state;
 
     const emailError = emailErrors && emailErrors.length > 0;
     const usernameError = usernameErrors && usernameErrors.length > 0;
@@ -125,6 +125,7 @@ class SignUp extends Component {
             onSubmit={this._submit}
             error={emailError || usernameError || passwordError}
             inverted={inverted}
+            loading={loading}
           >
             <Form.Field>
               <label style={WHITE_TEXT_STYLE}>EMAIL</label>
@@ -229,7 +230,6 @@ class SignUp extends Component {
 }
 
 SignUp.propTypes = propTypes;
-
 
 function mapStateToProps(state) {
   return {

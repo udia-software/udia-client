@@ -65,10 +65,10 @@ class SignIn extends Component {
     } catch (err) {
       console.error(err);
       (err.graphQLErrors || []).forEach(graphqlError => {
-        let { email, password } = graphqlError.state;
+        let { email, rawPassword } = graphqlError.state;
         this.setState({
           emailErrors: email,
-          passwordErrors: password
+          passwordErrors: rawPassword
         });
       });
       this.setState({ loading: false });
@@ -84,7 +84,7 @@ class SignIn extends Component {
     const { email, password } = this.props;
     const { emailErrors, passwordErrors, loading } = this.state;
     const emailError = emailErrors && emailErrors.length > 0;
-    const passwordError = passwordErrors && passwordErrors > 0;
+    const passwordError = passwordErrors && passwordErrors.length > 0;
 
     return (
       <Container

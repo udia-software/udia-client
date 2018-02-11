@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import moment from "moment";
 
 const propTypes = {
-  time: PropTypes.instanceOf(moment).isRequired
+  time: PropTypes.oneOfType([
+    PropTypes.instanceOf(moment),
+    PropTypes.instanceOf(Date)
+  ]).isRequired
 };
 
 class FromTime extends Component {
