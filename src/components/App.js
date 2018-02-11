@@ -11,6 +11,7 @@ import NoMatch from "./Pages/NoMatch";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import Lesson from "./Pages/Lesson";
+import ViewNode from "./Pages/ViewNode";
 
 class App extends Component {
   render() {
@@ -38,6 +39,7 @@ class App extends Component {
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/all" component={AllNodes} />
             <Route exact path="/create" component={CreateNode} />
+            <Route exact path="/node/:node_uid" component={ViewNode} />
             <Route component={NoMatch} />
           </Switch>
         </div>

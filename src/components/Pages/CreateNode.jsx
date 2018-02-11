@@ -61,18 +61,24 @@ class CreateNode extends Component {
       });
       dispatch(nodeActions.setFormTitle(""));
       dispatch(nodeActions.setFormContent(""));
-      console.log(result.data.createNode);
-      history.push(`/all`);
     } catch (err) {
       console.error(err);
       (err.graphQLErrors || []).forEach(graphqlError => {
+        console.log(graphqlError);
         let { title, content } = graphqlError.state;
         this.setState({
           titleErrors: title,
           contentErrors: content
         });
       });
+    } finally {
       this.setState({ loading: false });
+      const { titleErrors, contentErrors } = this.state;
+      const titleError = titleErrors && titleErrors.length > 0;
+      const contentError = contentErrors && contentErrors.length > 0;
+      if (!titleError && !contentError) {
+        history.push(`${"/all"}`);
+      }
     }
   };
 
