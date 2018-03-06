@@ -3,18 +3,50 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#000000">
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <title>UDIA</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:200,400" rel="stylesheet">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.webmanifest">
+    <meta name="apple-mobile-web-app-title" content="UDIA">
+    <meta name="application-name" content="UDIA">
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="#000000">
+      <title>UDIA</title>
     <style>
-      html { background-color: #808080; }
-      body { padding: 0; margin: 0; font-family: sans-serif; }
-      #root { display: grid; min-width: 100%; min-height: 100vh; padding: 0; margin: 0; }
+      html {
+        background-color: #181818;
+        color: #ffffff;
+        height: 100%;
+        width: 100%;
+      }
+      body {
+        padding: 0;
+        margin: 0;
+        min-height: 100%;
+        min-width: 100%;
+        font-family: 'Raleway', sans-serif;
+        font-weight: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        padding: 0;
+        margin: 0;
+        font-weight: 400;
+      }
+      #root {
+        padding: 0;
+        margin: 0;
+      }
     </style>
   </head>
   <body>
-    <noscript>UDIA is a web application that needs to enable JavaScript to run.</noscript>
-    <div id="root"></div>
+    <noscript>UDIA is a web application that requires JavaScript to run.</noscript>
+    <div id="root">Loading...</div>
   </body>
 </html>
