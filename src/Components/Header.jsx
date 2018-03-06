@@ -9,6 +9,7 @@ export const Header = () => {
     grid-template-columns: 1fr 1fr;
     background-color: #1b1c1d;
     align-items: center;
+    padding: 0 0.4em;
   `;
 
   const StyledTitleLink = styled(Link)`
