@@ -2,3 +2,13 @@ html {
   background-color: #000000;
   color: #ffffff
 }
+
+a {
+  color: hsla(0,0%,100%,.5);
+  transition-property: color;
+  transition-duration: 0.2s;
+}
+
+a:hover {
+  color: hsla(0,0%,100%,1);
+}
