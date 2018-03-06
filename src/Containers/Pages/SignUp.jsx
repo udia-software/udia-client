@@ -22,7 +22,7 @@ export const SignUp = () => {
         <StyledAuthFormFieldset>
           <legend>Hello there, User.</legend>
           <StyledAuthFormContent>
-          <StyledAuthFormField>
+            <StyledAuthFormField>
               <label htmlFor="email">Email:</label>
               <StyledInput
                 type="email"
@@ -32,11 +32,7 @@ export const SignUp = () => {
             </StyledAuthFormField>
             <StyledAuthFormField>
               <label htmlFor="username">Username:</label>
-              <StyledInput
-                type="text"
-                id="username"
-                placeholder="alex"
-              />
+              <StyledInput type="text" id="username" placeholder="alex" />
             </StyledAuthFormField>
             <StyledAuthFormField>
               <label htmlFor="pw">Password:</label>
