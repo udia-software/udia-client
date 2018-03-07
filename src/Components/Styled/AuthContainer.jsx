@@ -17,8 +17,8 @@ const StyleComponent = styled.div`
   align-self: center;
   margin: 1em;
 `;
-const StyledAuthContainer = props => {
+const AuthContainer = props => {
   return <StyleComponent {...props} />;
 };
-export { StyledAuthContainer };
-export default StyledAuthContainer;
+export { AuthContainer };
+export default AuthContainer;

@@ -4,17 +4,18 @@ import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 
 import { authActions } from "Modules/Auth";
-import SignInView from "./SignInView";
+import SignUpView from "./SignUpView";
 
-class SignInController extends Component {
+class SignUpController extends Component {
   constructor(props) {
     super(props);
-    document.title = "Sign In - UDIA";
+    document.title = "Sign Up - UDIA";
     this.state = {
+      loading: false,
       errors: [],
       emailErrors: [],
-      passwordErrors: [],
-      loading: false
+      usernameErrors: [],
+      passwordErrors: []
     };
   }
 
@@ -23,68 +24,95 @@ class SignInController extends Component {
     this.setState({ emailErrors: [] });
   };
 
+  handleChangeUsername = event => {
+    this.props.dispatch(authActions.setFormUsername(event.target.value));
+    this.setState({ usernameErrors: [] });
+  };
+
   handleChangePassword = event => {
+    console.log(event);
     this.props.dispatch(authActions.setFormPassword(event.target.value));
     this.setState({ passwordErrors: [] });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    const { signInUserMutation, email, password } = this.props;
-    this.setState({ loading: true, emailErrors: [], passwordErrors: [] });
-    signInUserMutation({ variables: { email, password } })
+    const { signUpUserMutation, email, username, password } = this.props;
+    this.setState({
+      loading: true,
+      emailErrors: [],
+      usernameErrors: [],
+      passwordErrors: []
+    });
+    signUpUserMutation({ variables: { email, username, password } })
       .then(data => {
-        console.log("Todo (SignIn): ", data);
+        console.log("ToDo (SignUp):", data);
       })
       .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
         console.warn(message, graphQLErrors, networkError, extraInfo);
         const errors = [];
         let emailErrors = [];
+        let usernameErrors = [];
         let passwordErrors = [];
         graphQLErrors.forEach(graphQLError => {
           const errorState = graphQLError.state || {};
           emailErrors = emailErrors.concat(errorState.email || []);
+          usernameErrors = usernameErrors.concat(errorState.username || []);
           passwordErrors = passwordErrors.concat(errorState.password || []);
         });
         if (networkError) {
           errors.push(message);
         }
-        this.setState({ errors, emailErrors, passwordErrors });
+        this.setState({ errors, emailErrors, usernameErrors, passwordErrors });
       })
       .finally(() => {
         this.setState({ loading: false });
       });
   };
 
-  render = () => {
-    const { loading, errors, passwordErrors, emailErrors } = this.state;
-    const { email, password } = this.props;
+  render() {
+    const { email, username, password } = this.props;
+    const {
+      loading,
+      errors,
+      emailErrors,
+      usernameErrors,
+      passwordErrors
+    } = this.state;
     return (
-      <SignInView
+      <SignUpView
         loading={loading}
         email={email}
+        username={username}
         password={password}
         errors={errors}
         emailErrors={emailErrors}
+        usernameErrors={usernameErrors}
         passwordErrors={passwordErrors}
         handleChangeEmail={this.handleChangeEmail}
+        handleChangeUsername={this.handleChangeUsername}
         handleChangePassword={this.handleChangePassword}
         handleSubmit={this.handleSubmit}
       />
     );
-  };
+  }
 }
 
 function mapStateToProps(state) {
   return {
     email: state.auth.email,
+    username: state.auth.username,
     password: state.auth.password
   };
 }
 
-const SIGN_IN_MUTATION = gql`
-  mutation SignInMutation($email: String!, $password: String!) {
-    signinUser(email: { email: $email, password: $password }) {
+const SIGN_UP_MUTATION = gql`
+  mutation CreateUserMutation(
+    $email: String!
+    $password: String!
+    $username: String!
+  ) {
+    createUser(email: $email, username: $username, password: $password) {
       token
       user {
         _id
@@ -94,8 +122,9 @@ const SIGN_IN_MUTATION = gql`
   }
 `;
 
-const SignIn = connect(mapStateToProps)(
-  graphql(SIGN_IN_MUTATION, { name: "signInUserMutation" })(SignInController)
+const SignUp = connect(mapStateToProps)(
+  graphql(SIGN_UP_MUTATION, { name: "signUpUserMutation" })(SignUpController)
 );
-export { SignIn };
-export default SignIn;
+
+export { SignUp };
+export default SignUp;

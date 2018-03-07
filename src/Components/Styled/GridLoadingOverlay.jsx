@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 
 const StyledGridLoadingOverlay = styled.div`
-  display: grid;
+  display: ${props => (props.loading ? "grid" : "none")};
   grid-auto-rows: auto;
   align-items: center;
   align-content: center;
@@ -13,12 +13,10 @@ const StyledGridLoadingOverlay = styled.div`
   background-color: #000000;
   width: 100%;
   height: 100%;
-  opacity: ${props => (props.loading ? 0.8 : 0)};
-  z-index: ${props => (props.loading ? 1 : -1)};
+  opacity: 0.8;
+  z-index: 1;
 `;
 const GridLoadingOverlay = props => {
-  const { gridAreaName, loading } = props;
-
   return (
     <StyledGridLoadingOverlay {...props}>
       <svg id="loading-logo">
