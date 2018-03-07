@@ -1,6 +1,7 @@
+import React from "react";
 import styled from "styled-components";
 
-export const StyledInput = styled.input`
+const StyleComponent = styled.input`
   flex: 1 0 auto;
   width: auto;
   padding: 0.5em;
@@ -9,4 +10,10 @@ export const StyledInput = styled.input`
   border: none;
   border-radius: 3px;
 `;
+
+const StyledInput = props => {
+  return <StyleComponent {...props} />;
+};
+
+export { StyledInput };
 export default StyledInput;

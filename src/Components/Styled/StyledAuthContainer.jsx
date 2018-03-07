@@ -1,6 +1,7 @@
+import React from "react";
 import styled from "styled-components";
 
-export const StyledAuthContainer = styled.div`
+const StyleComponent = styled.div`
   display: grid;
   grid-template-areas:
     "title"
@@ -16,4 +17,8 @@ export const StyledAuthContainer = styled.div`
   align-self: center;
   margin: 1em;
 `;
+const StyledAuthContainer = props => {
+  return <StyleComponent {...props} />;
+};
+export { StyledAuthContainer };
 export default StyledAuthContainer;
