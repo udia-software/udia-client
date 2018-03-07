@@ -4,12 +4,12 @@ import styled from "styled-components";
 import { Logo } from "Static";
 
 export const Footer = () => {
-  const StyledFooter = styled.header`
+  const StyledFooter = styled.div`
     grid-area: footer;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto;
-    background-color: #1b1c1d;
+    background-color: #040404;
     justify-items: center;
     padding: 1em;
 

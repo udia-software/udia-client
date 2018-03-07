@@ -9,7 +9,7 @@ import {
   AUTH_TOKEN,
   REACT_APP_GRAPHQL_HTTP_ENDPOINT,
   REACT_APP_SUBSCRIPTIONS_ENDPOINT
-} from "./constants";
+} from "Constants";
 
 // Build the Apollo Http Link with the authentication token
 const middlewareAuthLink = new ApolloLink((operation, forward) => {
@@ -49,9 +49,11 @@ const link = split(
   httpLinkWithAuthToken
 );
 
-export default function initializeApolloClient() {
+export function initializeApolloClient() {
   return new ApolloClient({
     link,
     cache: new InMemoryCache()
   });
 }
+
+export default initializeApolloClient;

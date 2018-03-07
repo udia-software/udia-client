@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 
-import "./App.css";
+import "./App.css"; // Application Loaded Site Wide Styles
 import { Home, NoMatch, SignIn, SignUp } from "Containers/Pages";
 import { Header, Footer } from "Components";
 

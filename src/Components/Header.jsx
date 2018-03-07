@@ -1,13 +1,14 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-export const Header = () => {
+const HeaderController = ({ pathname }) => {
   const StyledHeader = styled.header`
     grid-area: header;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background-color: #1b1c1d;
+    background-color: #040404;
     align-items: center;
     padding: 0 0.4em;
   `;
@@ -28,13 +29,18 @@ export const Header = () => {
       border-left: 1px solid #fff;
     }
   `;
+
   const HeaderSubMenu = styled.div`
     justify-self: end;
     display: grid;
     grid-template-columns: 1fr 1fr;
   `;
 
-  const StyledSubTitleLink = styled(StyledTitleLink)`
+  const StyledSubTitleLink = StyledTitleLink.extend.attrs({
+    style: ({ to }) => ({
+      color: to === pathname ? "hsla(0, 0%, 100%, 1)" : "hsla(0, 0%, 100%, 0.5)"
+    })
+  })`
     font-size: medium;
     padding: 0.4em;
     border-left: 1px solid #000;
@@ -58,4 +64,14 @@ export const Header = () => {
     </StyledHeader>
   );
 };
+
+function mapStateToProps(state) {
+  return {
+    pathname: state.routing.location.pathname
+  };
+}
+
+const Header = connect(mapStateToProps)(HeaderController);
+
+export { Header };
 export default Header;
