@@ -2,23 +2,25 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const GridLoadingOverlay = ({ gridAreaName, loading }) => {
-  const StyledGridLoadingOverlay = styled.div`
-    display: grid;
-    grid-auto-rows: auto;
-    align-items: center;
-    align-content: center;
-    justify-items: center;
-    justify-content: center;
-    grid-area: ${gridAreaName};
-    background-color: #000000;
-    width: 100%;
-    height: 100%;
-    opacity: ${loading ? 0.8 : 0};
-    z-index: ${loading ? 1 : -1};
-  `;
+const StyledGridLoadingOverlay = styled.div`
+  display: grid;
+  grid-auto-rows: auto;
+  align-items: center;
+  align-content: center;
+  justify-items: center;
+  justify-content: center;
+  grid-area: ${props => props.gridAreaName};
+  background-color: #000000;
+  width: 100%;
+  height: 100%;
+  opacity: ${props => (props.loading ? 0.8 : 0)};
+  z-index: ${props => (props.loading ? 1 : -1)};
+`;
+const GridLoadingOverlay = props => {
+  const { gridAreaName, loading } = props;
+
   return (
-    <StyledGridLoadingOverlay>
+    <StyledGridLoadingOverlay {...props}>
       <svg id="loading-logo">
         <svg
           xmlns="http://www.w3.org/2000/svg"

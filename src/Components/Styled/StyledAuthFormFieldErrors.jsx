@@ -2,17 +2,19 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const StyledAuthFormFieldErrors = ({ errors }) => {
-  const StyledList = styled.ul`
-    display: ${errors.length > 0 ? "auto" : "none"};
-    padding-left: 1em;
-    margin-top: 0.4em;
-    margin-bottom: 0;
-  `;
+const StyleComponent = styled.ul`
+  display: ${props => (props.errors.length > 0 ? "auto" : "none")};
+  padding-left: 1em;
+  margin-top: 0.4em;
+  margin-bottom: 0;
+`;
+
+const StyledAuthFormFieldErrors = props => {
+  const { errors } = props;
   return (
-    <StyledList>
+    <StyleComponent {...props}>
       {errors.map((error, index) => <li key={index}>{error}</li>)}
-    </StyledList>
+    </StyleComponent>
   );
 };
 

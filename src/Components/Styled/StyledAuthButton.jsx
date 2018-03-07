@@ -1,6 +1,7 @@
+import React from "react";
 import styled from "styled-components";
 
-export const StyledAuthButton = styled.button`
+const StyleComponent = styled.button`
   background-color: transparent;
   color: hsla(206, 73%, 47%, 0.65);
   border-color: hsla(206, 73%, 47%, 0.65);
@@ -20,4 +21,9 @@ export const StyledAuthButton = styled.button`
     border-color: hsla(206, 73%, 47%, 1);
   }
 `;
+const StyledAuthButton = props => {
+  return <StyleComponent {...props} />;
+};
+
+export { StyledAuthButton };
 export default StyledAuthButton;
