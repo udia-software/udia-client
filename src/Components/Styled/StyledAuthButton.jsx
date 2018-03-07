@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 export const StyledAuthButton = styled.button`
@@ -6,11 +5,12 @@ export const StyledAuthButton = styled.button`
   color: hsla(206, 73%, 47%, 0.65);
   border-color: hsla(206, 73%, 47%, 0.65);
   border-radius: 0.4rem;
+  border-width: 2px;
   cursor: pointer;
   display: inline-block;
   min-height: 1em;
   padding: 0.3em 1.5em;
-  margin-bottom: 0.5em;
+  margin: 0.5em 0;
   font-weight: 100;
   font-size: large;
   transition-property: color, border-color;

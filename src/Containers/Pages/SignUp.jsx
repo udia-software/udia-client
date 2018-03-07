@@ -1,12 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 
 import {
   StyledAuthButton,
   StyledAuthContainer,
   StyledAuthForm,
-  StyledAuthFormCheckboxField,
   StyledAuthFormContent,
   StyledAuthFormField,
   StyledAuthFormFieldset,
@@ -38,10 +36,6 @@ export const SignUp = () => {
               <label htmlFor="pw">Password:</label>
               <StyledInput type="password" id="pw" placeholder="••••••••" />
             </StyledAuthFormField>
-            <StyledAuthFormCheckboxField>
-              <label htmlFor="remember">Remember Me:</label>
-              <input type="checkbox" id="remember" />
-            </StyledAuthFormCheckboxField>
             <StyledAuthButton>Sign Up</StyledAuthButton>
           </StyledAuthFormContent>
         </StyledAuthFormFieldset>

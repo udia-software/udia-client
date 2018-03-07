@@ -7,6 +7,7 @@ export const Logo = () => {
     align-self: center;
     max-height: 80px;
     max-width: auto;
+    color: #ffffff;
   `;
   return (
     <LogoContainer>
