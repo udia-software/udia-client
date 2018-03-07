@@ -5,9 +5,9 @@ const StyledForm = styled.form`
   grid-area: form;
   min-height: auto;
 `;
-const StyledAuthForm = props => {
-  return <StyledForm {...props} />;
+const Form = props => {
+  return <StyledForm {...props} noValidate />;
 };
 
-export { StyledAuthForm };
-export default StyledAuthForm;
+export { Form };
+export default Form;

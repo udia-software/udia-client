@@ -11,9 +11,9 @@ const StyleComponent = styled.input`
   border-radius: 3px;
 `;
 
-const StyledInput = props => {
+const Input  = props => {
   return <StyleComponent {...props} />;
 };
 
-export { StyledInput };
-export default StyledInput;
+export { Input  };
+export default Input ;

@@ -7,9 +7,9 @@ const StyleComponent = styled.div`
   flex-direction: column;
   justify-content: space-around;
 `;
-const StyledAuthFormContent = props => {
+const FormContent = props => {
   return <StyleComponent {...props} />;
 };
 
-export { StyledAuthFormContent };
-export default StyledAuthFormContent;
+export { FormContent };
+export default FormContent;

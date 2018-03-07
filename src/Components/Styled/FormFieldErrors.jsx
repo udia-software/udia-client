@@ -7,9 +7,19 @@ const StyleComponent = styled.ul`
   padding-left: 1em;
   margin-top: 0.4em;
   margin-bottom: 0;
+  list-style: none;
+  > li {
+    ::before {
+      content: "↑";
+      color: #9f3a38;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+  }
 `;
 
-const StyledAuthFormFieldErrors = props => {
+const FormFieldErrors = props => {
   const { errors } = props;
   return (
     <StyleComponent {...props}>
@@ -18,9 +28,9 @@ const StyledAuthFormFieldErrors = props => {
   );
 };
 
-StyledAuthFormFieldErrors.propTypes = {
+FormFieldErrors.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-export { StyledAuthFormFieldErrors };
-export default StyledAuthFormFieldErrors;
+export { FormFieldErrors };
+export default FormFieldErrors;

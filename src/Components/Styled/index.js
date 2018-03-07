@@ -1,9 +1,9 @@
 export { GridLoadingOverlay } from "./GridLoadingOverlay";
-export { StyledAuthButton } from "./StyledAuthButton";
-export { StyledAuthContainer } from "./StyledAuthContainer";
-export { StyledAuthForm } from "./StyledAuthForm";
-export { StyledAuthFormContent } from "./StyledAuthFormContent";
-export { StyledAuthFormField } from "./StyledAuthFormField";
-export { StyledAuthFormFieldErrors } from "./StyledAuthFormFieldErrors";
-export { StyledAuthFormFieldset } from "./StyledAuthFormFieldset";
-export { StyledInput } from "./StyledInput";
+export { Button } from "./Button";
+export { AuthContainer } from "./AuthContainer";
+export { Form } from "./Form";
+export { FormContent } from "./FormContent";
+export { FormField } from "./FormField";
+export { FormFieldErrors } from "./FormFieldErrors";
+export { AuthFormFieldset } from "./AuthFormFieldset";
+export { Input } from "./Input";

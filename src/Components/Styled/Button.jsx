@@ -21,9 +21,9 @@ const StyleComponent = styled.button`
     border-color: hsla(206, 73%, 47%, 1);
   }
 `;
-const StyledAuthButton = props => {
+const Button = props => {
   return <StyleComponent {...props} />;
 };
 
-export { StyledAuthButton };
-export default StyledAuthButton;
+export { Button };
+export default Button;

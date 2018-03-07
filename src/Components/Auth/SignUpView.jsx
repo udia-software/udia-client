@@ -14,24 +14,26 @@ import {
   Input
 } from "Components/Styled";
 
-const SignInView = ({
+const SignUpView = ({
   loading,
   email,
+  username,
   password,
   errors,
   emailErrors,
+  usernameErrors,
   passwordErrors,
   handleChangeEmail,
+  handleChangeUsername,
   handleChangePassword,
   handleSubmit
 }) => (
   <AuthContainer>
     <GridLoadingOverlay gridAreaName="form" loading={loading} />
-    <h1>Sign In</h1>
+    <h1>Sign Up</h1>
     <Form onSubmit={handleSubmit}>
       <AuthFormFieldset>
-        <legend>Welcome back, User.</legend>
-        <FormFieldErrors errors={errors} />
+        <legend>Hello there, User.</legend>
         <FormContent>
           <FormField error={emailErrors.length > 0}>
             <label htmlFor="email">Email:</label>
@@ -44,6 +46,17 @@ const SignInView = ({
             />
             <FormFieldErrors errors={emailErrors} />
           </FormField>
+          <FormField error={usernameErrors.length > 0}>
+            <label htmlFor="username">Username:</label>
+            <Input
+              type="text"
+              id="username"
+              placeholder="alex"
+              onChange={handleChangeUsername}
+              value={username}
+            />
+            <FormFieldErrors errors={usernameErrors} />
+          </FormField>
           <FormField error={passwordErrors.length > 0}>
             <label htmlFor="pw">Password:</label>
             <Input
@@ -55,26 +68,28 @@ const SignInView = ({
             />
             <FormFieldErrors errors={passwordErrors} />
           </FormField>
-          <Button>Sign In</Button>
+          <Button>Sign Up</Button>
         </FormContent>
       </AuthFormFieldset>
     </Form>
-    <Link to="/sign-up">I don't have an account →</Link>
-    <Link to="/forgot_password">I forgot my password.</Link>
+    <Link to="/sign-in">← I already have an account</Link>
+    <Link to="/">Go back home.</Link>
   </AuthContainer>
 );
 
-SignInView.propTypes = {
+SignUpView.propTypes = {
   loading: PropTypes.bool.isRequired,
   email: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
   password: PropTypes.string.isRequired,
   errors: PropTypes.arrayOf(PropTypes.string).isRequired,
   emailErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  usernameErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
   passwordErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
   handleChangeEmail: PropTypes.func.isRequired,
   handleChangePassword: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired
 };
 
-export { SignInView };
-export default SignInView;
+export { SignUpView };
+export default SignUpView;
