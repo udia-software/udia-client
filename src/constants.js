@@ -4,6 +4,8 @@ import gql from "graphql-tag";
 // JWT and User object are excluded and manually handled
 export const GC_AUTH_TOKEN = "udia-auth-token";
 
+export const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
 // GraphQL Mutations, Queries, Subscriptions
 export const CREATE_NODE_MUTATION = gql`
   mutation CreateNodeMutation(

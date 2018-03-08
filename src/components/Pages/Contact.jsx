@@ -13,6 +13,7 @@ import moment from "moment";
 import FromTime from "../Static/FromTime";
 import Logo from "../Static/Logo";
 import UdiaOfficeMap from "../Static/UdiaOfficeMap";
+import { GOOGLE_MAPS_API_KEY } from "../../constants";
 
 export const Contact = () => {
   document.title = "Contact - UDIA";
@@ -34,7 +35,7 @@ export const Contact = () => {
         </p>
       </Container>
       <UdiaOfficeMap
-        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjl_3CluAMqehsXlE0FNZ1OR4m9nmVi9I"
+        googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}`}
         loadingElement={
           <Dimmer.Dimmable
             style={{ height: `400px`, padding: `15px 0px` }}
