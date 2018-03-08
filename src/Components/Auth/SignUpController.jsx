@@ -69,10 +69,13 @@ class SignUpController extends Component {
         if (networkError) {
           errors.push(message);
         }
-        this.setState({ errors, emailErrors, usernameErrors, passwordErrors });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
+        this.setState({
+          errors,
+          emailErrors,
+          usernameErrors,
+          passwordErrors,
+          loading: false
+        });
       });
   };
 
