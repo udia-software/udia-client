@@ -11,49 +11,50 @@ import {
   REACT_APP_SUBSCRIPTIONS_ENDPOINT
 } from "Constants";
 
-// Build the Apollo Http Link with the authentication token
-const middlewareAuthLink = new ApolloLink((operation, forward) => {
-  const token = localStorage.getItem(AUTH_TOKEN);
-  const authorizationHeader = token ? `${token}` : null;
-  operation.setContext({
-    headers: {
-      authorization: authorizationHeader
+export function initializeApolloClient() {
+  // Build the Apollo Http Link with the authentication token
+  const middlewareAuthLink = new ApolloLink((operation, forward) => {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    const authorizationHeader = token ? `${token}` : null;
+    operation.setContext({
+      headers: {
+        authorization: authorizationHeader
+      }
+    });
+    return forward(operation);
+  });
+  const httpLinkWithAuthToken = middlewareAuthLink.concat(
+    new HttpLink({
+      uri: REACT_APP_GRAPHQL_HTTP_ENDPOINT
+    })
+  );
+
+  // Build the Apollo Websocket Link with the authentication token
+  const wsLinkWithAuthToken = new WebSocketLink({
+    uri: REACT_APP_SUBSCRIPTIONS_ENDPOINT,
+    options: {
+      reconnect: true,
+      connectionParams: {
+        authorization: localStorage.getItem(AUTH_TOKEN)
+      }
     }
   });
-  return forward(operation);
-});
-const httpLinkWithAuthToken = middlewareAuthLink.concat(
-  new HttpLink({
-    uri: REACT_APP_GRAPHQL_HTTP_ENDPOINT
-  })
-);
 
-// Build the Apollo Websocket Link with the authentication token
-const wsLinkWithAuthToken = new WebSocketLink({
-  uri: REACT_APP_SUBSCRIPTIONS_ENDPOINT,
-  options: {
-    reconnect: true,
-    connectionParams: {
-      authorization: localStorage.getItem(AUTH_TOKEN)
-    }
-  }
-});
-
-// Determine which link to use. If operation is subscription, use WebsocketLink
-const link = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
-  },
-  wsLinkWithAuthToken,
-  httpLinkWithAuthToken
-);
-
-export function initializeApolloClient() {
-  return new ApolloClient({
+  // Determine which link to use. If operation is subscription, use WebsocketLink
+  const link = split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query);
+      return kind === "OperationDefinition" && operation === "subscription";
+    },
+    wsLinkWithAuthToken,
+    httpLinkWithAuthToken
+  );
+  const client = new ApolloClient({
     link,
     cache: new InMemoryCache()
   });
+  client.resetStore();
+  return client;
 }
 
 export default initializeApolloClient;

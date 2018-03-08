@@ -30,14 +30,19 @@ class SignUpController extends Component {
   };
 
   handleChangePassword = event => {
-    console.log(event);
     this.props.dispatch(authActions.setFormPassword(event.target.value));
     this.setState({ passwordErrors: [] });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    const { signUpUserMutation, email, username, password } = this.props;
+    const {
+      signUpUserMutation,
+      dispatch,
+      email,
+      username,
+      password
+    } = this.props;
     this.setState({
       loading: true,
       emailErrors: [],
@@ -45,8 +50,9 @@ class SignUpController extends Component {
       passwordErrors: []
     });
     signUpUserMutation({ variables: { email, username, password } })
-      .then(data => {
-        console.log("ToDo (SignUp):", data);
+      .then(({ data }) => {
+        const { token, user } = data.createUser;
+        dispatch(authActions.setAuthData({ jwt: token, user }));
       })
       .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
         console.warn(message, graphQLErrors, networkError, extraInfo);
@@ -117,6 +123,10 @@ const SIGN_UP_MUTATION = gql`
       user {
         _id
         username
+        createdAt
+        updatedAt
+        email
+        emailVerified
       }
     }
   }

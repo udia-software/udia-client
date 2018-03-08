@@ -34,6 +34,7 @@ const SignUpView = ({
     <Form onSubmit={handleSubmit}>
       <AuthFormFieldset>
         <legend>Hello there, User.</legend>
+        <FormFieldErrors errors={errors} />
         <FormContent>
           <FormField error={emailErrors.length > 0}>
             <label htmlFor="email">Email:</label>

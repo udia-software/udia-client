@@ -11,6 +11,7 @@ const StyledGridLoadingOverlay = styled.div`
   justify-content: center;
   grid-area: ${props => props.gridAreaName};
   background-color: #000000;
+  padding-bottom: 1px;
   width: 100%;
   height: 100%;
   opacity: 0.8;

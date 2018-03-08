@@ -30,11 +30,12 @@ class SignInController extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const { signInUserMutation, email, password } = this.props;
+    const { signInUserMutation, dispatch, email, password } = this.props;
     this.setState({ loading: true, emailErrors: [], passwordErrors: [] });
     signInUserMutation({ variables: { email, password } })
-      .then(data => {
-        console.log("Todo (SignIn): ", data);
+      .then(({ data }) => {
+        const { token, user } = data.signinUser;
+        dispatch(authActions.setAuthData({ jwt: token, user }));
       })
       .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
         console.warn(message, graphQLErrors, networkError, extraInfo);
@@ -44,7 +45,7 @@ class SignInController extends Component {
         graphQLErrors.forEach(graphQLError => {
           const errorState = graphQLError.state || {};
           emailErrors = emailErrors.concat(errorState.email || []);
-          passwordErrors = passwordErrors.concat(errorState.password || []);
+          passwordErrors = passwordErrors.concat(errorState.rawPassword || []);
         });
         if (networkError) {
           errors.push(message);
@@ -89,6 +90,10 @@ const SIGN_IN_MUTATION = gql`
       user {
         _id
         username
+        createdAt
+        updatedAt
+        email
+        emailVerified
       }
     }
   }
