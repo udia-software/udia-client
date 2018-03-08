@@ -1,29 +1,18 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import styled from "styled-components";
 
 import { authActions } from "Modules/Auth";
-import { Button } from "Components/Styled";
-
-const SignOutContainer = styled.div`
-  display: grid;
-  grid-auto-rows: auto;
-  align-content: center;
-  align-items: center;
-  justify-items: center;
-  justify-content: center;
-
-  grid-area: content;
-  justify-self: center;
-  align-self: center;
-  margin: 1em;
-`;
+import { Button, CenterContainer } from "Components/Styled";
 
 class SignOutController extends Component {
   constructor(props) {
     super(props);
     document.title = "Sign Out - UDIA";
+    const { confirmSignOut, dispatch } = props;
+    if (confirmSignOut) {
+      dispatch(authActions.clearAuthData());
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,12 +28,12 @@ class SignOutController extends Component {
 
   render() {
     return (
-      <SignOutContainer>
+      <CenterContainer>
         <h1>Sign Out</h1>
         <h4>Are you leaving?</h4>
         <Button onClick={this.handleSignOut}>Yes, farewell.</Button>
         <Link to="/">← No, I changed my mind.</Link>
-      </SignOutContainer>
+      </CenterContainer>
     );
   }
 }

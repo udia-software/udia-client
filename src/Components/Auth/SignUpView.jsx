@@ -36,17 +36,6 @@ const SignUpView = ({
         <legend>Hello there, User.</legend>
         <FormFieldErrors errors={errors} />
         <FormContent>
-          <FormField error={emailErrors.length > 0}>
-            <label htmlFor="email">Email:</label>
-            <Input
-              type="email"
-              id="email"
-              placeholder="your@email.tld"
-              onChange={handleChangeEmail}
-              value={email}
-            />
-            <FormFieldErrors errors={emailErrors} />
-          </FormField>
           <FormField error={usernameErrors.length > 0}>
             <label htmlFor="username">Username:</label>
             <Input
@@ -57,6 +46,17 @@ const SignUpView = ({
               value={username}
             />
             <FormFieldErrors errors={usernameErrors} />
+          </FormField>
+          <FormField error={emailErrors.length > 0}>
+            <label htmlFor="email">Email:</label>
+            <Input
+              type="email"
+              id="email"
+              placeholder="your@email.tld"
+              onChange={handleChangeEmail}
+              value={email}
+            />
+            <FormFieldErrors errors={emailErrors} />
           </FormField>
           <FormField error={passwordErrors.length > 0}>
             <label htmlFor="pw">Password:</label>

@@ -9,7 +9,7 @@ const StyledGridLoadingOverlay = styled.div`
   align-content: center;
   justify-items: center;
   justify-content: center;
-  grid-area: ${props => props.gridAreaName};
+  grid-area: ${props => props.gridAreaName || null};
   background-color: #000000;
   padding-bottom: 1px;
   width: 100%;
@@ -53,7 +53,7 @@ const GridLoadingOverlay = props => {
 };
 
 GridLoadingOverlay.propTypes = {
-  gridAreaName: PropTypes.string.isRequired,
+  gridAreaName: PropTypes.string,
   loading: PropTypes.bool.isRequired
 };
 
