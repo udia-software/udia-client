@@ -50,10 +50,7 @@ class SignInController extends Component {
         if (networkError) {
           errors.push(message);
         }
-        this.setState({ errors, emailErrors, passwordErrors });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ errors, emailErrors, passwordErrors, loading: false });
       });
   };
 
