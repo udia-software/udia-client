@@ -11,6 +11,7 @@ import registerServiceWorker from "registerServiceWorker";
 
 const { persistor, store } = configureStore();
 
+/* Workaround for getting the Apollo client to referesh on login/logout */
 class RefreshingApolloProvider extends Component {
   shouldComponentUpdate(nextProps) {
     return this.props.jwt !== nextProps.jwt;

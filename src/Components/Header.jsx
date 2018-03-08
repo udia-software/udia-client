@@ -58,7 +58,8 @@ class HeaderController extends Component {
     if (
       // on initial load, the loading param may be undefined
       // otherwise, check if the state switched between loading/not loading
-      oldLoading && !loading
+      oldLoading &&
+      !loading
     ) {
       if (error) {
         console.error(error);
@@ -70,6 +71,11 @@ class HeaderController extends Component {
       }
     }
   }
+
+  handleClickSignOut = () => {
+    console.log("clicked sign out");
+    this.props.dispatch(authActions.confirmSignOut());
+  };
 
   render() {
     const { pathname, maybeAuthenticated, isAuthenticated } = this.props;
@@ -104,7 +110,12 @@ class HeaderController extends Component {
         <StyledTitleLink to="/">UDIA</StyledTitleLink>
         {isAuthenticated && (
           <HeaderSubMenu>
-            <StyledSubTitleLink to="/sign-out">Sign Out</StyledSubTitleLink>
+            <StyledSubTitleLink
+              to="/sign-out"
+              onClick={this.handleClickSignOut}
+            >
+              Sign Out
+            </StyledSubTitleLink>
           </HeaderSubMenu>
         )}
         {!isAuthenticated &&
