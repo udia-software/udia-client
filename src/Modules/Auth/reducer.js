@@ -5,8 +5,8 @@ const AuthState = {
   username: "",
   email: "",
   password: "",
-  rememberMe: false,
   jwt: localStorage.getItem(AUTH_TOKEN) || null,
+  confirmSignOut: false,
   authUser: null
 };
 
@@ -27,11 +27,6 @@ export function authReducer(state = { ...AuthState }, { payload, type }) {
         ...state,
         email: payload
       };
-    case authActions.SET_UNDERSTOOD_LESSON:
-      return {
-        ...state,
-        understoodLesson: payload
-      };
     case authActions.SET_AUTH_USER:
       return {
         ...state,
@@ -48,12 +43,16 @@ export function authReducer(state = { ...AuthState }, { payload, type }) {
         authUser: payload.user,
         jwt: payload.jwt
       };
+    case authActions.CONFIRM_SIGN_OUT:
+      return {
+        ...state,
+        confirmSignOut: true
+      };
     case authActions.CLEAR_AUTH_DATA:
       localStorage.removeItem(AUTH_TOKEN);
       return {
-        ...state,
-        jwt: null,
-        authUser: null
+        ...AuthState,
+        jwt: null
       };
     default:
       return state;

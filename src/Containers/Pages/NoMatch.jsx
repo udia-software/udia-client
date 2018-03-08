@@ -11,6 +11,7 @@ export const NoMatch = ({ location }) => {
     align-content: center;
     align-items: center;
     justify-items: center;
+    justify-content: center;
 
     grid-area: content;
     justify-self: center;
