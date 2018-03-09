@@ -8,9 +8,14 @@ export function isAuthenticated(state) {
   return !!(state.auth.authUser || {})._id;
 }
 
+export function getSelfUsername(state) {
+  return (state.auth.authUser || {}).username || "";
+}
+
 const authSelectors = {
   maybeAuthenticated,
-  isAuthenticated
+  isAuthenticated,
+  getSelfUsername
 };
 
 export default authSelectors;

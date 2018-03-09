@@ -3,7 +3,14 @@ import { Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 
 import "./App.css"; // Application Loaded Site Wide Styles
-import { Home, NoMatch, SignInPage, SignUpPage, SignOutPage } from "Containers/Pages";
+import {
+  Home,
+  ProfilePage,
+  NoMatch,
+  SignInPage,
+  SignUpPage,
+  SignOutPage
+} from "Containers/Pages";
 import { Header, Footer } from "Components";
 
 class App extends Component {
@@ -26,6 +33,7 @@ class App extends Component {
           <Route exact path="/" component={Home} />
           <Route exact path="/sign-in" component={SignInPage} />
           <Route exact path="/sign-up" component={SignUpPage} />
+          <Route exact path="/profile" components={ProfilePage} />
           <Route exact path="/sign-out" component={SignOutPage} />
           <Route component={NoMatch} />
         </Switch>

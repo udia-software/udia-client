@@ -69,7 +69,10 @@ function WithAuthentication(
     };
   }
 
-  return connect(mapStateToProps)(AuthenticationWrapper);
+  const ConnectedAuthenticationWrapper = connect(mapStateToProps)(
+    AuthenticationWrapper
+  );
+  return ConnectedAuthenticationWrapper;
 }
 
 export { WithAuthentication };
