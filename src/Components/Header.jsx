@@ -117,7 +117,7 @@ class HeaderController extends Component {
           <HeaderSubMenu>
             <StyledSubTitleLink
               to="/sign-out"
-              onClick={this.handleClickSignOut}
+              //onClick={this.handleClickSignOut}
             >
               Sign Out
             </StyledSubTitleLink>
