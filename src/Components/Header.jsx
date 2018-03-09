@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 import { authActions, authSelectors } from "Modules/Auth";
@@ -78,12 +78,17 @@ class HeaderController extends Component {
   };
 
   render() {
-    const { pathname, maybeAuthenticated, isAuthenticated } = this.props;
+    const {
+      location,
+      maybeAuthenticated,
+      isAuthenticated,
+      username
+    } = this.props;
 
     const StyledSubTitleLink = StyledTitleLink.extend.attrs({
       style: ({ to }) => ({
         color:
-          to === pathname ? "hsla(0, 0%, 100%, 1)" : "hsla(0, 0%, 100%, 0.5)"
+          to === location.pathname ? "hsla(0, 0%, 100%, 1)" : "hsla(0, 0%, 100%, 0.5)"
       })
     })`
     font-size: medium;
@@ -116,6 +121,7 @@ class HeaderController extends Component {
             >
               Sign Out
             </StyledSubTitleLink>
+            <StyledSubTitleLink to="/profile">{username}</StyledSubTitleLink>
           </HeaderSubMenu>
         )}
         {!isAuthenticated &&
@@ -162,10 +168,9 @@ class HeaderController extends Component {
 
 function mapStateToProps(state) {
   return {
-    pathname: state.routing.location.pathname,
     maybeAuthenticated: authSelectors.maybeAuthenticated(state),
     isAuthenticated: authSelectors.isAuthenticated(state),
-    user: state.auth.authUser
+    username: authSelectors.getSelfUsername(state)
   };
 }
 
@@ -182,9 +187,11 @@ const CHECK_USER_MUTATION = gql`
   }
 `;
 
-const Header = connect(mapStateToProps)(
-  graphql(CHECK_USER_MUTATION, { fetchPolicy: "network-only" })(
-    HeaderController
+const Header = withRouter(
+  connect(mapStateToProps)(
+    graphql(CHECK_USER_MUTATION, { fetchPolicy: "network-only" })(
+      HeaderController
+    )
   )
 );
 

@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "react-apollo";
 import { Provider, connect } from "react-redux";
-import { ConnectedRouter } from "react-router-redux";
+import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/es/integration/react";
 
 import App from "Containers/App";
-import { configureStore, history, initializeApolloClient } from "Modules";
+import { configureStore, initializeApolloClient } from "Modules";
 import registerServiceWorker from "registerServiceWorker";
 
 const { persistor, store } = configureStore();
@@ -34,14 +34,16 @@ const HydratedApolloProvider = connect(mapStateToProps)(
   RefreshingApolloProvider
 );
 
+const supportsHistory = 'pushState' in window.history;
+
 function render(Component) {
   ReactDOM.render(
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <HydratedApolloProvider>
-          <ConnectedRouter history={history}>
+          <BrowserRouter forceRefresh={!supportsHistory}>
             <Component />
-          </ConnectedRouter>
+          </BrowserRouter>
         </HydratedApolloProvider>
       </PersistGate>
     </Provider>,
