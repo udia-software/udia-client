@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const StyleComponent = styled.button`
   background-color: transparent;
-  color: hsla(206, 73%, 47%, 0.65);
-  border-color: hsla(206, 73%, 47%, 0.65);
+  color: ${props => props.primaryColor};
+  border-color: ${props => props.primaryColor};
+  text-decoration-color: ${props => props.primaryColor};
   border-radius: 0.4rem;
   border-width: 2px;
   cursor: pointer;
@@ -14,15 +16,42 @@ const StyleComponent = styled.button`
   margin: 0.5em 0;
   font-weight: 100;
   font-size: large;
-  transition-property: color, border-color;
+  transition-property: color, border-color, background-color;
   transition-duration: 0.2s;
   &:hover {
-    color: hsla(206, 73%, 47%, 1);
-    border-color: hsla(206, 73%, 47%, 1);
+    color: ${props => props.fallbackColor};
+    text-decoration-color: ${props => props.fallbackColor};
+    border-color: ${props => props.fallbackColor};
+    background-color: ${props => props.primaryColor};
+  }
+  &:focus {
+    outline: 0;
   }
 `;
+
 const Button = props => {
-  return <StyleComponent {...props} />;
+  let primaryColor = "#ffffff";
+  let fallbackColor = "#000000";
+
+  switch (props.color) {
+    case "blue":
+      primaryColor = "#54c8ff";
+      fallbackColor = "#000000";
+      break;
+    default:
+      break;
+  }
+  return (
+    <StyleComponent
+      primaryColor={primaryColor}
+      fallbackColor={fallbackColor}
+      {...props}
+    />
+  );
+};
+
+Button.propTypes = {
+  color: PropTypes.string
 };
 
 export { Button };

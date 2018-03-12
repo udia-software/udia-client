@@ -12,10 +12,30 @@ export function getSelfUsername(state) {
   return (state.auth.authUser || {}).username || "";
 }
 
+export function getSelfCreatedAt(state) {
+  return (state.auth.authUser || {}).createdAt || null;
+}
+
+export function getSelfUpdatedAt(state) {
+  return (state.auth.authUser || {}).updatedAt || null;
+}
+
+export function getSelfEmail(state) {
+  return (state.auth.authUser || {}).email || "";
+}
+
+export function getSelfEmailVerified(state) {
+  return (state.auth.authUser || {}).emailVerified;
+}
+
 const authSelectors = {
   maybeAuthenticated,
   isAuthenticated,
-  getSelfUsername
+  getSelfUsername,
+  getSelfCreatedAt,
+  getSelfUpdatedAt,
+  getSelfEmail,
+  getSelfEmailVerified,
 };
 
 export default authSelectors;
