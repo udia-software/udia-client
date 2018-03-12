@@ -62,8 +62,8 @@ export const Footer = () => {
         <h3>Links</h3>
         <div>
           <Link to="/">Home</Link>
-          <Link to="/">Contact</Link>
-          <Link to="/">Fundamental Lesson</Link>
+          <Link to="/about">About</Link>
+          <Link to="/kitchen-sink">Kitchen Sink</Link>
         </div>
       </StyledFooterLinksContainer>
     </StyledFooter>

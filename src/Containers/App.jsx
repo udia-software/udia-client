@@ -4,7 +4,9 @@ import styled from "styled-components";
 
 import "./App.css"; // Application Loaded Site Wide Styles
 import {
+  AboutPage,
   Home,
+  KitchenSinkPage,
   ProfilePage,
   NoMatch,
   SignInPage,
@@ -31,9 +33,11 @@ class App extends Component {
         <Header />
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/about" component={AboutPage} />
+          <Route exact path="/kitchen-sink" component={KitchenSinkPage} />
           <Route exact path="/sign-in" component={SignInPage} />
           <Route exact path="/sign-up" component={SignUpPage} />
-          <Route exact path="/profile" components={ProfilePage} />
+          <Route exact path="/profile" component={ProfilePage} />
           <Route exact path="/sign-out" component={SignOutPage} />
           <Route component={NoMatch} />
         </Switch>

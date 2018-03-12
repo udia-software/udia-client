@@ -69,7 +69,7 @@ const SignUpView = ({
             />
             <FormFieldErrors errors={passwordErrors} />
           </FormField>
-          <Button>Sign Up</Button>
+          <Button color="blue">Sign Up</Button>
         </FormContent>
       </AuthFormFieldset>
     </Form>
