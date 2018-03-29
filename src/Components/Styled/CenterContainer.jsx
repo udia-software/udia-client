@@ -4,6 +4,8 @@ import styled from "styled-components";
 const StyleComponent = styled.div`
   display: grid;
   grid-auto-rows: auto;
+  grid-template-columns: auto;
+  grid-auto-flow: row;
   align-content: center;
   align-items: center;
   justify-items: center;
