@@ -7,3 +7,4 @@ export { NoMatch } from "./NoMatch";
 export { SignInPage } from "./SignIn";
 export { SignUpPage } from "./SignUp";
 export { SignOutPage } from "./SignOut";
+export { WebCryptoPage } from "./WebCrypto";

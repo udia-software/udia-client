@@ -50,7 +50,7 @@ class AboutPage extends Component {
         <dl>
           <dt>Application Version</dt>
           <dd><pre>Server: {version}</pre></dd>
-          <dt>Server Time {(Math.abs(skew) > 10000 || !now) && <span>(ERR! Is server down?!)</span>}</dt>
+          <dt>Server Time {(Math.abs(skew) > 60000 || !now) && <span>(ERR! Is server down?!)</span>}</dt>
           <dd><pre>{serverNow.format(MOMENT_FORMAT_STRING)}</pre></dd>
           <dt>Client Time (skew {skew}ms)</dt>
           <dd><pre>{clientNow.format(MOMENT_FORMAT_STRING)}</pre></dd>

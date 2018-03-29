@@ -15,7 +15,7 @@ const StyleComponent = styled.button`
   padding: 0.3em 1.5em;
   margin: 0.5em 0;
   font-weight: 100;
-  font-size: large;
+  font-size: ${props => props.fontSize}rem;
   transition-property: color, border-color, background-color;
   transition-duration: 0.2s;
   &:hover {
@@ -32,6 +32,7 @@ const StyleComponent = styled.button`
 const Button = props => {
   let primaryColor = "#ffffff";
   let fallbackColor = "#000000";
+  let sizeMultiplier = 1;
 
   switch (props.color) {
     case "blue":
@@ -41,17 +42,48 @@ const Button = props => {
     default:
       break;
   }
+
+  switch (props.size) {
+    case "mini":
+      sizeMultiplier = 0.78571429;
+      break;
+    case "tiny":
+      sizeMultiplier = 0.85714286;
+      break;
+    case "small":
+      sizeMultiplier = 0.92857143;
+      break;
+    case "medium":
+      sizeMultiplier = 1;
+      break;
+    case "large":
+      sizeMultiplier = 1.14285714;
+      break;
+    case "big":
+      sizeMultiplier = 1.28571429;
+      break;
+    case "huge":
+      sizeMultiplier = 1.42857143;
+      break;
+    case "massive":
+      sizeMultiplier = 1.71428571;
+      break;
+    default:
+      break;
+  }
   return (
     <StyleComponent
       primaryColor={primaryColor}
       fallbackColor={fallbackColor}
+      fontSize={sizeMultiplier}
       {...props}
     />
   );
 };
 
 Button.propTypes = {
-  color: PropTypes.string
+  color: PropTypes.string,
+  size: PropTypes.string
 };
 
 export { Button };

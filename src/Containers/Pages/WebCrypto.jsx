@@ -1,0 +1,230 @@
+import React, { Component } from "react";
+import { Button, CenterContainer } from "Components/Styled";
+import styled from "styled-components";
+
+const RandomValuesTextArea = props => {
+  const StyledComponent = styled.textarea`
+    background: black;
+    color: white;
+    border-radius: 1em;
+  `;
+  return <StyledComponent {...props} />;
+};
+
+export class WebCryptoPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      randomValuesMaxLength: 32768,
+      randomValuesLength: 8192,
+      randomValues: new Uint16Array(6000),
+      randomValueType: "Uint16",
+      randomValueTime: -1,
+      showRandomValues: "show"
+    };
+  }
+
+  handleChangeShowRandomValues = event => {
+    this.setState({ showRandomValues: event.target.value });
+  };
+
+  handleChangeRandomValuesLength = event => {
+    const { randomValueType, randomValuesMaxLength } = this.state;
+    let newValue = event.target.value;
+    newValue = Math.min(newValue, randomValuesMaxLength);
+    newValue = Math.max(newValue, 0);
+    let tempRandomValues = new Uint16Array(newValue);
+    switch (randomValueType) {
+      case "Uint32":
+        tempRandomValues = new Uint32Array(newValue);
+        break;
+      case "Int32":
+        tempRandomValues = new Int32Array(newValue);
+        break;
+      case "Uint16":
+        tempRandomValues = new Uint16Array(newValue);
+        break;
+      case "Int16":
+        tempRandomValues = new Int16Array(newValue);
+        break;
+      case "Uint8":
+        tempRandomValues = new Uint8Array(newValue);
+        break;
+      case "Int8":
+        tempRandomValues = new Int8Array(newValue);
+        break;
+      default:
+        break;
+    }
+    this.setState({
+      randomValuesLength: newValue,
+      randomValueTime: -1,
+      randomValues: tempRandomValues
+    });
+  };
+
+  handleChangeRandomValueType = event => {
+    const { randomValuesLength } = this.state;
+    let randomValueType = event.target.value;
+    let tempMaxLength = 32768;
+    let tempLength = randomValuesLength;
+    let tempRandomValues = new Uint16Array(tempLength);
+    switch (randomValueType) {
+      case "Uint32":
+        tempMaxLength = 65536 / 4;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Uint32Array(tempLength);
+        break;
+      case "Int32":
+        tempMaxLength = 65536 / 4;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Int32Array(tempLength);
+        break;
+      case "Uint16":
+        tempMaxLength = 65536 / 2;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Uint16Array(tempLength);
+        break;
+      case "Int16":
+        tempMaxLength = 65536 / 2;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Int16Array(tempLength);
+        break;
+      case "Uint8":
+        tempMaxLength = 65536;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Uint8Array(tempLength);
+        break;
+      case "Int8":
+        tempMaxLength = 65536;
+        tempLength = Math.min(tempLength, tempMaxLength);
+        tempRandomValues = new Int8Array(tempLength);
+        break;
+      default:
+        break;
+    }
+    this.setState({
+      randomValueType,
+      randomValuesMaxLength: tempMaxLength,
+      randomValuesLength: tempLength,
+      randomValueTime: -1,
+      randomValues: tempRandomValues
+    });
+  };
+
+  generateRandomValues = () => {
+    const { randomValuesLength, randomValueType } = this.state;
+    let temporaryArray = new Int8Array(randomValuesLength);
+    let tempMaxLength = 65536;
+    switch (randomValueType) {
+      case "Uint32":
+        temporaryArray = new Uint32Array(randomValuesLength);
+        tempMaxLength = 16384;
+        break;
+      case "Int32":
+        temporaryArray = new Int32Array(randomValuesLength);
+        tempMaxLength = 16384;
+        break;
+      case "Uint16":
+        temporaryArray = new Uint16Array(randomValuesLength);
+        tempMaxLength = 32768;
+        break;
+      case "Int16":
+        temporaryArray = new Int16Array(randomValuesLength);
+        tempMaxLength = 32768;
+        break;
+      case "Uint8":
+        temporaryArray = new Uint8Array(randomValuesLength);
+        tempMaxLength = 65536;
+        break;
+      case "Int8":
+        temporaryArray = new Int8Array(randomValuesLength);
+        tempMaxLength = 65536;
+        break;
+      default:
+        break;
+    }
+
+    const timeStart = performance.now();
+    window.crypto.getRandomValues(temporaryArray);
+    const timeTookMs = performance.now() - timeStart;
+
+    this.setState({
+      randomValues: temporaryArray,
+      randomValuesMaxLength: tempMaxLength,
+      randomValueTime: timeTookMs
+    });
+  };
+
+  render() {
+    document.title = "Web Crypto - UDIA";
+
+    const {
+      randomValues,
+      randomValuesMaxLength,
+      randomValuesLength,
+      randomValueType,
+      randomValueTime,
+      showRandomValues
+    } = this.state;
+    return (
+      <CenterContainer>
+        <h1>Web Crypto</h1>
+        <p>Proof of concept. Be wary of security and privacy.</p>
+        <hr />
+        <strong>Random Values ({randomValueType}Array)</strong>
+        {showRandomValues === "show" && (
+          <RandomValuesTextArea
+            value={randomValues.join(" ")}
+            readOnly={true}
+            cols={40}
+            rows={4}
+          />
+        )}
+        {randomValueTime < 0 && <span>Awaiting generation.</span>}
+        {randomValueTime >= 0 && <span>Took approx. {randomValueTime}ms.</span>}
+        <dl>
+          <dt>Show Values</dt>
+          <dd>
+            <select
+              value={showRandomValues}
+              onChange={this.handleChangeShowRandomValues}
+            >
+              <option value="show">Show</option>
+              <option value="hide">Hide</option>
+            </select>
+          </dd>
+          <dt>Type</dt>
+          <dd>
+            <select
+              value={randomValueType}
+              onChange={this.handleChangeRandomValueType}
+            >
+              <option value="Uint32">Uint32</option>
+              <option value="Int32">Int32</option>
+              <option value="Uint16">Uint16</option>
+              <option value="Int16">Int16</option>
+              <option value="Uint8">Uint8</option>
+              <option value="Int8">Int8</option>
+            </select>
+          </dd>
+          <dt>Length (max {randomValuesMaxLength})</dt>
+          <dd>
+            <input
+              value={randomValuesLength}
+              onChange={this.handleChangeRandomValuesLength}
+              type="number"
+              min="1"
+              max={randomValuesMaxLength}
+            />
+          </dd>
+        </dl>
+        <Button size="mini" onClick={this.generateRandomValues}>
+          Generate Random Values
+        </Button>
+      </CenterContainer>
+    );
+  }
+}
+
+export default WebCryptoPage;
