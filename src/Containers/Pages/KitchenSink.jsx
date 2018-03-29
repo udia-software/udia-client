@@ -1,5 +1,5 @@
 import React from "react";
-import { CenterContainer } from "Components/Styled";
+import { Button, CenterContainer } from "Components/Styled";
 
 export const KitchenSinkPage = () => {
   document.title = "Kitchen Sink - UDIA";
@@ -206,9 +206,7 @@ export const KitchenSinkPage = () => {
           exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </dd>
         <dt>UDIA</dt>
-        <dd>
-          Universal wildcard.
-        </dd>
+        <dd>Universal wildcard.</dd>
       </dl>
       <hr />
       <blockquote>
@@ -218,35 +216,57 @@ export const KitchenSinkPage = () => {
           Morbi convallis felis vel nibh. Sed scelerisque sagittis lorem.
         </p>
       </blockquote>
-      <hr/>
+      <hr />
       <address>Address: Example address 224, Sweden</address>
       <pre>
         <strong>Preformated:</strong>Testing one row and another
       </pre>
-      <hr/>
+      <hr />
       <p>
-        I am <a href="?abc123">the a tag</a><br />
-        I am <abbr title="test">the abbr tag</abbr><br />
-        I am <acronym>the acronym tag</acronym><br />
-        I am <b>the b tag</b><br />
-        I am <big>the big tag</big><br />
-        I am <cite>the cite tag</cite><br />
-        I am <code>the code tag</code><br />
-        I am <del>the del tag</del><br />
-        I am <dfn>the dfn tag</dfn><br />
-        I am <em>the em tag</em><br />
-        I am <i>the i tag</i><br />
-        I am <ins>the ins tag</ins><br />
-        I am <kbd>the kbd tag</kbd><br />
-        I am <q>the q tag</q><br />
-        I am <samp>the samp tag</samp><br />
-        I am <small>the small tag</small><br />
-        I am <span>the span tag</span><br />
-        I am <strong>the strong tag</strong><br />
-        I am <sub>the sub tag</sub><br />
-        I am <sup>the sup tag</sup><br />
-        I am <tt>the tt tag</tt><br />
-        I am <var>the var tag</var><br />
+        I am <a href="?abc123">the a tag</a>
+        <br />
+        I am <abbr title="test">the abbr tag</abbr>
+        <br />
+        I am <acronym>the acronym tag</acronym>
+        <br />
+        I am <b>the b tag</b>
+        <br />
+        I am <big>the big tag</big>
+        <br />
+        I am <cite>the cite tag</cite>
+        <br />
+        I am <code>the code tag</code>
+        <br />
+        I am <del>the del tag</del>
+        <br />
+        I am <dfn>the dfn tag</dfn>
+        <br />
+        I am <em>the em tag</em>
+        <br />
+        I am <i>the i tag</i>
+        <br />
+        I am <ins>the ins tag</ins>
+        <br />
+        I am <kbd>the kbd tag</kbd>
+        <br />
+        I am <q>the q tag</q>
+        <br />
+        I am <samp>the samp tag</samp>
+        <br />
+        I am <small>the small tag</small>
+        <br />
+        I am <span>the span tag</span>
+        <br />
+        I am <strong>the strong tag</strong>
+        <br />
+        I am <sub>the sub tag</sub>
+        <br />
+        I am <sup>the sup tag</sup>
+        <br />
+        I am <tt>the tt tag</tt>
+        <br />
+        I am <var>the var tag</var>
+        <br />
       </p>
       <hr />
       <ul>
@@ -380,6 +400,22 @@ export const KitchenSinkPage = () => {
           </div>
         </fieldset>
       </form>
+      <hr />
+      <h2>Buttons</h2>
+      <Button>Default</Button>
+      <p>Colors</p>
+      <Button color="blue">Blue</Button>
+      <p>Sizes</p>
+      <div>
+        <Button size="mini">Mini</Button>
+        <Button size="tiny">Tiny</Button>
+        <Button size="small">Small</Button>
+        <Button size="medium">Medium</Button>
+        <Button size="large">Large</Button>
+        <Button size="big">Big</Button>
+        <Button size="huge">Huge</Button>
+        <Button size="massive">Massive</Button>
+      </div>
     </CenterContainer>
   );
 };

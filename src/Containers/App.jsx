@@ -11,7 +11,8 @@ import {
   NoMatch,
   SignInPage,
   SignUpPage,
-  SignOutPage
+  SignOutPage,
+  WebCryptoPage
 } from "Containers/Pages";
 import { Header, Footer } from "Components";
 
@@ -35,6 +36,7 @@ class App extends Component {
           <Route exact path="/" component={Home} />
           <Route exact path="/about" component={About} />
           <Route exact path="/kitchen-sink" component={KitchenSinkPage} />
+          <Route exact path="/web-crypto" component={WebCryptoPage} />
           <Route exact path="/sign-in" component={SignInPage} />
           <Route exact path="/sign-up" component={SignUpPage} />
           <Route exact path="/profile" component={ProfilePage} />
