@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, CenterContainer, Input } from "Components/Styled";
+import { Button, CenterContainer, Input, Select } from "Components/Styled";
 import styled from "styled-components";
 
 const RandomValuesTextArea = props => {
@@ -171,18 +171,6 @@ export class RandomValuesComponent extends Component {
     const LengthInput = styled(Input)`
       font-size: small;
     `;
-    const RandomValueSelector = styled.select`
-      color: white;
-      background-color: black;
-      appearance: none;
-      border-radius: 3px;
-      background: transparent;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-      background-repeat: no-repeat;
-      background-position-x: 110%;
-      background-position-y -3px;
-      padding: 2px 1.3em 2px 3px;
-    `;
     return (
       <RandomValuesComponent>
         <h2>Random Values ({randomValueType}Array)</h2>
@@ -200,17 +188,17 @@ export class RandomValuesComponent extends Component {
         <dl>
           <dt>Show Values</dt>
           <dd>
-            <RandomValueSelector
+            <Select
               value={showRandomValues}
               onChange={this.handleChangeShowRandomValues}
             >
               <option value="show">Show</option>
               <option value="hide">Hide</option>
-            </RandomValueSelector>
+            </Select>
           </dd>
           <dt>Type</dt>
           <dd>
-            <RandomValueSelector
+            <Select
               value={randomValueType}
               onChange={this.handleChangeRandomValueType}
             >
@@ -220,7 +208,7 @@ export class RandomValuesComponent extends Component {
               <option value="Int16">Int16</option>
               <option value="Uint8">Uint8</option>
               <option value="Int8">Int8</option>
-            </RandomValueSelector>
+            </Select>
           </dd>
           <dt>Length (max {randomValuesMaxLength})</dt>
           <dd>

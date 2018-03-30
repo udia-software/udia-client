@@ -46,6 +46,11 @@ export class WebCryptoPage extends Component {
                 Web Crypto API
               </a>
             </li>
+            <li>
+              <a href="https://udia-software.github.io/webcrypto-examples/">
+                Full Web Crypto Examples
+              </a>
+            </li>
           </ul>
           <dl>
             <dt>User Agent</dt>
@@ -54,8 +59,6 @@ export class WebCryptoPage extends Component {
             <dd>
               <DetectBrowser />
             </dd>
-            <dt>Web Crypto Module Defined</dt>
-            <dd>{Boolean(typeof window.crypto !== "undefined").toString()}</dd>
           </dl>
         </Description>
         <RandomValuesComponent />

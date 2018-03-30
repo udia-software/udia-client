@@ -8,3 +8,4 @@ export { FormField } from "./FormField";
 export { FormFieldErrors } from "./FormFieldErrors";
 export { GridLoadingOverlay } from "./GridLoadingOverlay";
 export { Input } from "./Input";
+export { Select } from "./Select";
