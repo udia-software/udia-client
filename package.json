@@ -1,0 +1,35 @@
+{
+  "name": "udia",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.1.9",
+    "apollo-client": "^2.2.5",
+    "apollo-link-http": "^1.5.2",
+    "apollo-link-ws": "^1.0.7",
+    "graphql": "^0.13.1",
+    "graphql-tag": "^2.8.0",
+    "moment": "^2.21.0",
+    "prop-types": "^15.6.1",
+    "react": "^16.2.0",
+    "react-apollo": "^2.0.4",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "^1.1.4",
+    "redux": "^3.7.2",
+    "redux-persist": "^5.9.1",
+    "styled-components": "^3.2.0",
+    "subscriptions-transport-ws": "^0.9.6"
+  },
+  "scripts": {
+    "start": "NODE_PATH=src react-scripts start",
+    "build": "NODE_PATH=src react-scripts build",
+    "test": "NODE_PATH=src react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "yarn run build && aws s3 sync build/ s3://udia-amazon --delete"
+  },
+  "devDependencies": {
+    "jest-localstorage-mock": "^2.2.0"
+  }
+}
