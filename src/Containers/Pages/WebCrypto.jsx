@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import RandomValuesComponent from "Components/CryptoDemo/RandomValues";
+import DerivePasswordComponent from "../../Components/CryptoDemo/DerivePassword";
 import { CenterContainer } from "Components/Styled";
 import { DetectBrowser } from "../../Components/CryptoDemo/DetectBrowser";
 
@@ -8,7 +9,8 @@ const RawWebCryptoPageDiv = styled(CenterContainer)`
   grid-template-areas:
     "title"
     "description"
-    "random-values";
+    "random-values"
+    "derive-password";
 `;
 
 const WebCryptoPageContainer = props => {
@@ -62,6 +64,7 @@ export class WebCryptoPage extends Component {
           </dl>
         </Description>
         <RandomValuesComponent />
+        <DerivePasswordComponent />
       </WebCryptoPageContainer>
     );
   }

@@ -11,6 +11,10 @@ const RandomValuesTextArea = props => {
   return <StyledComponent {...props} />;
 };
 
+const RandomValuesComponentStyled = styled(CenterContainer)`
+  grid-area: random-values;
+`;
+
 export class RandomValuesComponent extends Component {
   constructor(props) {
     super(props);
@@ -165,14 +169,11 @@ export class RandomValuesComponent extends Component {
       randomValueTime,
       showRandomValues
     } = this.state;
-    const RandomValuesComponent = styled(CenterContainer)`
-      grid-area: random-values;
-    `;
     const LengthInput = styled(Input)`
       font-size: small;
     `;
     return (
-      <RandomValuesComponent>
+      <RandomValuesComponentStyled>
         <h2>Random Values ({randomValueType}Array)</h2>
         {showRandomValues === "show" && (
           <RandomValuesTextArea
@@ -224,7 +225,7 @@ export class RandomValuesComponent extends Component {
         <Button size="mini" onClick={this.generateRandomValues}>
           Generate Random Values
         </Button>
-      </RandomValuesComponent>
+      </RandomValuesComponentStyled>
     );
   }
 }
