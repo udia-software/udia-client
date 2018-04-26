@@ -24,6 +24,10 @@ Now you can visit [`localhost:3001`](http://localhost:3001) from your browser.
 To test your react app:
 
   * Run the test with `yarn test`
+  
+[![Browserstack](https://bstacksupport.zendesk.com/attachments/token/38rkoBZFSHEAe9MeHzCOTi1cS/?name=Logo-01.svg)](https://www.browserstack.com/)
+
+* This project is trailing the Browserstack cross browser testing functionality.
 
 ## License
 
