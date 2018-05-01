@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 
-import { authActions } from "../../Modules/Auth";
+import { AuthActions } from "../../Modules/Auth";
 import SignUpView from "./SignUpView";
 
 class SignUpController extends Component {
@@ -20,17 +20,17 @@ class SignUpController extends Component {
   }
 
   handleChangeEmail = event => {
-    this.props.dispatch(authActions.setFormEmail(event.target.value));
+    this.props.dispatch(AuthActions.setFormEmail(event.target.value));
     this.setState({ emailErrors: [] });
   };
 
   handleChangeUsername = event => {
-    this.props.dispatch(authActions.setFormUsername(event.target.value));
+    this.props.dispatch(AuthActions.setFormUsername(event.target.value));
     this.setState({ usernameErrors: [] });
   };
 
   handleChangePassword = event => {
-    this.props.dispatch(authActions.setFormPassword(event.target.value));
+    this.props.dispatch(AuthActions.setFormPassword(event.target.value));
     this.setState({ passwordErrors: [] });
   };
 
@@ -52,7 +52,7 @@ class SignUpController extends Component {
     signUpUserMutation({ variables: { email, username, password } })
       .then(({ data }) => {
         const { token, user } = data.createUser;
-        dispatch(authActions.setAuthData({ jwt: token, user }));
+        dispatch(AuthActions.setAuthData({ jwt: token, user }));
       })
       .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
         console.warn(message, graphQLErrors, networkError, extraInfo);

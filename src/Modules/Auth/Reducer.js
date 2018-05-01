@@ -1,7 +1,7 @@
 // @flow
-import type { IAuthAction } from "./actions";
+import type { IAuthAction } from "./Actions";
 import { AUTH_TOKEN } from "../../Constants";
-import { authActions } from "./actions";
+import { AuthActions } from "./Actions";
 
 export interface IAuthState {
   username: string;
@@ -21,32 +21,32 @@ const AuthState: IAuthState = {
   authUser: null
 };
 
-export function authReducer(
+export function AuthReducer(
   state: IAuthState = { ...AuthState },
   action: IAuthAction
 ) {
   switch (action.type) {
-    case authActions.SET_FORM_USERNAME:
+    case AuthActions.SET_FORM_USERNAME:
       return {
         ...state,
         username: action.payload
       };
-    case authActions.SET_FORM_PASSWORD:
+    case AuthActions.SET_FORM_PASSWORD:
       return {
         ...state,
         password: action.payload
       };
-    case authActions.SET_FORM_EMAIL:
+    case AuthActions.SET_FORM_EMAIL:
       return {
         ...state,
         email: action.payload
       };
-    case authActions.SET_AUTH_USER:
+    case AuthActions.SET_AUTH_USER:
       return {
         ...state,
         authUser: action.payload
       };
-    case authActions.SET_AUTH_DATA:
+    case AuthActions.SET_AUTH_DATA:
       localStorage.setItem(AUTH_TOKEN, action.payload.jwt);
       return {
         ...state,
@@ -57,12 +57,12 @@ export function authReducer(
         authUser: action.payload.user,
         jwt: action.payload.jwt
       };
-    case authActions.CONFIRM_SIGN_OUT:
+    case AuthActions.CONFIRM_SIGN_OUT:
       return {
         ...state,
         confirmSignOut: true
       };
-    case authActions.CLEAR_AUTH_DATA:
+    case AuthActions.CLEAR_AUTH_DATA:
       localStorage.removeItem(AUTH_TOKEN);
       return {
         ...AuthState,
@@ -72,5 +72,3 @@ export function authReducer(
       return state;
   }
 }
-
-export default authReducer;

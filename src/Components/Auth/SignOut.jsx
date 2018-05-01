@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { authActions } from "../../Modules/Auth";
+import { AuthActions } from "../../Modules/Auth";
 import { Button, CenterContainer } from "../Styled";
 
 class SignOutController extends Component {
@@ -11,19 +11,19 @@ class SignOutController extends Component {
     document.title = "Sign Out - UDIA";
     const { confirmSignOut, dispatch } = props;
     if (confirmSignOut) {
-      dispatch(authActions.clearAuthData());
+      dispatch(AuthActions.clearAuthData());
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { confirmSignOut, dispatch } = nextProps;
     if (confirmSignOut) {
-      dispatch(authActions.clearAuthData());
+      dispatch(AuthActions.clearAuthData());
     }
   }
 
   handleSignOut = () => {
-    this.props.dispatch(authActions.confirmSignOut());
+    this.props.dispatch(AuthActions.confirmSignOut());
   }
 
   render() {

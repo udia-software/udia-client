@@ -84,7 +84,7 @@ const clearAuthData = (): IClearAuthDataAuthActions => ({
   type: CLEAR_AUTH_DATA
 });
 
-export const authActions = {
+export const AuthActions = {
   // action type strings
   SET_FORM_USERNAME,
   SET_FORM_PASSWORD,

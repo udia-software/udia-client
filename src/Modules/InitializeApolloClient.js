@@ -12,7 +12,7 @@ import {
   REACT_APP_SUBSCRIPTIONS_ENDPOINT
 } from "../Constants";
 
-export function initializeApolloClient() {
+export function InitializeApolloClient() {
   // Build the Apollo Http Link with the authentication token
   const middlewareAuthLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem(AUTH_TOKEN);
@@ -58,4 +58,4 @@ export function initializeApolloClient() {
   return client;
 }
 
-export default initializeApolloClient;
+export default InitializeApolloClient;

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { utc } from "moment";
 
 import { CenterContainer } from "../Styled";
-import { authSelectors } from "../../Modules/Auth";
+import { AuthSelectors } from "../../Modules/Auth";
 
 class ProfileController extends Component {
   render() {
@@ -31,11 +31,11 @@ class ProfileController extends Component {
 
 function mapStateToProps(state) {
   return {
-    username: authSelectors.getSelfUsername(state),
-    createdAt: authSelectors.getSelfCreatedAt(state),
-    updatedAt: authSelectors.getSelfUpdatedAt(state),
-    email: authSelectors.getSelfEmail(state),
-    emailVerified: authSelectors.getSelfEmailVerified(state)
+    username: AuthSelectors.getSelfUsername(state),
+    createdAt: AuthSelectors.getSelfCreatedAt(state),
+    updatedAt: AuthSelectors.getSelfUpdatedAt(state),
+    email: AuthSelectors.getSelfEmail(state),
+    emailVerified: AuthSelectors.getSelfEmailVerified(state)
   };
 }
 

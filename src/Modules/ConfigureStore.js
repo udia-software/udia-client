@@ -2,9 +2,9 @@
 import { persistStore, persistCombineReducers } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { createStore } from "redux";
-import rootReducer from "./rootReducer";
+import RootReducer from "./RootReducer";
 
-export function configureStore() {
+export function ConfigureStore() {
   const rootPersistConfig = {
     key: "root",
     storage: storage,
@@ -13,7 +13,7 @@ export function configureStore() {
 
   const persistedReducer = persistCombineReducers(
     rootPersistConfig,
-    rootReducer
+    RootReducer
   );
 
   const store = createStore(
@@ -23,5 +23,3 @@ export function configureStore() {
   const persistor = persistStore(store);
   return { store, persistor };
 }
-
-export default configureStore;
