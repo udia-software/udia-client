@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
-import { authSelectors } from "../../Modules/Auth";
+import { AuthSelectors } from "../../Modules/Auth";
 import { CenterContainer, GridLoadingOverlay } from "../Styled";
 
 const AuthenticationLoadingComponent = (
@@ -64,8 +64,8 @@ function WithAuthentication(
 
   function mapStateToProps(state) {
     return {
-      maybeAuthenticated: authSelectors.maybeAuthenticated(state),
-      isAuthenticated: authSelectors.isAuthenticated(state)
+      maybeAuthenticated: AuthSelectors.maybeAuthenticated(state),
+      isAuthenticated: AuthSelectors.isAuthenticated(state)
     };
   }
 

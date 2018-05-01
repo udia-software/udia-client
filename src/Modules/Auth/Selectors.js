@@ -1,5 +1,5 @@
 // @flow
-import type { IRootState } from "../rootReducer";
+import type { IRootState } from "../RootReducer";
 
 // client may be authenticated if the JWT is set in local storage.
 function maybeAuthenticated(state: IRootState) {
@@ -31,7 +31,7 @@ function getSelfEmailVerified(state: IRootState) {
   return (state.auth.authUser || {}).emailVerified;
 }
 
-export const authSelectors = {
+export const AuthSelectors = {
   maybeAuthenticated,
   isAuthenticated,
   getSelfUsername,

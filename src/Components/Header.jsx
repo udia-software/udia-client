@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
-import { authActions, authSelectors } from "../Modules/Auth";
+import { AuthActions, AuthSelectors } from "../Modules/Auth";
 
 const StyledHeader = styled.header`
   grid-area: header;
@@ -65,16 +65,16 @@ class HeaderController extends Component {
         console.error(error);
       }
       if (!!(me || {})._id) {
-        dispatch(authActions.setAuthUser(me));
+        dispatch(AuthActions.setAuthUser(me));
       } else {
-        dispatch(authActions.clearAuthData());
+        dispatch(AuthActions.clearAuthData());
       }
     }
   }
 
   handleClickSignOut = () => {
     console.log("clicked sign out");
-    this.props.dispatch(authActions.confirmSignOut());
+    this.props.dispatch(AuthActions.confirmSignOut());
   };
 
   render() {
@@ -168,9 +168,9 @@ class HeaderController extends Component {
 
 function mapStateToProps(state) {
   return {
-    maybeAuthenticated: authSelectors.maybeAuthenticated(state),
-    isAuthenticated: authSelectors.isAuthenticated(state),
-    username: authSelectors.getSelfUsername(state)
+    maybeAuthenticated: AuthSelectors.maybeAuthenticated(state),
+    isAuthenticated: AuthSelectors.isAuthenticated(state),
+    username: AuthSelectors.getSelfUsername(state)
   };
 }
 

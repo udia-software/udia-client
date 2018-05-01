@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 
-import { authActions } from "../../Modules/Auth";
+import { AuthActions } from "../../Modules/Auth";
 import SignInView from "./SignInView";
 
 class SignInController extends Component {
@@ -19,12 +19,12 @@ class SignInController extends Component {
   }
 
   handleChangeEmail = event => {
-    this.props.dispatch(authActions.setFormEmail(event.target.value));
+    this.props.dispatch(AuthActions.setFormEmail(event.target.value));
     this.setState({ emailErrors: [] });
   };
 
   handleChangePassword = event => {
-    this.props.dispatch(authActions.setFormPassword(event.target.value));
+    this.props.dispatch(AuthActions.setFormPassword(event.target.value));
     this.setState({ passwordErrors: [] });
   };
 
@@ -35,7 +35,7 @@ class SignInController extends Component {
     signInUserMutation({ variables: { email, password } })
       .then(({ data }) => {
         const { token, user } = data.signinUser;
-        dispatch(authActions.setAuthData({ jwt: token, user }));
+        dispatch(AuthActions.setAuthData({ jwt: token, user }));
       })
       .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
         console.warn(message, graphQLErrors, networkError, extraInfo);

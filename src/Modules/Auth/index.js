@@ -1,4 +1,4 @@
 // @flow
-export { authSelectors } from "./selectors";
-export { authActions } from "./actions";
-export { authReducer } from "./reducer";
+export { AuthSelectors } from "./Selectors";
+export { AuthActions } from "./Actions";
+export { AuthReducer } from "./Reducer";

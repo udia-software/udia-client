@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/es/integration/react";
 
 import App from "./Containers/App";
-import { configureStore, initializeApolloClient } from "./Modules";
+import { ConfigureStore, InitializeApolloClient } from "./Modules";
 import registerServiceWorker from "./registerServiceWorker";
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
-  const { persistor, store } = configureStore();
+  const { persistor, store } = ConfigureStore();
 
   /* Workaround for getting the Apollo client to referesh on login/logout */
   class RefreshingApolloProvider extends Component<Props> {
@@ -30,7 +30,7 @@ if (rootElement) {
         }`
       );
       return (
-        <ApolloProvider {...this.props} client={initializeApolloClient()} />
+        <ApolloProvider {...this.props} client={InitializeApolloClient()} />
       );
     }
   }
