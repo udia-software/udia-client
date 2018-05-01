@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { authActions } from "Modules/Auth";
-import { Button, CenterContainer } from "Components/Styled";
+import { authActions } from "../../Modules/Auth";
+import { Button, CenterContainer } from "../Styled";
 
 class SignOutController extends Component {
   constructor(props) {

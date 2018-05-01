@@ -12,7 +12,7 @@ import {
   FormFieldErrors,
   AuthFormFieldset,
   Input
-} from "Components/Styled";
+} from "../Styled";
 
 const SignInView = ({
   loading,

@@ -1,4 +1,4 @@
-import { AUTH_TOKEN } from "Constants";
+import { AUTH_TOKEN } from "../../Constants";
 import { authActions } from "./actions";
 
 const AuthState = {

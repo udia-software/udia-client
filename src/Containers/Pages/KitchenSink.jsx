@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, CenterContainer } from "Components/Styled";
+import { Button, CenterContainer } from "../../Components/Styled";
 
 export const KitchenSinkPage = () => {
   document.title = "Kitchen Sink - UDIA";

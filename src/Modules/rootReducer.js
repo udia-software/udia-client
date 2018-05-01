@@ -1,8 +1,8 @@
-import { authReducer } from "Modules/Auth";
+import { authReducer } from "./Auth";
 // import { nodesReducer } from "./nodes";
 
 export const rootReducer = {
-  auth: authReducer,
+  auth: authReducer
   // nodes: nodesReducer
 };
 export default rootReducer;

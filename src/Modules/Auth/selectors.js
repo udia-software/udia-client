@@ -1,34 +1,34 @@
 // client may be authenticated if the JWT is set in local storage.
-export function maybeAuthenticated(state) {
+function maybeAuthenticated(state) {
   return !!state.auth.jwt;
 }
 
 // client is authenticated if the user id is set.
-export function isAuthenticated(state) {
+function isAuthenticated(state) {
   return !!(state.auth.authUser || {})._id;
 }
 
-export function getSelfUsername(state) {
+function getSelfUsername(state) {
   return (state.auth.authUser || {}).username || "";
 }
 
-export function getSelfCreatedAt(state) {
+function getSelfCreatedAt(state) {
   return (state.auth.authUser || {}).createdAt || null;
 }
 
-export function getSelfUpdatedAt(state) {
+function getSelfUpdatedAt(state) {
   return (state.auth.authUser || {}).updatedAt || null;
 }
 
-export function getSelfEmail(state) {
+function getSelfEmail(state) {
   return (state.auth.authUser || {}).email || "";
 }
 
-export function getSelfEmailVerified(state) {
+function getSelfEmailVerified(state) {
   return (state.auth.authUser || {}).emailVerified;
 }
 
-const authSelectors = {
+export const authSelectors = {
   maybeAuthenticated,
   isAuthenticated,
   getSelfUsername,
@@ -37,5 +37,3 @@ const authSelectors = {
   getSelfEmail,
   getSelfEmailVerified,
 };
-
-export default authSelectors;

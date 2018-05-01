@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
-import { authActions, authSelectors } from "Modules/Auth";
+import { authActions, authSelectors } from "../Modules/Auth";
 
 const StyledHeader = styled.header`
   grid-area: header;

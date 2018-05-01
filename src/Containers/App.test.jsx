@@ -6,9 +6,9 @@ import { Provider } from "react-redux";
 import { ApolloClient } from "apollo-client";
 import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import App from "Containers/App";
-import { configureStore } from "Modules";
-import { REACT_APP_GRAPHQL_HTTP_ENDPOINT } from "Constants";
+import App from "./App";
+import { configureStore } from "../Modules";
+import { REACT_APP_GRAPHQL_HTTP_ENDPOINT } from "../Constants";
 
 it("renders without crashing", async done => {
   const div = document.createElement("div");
