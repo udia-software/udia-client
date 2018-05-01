@@ -1,7 +1,18 @@
+// @flow
+import type { IAuthAction } from "./actions";
 import { AUTH_TOKEN } from "../../Constants";
 import { authActions } from "./actions";
 
-const AuthState = {
+export interface IAuthState {
+  username: string;
+  email: string;
+  password: string;
+  jwt: string | null;
+  confirmSignOut: boolean;
+  authUser: any | null;
+}
+
+const AuthState: IAuthState = {
   username: "",
   email: "",
   password: "",
@@ -10,38 +21,41 @@ const AuthState = {
   authUser: null
 };
 
-export function authReducer(state = { ...AuthState }, { payload, type }) {
-  switch (type) {
+export function authReducer(
+  state: IAuthState = { ...AuthState },
+  action: IAuthAction
+) {
+  switch (action.type) {
     case authActions.SET_FORM_USERNAME:
       return {
         ...state,
-        username: payload
+        username: action.payload
       };
     case authActions.SET_FORM_PASSWORD:
       return {
         ...state,
-        password: payload
+        password: action.payload
       };
     case authActions.SET_FORM_EMAIL:
       return {
         ...state,
-        email: payload
+        email: action.payload
       };
     case authActions.SET_AUTH_USER:
       return {
         ...state,
-        authUser: payload
+        authUser: action.payload
       };
     case authActions.SET_AUTH_DATA:
-      localStorage.setItem(AUTH_TOKEN, payload.jwt);
+      localStorage.setItem(AUTH_TOKEN, action.payload.jwt);
       return {
         ...state,
         username: "",
         email: "",
         password: "",
         understoodLesson: false,
-        authUser: payload.user,
-        jwt: payload.jwt
+        authUser: action.payload.user,
+        jwt: action.payload.jwt
       };
     case authActions.CONFIRM_SIGN_OUT:
       return {
