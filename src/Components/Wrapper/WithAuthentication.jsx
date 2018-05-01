@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
-import { authSelectors } from "Modules/Auth";
-import { CenterContainer, GridLoadingOverlay } from "Components/Styled";
+import { authSelectors } from "../../Modules/Auth";
+import { CenterContainer, GridLoadingOverlay } from "../Styled";
 
 const AuthenticationLoadingComponent = (
   <CenterContainer>

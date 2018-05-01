@@ -1,5 +1,5 @@
 import React from "react";
-import { CenterContainer } from "Components/Styled";
+import { CenterContainer } from "../../Components/Styled";
 
 export const Home = () => {
   document.title = "UDIA";

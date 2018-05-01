@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { utc } from "moment";
 
-import { CenterContainer } from "Components/Styled";
-import { authSelectors } from "Modules/Auth";
+import { CenterContainer } from "../Styled";
+import { authSelectors } from "../../Modules/Auth";
 
 class ProfileController extends Component {
   render() {

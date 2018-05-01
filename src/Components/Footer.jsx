@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Logo } from "Static";
+import { Logo } from "../Static";
 
 export const Footer = () => {
   const StyledFooter = styled.div`

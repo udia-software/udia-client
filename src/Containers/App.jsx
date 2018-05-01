@@ -13,8 +13,8 @@ import {
   SignUpPage,
   SignOutPage,
   WebCryptoPage
-} from "Containers/Pages";
-import { Header, Footer } from "Components";
+} from "./Pages";
+import { Header, Footer } from "../Components";
 
 class App extends Component {
   render() {

@@ -9,7 +9,7 @@ import {
   AUTH_TOKEN,
   REACT_APP_GRAPHQL_HTTP_ENDPOINT,
   REACT_APP_SUBSCRIPTIONS_ENDPOINT
-} from "Constants";
+} from "../Constants";
 
 export function initializeApolloClient() {
   // Build the Apollo Http Link with the authentication token

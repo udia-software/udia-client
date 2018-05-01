@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import RandomValuesComponent from "Components/CryptoDemo/RandomValues";
+import RandomValuesComponent from "../../Components/CryptoDemo/RandomValues";
 import DerivePasswordComponent from "../../Components/CryptoDemo/DerivePassword";
-import { CenterContainer } from "Components/Styled";
+import { CenterContainer } from "../../Components/Styled";
 import { DetectBrowser } from "../../Components/CryptoDemo/DetectBrowser";
 
 const RawWebCryptoPageDiv = styled(CenterContainer)`

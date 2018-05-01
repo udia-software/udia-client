@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 
-import { authActions } from "Modules/Auth";
+import { authActions } from "../../Modules/Auth";
 import SignUpView from "./SignUpView";
 
 class SignUpController extends Component {

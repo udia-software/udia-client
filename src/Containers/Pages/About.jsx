@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { graphql } from "react-apollo";
 import { utc } from "moment";
 
-import { CenterContainer } from "Components/Styled";
-import { authSelectors } from "Modules/Auth";
+import { CenterContainer } from "../../Components/Styled";
+import { authSelectors } from "../../Modules/Auth";
 
 const MOMENT_FORMAT_STRING = "MMMM D YYYY, h:mm:ss SSS a ZZ";
 

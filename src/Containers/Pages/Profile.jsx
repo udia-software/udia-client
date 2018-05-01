@@ -1,5 +1,5 @@
-import { Profile } from "Components/Auth";
-import { WithAuthentication } from "Components/Wrapper";
+import { Profile } from "../../Components/Auth";
+import { WithAuthentication } from "../../Components/Wrapper";
 
 const ProfilePage = WithAuthentication(
   Profile,
