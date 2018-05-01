@@ -1,3 +1,4 @@
+// @flow
 // name of local storage key for auth token
 export const AUTH_TOKEN = "udia-auth-token";
 
