@@ -1,11 +1,11 @@
 // @flow
-import type { IAuthState } from "./Auth/Reducer";
-import { AuthReducer } from "./Auth";
+import type { IAuthState } from './Auth/Reducer';
+import { AuthReducer } from './Auth';
 
 export type IRootState = {
-  auth: IAuthState
+  auth: IAuthState,
 };
 
 export default {
-  auth: AuthReducer
+  auth: AuthReducer,
 };

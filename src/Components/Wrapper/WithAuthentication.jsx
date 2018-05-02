@@ -18,7 +18,7 @@ const AuthenticationLoadingComponent = (
  * @param {string} redirectToPath Where to redirect to if requireAuthentication not satisfied?
  * @param {string} redirectReferrer Who is this being referred from?
  */
-function WithAuthentication(
+export default function WithAuthentication(
   WrappedComponent,
   requireAuthentication,
   redirectToPath,
@@ -74,6 +74,3 @@ function WithAuthentication(
   );
   return ConnectedAuthenticationWrapper;
 }
-
-export { WithAuthentication };
-export default WithAuthentication;

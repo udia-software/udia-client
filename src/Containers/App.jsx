@@ -1,8 +1,9 @@
-import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
-import styled from "styled-components";
+// @flow
+import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
+import styled from 'styled-components';
 
-import "./App.css"; // Application Loaded Site Wide Styles
+import './App.css'; // Application Loaded Site Wide Styles
 import {
   About,
   Home,
@@ -12,20 +13,20 @@ import {
   SignInPage,
   SignUpPage,
   SignOutPage,
-  WebCryptoPage
-} from "./Pages";
-import { Header, Footer } from "../Components";
+  WebCryptoPage,
+} from './Pages';
+import { Header, Footer } from '../Components';
 
-class App extends Component {
+class App extends Component<{}> {
   render() {
     const AppContainer = styled.div`
       display: grid;
       grid-template-rows: auto 1fr auto;
       grid-template-columns: auto;
       grid-template-areas:
-        "header"
-        "content"
-        "footer";
+        'header'
+        'content'
+        'footer';
       min-height: 100vh;
       min-width: 100vw;
     `;

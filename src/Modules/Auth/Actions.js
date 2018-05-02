@@ -1,11 +1,11 @@
 // @flow
-const SET_FORM_USERNAME: "auth/SET_FORM_USERNAME" = "auth/SET_FORM_USERNAME";
-const SET_FORM_PASSWORD: "auth/SET_FORM_PASSWORD" = "auth/SET_FORM_PASSWORD";
-const SET_FORM_EMAIL: "auth/SET_FORM_EMAIL" = "auth/SET_FORM_EMAIL";
-const SET_AUTH_USER: "auth/SET_AUTH_USER" = "auth/SET_AUTH_USER";
-const SET_AUTH_DATA: "auth/SET_AUTH_DATA" = "auth/SET_AUTH_DATA";
-const CONFIRM_SIGN_OUT: "auth/CONFIRM_SIGN_OUT" = "auth/CONFIRM_SIGN_OUT";
-const CLEAR_AUTH_DATA: "auth/CLEAR_AUTH_DATA" = "auth/CLEAR_AUTH_DATA";
+const SET_FORM_USERNAME: 'auth/SET_FORM_USERNAME' = 'auth/SET_FORM_USERNAME';
+const SET_FORM_PASSWORD: 'auth/SET_FORM_PASSWORD' = 'auth/SET_FORM_PASSWORD';
+const SET_FORM_EMAIL: 'auth/SET_FORM_EMAIL' = 'auth/SET_FORM_EMAIL';
+const SET_AUTH_USER: 'auth/SET_AUTH_USER' = 'auth/SET_AUTH_USER';
+const SET_AUTH_DATA: 'auth/SET_AUTH_DATA' = 'auth/SET_AUTH_DATA';
+const CONFIRM_SIGN_OUT: 'auth/CONFIRM_SIGN_OUT' = 'auth/CONFIRM_SIGN_OUT';
+const CLEAR_AUTH_DATA: 'auth/CLEAR_AUTH_DATA' = 'auth/CLEAR_AUTH_DATA';
 
 interface ISetFormUsernameAuthAction {
   type: typeof SET_FORM_USERNAME;
@@ -53,38 +53,38 @@ export type IAuthAction =
 
 const setFormUsername = (username: string): ISetFormUsernameAuthAction => ({
   type: SET_FORM_USERNAME,
-  payload: username
+  payload: username,
 });
 
 const setFormEmail = (email: string): ISetFormEmailAuthAction => ({
   type: SET_FORM_EMAIL,
-  payload: email
+  payload: email,
 });
 
 const setFormPassword = (password: string): ISetFormPasswordAuthAction => ({
   type: SET_FORM_PASSWORD,
-  payload: password
+  payload: password,
 });
 
 const setAuthUser = (user: any): ISetAuthUserAuthAction => ({
   type: SET_AUTH_USER,
-  payload: user
+  payload: user,
 });
 
 const setAuthData = ({ user, jwt }: any): ISetAuthDataAuthAction => ({
   type: SET_AUTH_DATA,
-  payload: { user, jwt }
+  payload: { user, jwt },
 });
 
 const confirmSignOut = (): IConfirmSignOutAuthAction => ({
-  type: CONFIRM_SIGN_OUT
+  type: CONFIRM_SIGN_OUT,
 });
 
 const clearAuthData = (): IClearAuthDataAuthActions => ({
-  type: CLEAR_AUTH_DATA
+  type: CLEAR_AUTH_DATA,
 });
 
-export const AuthActions = {
+export default {
   // action type strings
   SET_FORM_USERNAME,
   SET_FORM_PASSWORD,
@@ -101,5 +101,5 @@ export const AuthActions = {
   setAuthUser,
   setAuthData,
   confirmSignOut,
-  clearAuthData
+  clearAuthData,
 };

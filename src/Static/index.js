@@ -1,2 +1,5 @@
-// @flow
-export { Logo } from "./Logo";
+/* @flow */
+import Logo from './Logo';
+
+export { Logo };
+export default { Logo };

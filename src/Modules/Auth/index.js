@@ -1,4 +1,9 @@
 // @flow
-export { AuthSelectors } from "./Selectors";
-export { AuthActions } from "./Actions";
-export { AuthReducer } from "./Reducer";
+import AuthActions from './Actions';
+import AuthSelectors from './Selectors';
+import AuthReducer from './Reducer';
+
+export { AuthReducer };
+export { AuthActions };
+export { AuthSelectors };
+// export default { AuthReducer, AuthActions, AuthSelectors };
