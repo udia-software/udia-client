@@ -1,1 +1,6 @@
-export { WithAuthentication } from "./WithAuthentication";
+import WithAuthentication from './WithAuthentication';
+
+export { WithAuthentication };
+export default {
+  WithAuthentication,
+};

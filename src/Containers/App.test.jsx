@@ -1,25 +1,25 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { ApolloProvider } from "react-apollo";
-import { MemoryRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { ApolloClient } from "apollo-client";
-import { HttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import App from "./App";
-import { ConfigureStore } from "../Modules";
-import { REACT_APP_GRAPHQL_HTTP_ENDPOINT } from "../Constants";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { ApolloProvider } from 'react-apollo';
+import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import App from './App';
+import { configureStore } from '../Modules';
+import { REACT_APP_GRAPHQL_HTTP_ENDPOINT } from '../Constants';
 
-it("renders without crashing", async done => {
-  const div = document.createElement("div");
-  const { store } = ConfigureStore();
+it('renders without crashing', async (done) => {
+  const div = document.createElement('div');
+  const { store } = configureStore();
   ReactDOM.render(
     <Provider store={store}>
       <ApolloProvider
         client={
           new ApolloClient({
             link: new HttpLink({ uri: REACT_APP_GRAPHQL_HTTP_ENDPOINT }),
-            cache: new InMemoryCache()
+            cache: new InMemoryCache(),
           })
         }
       >
@@ -28,7 +28,7 @@ it("renders without crashing", async done => {
         </MemoryRouter>
       </ApolloProvider>
     </Provider>,
-    div
+    div,
   );
   ReactDOM.unmountComponentAtNode(div);
   // this is required because otherwise JSDOM throws an exception
