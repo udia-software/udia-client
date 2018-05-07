@@ -188,6 +188,19 @@ const CHECK_USER_MUTATION = gql`
     me {
       uuid
       username
+      emails {
+        email
+        primary
+        verified
+        createdAt
+        updatedAt
+        verificationExpiry
+      }
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
       createdAt
       updatedAt
     }

@@ -13,10 +13,13 @@ const getSelfCreatedAt = (state: IRootState) => (state.auth.authUser || {}).crea
 
 const getSelfUpdatedAt = (state: IRootState) => (state.auth.authUser || {}).updatedAt || null;
 
+const getSelfEmails = (state: IRootState) => (state.auth.authUser || {}).emails || [];
+
 export default {
   maybeAuthenticated,
   isAuthenticated,
   getSelfUsername,
   getSelfCreatedAt,
   getSelfUpdatedAt,
+  getSelfEmails,
 };
