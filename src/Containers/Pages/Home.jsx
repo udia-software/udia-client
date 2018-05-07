@@ -1,8 +1,9 @@
-import React from "react";
-import { CenterContainer } from "../../Components/Styled";
+// @flow
+import React from 'react';
+import { CenterContainer } from '../../Components/Styled';
 
-export const Home = () => {
-  document.title = "UDIA";
+const Home = () => {
+  document.title = 'UDIA';
 
   return (
     <CenterContainer>

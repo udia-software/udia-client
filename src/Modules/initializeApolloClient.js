@@ -52,6 +52,6 @@ export default function () {
     link,
     cache: new InMemoryCache(),
   });
-  client.resetStore();
+  // client.resetStore();
   return client;
 }

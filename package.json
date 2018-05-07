@@ -23,6 +23,7 @@
     "graphql": "^0.13.1",
     "graphql-tag": "^2.8.0",
     "moment": "^2.21.0",
+    "node-forge": "^0.7.5",
     "pbkdf2": "^3.0.14",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
