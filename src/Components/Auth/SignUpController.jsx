@@ -200,6 +200,4 @@ const SIGN_UP_MUTATION = gql`
   }
 `;
 
-const SignUp = connect(mapStateToProps)(graphql(SIGN_UP_MUTATION, { name: 'signUpUserMutation' })(SignUpController));
-
-export default SignUp;
+export default connect(mapStateToProps)(graphql(SIGN_UP_MUTATION, { name: 'signUpUserMutation' })(SignUpController));

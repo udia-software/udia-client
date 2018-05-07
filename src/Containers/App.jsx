@@ -8,11 +8,11 @@ import {
   About,
   Home,
   KitchenSink,
-  ProfilePage,
+  Profile,
   NoMatch,
   SignIn,
   SignUp,
-  SignOutPage,
+  SignOut,
   WebCryptoPage,
 } from './Pages';
 import { Header, Footer } from '../Components';
@@ -39,8 +39,8 @@ const App = () => {
         <Route exact path="/web-crypto" component={WebCryptoPage} />
         <Route exact path="/sign-in" component={SignIn} />
         <Route exact path="/sign-up" component={SignUp} />
-        <Route exact path="/profile" component={ProfilePage} />
-        <Route exact path="/sign-out" component={SignOutPage} />
+        <Route exact path="/profile" component={Profile} />
+        <Route exact path="/sign-out" component={SignOut} />
         <Route component={NoMatch} />
       </Switch>
       <Footer />

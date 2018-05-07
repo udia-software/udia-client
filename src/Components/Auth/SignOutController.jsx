@@ -1,14 +1,20 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
+// @flow
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import { AuthActions } from "../../Modules/Auth";
-import { Button, CenterContainer } from "../Styled";
+import { AuthActions } from '../../Modules/Auth';
+import { Button, CenterContainer } from '../Styled';
 
-class SignOutController extends Component {
+type Props = {
+  dispatch: Function,
+  confirmSignOut: boolean,
+};
+
+class SignOutController extends Component<Props> {
   constructor(props) {
     super(props);
-    document.title = "Sign Out - UDIA";
+    document.title = 'Sign Out - UDIA';
     const { confirmSignOut, dispatch } = props;
     if (confirmSignOut) {
       dispatch(AuthActions.clearAuthData());
@@ -24,7 +30,7 @@ class SignOutController extends Component {
 
   handleSignOut = () => {
     this.props.dispatch(AuthActions.confirmSignOut());
-  }
+  };
 
   render() {
     return (
@@ -40,11 +46,8 @@ class SignOutController extends Component {
 
 function mapStateToProps(state) {
   return {
-    confirmSignOut: state.auth.confirmSignOut
+    confirmSignOut: state.auth.confirmSignOut,
   };
 }
 
-const SignOut = connect(mapStateToProps)(SignOutController);
-
-export { SignOut };
-export default SignOut;
+export default connect(mapStateToProps)(SignOutController);

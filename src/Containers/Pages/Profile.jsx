@@ -1,4 +1,4 @@
-import { Profile } from '../../Components/Auth';
+import { ProfileController } from '../../Components/Auth';
 import { WithAuthentication } from '../../Components/Wrapper';
 
-export default WithAuthentication(Profile, true, '/sign-in', '/profile');
+export default WithAuthentication(ProfileController, true, '/sign-in', '/profile');

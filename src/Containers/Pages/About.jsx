@@ -26,8 +26,9 @@ type State = {
 class AboutPage extends Component<Props, State> {
   constructor(props) {
     super(props);
+    document.title = 'About - UDIA';
     this.state = {
-      intervalId: setInterval(this.timer, 1000),
+      intervalId: setInterval(this.timer, 100),
       clientNow: utc(),
     };
   }
@@ -45,7 +46,6 @@ class AboutPage extends Component<Props, State> {
   };
 
   render() {
-    document.title = 'About - UDIA';
     const { healthMetricQuery, username } = this.props;
     const { now, version } = healthMetricQuery.health || {};
     const serverNow = utc(now);
@@ -63,8 +63,26 @@ class AboutPage extends Component<Props, State> {
         <dl>
           <dt>Application Version</dt>
           <dd>
-            <pre>Client: {clientVersion}</pre>
-            <pre>Server: {version}</pre>
+            <pre>
+              Client: {clientVersion}{' '}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/udia-software/udia-client"
+              >
+                src
+              </a>
+            </pre>
+            <pre>
+              Server: {version}{' '}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/udia-software/udia"
+              >
+                src
+              </a>
+            </pre>
           </dd>
           <dt>
             Server Time {(Math.abs(skew) > 60000 || !now) && <span>(ERR! Is server down?!)</span>}

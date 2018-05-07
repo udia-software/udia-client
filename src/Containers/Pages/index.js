@@ -4,11 +4,11 @@
 import About from './About';
 import Home from './Home';
 import KitchenSink from './KitchenSink';
-import NoMatch from './NoMatch';
+import Profile from './Profile';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import SignOut from './SignOut';
+import NoMatch from './NoMatch';
 
-export { About, Home, KitchenSink, NoMatch, SignIn, SignUp };
-export { ProfilePage } from './Profile';
-export { SignOutPage } from './SignOut';
+export { About, Home, KitchenSink, Profile, SignIn, SignUp, SignOut, NoMatch };
 export { WebCryptoPage } from './WebCrypto';

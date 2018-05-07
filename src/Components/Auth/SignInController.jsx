@@ -1,7 +1,8 @@
 // @flow
+import { ApolloClient } from 'apollo-client';
 import gql from 'graphql-tag';
 import React, { Component } from 'react';
-import { graphql, compose } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import { connect } from 'react-redux';
 import type { Dispatch } from 'redux';
 import Crypto from '../../Modules/Crypto';
@@ -11,8 +12,7 @@ import SignInView from './SignInView';
 
 type Props = {
   dispatch: Dispatch,
-  signInUserMutation: Function,
-  getAuthParamsQuery: Function,
+  client: ApolloClient,
   email: string,
   password: string,
 };
@@ -24,6 +24,45 @@ type State = {
   emailErrors: string[],
   passwordErrors: string[],
 };
+
+const SIGN_IN_MUTATION = gql`
+  mutation signInMutation($email: String!, $pw: String!) {
+    signInUser(email: $email, pw: $pw) {
+      jwt
+      user {
+        uuid
+        username
+        emails {
+          email
+          primary
+          verified
+          createdAt
+          updatedAt
+          verificationExpiry
+        }
+        pwFunc
+        pwDigest
+        pwCost
+        pwKeySize
+        pwSalt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+const GET_AUTH_PARAMS_QUERY = gql`
+  query getAuthParamsQuery($email: String!) {
+    getUserAuthParams(email: $email) {
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
+    }
+  }
+`;
 
 class SignInController extends Component<Props, State> {
   constructor(props) {
@@ -50,7 +89,7 @@ class SignInController extends Component<Props, State> {
   handleSubmit = (event) => {
     event.preventDefault();
     const {
-      getAuthParamsQuery, signInUserMutation, dispatch, email, password,
+      client, dispatch, email, password,
     } = this.props;
     this.setState({
       loading: true,
@@ -58,8 +97,8 @@ class SignInController extends Component<Props, State> {
       emailErrors: [],
       passwordErrors: [],
     });
-    getAuthParamsQuery
-      .refetch({ variables: { email } })
+    client
+      .query({ query: GET_AUTH_PARAMS_QUERY, variables: { email } })
       .then(({ data }) => {
         this.setState({ loadingText: 'Deriving secure password...' });
         const {
@@ -76,7 +115,7 @@ class SignInController extends Component<Props, State> {
       })
       .then(({ pw }) => {
         this.setState({ loadingText: 'Communicating with server...' });
-        return signInUserMutation({ variables: { email, pw } });
+        return client.mutate({ mutation: SIGN_IN_MUTATION, variables: { email, pw } });
       })
       .then(({ data }) => {
         this.setState({ loadingText: 'Setting up client...' });
@@ -136,47 +175,4 @@ function mapStateToProps(state) {
   };
 }
 
-const SIGN_IN_MUTATION = gql`
-  mutation signInMutation($email: String!, $pw: String!) {
-    signInUser(email: $email, pw: $pw) {
-      jwt
-      user {
-        uuid
-        username
-        emails {
-          email
-          primary
-          verified
-          createdAt
-          updatedAt
-          verificationExpiry
-        }
-        pwFunc
-        pwDigest
-        pwCost
-        pwKeySize
-        pwSalt
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-const GET_AUTH_PARAMS_QUERY = gql`
-  query getAuthParamsQuery($email: String!) {
-    getUserAuthParams(email: $email) {
-      pwFunc
-      pwDigest
-      pwCost
-      pwKeySize
-      pwSalt
-    }
-  }
-`;
-
-const SignIn = connect(mapStateToProps)(compose(
-  graphql(SIGN_IN_MUTATION, { name: 'signInUserMutation' }),
-  graphql(GET_AUTH_PARAMS_QUERY, { name: 'getAuthParamsQuery' }),
-)(SignInController));
-export default SignIn;
+export default connect(mapStateToProps)(withApollo(SignInController));
