@@ -1,4 +1,5 @@
 // @flow
+import { ApolloClient } from 'apollo-client';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from 'react-apollo';
@@ -14,6 +15,10 @@ type Props = {
   jwt: string,
 };
 
+type State = {
+  client: ApolloClient,
+};
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Element `root` does not exist!');
@@ -22,14 +27,27 @@ if (!rootElement) {
 const { persistor, store } = configureStore();
 
 /* Workaround for getting the Apollo client to referesh on login/logout */
-class RefreshingApolloProvider extends Component<Props> {
+class RefreshingApolloProvider extends Component<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      client: initializeApolloClient(),
+    };
+  }
   shouldComponentUpdate(nextProps) {
-    return this.props.jwt !== nextProps.jwt;
+    const update = this.props.jwt !== nextProps.jwt;
+    const { client } = this.state;
+    if (update) {
+      client.resetStore().then(() => {
+        this.setState({ client: initializeApolloClient() });
+      });
+    }
+    return update;
   }
   render() {
     // eslint-disable-next-line no-console
     console.log(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
-    return <ApolloProvider {...this.props} client={initializeApolloClient()} />;
+    return <ApolloProvider {...this.props} client={this.state.client} />;
   }
 }
 

@@ -1,4 +1,6 @@
+import SignUpController from './SignUpController';
+
+export { SignUpController };
 export { Profile } from './Profile';
 export { SignIn } from './SignInController';
-export { SignUp } from './SignUpController';
 export { SignOut } from './SignOut';

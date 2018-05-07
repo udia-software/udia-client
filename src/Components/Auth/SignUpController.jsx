@@ -1,66 +1,104 @@
-import gql from "graphql-tag";
-import React, { Component } from "react";
-import { graphql } from "react-apollo";
-import { connect } from "react-redux";
+// @flow
+import gql from 'graphql-tag';
+import React, { Component } from 'react';
+import { graphql } from 'react-apollo';
+import { connect } from 'react-redux';
+import type { Dispatch } from 'redux';
 
-import { AuthActions } from "../../Modules/Auth";
-import SignUpView from "./SignUpView";
+import { AuthActions } from '../../Modules/Auth';
+import SignUpView from './SignUpView';
+import Crypto from '../../Modules/Crypto';
 
-class SignUpController extends Component {
+type Props = {
+  dispatch: Dispatch,
+  signUpUserMutation: Function,
+  email: string,
+  username: string,
+  password: string,
+};
+
+type State = {
+  loading: boolean,
+  loadingText?: string,
+  errors: string[],
+  emailErrors: string[],
+  usernameErrors: string[],
+  passwordErrors: string[],
+};
+
+class SignUpController extends Component<Props, State> {
   constructor(props) {
     super(props);
-    document.title = "Sign Up - UDIA";
+    document.title = 'Sign Up - UDIA';
     this.state = {
       loading: false,
       errors: [],
       emailErrors: [],
       usernameErrors: [],
-      passwordErrors: []
+      passwordErrors: [],
     };
   }
 
-  handleChangeEmail = event => {
+  handleChangeEmail = (event) => {
     this.props.dispatch(AuthActions.setFormEmail(event.target.value));
     this.setState({ emailErrors: [] });
   };
 
-  handleChangeUsername = event => {
+  handleChangeUsername = (event) => {
     this.props.dispatch(AuthActions.setFormUsername(event.target.value));
     this.setState({ usernameErrors: [] });
   };
 
-  handleChangePassword = event => {
+  handleChangePassword = (event) => {
     this.props.dispatch(AuthActions.setFormPassword(event.target.value));
     this.setState({ passwordErrors: [] });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
     const {
-      signUpUserMutation,
-      dispatch,
-      email,
-      username,
-      password
+      signUpUserMutation, dispatch, email, username, password,
     } = this.props;
     this.setState({
       loading: true,
+      loadingText: 'Deriving secure password...',
       emailErrors: [],
       usernameErrors: [],
-      passwordErrors: []
+      passwordErrors: [],
     });
-    signUpUserMutation({ variables: { email, username, password } })
+    Crypto.derivePassword(password)
+      .then((result) => {
+        this.setState({ loadingText: 'Communicating with server...' });
+        const {
+          pw, pwSalt, pwCost, pwKeySize, pwDigest, pwFunc,
+        } = result;
+        return signUpUserMutation({
+          variables: {
+            email,
+            username,
+            pw,
+            pwSalt,
+            pwCost,
+            pwKeySize,
+            pwDigest,
+            pwFunc,
+          },
+        });
+      })
       .then(({ data }) => {
+        this.setState({ loadingText: 'Setting up client...' });
         const { token, user } = data.createUser;
         dispatch(AuthActions.setAuthData({ jwt: token, user }));
       })
-      .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
-        console.warn(message, graphQLErrors, networkError, extraInfo);
+      .catch(({
+        graphQLErrors, networkError, message, extraInfo,
+      }) => {
+        console.error(message, graphQLErrors, networkError, extraInfo);
         const errors = [];
         let emailErrors = [];
         let usernameErrors = [];
         let passwordErrors = [];
-        graphQLErrors.forEach(graphQLError => {
+        graphQLErrors.forEach((graphQLError) => {
           const errorState = graphQLError.state || {};
           emailErrors = emailErrors.concat(errorState.email || []);
           usernameErrors = usernameErrors.concat(errorState.username || []);
@@ -74,7 +112,7 @@ class SignUpController extends Component {
           emailErrors,
           usernameErrors,
           passwordErrors,
-          loading: false
+          loading: false,
         });
       });
   };
@@ -83,14 +121,16 @@ class SignUpController extends Component {
     const { email, username, password } = this.props;
     const {
       loading,
+      loadingText,
       errors,
       emailErrors,
       usernameErrors,
-      passwordErrors
+      passwordErrors,
     } = this.state;
     return (
       <SignUpView
         loading={loading}
+        loadingText={loadingText}
         email={email}
         username={username}
         password={password}
@@ -111,33 +151,55 @@ function mapStateToProps(state) {
   return {
     email: state.auth.email,
     username: state.auth.username,
-    password: state.auth.password
+    password: state.auth.password,
   };
 }
 
 const SIGN_UP_MUTATION = gql`
   mutation CreateUserMutation(
     $email: String!
-    $password: String!
     $username: String!
+    $pw: String!
+    $pwFunc: String!
+    $pwDigest: String!
+    $pwCost: Int!
+    $pwKeySize: Int!
+    $pwSalt: String!
   ) {
-    createUser(email: $email, username: $username, password: $password) {
-      token
+    createUser(
+      email: $email
+      username: $username
+      pw: $pw
+      pwFunc: $pwFunc
+      pwDigest: $pwDigest
+      pwCost: $pwCost
+      pwKeySize: $pwKeySize
+      pwSalt: $pwSalt
+    ) {
+      jwt
       user {
-        _id
+        uuid
         username
+        emails {
+          email
+          primary
+          verified
+          createdAt
+          updatedAt
+          verificationExpiry
+        }
+        pwFunc
+        pwDigest
+        pwCost
+        pwKeySize
+        pwSalt
         createdAt
         updatedAt
-        email
-        emailVerified
       }
     }
   }
 `;
 
-const SignUp = connect(mapStateToProps)(
-  graphql(SIGN_UP_MUTATION, { name: "signUpUserMutation" })(SignUpController)
-);
+const SignUp = connect(mapStateToProps)(graphql(SIGN_UP_MUTATION, { name: 'signUpUserMutation' })(SignUpController));
 
-export { SignUp };
 export default SignUp;
