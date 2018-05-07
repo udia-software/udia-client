@@ -1,6 +1,8 @@
+import About from './About';
+import Home from './Home';
+
 // Pages should handle authentication route checking and delegate to controllers
-export { About } from './About';
-export { Home } from './Home';
+export { About, Home };
 export { KitchenSinkPage } from './KitchenSink';
 export { ProfilePage } from './Profile';
 export { NoMatch } from './NoMatch';
