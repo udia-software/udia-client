@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import type Moment from 'moment';
 import { utc } from 'moment';
+import { version as clientVersion } from '../../../package.json';
 
 import { CenterContainer } from '../../Components/Styled';
 import { AuthSelectors } from '../../Modules/Auth';
@@ -62,6 +63,7 @@ class AboutPage extends Component<Props, State> {
         <dl>
           <dt>Application Version</dt>
           <dd>
+            <pre>Client: {clientVersion}</pre>
             <pre>Server: {version}</pre>
           </dd>
           <dt>

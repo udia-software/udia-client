@@ -12,11 +12,11 @@ import {
   REACT_APP_SUBSCRIPTIONS_ENDPOINT,
 } from '../Constants';
 
-export default function () {
+export default function (): ApolloClient {
   // Build the Apollo Http Link with the authentication token
   const middlewareAuthLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem(AUTH_TOKEN);
-    const authorizationHeader = token ? `${token}` : null;
+    const authorizationHeader = token ? `Bearer: ${token}` : null;
     operation.setContext({
       headers: {
         authorization: authorizationHeader,

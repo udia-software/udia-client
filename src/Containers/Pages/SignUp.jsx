@@ -1,4 +1,4 @@
-import { SignUp } from '../../Components/Auth';
+import { SignUpController } from '../../Components/Auth';
 import { WithAuthentication } from '../../Components/Wrapper';
 
-export default WithAuthentication(SignUp, false, '/', '/sign-up');
+export default WithAuthentication(SignUpController, false, '/', '/sign-up');
