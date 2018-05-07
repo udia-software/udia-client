@@ -36,8 +36,8 @@ class RefreshingApolloProvider extends Component<Props, State> {
   }
   shouldComponentUpdate(nextProps) {
     const update = this.props.jwt !== nextProps.jwt;
-    const { client } = this.state;
     if (update) {
+      const { client } = this.state;
       client.resetStore().then(() => {
         this.setState({ client: initializeApolloClient() });
       });

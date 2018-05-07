@@ -66,7 +66,7 @@ class SignUpController extends Component<Props, State> {
       usernameErrors: [],
       passwordErrors: [],
     });
-    Crypto.derivePassword(password)
+    Crypto.derivePassword({ password })
       .then((result) => {
         this.setState({ loadingText: 'Communicating with server...' });
         const {
@@ -87,13 +87,13 @@ class SignUpController extends Component<Props, State> {
       })
       .then(({ data }) => {
         this.setState({ loadingText: 'Setting up client...' });
-        const { token, user } = data.createUser;
-        dispatch(AuthActions.setAuthData({ jwt: token, user }));
+        const { jwt, user } = data.createUser;
+        dispatch(AuthActions.setAuthData({ jwt, user }));
       })
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
       }) => {
-        console.error(message, graphQLErrors, networkError, extraInfo);
+        console.warn(message, graphQLErrors, networkError, extraInfo);
         const errors = [];
         let emailErrors = [];
         let usernameErrors = [];
