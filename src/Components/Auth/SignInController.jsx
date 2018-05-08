@@ -125,6 +125,7 @@ class SignInController extends Component<Props, State> {
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
       }) => {
+        // eslint-disable-next-line no-console
         console.warn(message, graphQLErrors, networkError, extraInfo);
         const errors = [];
         let emailErrors = [];

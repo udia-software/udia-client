@@ -9,6 +9,7 @@ import SignIn from './SignIn';
 import SignUp from './SignUp';
 import SignOut from './SignOut';
 import NoMatch from './NoMatch';
+import VerifyEmail from './VerifyEmail';
 
-export { About, Home, KitchenSink, Profile, SignIn, SignUp, SignOut, NoMatch };
+export { About, Home, KitchenSink, Profile, SignIn, SignUp, SignOut, NoMatch, VerifyEmail };
 export { WebCryptoPage } from './WebCrypto';
