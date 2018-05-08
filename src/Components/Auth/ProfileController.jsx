@@ -18,7 +18,6 @@ const ProfileController = (props: Props) => {
     username, createdAt, updatedAt, emails,
   } = props;
   const MOMENT_FORMAT_STRING = 'dddd, MMMM Do YYYY, h:mm:ss a';
-  console.log(emails);
   return (
     <CenterContainer>
       <h1>My Profile</h1>

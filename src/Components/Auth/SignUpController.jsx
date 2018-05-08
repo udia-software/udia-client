@@ -93,7 +93,7 @@ class SignUpController extends Component<Props, State> {
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
       }) => {
-        console.warn(message, graphQLErrors, networkError, extraInfo);
+        console.warn(message, graphQLErrors, networkError, extraInfo); // eslint-disable-line no-console
         const errors = [];
         let emailErrors = [];
         let usernameErrors = [];

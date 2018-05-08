@@ -76,7 +76,7 @@ class HeaderController extends Component<Props, State> {
       !loading
     ) {
       if (error) {
-        console.error(error);
+        console.error(error); // eslint-disable-line no-console
       }
       if ((me || {}).uuid) {
         dispatch(AuthActions.setAuthUser(me));
