@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import PropTypes from "prop-types";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
 
 const StyleComponent = styled.button`
   background-color: transparent;
@@ -9,7 +9,6 @@ const StyleComponent = styled.button`
   text-decoration-color: ${props => props.primaryColor};
   border-radius: 0.4rem;
   border-width: 2px;
-  cursor: pointer;
   display: inline-block;
   min-height: 1em;
   padding: 0.3em 1.5em;
@@ -18,54 +17,64 @@ const StyleComponent = styled.button`
   font-size: ${props => props.fontSize}rem;
   transition-property: color, border-color, background-color;
   transition-duration: 0.2s;
-  &:hover {
-    color: ${props => props.fallbackColor};
-    text-decoration-color: ${props => props.fallbackColor};
-    border-color: ${props => props.fallbackColor};
-    background-color: ${props => props.primaryColor};
-  }
-  &:focus {
-    outline: 0;
-  }
+  ${props =>
+    !props.disabled &&
+    `
+    cursor: pointer;
+    &:hover {
+      color: ${props.fallbackColor};
+      text-decoration-color: ${props.fallbackColor};
+      border-color: ${props.fallbackColor};
+      background-color: ${props.primaryColor};
+    }
+    &:focus {
+      outline: 0;
+    }`};
+  ${props => props.disabled && 'opacity: 0.40;'};
 `;
 
-const Button = props => {
-  let primaryColor = "#ffffff";
-  let fallbackColor = "#000000";
+type Props = {
+  color: string,
+  size: string,
+};
+
+const Button = (props: Props) => {
+  let primaryColor = '#ffffff';
+  let fallbackColor = '#000000';
   let sizeMultiplier = 1;
 
   switch (props.color) {
-    case "blue":
-      primaryColor = "#54c8ff";
-      fallbackColor = "#000000";
+    case 'blue':
+      primaryColor = '#54c8ff';
+      fallbackColor = '#000000';
       break;
     default:
       break;
   }
 
   switch (props.size) {
-    case "mini":
+    case 'mini':
       sizeMultiplier = 0.78571429;
       break;
-    case "tiny":
+    case 'tiny':
       sizeMultiplier = 0.85714286;
       break;
-    case "small":
+    case 'small':
       sizeMultiplier = 0.92857143;
       break;
-    case "medium":
+    case 'medium':
       sizeMultiplier = 1;
       break;
-    case "large":
+    case 'large':
       sizeMultiplier = 1.14285714;
       break;
-    case "big":
+    case 'big':
       sizeMultiplier = 1.28571429;
       break;
-    case "huge":
+    case 'huge':
       sizeMultiplier = 1.42857143;
       break;
-    case "massive":
+    case 'massive':
       sizeMultiplier = 1.71428571;
       break;
     default:
@@ -79,11 +88,6 @@ const Button = props => {
       {...props}
     />
   );
-};
-
-Button.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.string
 };
 
 export { Button };

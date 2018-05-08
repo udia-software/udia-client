@@ -13,6 +13,7 @@ import {
   SignIn,
   SignUp,
   SignOut,
+  VerifyEmail,
   WebCryptoPage,
 } from './Pages';
 import { Header, Footer } from '../Components';
@@ -41,6 +42,8 @@ const App = () => {
         <Route exact path="/sign-up" component={SignUp} />
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/sign-out" component={SignOut} />
+        <Route exact path="/verify-email/:verificationToken" component={VerifyEmail} />
+        <Route exact path="/verify-email" component={VerifyEmail} />
         <Route component={NoMatch} />
       </Switch>
       <Footer />

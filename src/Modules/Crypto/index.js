@@ -37,7 +37,6 @@ export default class Crypto {
       pwDigest = DEFAULT_DIGEST,
       pwFunc = DEFAULT_PWFUNC,
     } = options;
-
     if (pwFunc !== DEFAULT_PWFUNC) {
       throw new Error(`Invalid password derivation function '${pwFunc}'`);
     }

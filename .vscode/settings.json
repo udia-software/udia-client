@@ -8,5 +8,6 @@
   "flow.runOnAllFiles": false,
   "editor.formatOnSave": true,
   "javascript.validate.enable": false,
-  "prettier.eslintIntegration": true
+  "prettier.eslintIntegration": true,
+  "editor.rulers": [100]
 }
