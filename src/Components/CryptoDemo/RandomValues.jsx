@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, CenterContainer, Input, Select } from "Components/Styled";
+import { Button, CenterContainer, Input, Select } from "../Styled";
 import styled from "styled-components";
 
 const RandomValuesTextArea = props => {

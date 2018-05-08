@@ -1,11 +1,12 @@
-import gql from "graphql-tag";
-import React, { Component } from "react";
-import { graphql } from "react-apollo";
-import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
-import styled from "styled-components";
+// @flow
+import gql from 'graphql-tag';
+import React, { Component } from 'react';
+import { graphql } from 'react-apollo';
+import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { authActions, authSelectors } from "Modules/Auth";
+import { AuthActions, AuthSelectors } from '../Modules/Auth';
 
 const StyledHeader = styled.header`
   grid-area: header;
@@ -43,7 +44,20 @@ const HeaderSubMenu = styled.div`
   align-content: center;
 `;
 
-class HeaderController extends Component {
+type Props = {
+  data: any,
+  dispatch: Function,
+  location: any,
+  maybeAuthenticated: boolean,
+  isAuthenticated: boolean,
+  username: string,
+};
+
+type State = {
+  userFetchLoading: boolean,
+};
+
+class HeaderController extends Component<Props, State> {
   constructor(props) {
     super(props);
     const { data } = props;
@@ -62,34 +76,29 @@ class HeaderController extends Component {
       !loading
     ) {
       if (error) {
-        console.error(error);
+        console.error(error); // eslint-disable-line no-console
       }
-      if (!!(me || {})._id) {
-        dispatch(authActions.setAuthUser(me));
+      if ((me || {}).uuid) {
+        dispatch(AuthActions.setAuthUser(me));
       } else {
-        dispatch(authActions.clearAuthData());
+        dispatch(AuthActions.clearAuthData());
       }
     }
   }
 
   handleClickSignOut = () => {
-    console.log("clicked sign out");
-    this.props.dispatch(authActions.confirmSignOut());
+    this.props.dispatch(AuthActions.confirmSignOut());
   };
 
   render() {
     const {
-      location,
-      maybeAuthenticated,
-      isAuthenticated,
-      username
+      location, maybeAuthenticated, isAuthenticated, username,
     } = this.props;
 
     const StyledSubTitleLink = StyledTitleLink.extend.attrs({
       style: ({ to }) => ({
-        color:
-          to === location.pathname ? "hsla(0, 0%, 100%, 1)" : "hsla(0, 0%, 100%, 0.5)"
-      })
+        color: to === location.pathname ? 'hsla(0, 0%, 100%, 1)' : 'hsla(0, 0%, 100%, 0.5)',
+      }),
     })`
     font-size: medium;
     padding: 0.4em;
@@ -117,7 +126,7 @@ class HeaderController extends Component {
           <HeaderSubMenu>
             <StyledSubTitleLink
               to="/sign-out"
-              //onClick={this.handleClickSignOut}
+              // onClick={this.handleClickSignOut}
             >
               Sign Out
             </StyledSubTitleLink>
@@ -168,32 +177,37 @@ class HeaderController extends Component {
 
 function mapStateToProps(state) {
   return {
-    maybeAuthenticated: authSelectors.maybeAuthenticated(state),
-    isAuthenticated: authSelectors.isAuthenticated(state),
-    username: authSelectors.getSelfUsername(state)
+    maybeAuthenticated: AuthSelectors.maybeAuthenticated(state),
+    isAuthenticated: AuthSelectors.isAuthenticated(state),
+    username: AuthSelectors.getSelfUsername(state),
   };
 }
 
 const CHECK_USER_MUTATION = gql`
   query GetSelfUser {
     me {
-      _id
+      uuid
       username
+      emails {
+        email
+        primary
+        verified
+        createdAt
+        updatedAt
+        verificationExpiry
+      }
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
       createdAt
       updatedAt
-      email
-      emailVerified
     }
   }
 `;
 
-const Header = withRouter(
-  connect(mapStateToProps)(
-    graphql(CHECK_USER_MUTATION, { fetchPolicy: "network-only" })(
-      HeaderController
-    )
-  )
-);
+const Header = withRouter(connect(mapStateToProps)(graphql(CHECK_USER_MUTATION, { fetchPolicy: 'network-only' })(HeaderController)));
 
 export { Header };
 export default Header;

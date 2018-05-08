@@ -1,9 +1,10 @@
 language: node_js
 node_js:
-  - node
+  - 9
   - lts/*
 cache:
+  yarn: true
   directories:
   - node_modules
 script:
-  - npm test
+  - yarn test
