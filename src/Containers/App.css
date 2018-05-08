@@ -1,14 +1,14 @@
 html {
   background-color: #000000;
-  color:  hsla(0,0%,100%,.8)
+  color: hsla(0, 0%, 100%, 0.8);
 }
 
 a {
-  color: hsla(0,0%,100%,.5);
+  color: hsla(0, 0%, 100%, 0.5);
   transition-property: color;
   transition-duration: 0.2s;
 }
 
 a:hover {
-  color: hsla(0,0%,100%,1);
+  color: hsla(0, 0%, 100%, 1);
 }

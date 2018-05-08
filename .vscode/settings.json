@@ -1,0 +1,12 @@
+{
+  "flow.pathToFlow": "${workspaceRoot}/node_modules/.bin/flow",
+  "flow.stopFlowOnExit": true,
+  "flow.enabled": true,
+  "flow.useNPMPackagedFlow": true,
+  "flow.showStatus": true,
+  "flow.runOnEdit": true,
+  "flow.runOnAllFiles": false,
+  "editor.formatOnSave": true,
+  "javascript.validate.enable": false,
+  "prettier.eslintIntegration": true
+}

@@ -1,2 +1,5 @@
-export { configureStore } from "./configureStore";
-export { initializeApolloClient } from "./initializeApolloClient";
+// @flow
+import configureStore from './configureStore';
+import initializeApolloClient from './initializeApolloClient';
+
+export { configureStore, initializeApolloClient };

@@ -1,4 +1,6 @@
-export { Profile } from "./Profile";
-export { SignIn } from "./SignInController";
-export { SignUp } from "./SignUpController";
-export { SignOut } from "./SignOut";
+import ProfileController from './ProfileController';
+import SignUpController from './SignUpController';
+import SignInController from './SignInController';
+import SignOutController from './SignOutController';
+
+export { ProfileController, SignInController, SignUpController, SignOutController };

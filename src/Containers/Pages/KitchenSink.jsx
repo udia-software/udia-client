@@ -1,18 +1,16 @@
-import React from "react";
-import { Button, CenterContainer } from "Components/Styled";
+// @flow
+import React from 'react';
+import { Button, CenterContainer } from '../../Components/Styled';
 
-export const KitchenSinkPage = () => {
-  document.title = "Kitchen Sink - UDIA";
+const KitchenSinkPage = () => {
+  document.title = 'Kitchen Sink - UDIA';
 
   return (
     <CenterContainer>
       <h1>Kitchen Sink</h1>
+      <p>A &quot;kitchen sink&quot; is a state that shows all the features and whistles.</p>
       <p>
-        A "kitchen sink" is a state that shows all the features and whistles.
-      </p>
-      <p>
-        A small paragraph to <em>emphasis</em> and show{" "}
-        <strong>important</strong> bits.
+        A small paragraph to <em>emphasis</em> and show <strong>important</strong> bits.
       </p>
       <hr />
       <ul>
@@ -48,19 +46,16 @@ export const KitchenSinkPage = () => {
       <hr />
       <h2>Many worded paragraph</h2>
       <p>
-        Pellentesque habitant morbi tristique senectus et netus et malesuada
-        fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae,
-        ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam
-        egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend
-        leo. Pellentesque habitant morbi tristique senectus et netus et
-        malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat
-        vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet
-        quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat
-        eleifend leo. Pellentesque habitant morbi tristique senectus et netus et
-        malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat
-        vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet
-        quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat
-        eleifend leo.
+        Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis
+        egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec
+        eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat
+        eleifend leo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+        turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet,
+        ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris
+        placerat eleifend leo. Pellentesque habitant morbi tristique senectus et netus et malesuada
+        fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit
+        amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est.
+        Mauris placerat eleifend leo.
       </p>
       <hr />
       <h2>Table</h2>
@@ -68,7 +63,7 @@ export const KitchenSinkPage = () => {
         className="t1"
         summary="Top 10 downloaded movies in 2011 using BitTorrent, in descending order, listing number of downloads and worldwide cinema grosses"
       >
-        <caption>I'm a table's caption</caption>
+        <caption>I&apos;m a table&apos;s caption</caption>
         <thead>
           <tr>
             <th>Rank</th>
@@ -79,7 +74,7 @@ export const KitchenSinkPage = () => {
         </thead>
         <tfoot>
           <tr>
-            <th colSpan="4">I'm a table's footer</th>
+            <th colSpan="4">I&apos;m a table&apos;s footer</th>
           </tr>
         </tfoot>
         <tbody>
@@ -181,11 +176,11 @@ export const KitchenSinkPage = () => {
       <blockquote>
         <em>This is a properly formatted blockquote, btw.</em>
         <p>
-          Measuring programming progress by lines of code is like measuring
-          aircraft building progress by weight.
+          Measuring programming progress by lines of code is like measuring aircraft building
+          progress by weight.
         </p>
         <footer>
-          —{" "}
+          —{' '}
           <cite>
             <a href="http://www.thegatesnotes.com">Bill Gates</a>
           </cite>
@@ -201,9 +196,9 @@ export const KitchenSinkPage = () => {
       <dl>
         <dt>Definition list</dt>
         <dd>
-          Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+          ex ea commodo consequat.
         </dd>
         <dt>UDIA</dt>
         <dd>Universal wildcard.</dd>
@@ -211,9 +206,9 @@ export const KitchenSinkPage = () => {
       <hr />
       <blockquote>
         <p>
-          Paragraph inside Blockquote: Nam libero leo, elementum in, dapibus a,
-          suscipit vitae, purus. Duis arcu. Integer dignissim fermentum enim.
-          Morbi convallis felis vel nibh. Sed scelerisque sagittis lorem.
+          Paragraph inside Blockquote: Nam libero leo, elementum in, dapibus a, suscipit vitae,
+          purus. Duis arcu. Integer dignissim fermentum enim. Morbi convallis felis vel nibh. Sed
+          scelerisque sagittis lorem.
         </p>
       </blockquote>
       <hr />
@@ -339,48 +334,62 @@ export const KitchenSinkPage = () => {
         <fieldset>
           <legend>Form legend</legend>
           <div>
-            <label htmlFor="f1">Text input:</label>
-            <input type="text" id="f1" defaultValue="input text" />
-          </div>
-          <div>
-            <label htmlFor="pw">Password input:</label>
-            <input type="password" id="pw" defaultValue="password" />
-          </div>
-          <div>
-            <label htmlFor="f2">Radio input:</label>
-            <input type="radio" id="f2" />
-          </div>
-          <div>
-            <label htmlFor="f3">Checkbox input:</label>
-            <input type="checkbox" id="f3" />
-          </div>
-          <div>
-            <label htmlFor="f4">Select field:</label>
-            <select id="f4">
-              <option>Option 01</option>
-              <option>Option 02</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="f5">Textarea:</label>
-            <textarea id="f5" cols="30" rows="5" defaultValue="Textarea text" />
-          </div>
-          <div>
-            <label htmlFor="f6">Input Button:</label>
-            <input type="button" id="f6" defaultValue="button text" />
-          </div>
-          <div>
-            <label>
-              Button Elements:{" "}
-              <span className="small quiet">
-                Can use &lt;button&gt; tag or &lt;a className="button"&gt;
-              </span>
+            <label htmlFor="f1">
+              Text input:
+              <input type="text" id="f1" defaultValue="input text" />
             </label>
+          </div>
+          <div>
+            <label htmlFor="pw">
+              Password input:
+              <input type="password" id="pw" defaultValue="password" />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="f2">
+              Radio input:
+              <input type="radio" id="f2" />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="f3">
+              Checkbox input:
+              <input type="checkbox" id="f3" />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="f4">
+              Select field:
+              <select id="f4">
+                <option>Option 01</option>
+                <option>Option 02</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label htmlFor="f5">
+              Textarea:
+              <textarea id="f5" cols="30" rows="5" defaultValue="Textarea text" />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="f6">
+              Input Button:
+              <input type="button" id="f6" defaultValue="button text" />
+            </label>
+          </div>
+          <div>
+            <div>
+              Button Elements:
+              <span className="small quiet">
+                Can use &lt;button&gt; tag or &lt;a className=&quot;button&quot;&gt;
+              </span>
+            </div>
             <button className="button positive">
               <img
                 src="https://raw.githubusercontent.com/ericrasch/html-kitchen-sink/master/web/assets/img/icons/tick.png"
                 alt=""
-              />{" "}
+              />{' '}
               Save
             </button>
             <a className="button" href="/">
@@ -389,12 +398,12 @@ export const KitchenSinkPage = () => {
                 alt=""
               />
               Change Password
-            </a>{" "}
+            </a>{' '}
             <a href="/" className="button negative">
               <img
                 src="https://raw.githubusercontent.com/ericrasch/html-kitchen-sink/master/web/assets/img/icons/cross.png"
                 alt=""
-              />{" "}
+              />{' '}
               Cancel
             </a>
           </div>

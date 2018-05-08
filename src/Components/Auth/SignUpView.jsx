@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+// @flow
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   GridLoadingOverlay,
@@ -11,11 +11,28 @@ import {
   FormField,
   FormFieldErrors,
   AuthFormFieldset,
-  Input
-} from "Components/Styled";
+  Input,
+} from '../Styled';
+
+type Props = {
+  loading: boolean,
+  loadingText?: string,
+  email: string,
+  username: string,
+  password: string,
+  errors: string[],
+  emailErrors: string[],
+  usernameErrors: string[],
+  passwordErrors: string[],
+  handleChangeEmail: Function,
+  handleChangeUsername: Function,
+  handleChangePassword: Function,
+  handleSubmit: Function,
+};
 
 const SignUpView = ({
   loading,
+  loadingText,
   email,
   username,
   password,
@@ -26,10 +43,10 @@ const SignUpView = ({
   handleChangeEmail,
   handleChangeUsername,
   handleChangePassword,
-  handleSubmit
-}) => (
+  handleSubmit,
+}: Props) => (
   <AuthContainer>
-    <GridLoadingOverlay gridAreaName="form" loading={loading} />
+    <GridLoadingOverlay gridAreaName="form" loading={loading} loadingText={loadingText} />
     <h1>Sign Up</h1>
     <Form onSubmit={handleSubmit}>
       <AuthFormFieldset>
@@ -37,36 +54,42 @@ const SignUpView = ({
         <FormFieldErrors errors={errors} />
         <FormContent>
           <FormField error={usernameErrors.length > 0}>
-            <label htmlFor="username">Username:</label>
-            <Input
-              type="text"
-              id="username"
-              placeholder="alex"
-              onChange={handleChangeUsername}
-              value={username}
-            />
+            <label htmlFor="username">
+              Username:
+              <Input
+                type="text"
+                id="username"
+                placeholder="alex"
+                onChange={handleChangeUsername}
+                value={username}
+              />
+            </label>
             <FormFieldErrors errors={usernameErrors} />
           </FormField>
           <FormField error={emailErrors.length > 0}>
-            <label htmlFor="email">Email:</label>
-            <Input
-              type="email"
-              id="email"
-              placeholder="your@email.tld"
-              onChange={handleChangeEmail}
-              value={email}
-            />
+            <label htmlFor="email">
+              Email:
+              <Input
+                type="email"
+                id="email"
+                placeholder="your@email.tld"
+                onChange={handleChangeEmail}
+                value={email}
+              />
+            </label>
             <FormFieldErrors errors={emailErrors} />
           </FormField>
           <FormField error={passwordErrors.length > 0}>
-            <label htmlFor="pw">Password:</label>
-            <Input
-              type="password"
-              id="pw"
-              placeholder="••••••••"
-              onChange={handleChangePassword}
-              value={password}
-            />
+            <label htmlFor="pw">
+              Password:
+              <Input
+                type="password"
+                id="pw"
+                placeholder="••••••••"
+                onChange={handleChangePassword}
+                value={password}
+              />
+            </label>
             <FormFieldErrors errors={passwordErrors} />
           </FormField>
           <Button color="blue">Sign Up</Button>
@@ -78,19 +101,8 @@ const SignUpView = ({
   </AuthContainer>
 );
 
-SignUpView.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  email: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired,
-  errors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  emailErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  usernameErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  passwordErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  handleChangeEmail: PropTypes.func.isRequired,
-  handleChangePassword: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
+SignUpView.defaultProps = {
+  loadingText: 'Loading',
 };
 
-export { SignUpView };
 export default SignUpView;

@@ -1,10 +1,14 @@
+// @flow
+
 // Pages should handle authentication route checking and delegate to controllers
-export { About } from "./About";
-export { Home } from "./Home";
-export { KitchenSinkPage } from "./KitchenSink";
-export { ProfilePage } from "./Profile";
-export { NoMatch } from "./NoMatch";
-export { SignInPage } from "./SignIn";
-export { SignUpPage } from "./SignUp";
-export { SignOutPage } from "./SignOut";
-export { WebCryptoPage } from "./WebCrypto";
+import About from './About';
+import Home from './Home';
+import KitchenSink from './KitchenSink';
+import Profile from './Profile';
+import SignIn from './SignIn';
+import SignUp from './SignUp';
+import SignOut from './SignOut';
+import NoMatch from './NoMatch';
+
+export { About, Home, KitchenSink, Profile, SignIn, SignUp, SignOut, NoMatch };
+export { WebCryptoPage } from './WebCrypto';
