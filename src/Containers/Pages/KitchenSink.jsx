@@ -411,9 +411,24 @@ const KitchenSinkPage = () => {
       </form>
       <hr />
       <h2>Buttons</h2>
-      <Button>Default</Button>
+      <div>
+        <Button>Default</Button>
+        <Button disabled>Disabled</Button>
+      </div>
       <p>Colors</p>
-      <Button color="blue">Blue</Button>
+      <div>
+        <Button color="red">Red</Button>
+        <Button color="orange">Orange</Button>
+        <Button color="yellow">Yellow</Button>
+        <Button color="olive">Olive</Button>
+        <Button color="green">Green</Button>
+        <Button color="teal">Teal</Button>
+        <Button color="blue">Blue</Button>
+        <Button color="violet">Violet</Button>
+        <Button color="purple">Purple</Button>
+        <Button color="pink">Pink</Button>
+        <Button color="brown">Brown</Button>
+      </div>
       <p>Sizes</p>
       <div>
         <Button size="mini">Mini</Button>
