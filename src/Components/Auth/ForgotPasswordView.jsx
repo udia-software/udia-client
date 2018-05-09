@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import {
   GridLoadingOverlay,
@@ -18,72 +17,55 @@ type Props = {
   loading: boolean,
   loadingText?: string,
   email: string,
-  password: string,
   errors: string[],
+  requestSent: boolean,
   emailErrors: string[],
-  passwordErrors: string[],
   handleChangeEmail: Function,
-  handleChangePassword: Function,
   handleSubmit: Function,
 };
 
-const SignInView = ({
+const ForgotPasswordView = ({
   loading,
   loadingText,
   email,
-  password,
   errors,
+  requestSent,
   emailErrors,
-  passwordErrors,
   handleChangeEmail,
-  handleChangePassword,
   handleSubmit,
 }: Props) => (
   <AuthContainer>
     <GridLoadingOverlay gridAreaName="form" loading={loading} loadingText={loadingText} />
-    <h1>Sign In</h1>
+    <h1>Forgot Password</h1>
     <Form onSubmit={handleSubmit}>
       <AuthFormFieldset>
-        <legend>Welcome back, User.</legend>
+        <legend>Resetting your password, User?</legend>
         <FormFieldErrors errors={errors} />
         <FormContent>
-          <FormField error={emailErrors.length > 0}>
+          <FormField error={emailErrors.length > 0} success={requestSent}>
             <label htmlFor="email">
               Email:
               <Input
                 type="email"
                 id="email"
-                placeholder="your@email.tld"
+                placeholder="email@udia.ca"
                 onChange={handleChangeEmail}
+                autoComplete="off"
                 value={email}
               />
             </label>
+            {requestSent && 'Password reset email sent!'}
             <FormFieldErrors errors={emailErrors} />
           </FormField>
-          <FormField error={passwordErrors.length > 0}>
-            <label htmlFor="pw">
-              Password:
-              <Input
-                type="password"
-                id="pw"
-                placeholder="••••••••"
-                onChange={handleChangePassword}
-                value={password}
-              />
-            </label>
-            <FormFieldErrors errors={passwordErrors} />
-          </FormField>
-          <Button color="green">Sign In</Button>
+          <Button color="yellow">Request Password Reset</Button>
         </FormContent>
       </AuthFormFieldset>
     </Form>
-    <Link to="/sign-up">I don&apos;t have an account →</Link>
-    <Link to="/forgot-password">I forgot my password.</Link>
   </AuthContainer>
 );
 
-SignInView.defaultProps = {
+ForgotPasswordView.defaultProps = {
   loadingText: 'Loading',
 };
 
-export default SignInView;
+export default ForgotPasswordView;

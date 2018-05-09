@@ -22,9 +22,9 @@ const StyleComponent = styled.button`
     `
     cursor: pointer;
     &:hover {
-      color: ${props.fallbackColor};
-      text-decoration-color: ${props.fallbackColor};
-      border-color: ${props.fallbackColor};
+      color: #000000;
+      text-decoration-color: #000000;
+      border-color: #000000;
       background-color: ${props.primaryColor};
     }
     &:focus {
@@ -40,13 +40,41 @@ type Props = {
 
 const Button = (props: Props) => {
   let primaryColor = '#ffffff';
-  let fallbackColor = '#000000';
   let sizeMultiplier = 1;
 
   switch (props.color) {
+    case 'red':
+      primaryColor = '#ff695e';
+      break;
+    case 'orange':
+      primaryColor = '#ff851b';
+      break;
+    case 'yellow':
+      primaryColor = '#ffe21f';
+      break;
+    case 'olive':
+      primaryColor = '#d9e778';
+      break;
+    case 'green':
+      primaryColor = '#2ecc40';
+      break;
+    case 'teal':
+      primaryColor = '#6dffff';
+      break;
     case 'blue':
       primaryColor = '#54c8ff';
-      fallbackColor = '#000000';
+      break;
+    case 'violet':
+      primaryColor = '#a291fb';
+      break;
+    case 'purple':
+      primaryColor = '#dc73ff';
+      break;
+    case 'pink':
+      primaryColor = '#ff8edf';
+      break;
+    case 'brown':
+      primaryColor = '#d67c1c';
       break;
     default:
       break;
@@ -80,14 +108,7 @@ const Button = (props: Props) => {
     default:
       break;
   }
-  return (
-    <StyleComponent
-      primaryColor={primaryColor}
-      fallbackColor={fallbackColor}
-      fontSize={sizeMultiplier}
-      {...props}
-    />
-  );
+  return <StyleComponent primaryColor={primaryColor} fontSize={sizeMultiplier} {...props} />;
 };
 
 export { Button };

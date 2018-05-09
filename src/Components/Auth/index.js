@@ -1,8 +1,10 @@
+// @flow
 import ProfileController from './ProfileController';
 import SignUpController from './SignUpController';
 import SignInController from './SignInController';
 import SignOutController from './SignOutController';
 import VerifyEmailController from './VerifyEmailController';
+import ForgotPasswordController from './ForgotPasswordController';
 
 export {
   ProfileController,
@@ -10,4 +12,5 @@ export {
   SignUpController,
   SignOutController,
   VerifyEmailController,
+  ForgotPasswordController,
 };

@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import './App.css'; // Application Loaded Site Wide Styles
 import {
   About,
+  ForgotPassword,
   Home,
   KitchenSink,
   Profile,
@@ -44,6 +45,7 @@ const App = () => {
         <Route exact path="/sign-out" component={SignOut} />
         <Route exact path="/verify-email/:verificationToken" component={VerifyEmail} />
         <Route exact path="/verify-email" component={VerifyEmail} />
+        <Route exact path="/forgot-password" component={ForgotPassword} />
         <Route component={NoMatch} />
       </Switch>
       <Footer />
