@@ -18,6 +18,7 @@ type Props = {
   loadingText?: string,
   token: string,
   errors: string[],
+  tokenVerified: boolean,
   tokenErrors: string[],
   handleChangeVerificationToken: Function,
   handleSubmit: Function,
@@ -28,6 +29,7 @@ const VerifyEmailView = ({
   loadingText,
   token,
   errors,
+  tokenVerified,
   tokenErrors,
   handleChangeVerificationToken,
   handleSubmit,
@@ -40,7 +42,7 @@ const VerifyEmailView = ({
         <legend>Confirm your email, User.</legend>
         <FormFieldErrors errors={errors} />
         <FormContent>
-          <FormField error={tokenErrors.length > 0}>
+          <FormField error={tokenErrors.length > 0} success={tokenVerified}>
             <label htmlFor="username">
               Token:
               <Input
@@ -52,6 +54,7 @@ const VerifyEmailView = ({
                 value={token}
               />
             </label>
+            {tokenVerified && 'Token successfully verified!'}
             <FormFieldErrors errors={tokenErrors} />
           </FormField>
           <Button color="blue">Verify Email Token</Button>

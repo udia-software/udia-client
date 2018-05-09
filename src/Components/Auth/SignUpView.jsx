@@ -107,12 +107,7 @@ const SignUpView = ({
             </label>
             <FormFieldErrors errors={passwordErrors} />
           </FormField>
-          <Button
-            color="blue"
-            disabled={!passwordValidated || !emailValidated || !usernameValidated}
-          >
-            Sign Up
-          </Button>
+          <Button color="blue">Sign Up</Button>
         </FormContent>
       </AuthFormFieldset>
     </Form>

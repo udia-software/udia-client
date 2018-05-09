@@ -105,7 +105,7 @@ class SignUpController extends Component<Props, State> {
 
   handleChangeEmail = (event) => {
     this.props.dispatch(AuthActions.setFormEmail(event.target.value));
-    this.setState({ emailErrors: [] });
+    this.setState({ emailErrors: [], emailValidated: false });
   };
 
   handleEmailBlur = () => {
@@ -143,7 +143,7 @@ class SignUpController extends Component<Props, State> {
 
   handleChangeUsername = (event) => {
     this.props.dispatch(AuthActions.setFormUsername(event.target.value));
-    this.setState({ usernameErrors: [] });
+    this.setState({ usernameErrors: [], usernameValidated: false });
   };
 
   handleUsernameBlur = () => {
@@ -181,7 +181,7 @@ class SignUpController extends Component<Props, State> {
 
   handleChangePassword = (event) => {
     this.props.dispatch(AuthActions.setFormPassword(event.target.value));
-    this.setState({ passwordErrors: [] });
+    this.setState({ passwordErrors: [], passwordValidated: false });
   };
 
   handlePasswordBlur = () => {
@@ -196,11 +196,17 @@ class SignUpController extends Component<Props, State> {
       this.setState({
         passwordValidated: true,
       });
+      return true;
     }
+    return false;
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
+    const validPassword = this.handlePasswordBlur();
+    if (!validPassword) {
+      return;
+    }
     const {
       client, dispatch, email, username, password,
     } = this.props;

@@ -20,6 +20,7 @@ type State = {
   loadingText?: string,
   errors: string[],
   tokenErrors: string[],
+  tokenVerified: boolean,
 };
 
 class VerifyEmailController extends Component<Props, State> {
@@ -30,6 +31,7 @@ class VerifyEmailController extends Component<Props, State> {
       loading: false,
       errors: [],
       tokenErrors: [],
+      tokenVerified: false,
     };
   }
 
@@ -37,7 +39,7 @@ class VerifyEmailController extends Component<Props, State> {
     const urlVerificationToken = this.props.match.params.verificationToken || '';
     if (urlVerificationToken) {
       this.props.dispatch(AuthActions.setFormEmailVerificationToken(urlVerificationToken));
-      this.handleSubmit({ preventDefault: () => {} });
+      this.handleSubmit({ preventDefault: () => {} }, urlVerificationToken);
     }
   }
 
@@ -46,19 +48,22 @@ class VerifyEmailController extends Component<Props, State> {
     this.setState({ tokenErrors: [] });
   };
 
-  handleSubmit = (event) => {
+  handleSubmit = (event, rawToken?: string) => {
     event.preventDefault();
-    const { verifyEmailTokenMutation, token } = this.props;
+    const { verifyEmailTokenMutation } = this.props;
+    let { token } = this.props;
+    if (rawToken) {
+      token = rawToken;
+    }
     this.setState({
       loading: true,
       loadingText: 'Communicating with server...',
       errors: [],
       tokenErrors: [],
     });
-    verifyEmailTokenMutation({ token })
-      .then(({ data }) => {
-        this.setState({ loading: false });
-        console.log('Email Token Verification', data);
+    verifyEmailTokenMutation({ variables: { token } })
+      .then(() => {
+        this.setState({ loading: false, tokenVerified: true });
       })
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
@@ -78,6 +83,7 @@ class VerifyEmailController extends Component<Props, State> {
           errors,
           tokenErrors,
           loading: false,
+          tokenVerified: false,
         });
       });
   };
@@ -85,7 +91,7 @@ class VerifyEmailController extends Component<Props, State> {
   render = () => {
     const { token } = this.props;
     const {
-      loading, loadingText, errors, tokenErrors,
+      loading, loadingText, errors, tokenErrors, tokenVerified,
     } = this.state;
     return (
       <VerifyEmailView
@@ -94,6 +100,7 @@ class VerifyEmailController extends Component<Props, State> {
         errors={errors}
         tokenErrors={tokenErrors}
         token={token}
+        tokenVerified={tokenVerified}
         handleChangeVerificationToken={this.handleChangeVerificationToken}
         handleSubmit={this.handleSubmit}
       />
