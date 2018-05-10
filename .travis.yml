@@ -8,3 +8,5 @@ cache:
   - node_modules
 script:
   - yarn test
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

@@ -1,13 +1,14 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
+// @flow
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
-import { AuthSelectors } from "../../Modules/Auth";
-import { CenterContainer, GridLoadingOverlay } from "../Styled";
+import { AuthSelectors } from '../../Modules/Auth';
+import { CenterContainer, GridLoadingOverlay } from '../Styled';
 
 const AuthenticationLoadingComponent = (
   <CenterContainer>
-    <GridLoadingOverlay loading={true} />
+    <GridLoadingOverlay loading />
   </CenterContainer>
 );
 
@@ -19,19 +20,22 @@ const AuthenticationLoadingComponent = (
  * @param {string} redirectReferrer Who is this being referred from?
  */
 export default function WithAuthentication(
-  WrappedComponent,
-  requireAuthentication,
-  redirectToPath,
-  redirectReferrer
+  WrappedComponent: any, // should be a react component like thing
+  requireAuthentication: boolean,
+  redirectToPath: string,
+  redirectReferrer: string,
 ) {
   const RedirectToComponent = (
-    <Redirect
-      to={{ pathname: redirectToPath, state: { from: redirectReferrer } }}
-    />
+    <Redirect to={{ pathname: redirectToPath, state: { from: redirectReferrer } }} />
   );
 
-  class AuthenticationWrapper extends Component {
-    shouldComponentUpdate = nextProps => {
+  type Props = {
+    isAuthenticated: boolean,
+    maybeAuthenticated: boolean,
+  };
+
+  class AuthenticationWrapper extends Component<Props> {
+    shouldComponentUpdate = (nextProps) => {
       // We should only update this component if the authentication state changes.
       const oldIsAuthenticated = this.props.isAuthenticated;
       const nextIsAuthenticated = nextProps.isAuthenticated;
@@ -51,12 +55,10 @@ export default function WithAuthentication(
         } else if (maybeAuthenticated && !isAuthenticated) {
           return AuthenticationLoadingComponent;
         }
-      } else {
-        if (isAuthenticated) {
-          return RedirectToComponent;
-        } else if (maybeAuthenticated) {
-          return AuthenticationLoadingComponent;
-        }
+      } else if (isAuthenticated) {
+        return RedirectToComponent;
+      } else if (maybeAuthenticated) {
+        return AuthenticationLoadingComponent;
       }
       return <WrappedComponent />;
     }
@@ -65,12 +67,10 @@ export default function WithAuthentication(
   function mapStateToProps(state) {
     return {
       maybeAuthenticated: AuthSelectors.maybeAuthenticated(state),
-      isAuthenticated: AuthSelectors.isAuthenticated(state)
+      isAuthenticated: AuthSelectors.isAuthenticated(state),
     };
   }
 
-  const ConnectedAuthenticationWrapper = connect(mapStateToProps)(
-    AuthenticationWrapper
-  );
+  const ConnectedAuthenticationWrapper = connect(mapStateToProps)(AuthenticationWrapper);
   return ConnectedAuthenticationWrapper;
 }

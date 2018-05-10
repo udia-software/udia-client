@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "Raleway";
+  src: url("/fonts/raleway/subset-Raleway-Regular.woff2") format("woff2"),
+    url("/fonts/raleway/subset-Raleway-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Raleway";
+  src: url("/fonts/raleway/subset-Raleway-Italic.woff2") format("woff2"),
+    url("/fonts/raleway/subset-Raleway-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+}
+
 html {
   background-color: #141414;
   color: #ffffff;
@@ -58,24 +74,24 @@ body {
 
 @keyframes pulse {
   0% {
-    fill: hsla(0,0%,100%,0);
+    fill: hsla(0, 0%, 100%, 0);
   }
   80% {
-    fill: hsla(0,0%,100%,1);
+    fill: hsla(0, 0%, 100%, 1);
   }
   100% {
-    fill: hsla(0,0%,100%,8);
+    fill: hsla(0, 0%, 100%, 8);
   }
 }
 
 @-webkit-keyframes pulse {
   0% {
-    fill: hsla(0,0%,100%,0);
+    fill: hsla(0, 0%, 100%, 0);
   }
   80% {
-    fill: hsla(0,0%,100%,1);
+    fill: hsla(0, 0%, 100%, 1);
   }
   100% {
-    fill: hsla(0,0%,100%,8);
+    fill: hsla(0, 0%, 100%, 8);
   }
 }

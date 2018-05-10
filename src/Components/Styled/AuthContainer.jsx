@@ -1,11 +1,14 @@
-import React from "react";
-import styled from "styled-components";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
+
+type Props = {};
 
 const StyleComponent = styled.div`
   display: grid;
   grid-template-areas:
-    "title"
-    "form";
+    'title'
+    'form';
   grid-auto-rows: auto;
   align-content: center;
   align-items: center;
@@ -17,8 +20,6 @@ const StyleComponent = styled.div`
   align-self: center;
   margin: 1em;
 `;
-const AuthContainer = props => {
-  return <StyleComponent {...props} />;
-};
+const AuthContainer = (props: Props) => <StyleComponent {...props} />;
 export { AuthContainer };
 export default AuthContainer;

@@ -1,40 +1,53 @@
 # Udia Client
 
-[![Build Status](https://travis-ci.org/udia-software/udia-client.svg?branch=master)](https://travis-ci.org/udia-software/udia-client)
-[![Dependency Status](https://img.shields.io/david/udia-software/udia-client.svg)](https://david-dm.org/udia-software/udia-client)
-[![Dev-Dependency Status](https://img.shields.io/david/dev/udia-software/udia-client.svg)](https://david-dm.org/udia-software/udia-client#info=devDependencies)
-
-[![UDIA](logo.png)](https://udia.ca)
+[![Travis](https://shields.alexander-wong.com/travis/udia-software/udia-client.svg?style=flat-square)](https://travis-ci.org/udia-software/udia-client)
+[![Codecov](https://shields.alexander-wong.com/codecov/c/github/udia-software/udia-client.svg?style=flat-square)](https://codecov.io/gh/udia-software/udia-client)
+[![David](https://shields.alexander-wong.com/david/udia-software/udia-client.svg?style=flat-square)](https://david-dm.org/udia-software/udia-client)
+[![David](https://shields.alexander-wong.com/david/dev/udia-software/udia-client.svg?style=flat-square)](https://david-dm.org/udia-software/udia-client?type=dev)
 
 **Universal Dream | Infinite Awareness**
 
-* The public client can be found at [https://udia.ca](https://udia.ca)
+[![UDIA](logo.svg)](https://udia.ca)
 
-## Quickstart (Development)
+## Quickstart
 
-To start the client locally:
+Setup server locally. Refer to [udia-software/udia](https://github.com/udia-software/udia).
+Afterwards, to start the client locally:
 
-  * Install dependencies with `yarn install`
-  * Run the client with `yarn start`
+* Clone Repo: `git clone git@github.com:udia-software/udia-client.git && cd udia-client`
+* Install dependencies with `yarn`
+* Run the client with `yarn start`
 
-Now you can visit [`localhost:3001`](http://localhost:3001) from your browser.
+Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 
 ## Testing
 
 To test your react app:
 
-  * Run the test with `yarn test`
-  
-[![Browserstack](https://bstacksupport.zendesk.com/attachments/token/38rkoBZFSHEAe9MeHzCOTi1cS/?name=Logo-01.svg)](https://www.browserstack.com/)
+* Run the test with `yarn test`
 
-* This project is trailing the Browserstack cross browser testing functionality.
+## Acknowledgements
+
+This project is trialing the Browserstack cross browser testing functionality.
+[![Browserstack](https://bstacksupport.zendesk.com/attachments/token/38rkoBZFSHEAe9MeHzCOTi1cS/?name=Logo-01.svg)](https://www.browserstack.com/)
 
 ## License
 
-Udia Software Incorporated (UDIA)
+This is [free software](https://www.gnu.org/philosophy/free-sw.en.html), licensed under **GNU Affero General Public License v3 (AGPL-3.0)**.
 
-Copyright (c) 2016-2018 Udia Software Incorporated. All Rights Reserved.
+```text
+Copyright (C) 2018 Alexander Wong <alex@udia.ca>, Udia Software Incorporated
 
-Common Public Attribution License Version 1.0 (CPAL)
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Full license text can be found at [LICENSE](LICENSE)
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```

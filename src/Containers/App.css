@@ -1,10 +1,10 @@
 html {
   background-color: #000000;
-  color: hsla(0, 0%, 100%, 0.8);
+  color: hsla(0, 0%, 100%, 0.9);
 }
 
 a {
-  color: hsla(0, 0%, 100%, 0.5);
+  color: hsla(0, 0%, 100%, 0.65);
   transition-property: color;
   transition-duration: 0.2s;
 }
