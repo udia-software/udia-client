@@ -9,7 +9,7 @@
     "src/**/*.jsx"
   ],
   "projectDir": ".",
-  "threshold": 70,
+  "threshold": 1,
   "type": [
     "text",
     "html",
