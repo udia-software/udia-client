@@ -10,6 +10,7 @@ export interface IAuthState {
   jwt: string | null;
   confirmSignOut: boolean;
   authUser: any | null;
+  emailVerificationToken: string;
 }
 
 const AuthState: IAuthState = {
@@ -19,6 +20,7 @@ const AuthState: IAuthState = {
   jwt: localStorage.getItem(AUTH_TOKEN) || null,
   confirmSignOut: false,
   authUser: null,
+  emailVerificationToken: '',
 };
 
 export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
@@ -53,6 +55,11 @@ export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
         understoodLesson: false,
         authUser: action.payload.user,
         jwt: action.payload.jwt,
+      };
+    case AuthActions.SET_FORM_EMAIL_VERIFICATION_TOKEN:
+      return {
+        ...state,
+        emailVerificationToken: action.payload,
       };
     case AuthActions.CONFIRM_SIGN_OUT:
       return {

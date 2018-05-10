@@ -20,7 +20,7 @@ type Props = {
 
 type State = {
   intervalId: any,
-  clientNow: Moment,
+  timerHeartbeat: Moment,
 };
 
 class AboutPage extends Component<Props, State> {
@@ -28,8 +28,8 @@ class AboutPage extends Component<Props, State> {
     super(props);
     document.title = 'About - UDIA';
     this.state = {
-      intervalId: setInterval(this.timer, 100),
-      clientNow: utc(),
+      intervalId: setInterval(this.timer, 1000),
+      timerHeartbeat: utc().local(),
     };
   }
 
@@ -37,24 +37,50 @@ class AboutPage extends Component<Props, State> {
     this.props.subscribeToNewHealthMetrics();
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    // If the healthMetricQuery value is falsy, we should update.
+    if (!this.props.healthMetricQuery.health) {
+      return true;
+    }
+    const oldServerMS = (this.props.healthMetricQuery.health || {}).now;
+    const newServerMS = (nextProps.healthMetricQuery.health || {}).now;
+    // If the server time changed, we should update
+    if (newServerMS - oldServerMS > 0) {
+      return true;
+    }
+    const oldServerTime = utc(oldServerMS).local();
+    // If the heartbeat time is over four seconds greater than the server time, we should update
+    const newHeartbeatTime = nextState.timerHeartbeat;
+    if (newHeartbeatTime.diff(oldServerTime, 'seconds') > 4) {
+      return true;
+    }
+    return false;
+  }
+
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
   }
 
   timer = () => {
-    this.setState({ clientNow: utc() });
+    this.setState({ timerHeartbeat: utc().local() });
   };
 
   render() {
     const { healthMetricQuery, username } = this.props;
+    const { timerHeartbeat } = this.state;
+    const { loading } = healthMetricQuery;
     const { now, version } = healthMetricQuery.health || {};
-    const serverNow = utc(now);
-    const delayClientNow = this.state.clientNow;
-    let clientNow = utc();
-    if (clientNow < delayClientNow) {
-      clientNow = delayClientNow;
-    }
+    let serverNow = utc(now || 0).local();
+    let clientNow = utc().local();
     const skew = clientNow.diff(serverNow, 'milliseconds');
+    let serverDown = false;
+    if (!loading && timerHeartbeat.diff(serverNow, 'seconds') > 4) {
+      clientNow = timerHeartbeat;
+      serverDown = true;
+    }
+    if (loading) {
+      serverNow = clientNow;
+    }
     return (
       <CenterContainer>
         <h1>UDIA</h1>
@@ -84,10 +110,10 @@ class AboutPage extends Component<Props, State> {
               </a>
             </pre>
           </dd>
-          <dt>
-            Server Time {(Math.abs(skew) > 60000 || !now) && <span>(ERR! Is server down?!)</span>}
+          <dt style={{ color: serverDown ? 'red' : undefined }}>
+            Server Time{serverDown && ' (ERR Server Down)'}
           </dt>
-          <dd>
+          <dd style={{ color: serverDown ? 'red' : undefined }}>
             <pre>{serverNow.format(MOMENT_FORMAT_STRING)}</pre>
           </dd>
           <dt>Client Time (skew {skew}ms)</dt>
@@ -132,7 +158,7 @@ const HEALTH_METRIC_SUBSCRIPTION = gql`
   }
 `;
 
-const withData = graphql(HEALTH_METRIC_QUERY, {
+const withSubscriptionData = graphql(HEALTH_METRIC_QUERY, {
   name: 'healthMetricQuery',
   props: props => ({
     ...props,
@@ -144,4 +170,4 @@ const withData = graphql(HEALTH_METRIC_QUERY, {
   }),
 });
 
-export default connect(mapStateToProps)(withData(AboutPage));
+export default connect(mapStateToProps)(withSubscriptionData(AboutPage));

@@ -37,23 +37,20 @@ class RefreshingApolloProvider extends Component<Props, State> {
   shouldComponentUpdate(nextProps) {
     const update = this.props.jwt !== nextProps.jwt;
     if (update) {
-      const { client } = this.state;
-      client.resetStore().then(() => {
-        this.setState({ client: initializeApolloClient() });
-      });
+      const newClient = initializeApolloClient();
+      newClient.resetStore();
+      this.setState({ client: newClient });
     }
     return update;
   }
   render() {
     // eslint-disable-next-line no-console
-    console.log(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
+    console.debug(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
     return <ApolloProvider {...this.props} client={this.state.client} />;
   }
 }
 
-const HydratedApolloProvider = connect(state => ({
-  jwt: state.auth.jwt,
-}))(RefreshingApolloProvider);
+const HydratedApolloProvider = connect(({ auth }) => ({ jwt: auth.jwt }))(RefreshingApolloProvider);
 
 const supportsHistory = 'pushState' in window.history;
 

@@ -1,5 +1,8 @@
-import React from "react";
-import styled from "styled-components";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
+
+type Props = {};
 
 const StyleComponent = styled.div`
   display: grid;
@@ -17,8 +20,6 @@ const StyleComponent = styled.div`
   margin: 1em;
 `;
 
-const CenterContainer = props => {
-  return <StyleComponent {...props} />;
-};
+const CenterContainer = (props: Props) => <StyleComponent {...props} />;
 export { CenterContainer };
 export default CenterContainer;

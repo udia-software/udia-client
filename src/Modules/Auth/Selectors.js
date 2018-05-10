@@ -15,6 +15,8 @@ const getSelfUpdatedAt = (state: IRootState) => (state.auth.authUser || {}).upda
 
 const getSelfEmails = (state: IRootState) => (state.auth.authUser || {}).emails || [];
 
+const getEmailVerificationToken = (state: IRootState) => state.auth.emailVerificationToken;
+
 export default {
   maybeAuthenticated,
   isAuthenticated,
@@ -22,4 +24,5 @@ export default {
   getSelfCreatedAt,
   getSelfUpdatedAt,
   getSelfEmails,
+  getEmailVerificationToken,
 };

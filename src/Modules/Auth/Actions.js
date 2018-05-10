@@ -4,6 +4,8 @@ const SET_FORM_PASSWORD: 'auth/SET_FORM_PASSWORD' = 'auth/SET_FORM_PASSWORD';
 const SET_FORM_EMAIL: 'auth/SET_FORM_EMAIL' = 'auth/SET_FORM_EMAIL';
 const SET_AUTH_USER: 'auth/SET_AUTH_USER' = 'auth/SET_AUTH_USER';
 const SET_AUTH_DATA: 'auth/SET_AUTH_DATA' = 'auth/SET_AUTH_DATA';
+const SET_FORM_EMAIL_VERIFICATION_TOKEN: 'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN' =
+  'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN';
 const CONFIRM_SIGN_OUT: 'auth/CONFIRM_SIGN_OUT' = 'auth/CONFIRM_SIGN_OUT';
 const CLEAR_AUTH_DATA: 'auth/CLEAR_AUTH_DATA' = 'auth/CLEAR_AUTH_DATA';
 
@@ -32,6 +34,11 @@ interface ISetAuthDataAuthAction {
   payload: any;
 }
 
+interface ISetFormEmailVerificationTokenAction {
+  type: typeof SET_FORM_EMAIL_VERIFICATION_TOKEN;
+  payload: string;
+}
+
 interface IConfirmSignOutAuthAction {
   type: typeof CONFIRM_SIGN_OUT;
   payload?: any;
@@ -48,6 +55,7 @@ export type IAuthAction =
   | ISetFormPasswordAuthAction
   | ISetAuthUserAuthAction
   | ISetAuthDataAuthAction
+  | ISetFormEmailVerificationTokenAction
   | IConfirmSignOutAuthAction
   | IClearAuthDataAuthActions;
 
@@ -76,6 +84,11 @@ const setAuthData = ({ user, jwt }: any): ISetAuthDataAuthAction => ({
   payload: { user, jwt },
 });
 
+const setFormEmailVerificationToken = (token: string): ISetFormEmailVerificationTokenAction => ({
+  type: SET_FORM_EMAIL_VERIFICATION_TOKEN,
+  payload: token,
+});
+
 const confirmSignOut = (): IConfirmSignOutAuthAction => ({
   type: CONFIRM_SIGN_OUT,
 });
@@ -91,6 +104,7 @@ export default {
   SET_FORM_EMAIL,
   SET_AUTH_USER,
   SET_AUTH_DATA,
+  SET_FORM_EMAIL_VERIFICATION_TOKEN,
   CONFIRM_SIGN_OUT,
   CLEAR_AUTH_DATA,
 
@@ -100,6 +114,7 @@ export default {
   setFormPassword,
   setAuthUser,
   setAuthData,
+  setFormEmailVerificationToken,
   confirmSignOut,
   clearAuthData,
 };

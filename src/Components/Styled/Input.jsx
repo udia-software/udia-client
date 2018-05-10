@@ -1,5 +1,8 @@
-import React from "react";
-import styled from "styled-components";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
+
+type Props = {};
 
 const StyleComponent = styled.input`
   flex: 1 0 auto;
@@ -11,9 +14,7 @@ const StyleComponent = styled.input`
   border-radius: 3px;
 `;
 
-const Input = props => {
-  return <StyleComponent {...props} />;
-};
+const Input = (props: Props) => <StyleComponent {...props} />;
 
 export { Input };
 export default Input;

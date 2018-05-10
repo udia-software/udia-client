@@ -17,6 +17,9 @@ import {
 type Props = {
   loading: boolean,
   loadingText?: string,
+  emailValidated: boolean,
+  usernameValidated: boolean,
+  passwordValidated: boolean,
   email: string,
   username: string,
   password: string,
@@ -25,14 +28,20 @@ type Props = {
   usernameErrors: string[],
   passwordErrors: string[],
   handleChangeEmail: Function,
+  handleEmailBlur: Function,
   handleChangeUsername: Function,
+  handleUsernameBlur: Function,
   handleChangePassword: Function,
+  handlePasswordBlur: Function,
   handleSubmit: Function,
 };
 
 const SignUpView = ({
   loading,
   loadingText,
+  emailValidated,
+  usernameValidated,
+  passwordValidated,
   email,
   username,
   password,
@@ -41,8 +50,11 @@ const SignUpView = ({
   usernameErrors,
   passwordErrors,
   handleChangeEmail,
+  handleEmailBlur,
   handleChangeUsername,
+  handleUsernameBlur,
   handleChangePassword,
+  handlePasswordBlur,
   handleSubmit,
 }: Props) => (
   <AuthContainer>
@@ -53,7 +65,7 @@ const SignUpView = ({
         <legend>Hello there, User.</legend>
         <FormFieldErrors errors={errors} />
         <FormContent>
-          <FormField error={usernameErrors.length > 0}>
+          <FormField error={usernameErrors.length > 0} success={usernameValidated}>
             <label htmlFor="username">
               Username:
               <Input
@@ -61,12 +73,13 @@ const SignUpView = ({
                 id="username"
                 placeholder="alex"
                 onChange={handleChangeUsername}
+                onBlur={handleUsernameBlur}
                 value={username}
               />
             </label>
             <FormFieldErrors errors={usernameErrors} />
           </FormField>
-          <FormField error={emailErrors.length > 0}>
+          <FormField error={emailErrors.length > 0} success={emailValidated}>
             <label htmlFor="email">
               Email:
               <Input
@@ -74,12 +87,13 @@ const SignUpView = ({
                 id="email"
                 placeholder="your@email.tld"
                 onChange={handleChangeEmail}
+                onBlur={handleEmailBlur}
                 value={email}
               />
             </label>
             <FormFieldErrors errors={emailErrors} />
           </FormField>
-          <FormField error={passwordErrors.length > 0}>
+          <FormField error={passwordErrors.length > 0} success={passwordValidated}>
             <label htmlFor="pw">
               Password:
               <Input
@@ -87,12 +101,13 @@ const SignUpView = ({
                 id="pw"
                 placeholder="••••••••"
                 onChange={handleChangePassword}
+                onBlur={handlePasswordBlur}
                 value={password}
               />
             </label>
             <FormFieldErrors errors={passwordErrors} />
           </FormField>
-          <Button color="blue">Sign Up</Button>
+          <Button color="green">Sign Up</Button>
         </FormContent>
       </AuthFormFieldset>
     </Form>

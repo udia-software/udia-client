@@ -9,7 +9,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
   <link rel="stylesheet" href="%PUBLIC_URL%/base.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400">
   <link rel="manifest" href="%PUBLIC_URL%/manifest.webmanifest">
   <meta name="apple-mobile-web-app-title" content="UDIA">
   <meta name="application-name" content="UDIA">
@@ -19,10 +18,27 @@
 </head>
 
 <body>
-  <noscript>
-    <p id="no-script-content">
-      UDIA is a web application that requires JavaScript to run.
+  <noscript id="no-script-content">
+    <p>
+      UDIA is a React application that requires JavaScript to run, namely for:
     </p>
+    <dl>
+      <dt>Client Side Cryptography</dt>
+      <dd>Uses Node-Forge for pbkdf2 and encryption/signing.</dd>
+      <dt>Asynchronous communcation with Udia Server</dt>
+      <dd>Uses Apollo-Client for GraphQL API consumption</dd>
+    </dl>
+    <p>All source code can be freely inspected and scrutinized at:</p>
+    <dl>
+      <dt>Udia (Server)</dt>
+      <dd>
+        <a href="https://github.com/udia-software/udia">github.com/udia-software/udia</a>
+      </dd>
+      <dt>Udia-Client</dt>
+      <dd>
+        <a href="https://github.com/udia-software/udia-client">github.com/udia-software/udia-client</a>
+      </dd>
+    </dl>
   </noscript>
   <div id="root">
     <svg id="loading-logo">
