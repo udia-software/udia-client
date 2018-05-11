@@ -100,7 +100,7 @@ class AboutPage extends Component<Props, State> {
               </a>
             </pre>
             <pre>
-              Server: {version}{' '}
+              Server: {version || 'Connecting...'}{' '}
               <a
                 target="_blank"
                 rel="noopener noreferrer"

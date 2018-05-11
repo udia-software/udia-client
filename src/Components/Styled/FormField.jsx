@@ -5,6 +5,7 @@ import styled from 'styled-components';
 type Props = {
   error?: boolean,
   success?: boolean,
+  warn?: boolean,
 };
 
 const StyleComponent = styled.div`
@@ -33,6 +34,9 @@ const FormField = (props: Props) => {
   if (props.error) {
     color = '#9f3a38';
     backgroundColor = '#fff6f6';
+  } else if (props.warn) {
+    color = '#ffe21f';
+    backgroundColor = '#fff6f6';
   } else if (props.success) {
     color = '#2c662d';
     backgroundColor = '#fcfff5';
@@ -43,6 +47,7 @@ const FormField = (props: Props) => {
 FormField.defaultProps = {
   error: false,
   success: false,
+  warn: false,
 };
 
 export default FormField;

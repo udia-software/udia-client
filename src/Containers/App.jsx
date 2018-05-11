@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import './App.css'; // Application Loaded Site Wide Styles
 import {
   About,
+  Contact,
   ForgotPassword,
   Home,
   KitchenSink,
@@ -37,6 +38,7 @@ const App = () => {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/about" component={About} />
+        <Route exact path="/contact" component={Contact} />
         <Route exact path="/kitchen-sink" component={KitchenSink} />
         <Route exact path="/web-crypto" component={WebCryptoPage} />
         <Route exact path="/sign-in" component={SignIn} />
