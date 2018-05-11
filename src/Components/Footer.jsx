@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../Static';
 
-export const Footer = () => {
+const Footer = () => {
   const StyledFooter = styled.div`
     grid-area: footer;
     display: grid;

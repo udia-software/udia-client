@@ -1,3 +1,4 @@
+// @flow
 import { SignUpController } from '../../Components/Auth';
 import { WithAuthentication } from '../../Components/Wrapper';
 
