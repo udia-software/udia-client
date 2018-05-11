@@ -10,11 +10,12 @@ const StyleComponent = styled.ul`
   list-style: none;
   > li {
     ::before {
-      content: '↑';
+      content: '\u26A0';
       color: #9f3a38;
       display: inline-block;
       width: 1em;
       margin-left: -1em;
+      padding-right: 0.2em;
     }
   }
 `;

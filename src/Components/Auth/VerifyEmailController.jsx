@@ -39,17 +39,19 @@ class VerifyEmailController extends Component<Props, State> {
     const urlVerificationToken = this.props.match.params.verificationToken || '';
     if (urlVerificationToken) {
       this.props.dispatch(AuthActions.setFormEmailVerificationToken(urlVerificationToken));
-      this.handleSubmit({ preventDefault: () => {} }, urlVerificationToken);
+      this.handleSubmit(undefined, urlVerificationToken);
     }
   }
 
-  handleChangeVerificationToken = (event) => {
+  handleChangeVerificationToken = (event: SyntheticInputEvent<HTMLInputElement>) => {
     this.props.dispatch(AuthActions.setFormEmailVerificationToken(event.target.value));
     this.setState({ tokenErrors: [] });
   };
 
-  handleSubmit = (event, rawToken?: string) => {
-    event.preventDefault();
+  handleSubmit = async (event?: SyntheticEvent<any>, rawToken?: string) => {
+    if (event) {
+      event.preventDefault();
+    }
     const { verifyEmailTokenMutation } = this.props;
     let { token } = this.props;
     if (rawToken) {
@@ -61,31 +63,31 @@ class VerifyEmailController extends Component<Props, State> {
       errors: [],
       tokenErrors: [],
     });
-    verifyEmailTokenMutation({ variables: { token } })
-      .then(() => {
-        this.setState({ loading: false, tokenVerified: true });
-      })
-      .catch(({
+    try {
+      await verifyEmailTokenMutation({ variables: { token } });
+      this.setState({ loading: false, tokenVerified: true });
+    } catch (error) {
+      const {
         graphQLErrors, networkError, message, extraInfo,
-      }) => {
-        // eslint-disable-next-line no-console
-        console.warn(message, graphQLErrors, networkError, extraInfo);
-        const errors = [];
-        let tokenErrors = [];
-        graphQLErrors.forEach((graphQLError) => {
-          const errorState = graphQLError.state || {};
-          tokenErrors = tokenErrors.concat(errorState.emailToken || []);
-        });
-        if (networkError) {
-          errors.push(message);
-        }
-        this.setState({
-          errors,
-          tokenErrors,
-          loading: false,
-          tokenVerified: false,
-        });
+      } = error;
+      // eslint-disable-next-line no-console
+      console.warn(message, graphQLErrors, networkError, extraInfo);
+      const errors = [];
+      let tokenErrors = [];
+      graphQLErrors.forEach((graphQLError) => {
+        const errorState = graphQLError.state || {};
+        tokenErrors = tokenErrors.concat(errorState.emailToken || []);
       });
+      if (networkError) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        tokenErrors,
+        loading: false,
+        tokenVerified: false,
+      });
+    }
   };
 
   render = () => {

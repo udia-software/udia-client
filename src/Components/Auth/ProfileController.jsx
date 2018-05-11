@@ -14,6 +14,7 @@ type Props = {
 };
 
 const ProfileController = (props: Props) => {
+  document.title = 'My Profile - UDIA';
   const {
     username, createdAt, updatedAt, emails,
   } = props;

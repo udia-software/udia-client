@@ -16,7 +16,7 @@ const RawWebCryptoPageDiv = styled(CenterContainer)`
 
 const WebCryptoPageContainer = props => <RawWebCryptoPageDiv {...props} />;
 
-export const WebCryptoPage = () => {
+const WebCryptoPage = () => {
   document.title = 'Web Crypto - UDIA';
 
   const Title = styled.h1`

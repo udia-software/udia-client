@@ -6,6 +6,8 @@ const SET_AUTH_USER: 'auth/SET_AUTH_USER' = 'auth/SET_AUTH_USER';
 const SET_AUTH_DATA: 'auth/SET_AUTH_DATA' = 'auth/SET_AUTH_DATA';
 const SET_FORM_EMAIL_VERIFICATION_TOKEN: 'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN' =
   'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN';
+const SET_FORM_PASSWORD_RESET_TOKEN: 'auth/SET_FORM_PASSWORD_RESET_TOKEN' =
+  'auth/SET_FORM_PASSWORD_RESET_TOKEN';
 const CONFIRM_SIGN_OUT: 'auth/CONFIRM_SIGN_OUT' = 'auth/CONFIRM_SIGN_OUT';
 const CLEAR_AUTH_DATA: 'auth/CLEAR_AUTH_DATA' = 'auth/CLEAR_AUTH_DATA';
 
@@ -39,6 +41,11 @@ interface ISetFormEmailVerificationTokenAction {
   payload: string;
 }
 
+interface ISetFormPasswordResetTokenAction {
+  type: typeof SET_FORM_PASSWORD_RESET_TOKEN;
+  payload: string;
+}
+
 interface IConfirmSignOutAuthAction {
   type: typeof CONFIRM_SIGN_OUT;
   payload?: any;
@@ -56,6 +63,7 @@ export type IAuthAction =
   | ISetAuthUserAuthAction
   | ISetAuthDataAuthAction
   | ISetFormEmailVerificationTokenAction
+  | ISetFormPasswordResetTokenAction
   | IConfirmSignOutAuthAction
   | IClearAuthDataAuthActions;
 
@@ -89,6 +97,11 @@ const setFormEmailVerificationToken = (token: string): ISetFormEmailVerification
   payload: token,
 });
 
+const setFormPasswordResetToken = (token: string): ISetFormPasswordResetTokenAction => ({
+  type: SET_FORM_PASSWORD_RESET_TOKEN,
+  payload: token,
+});
+
 const confirmSignOut = (): IConfirmSignOutAuthAction => ({
   type: CONFIRM_SIGN_OUT,
 });
@@ -105,6 +118,7 @@ export default {
   SET_AUTH_USER,
   SET_AUTH_DATA,
   SET_FORM_EMAIL_VERIFICATION_TOKEN,
+  SET_FORM_PASSWORD_RESET_TOKEN,
   CONFIRM_SIGN_OUT,
   CLEAR_AUTH_DATA,
 
@@ -115,6 +129,7 @@ export default {
   setAuthUser,
   setAuthData,
   setFormEmailVerificationToken,
+  setFormPasswordResetToken,
   confirmSignOut,
   clearAuthData,
 };

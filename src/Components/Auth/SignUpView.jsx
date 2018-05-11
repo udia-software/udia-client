@@ -75,7 +75,8 @@ const SignUpView = ({
             warn={usernameValidating}
           >
             <label htmlFor="username">
-              Username:{usernameValidating && ' ...'}
+              Username:{usernameValidating && ' \u2026'}
+              {usernameValidated && ' \u2713'}
               <Input
                 type="text"
                 id="username"
@@ -89,7 +90,8 @@ const SignUpView = ({
           </FormField>
           <FormField error={emailErrors.length > 0} success={emailValidated} warn={emailValidating}>
             <label htmlFor="email">
-              Email:{emailValidating && ' ...'}
+              Email:{emailValidating && ' \u2026'}
+              {emailValidated && ' \u2713'}
               <Input
                 type="email"
                 id="email"

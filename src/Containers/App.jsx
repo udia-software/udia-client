@@ -10,11 +10,12 @@ import {
   ForgotPassword,
   Home,
   KitchenSink,
-  Profile,
   NoMatch,
+  Profile,
+  ResetPassword,
   SignIn,
-  SignUp,
   SignOut,
+  SignUp,
   VerifyEmail,
   WebCryptoPage,
 } from './Pages';
@@ -48,6 +49,8 @@ const App = () => {
         <Route exact path="/verify-email/:verificationToken" component={VerifyEmail} />
         <Route exact path="/verify-email" component={VerifyEmail} />
         <Route exact path="/forgot-password" component={ForgotPassword} />
+        <Route exact path="/reset-password/:verificationToken" component={ResetPassword} />
+        <Route exact path="/reset-password" component={ResetPassword} />
         <Route component={NoMatch} />
       </Switch>
       <Footer />
