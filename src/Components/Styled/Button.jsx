@@ -34,8 +34,8 @@ const StyleComponent = styled.button`
 `;
 
 type Props = {
-  color: string,
-  size: string,
+  color?: string,
+  size?: string,
 };
 
 const Button = (props: Props) => {
@@ -111,5 +111,9 @@ const Button = (props: Props) => {
   return <StyleComponent primaryColor={primaryColor} fontSize={sizeMultiplier} {...props} />;
 };
 
-export { Button };
+Button.defaultProps = {
+  color: undefined,
+  size: undefined,
+};
+
 export default Button;

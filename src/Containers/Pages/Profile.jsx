@@ -1,3 +1,4 @@
+// @flow
 import { ProfileController } from '../../Components/Auth';
 import { WithAuthentication } from '../../Components/Wrapper';
 

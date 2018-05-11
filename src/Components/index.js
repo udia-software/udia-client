@@ -1,2 +1,5 @@
-export { Footer } from './Footer';
-export { Header } from './Header';
+// @flow
+import Header from './Header';
+import Footer from './Footer';
+
+export { Header, Footer };

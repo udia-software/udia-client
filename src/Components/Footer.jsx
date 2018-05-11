@@ -1,9 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { Logo } from "../Static";
+// @flow
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { Logo } from '../Static';
 
-export const Footer = () => {
+const Footer = () => {
   const StyledFooter = styled.div`
     grid-area: footer;
     display: grid;
@@ -64,7 +65,8 @@ export const Footer = () => {
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
           <Link to="/web-crypto">Web Crypto</Link>
-          <Link to="/kitchen-sink">Kitchen Sink</Link>
+          <Link to="/contact">Contact</Link>
+          {/* <Link to="/kitchen-sink">Kitchen Sink</Link> */}
         </div>
       </StyledFooterLinksContainer>
     </StyledFooter>

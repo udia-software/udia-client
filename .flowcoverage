@@ -1,0 +1,18 @@
+{
+  "concurrentFiles": 1,
+  "excludeGlob": [
+    "node_modules/**"
+  ],
+  "flowCommandPath": "node_modules/.bin/flow",
+  "includeGlob": [
+    "src/**/*.js",
+    "src/**/*.jsx"
+  ],
+  "projectDir": ".",
+  "threshold": 1,
+  "type": [
+    "text",
+    "html",
+    "json"
+  ]
+}

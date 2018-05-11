@@ -17,7 +17,9 @@ import {
 type Props = {
   loading: boolean,
   loadingText?: string,
+  emailValidating: boolean,
   emailValidated: boolean,
+  usernameValidating: boolean,
   usernameValidated: boolean,
   passwordValidated: boolean,
   email: string,
@@ -39,7 +41,9 @@ type Props = {
 const SignUpView = ({
   loading,
   loadingText,
+  emailValidating,
   emailValidated,
+  usernameValidating,
   usernameValidated,
   passwordValidated,
   email,
@@ -65,9 +69,13 @@ const SignUpView = ({
         <legend>Hello there, User.</legend>
         <FormFieldErrors errors={errors} />
         <FormContent>
-          <FormField error={usernameErrors.length > 0} success={usernameValidated}>
+          <FormField
+            error={usernameErrors.length > 0}
+            success={usernameValidated}
+            warn={usernameValidating}
+          >
             <label htmlFor="username">
-              Username:
+              Username:{usernameValidating && ' ...'}
               <Input
                 type="text"
                 id="username"
@@ -79,9 +87,9 @@ const SignUpView = ({
             </label>
             <FormFieldErrors errors={usernameErrors} />
           </FormField>
-          <FormField error={emailErrors.length > 0} success={emailValidated}>
+          <FormField error={emailErrors.length > 0} success={emailValidated} warn={emailValidating}>
             <label htmlFor="email">
-              Email:
+              Email:{emailValidating && ' ...'}
               <Input
                 type="email"
                 id="email"
