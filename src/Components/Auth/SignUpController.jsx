@@ -21,7 +21,9 @@ type Props = {
 type State = {
   loading: boolean,
   loadingText?: string,
+  emailValidating: boolean,
   emailValidated: boolean,
+  usernameValidating: boolean,
   usernameValidated: boolean,
   passwordValidated: boolean,
   errors: string[],
@@ -93,7 +95,9 @@ class SignUpController extends Component<Props, State> {
     document.title = 'Sign Up - UDIA';
     this.state = {
       loading: false,
+      emailValidating: false,
       emailValidated: false,
+      usernameValidating: false,
       usernameValidated: false,
       passwordValidated: false,
       errors: [],
@@ -110,14 +114,14 @@ class SignUpController extends Component<Props, State> {
 
   handleEmailBlur = () => {
     const { client, email } = this.props;
-    this.setState({ emailValidated: false });
+    this.setState({ emailValidated: false, emailValidating: true });
     client
       .query({
         query: CHECK_EMAIL_EXISTS,
         variables: { email },
       })
       .then(() => {
-        this.setState({ emailValidated: true });
+        this.setState({ emailValidated: true, emailValidating: false });
       })
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
@@ -137,6 +141,7 @@ class SignUpController extends Component<Props, State> {
           errors,
           emailErrors,
           emailValidated: false,
+          emailValidating: false,
         });
       });
   };
@@ -148,14 +153,14 @@ class SignUpController extends Component<Props, State> {
 
   handleUsernameBlur = () => {
     const { client, username } = this.props;
-    this.setState({ usernameValidated: false });
+    this.setState({ usernameValidated: false, usernameValidating: true });
     client
       .query({
         query: CHECK_USERNAME_EXISTS,
         variables: { username },
       })
       .then(() => {
-        this.setState({ usernameValidated: true });
+        this.setState({ usernameValidated: true, usernameValidating: false });
       })
       .catch(({
         graphQLErrors, networkError, message, extraInfo,
@@ -175,6 +180,7 @@ class SignUpController extends Component<Props, State> {
           errors,
           usernameErrors,
           usernameValidated: false,
+          usernameValidating: false,
         });
       });
   };
@@ -204,9 +210,16 @@ class SignUpController extends Component<Props, State> {
   handleSubmit = (event) => {
     event.preventDefault();
     const validPassword = this.handlePasswordBlur();
-    if (!validPassword) {
+    let { usernameErrors, emailErrors, passwordErrors } = this.state;
+    if (
+      !validPassword ||
+      usernameErrors.length > 0 ||
+      emailErrors.length > 0 ||
+      passwordErrors.length > 0
+    ) {
       return;
     }
+
     const {
       client, dispatch, email, username, password,
     } = this.props;
@@ -249,9 +262,9 @@ class SignUpController extends Component<Props, State> {
         // eslint-disable-next-line no-console
         console.warn(message, graphQLErrors, networkError, extraInfo);
         const errors = [];
-        let emailErrors = [];
-        let usernameErrors = [];
-        let passwordErrors = [];
+        emailErrors = [];
+        usernameErrors = [];
+        passwordErrors = [];
         graphQLErrors.forEach((graphQLError) => {
           const errorState = graphQLError.state || {};
           emailErrors = emailErrors.concat(errorState.email || []);
@@ -276,7 +289,9 @@ class SignUpController extends Component<Props, State> {
     const {
       loading,
       loadingText,
+      emailValidating,
       emailValidated,
+      usernameValidating,
       usernameValidated,
       passwordValidated,
       errors,
@@ -288,7 +303,9 @@ class SignUpController extends Component<Props, State> {
       <SignUpView
         loading={loading}
         loadingText={loadingText}
+        emailValidating={emailValidating}
         emailValidated={emailValidated}
+        usernameValidating={usernameValidating}
         usernameValidated={usernameValidated}
         passwordValidated={passwordValidated}
         email={email}

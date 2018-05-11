@@ -16,5 +16,4 @@ const StyleComponent = styled.input`
 
 const Input = (props: Props) => <StyleComponent {...props} />;
 
-export { Input };
 export default Input;

@@ -1,5 +1,6 @@
-import React from "react";
-import styled from "styled-components";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
 
 const StyleComponent = styled.select`
   color: white;
@@ -14,9 +15,6 @@ const StyleComponent = styled.select`
   padding: 2px 2em 2px 3px;
 `;
 
-const Select = props => {
-  return <StyleComponent {...props} />;
-};
+const Select = (props: {}) => <StyleComponent {...props} />;
 
-export { Select };
 export default Select;

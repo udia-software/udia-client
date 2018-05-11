@@ -21,7 +21,7 @@ const StyledGridLoadingOverlay = styled.div`
 type Props = {
   loading: boolean,
   loadingText?: string,
-  gridAreaName: string,
+  gridAreaName?: string,
 };
 
 const GridLoadingOverlay = (props: Props) => (
@@ -59,6 +59,7 @@ const GridLoadingOverlay = (props: Props) => (
 
 GridLoadingOverlay.defaultProps = {
   loadingText: 'Loading',
+  gridAreaName: undefined,
 };
 
 export default GridLoadingOverlay;

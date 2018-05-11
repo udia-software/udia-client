@@ -209,5 +209,4 @@ const CHECK_USER_MUTATION = gql`
 
 const Header = withRouter(connect(mapStateToProps)(graphql(CHECK_USER_MUTATION, { fetchPolicy: 'network-only' })(HeaderController)));
 
-export { Header };
 export default Header;

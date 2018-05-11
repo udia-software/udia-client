@@ -1,5 +1,6 @@
-import React from "react";
-import styled from "styled-components";
+// @flow
+import React from 'react';
+import styled from 'styled-components';
 
 const StyleComponent = styled.div`
   display: flex;
@@ -7,9 +8,6 @@ const StyleComponent = styled.div`
   flex-direction: column;
   justify-content: space-around;
 `;
-const FormContent = props => {
-  return <StyleComponent {...props} />;
-};
+const FormContent = (props: {}) => <StyleComponent {...props} />;
 
-export { FormContent };
 export default FormContent;

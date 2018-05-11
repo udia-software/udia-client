@@ -1,6 +1,6 @@
 {
   "name": "@udia/udia-client",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Javascript Client for Udia",
   "main": "src/index.js",
   "repository": {
@@ -30,6 +30,7 @@
     "react": "^16.2.0",
     "react-apollo": "^2.0.4",
     "react-dom": "^16.2.0",
+    "react-google-maps": "^9.4.5",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "^1.1.4",
@@ -41,12 +42,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "pretest": "yarn flow",
+    "pretest": "yarn flow-coverage",
     "test": "CI=true react-scripts test --env=jsdom --coverage",
     "posttest": "yarn lint",
     "lint": "eslint src",
     "eject": "react-scripts eject",
-    "deploy": "yarn run build && aws s3 sync build/ s3://udia-amazon --delete"
+    "deploy": "yarn run build && aws s3 sync build/ s3://udia-amazon --delete",
+    "flow-coverage": "flow-coverage-report --config ./.flowcoverage"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
@@ -57,6 +59,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.4.0",
     "flow-bin": "^0.71.0",
+    "flow-coverage-report": "^0.5.0",
     "jest-localstorage-mock": "^2.2.0",
     "prettier-eslint": "^8.8.1"
   }
