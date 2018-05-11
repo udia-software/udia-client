@@ -112,38 +112,37 @@ class SignUpController extends Component<Props, State> {
     this.setState({ emailErrors: [], emailValidated: false });
   };
 
-  handleEmailBlur = () => {
+  handleEmailBlur = async () => {
     const { client, email } = this.props;
     this.setState({ emailValidated: false, emailValidating: true });
-    client
-      .query({
+    try {
+      await client.query({
         query: CHECK_EMAIL_EXISTS,
         variables: { email },
-      })
-      .then(() => {
-        this.setState({ emailValidated: true, emailValidating: false });
-      })
-      .catch(({
-        graphQLErrors, networkError, message, extraInfo,
-      }) => {
-        // eslint-disable-next-line no-console
-        console.warn(message, graphQLErrors, networkError, extraInfo);
-        const errors = [];
-        let emailErrors = [];
-        graphQLErrors.forEach((graphQLError) => {
-          const errorState = graphQLError.state || {};
-          emailErrors = emailErrors.concat(errorState.email || []);
-        });
-        if (networkError) {
-          errors.push(message);
-        }
-        this.setState({
-          errors,
-          emailErrors,
-          emailValidated: false,
-          emailValidating: false,
-        });
       });
+      this.setState({ emailValidated: true, emailValidating: false });
+    } catch (error) {
+      const {
+        graphQLErrors, networkError, message, extraInfo,
+      } = error;
+      // eslint-disable-next-line no-console
+      console.warn(message, graphQLErrors, networkError, extraInfo);
+      const errors = [];
+      let emailErrors = [];
+      graphQLErrors.forEach((graphQLError) => {
+        const errorState = graphQLError.state || {};
+        emailErrors = emailErrors.concat(errorState.email || []);
+      });
+      if (networkError) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        emailErrors,
+        emailValidated: false,
+        emailValidating: false,
+      });
+    }
   };
 
   handleChangeUsername = (event) => {
@@ -151,38 +150,37 @@ class SignUpController extends Component<Props, State> {
     this.setState({ usernameErrors: [], usernameValidated: false });
   };
 
-  handleUsernameBlur = () => {
+  handleUsernameBlur = async () => {
     const { client, username } = this.props;
     this.setState({ usernameValidated: false, usernameValidating: true });
-    client
-      .query({
+    try {
+      await client.query({
         query: CHECK_USERNAME_EXISTS,
         variables: { username },
-      })
-      .then(() => {
-        this.setState({ usernameValidated: true, usernameValidating: false });
-      })
-      .catch(({
-        graphQLErrors, networkError, message, extraInfo,
-      }) => {
-        // eslint-disable-next-line no-console
-        console.warn(message, graphQLErrors, networkError, extraInfo);
-        const errors = [];
-        let usernameErrors = [];
-        graphQLErrors.forEach((graphQLError) => {
-          const errorState = graphQLError.state || {};
-          usernameErrors = usernameErrors.concat(errorState.username || []);
-        });
-        if (networkError) {
-          errors.push(message);
-        }
-        this.setState({
-          errors,
-          usernameErrors,
-          usernameValidated: false,
-          usernameValidating: false,
-        });
       });
+      this.setState({ usernameValidated: true, usernameValidating: false });
+    } catch (error) {
+      const {
+        graphQLErrors, networkError, message, extraInfo,
+      } = error;
+      // eslint-disable-next-line no-console
+      console.warn(message, graphQLErrors, networkError, extraInfo);
+      const errors = [];
+      let usernameErrors = [];
+      graphQLErrors.forEach((graphQLError) => {
+        const errorState = graphQLError.state || {};
+        usernameErrors = usernameErrors.concat(errorState.username || []);
+      });
+      if (networkError) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        usernameErrors,
+        usernameValidated: false,
+        usernameValidating: false,
+      });
+    }
   };
 
   handleChangePassword = (event) => {
@@ -207,7 +205,7 @@ class SignUpController extends Component<Props, State> {
     return false;
   };
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event: SyntheticEvent<any>) => {
     event.preventDefault();
     const validPassword = this.handlePasswordBlur();
     let { usernameErrors, emailErrors, passwordErrors } = this.state;
@@ -231,57 +229,56 @@ class SignUpController extends Component<Props, State> {
       usernameErrors: [],
       passwordErrors: [],
     });
-    Crypto.derivePassword({ password })
-      .then((result) => {
-        this.setState({ loadingText: 'Communicating with server...' });
-        const {
-          pw, pwSalt, pwCost, pwKeySize, pwDigest, pwFunc,
-        } = result;
-        return client.mutate({
-          mutation: SIGN_UP_MUTATION,
-          variables: {
-            email,
-            username,
-            pw,
-            pwSalt,
-            pwCost,
-            pwKeySize,
-            pwDigest,
-            pwFunc,
-          },
-        });
-      })
-      .then(({ data }) => {
-        this.setState({ loadingText: 'Setting up client...' });
-        const { jwt, user } = data.createUser;
-        dispatch(AuthActions.setAuthData({ jwt, user }));
-      })
-      .catch(({
-        graphQLErrors, networkError, message, extraInfo,
-      }) => {
-        // eslint-disable-next-line no-console
-        console.warn(message, graphQLErrors, networkError, extraInfo);
-        const errors = [];
-        emailErrors = [];
-        usernameErrors = [];
-        passwordErrors = [];
-        graphQLErrors.forEach((graphQLError) => {
-          const errorState = graphQLError.state || {};
-          emailErrors = emailErrors.concat(errorState.email || []);
-          usernameErrors = usernameErrors.concat(errorState.username || []);
-          passwordErrors = passwordErrors.concat(errorState.password || []);
-        });
-        if (networkError) {
-          errors.push(message);
-        }
-        this.setState({
-          errors,
-          emailErrors,
-          usernameErrors,
-          passwordErrors,
-          loading: false,
-        });
+    try {
+      const {
+        pw, pwSalt, pwCost, pwKeySize, pwDigest, pwFunc,
+      } = await Crypto.derivePassword({
+        password,
       });
+      this.setState({ loadingText: 'Communicating with server...' });
+      const { data } = await client.mutate({
+        mutation: SIGN_UP_MUTATION,
+        variables: {
+          email,
+          username,
+          pw,
+          pwSalt,
+          pwCost,
+          pwKeySize,
+          pwDigest,
+          pwFunc,
+        },
+      });
+      this.setState({ loadingText: 'Setting up client...' });
+      const { jwt, user } = data.createUser;
+      dispatch(AuthActions.setAuthData({ jwt, user }));
+    } catch (error) {
+      const {
+        graphQLErrors, networkError, message, extraInfo,
+      } = error;
+      // eslint-disable-next-line no-console
+      console.warn(message, graphQLErrors, networkError, extraInfo);
+      const errors = [];
+      emailErrors = [];
+      usernameErrors = [];
+      passwordErrors = [];
+      graphQLErrors.forEach((graphQLError) => {
+        const errorState = graphQLError.state || {};
+        emailErrors = emailErrors.concat(errorState.email || []);
+        usernameErrors = usernameErrors.concat(errorState.username || []);
+        passwordErrors = passwordErrors.concat(errorState.password || []);
+      });
+      if (networkError) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        emailErrors,
+        usernameErrors,
+        passwordErrors,
+        loading: false,
+      });
+    }
   };
 
   render() {

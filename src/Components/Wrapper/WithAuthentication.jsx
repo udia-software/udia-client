@@ -60,7 +60,7 @@ export default function WithAuthentication(
       } else if (maybeAuthenticated) {
         return AuthenticationLoadingComponent;
       }
-      return <WrappedComponent />;
+      return <WrappedComponent {...this.props} />;
     }
   }
 

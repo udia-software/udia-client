@@ -11,6 +11,7 @@ export interface IAuthState {
   confirmSignOut: boolean;
   authUser: any | null;
   emailVerificationToken: string;
+  passwordResetToken: string;
 }
 
 const AuthState: IAuthState = {
@@ -21,6 +22,7 @@ const AuthState: IAuthState = {
   confirmSignOut: false,
   authUser: null,
   emailVerificationToken: '',
+  passwordResetToken: '',
 };
 
 export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
@@ -60,6 +62,11 @@ export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
       return {
         ...state,
         emailVerificationToken: action.payload,
+      };
+    case AuthActions.SET_FORM_PASSWORD_RESET_TOKEN:
+      return {
+        ...state,
+        passwordResetToken: action.payload,
       };
     case AuthActions.CONFIRM_SIGN_OUT:
       return {

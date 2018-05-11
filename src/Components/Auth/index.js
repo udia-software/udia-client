@@ -5,6 +5,7 @@ import SignInController from './SignInController';
 import SignOutController from './SignOutController';
 import VerifyEmailController from './VerifyEmailController';
 import ForgotPasswordController from './ForgotPasswordController';
+import ResetPasswordController from './ResetPasswordController';
 
 export {
   ProfileController,
@@ -13,4 +14,5 @@ export {
   SignOutController,
   VerifyEmailController,
   ForgotPasswordController,
+  ResetPasswordController,
 };

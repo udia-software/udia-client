@@ -43,11 +43,11 @@ const VerifyEmailView = ({
         <FormFieldErrors errors={errors} />
         <FormContent>
           <FormField error={tokenErrors.length > 0} success={tokenVerified}>
-            <label htmlFor="username">
+            <label htmlFor="emailToken">
               Token:
               <Input
                 type="text"
-                id="username"
+                id="emailToken"
                 placeholder="email@udia.ca:••••••••"
                 onChange={handleChangeVerificationToken}
                 autoComplete="off"

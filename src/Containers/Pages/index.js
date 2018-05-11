@@ -6,12 +6,14 @@ import Contact from './Contact';
 import ForgotPassword from './ForgotPassword';
 import Home from './Home';
 import KitchenSink from './KitchenSink';
-import Profile from './Profile';
-import SignIn from './SignIn';
-import SignUp from './SignUp';
-import SignOut from './SignOut';
 import NoMatch from './NoMatch';
+import Profile from './Profile';
+import ResetPassword from './ResetPassword';
+import SignIn from './SignIn';
+import SignOut from './SignOut';
+import SignUp from './SignUp';
 import VerifyEmail from './VerifyEmail';
+import WebCryptoPage from './WebCrypto';
 
 export {
   About,
@@ -19,11 +21,12 @@ export {
   ForgotPassword,
   Home,
   KitchenSink,
-  Profile,
-  SignIn,
-  SignUp,
-  SignOut,
   NoMatch,
+  Profile,
+  ResetPassword,
+  SignIn,
+  SignOut,
+  SignUp,
   VerifyEmail,
+  WebCryptoPage,
 };
-export { WebCryptoPage } from './WebCrypto';
