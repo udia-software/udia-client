@@ -24,7 +24,7 @@ type State = {
   deriveKeyTime: number,
 };
 
-export class DerivePasswordComponent extends Component<Props, State> {
+class DerivePasswordComponent extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {

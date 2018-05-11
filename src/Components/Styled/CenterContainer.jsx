@@ -21,5 +21,5 @@ const StyleComponent = styled.div`
 `;
 
 const CenterContainer = (props: Props) => <StyleComponent {...props} />;
-export { CenterContainer };
+
 export default CenterContainer;

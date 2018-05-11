@@ -21,5 +21,5 @@ const StyleComponent = styled.div`
   margin: 1em;
 `;
 const AuthContainer = (props: Props) => <StyleComponent {...props} />;
-export { AuthContainer };
+
 export default AuthContainer;
