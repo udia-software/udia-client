@@ -29,6 +29,8 @@ const StyleComponent = styled.button`
     }
     &:focus {
       outline: 0;
+      border-color: #ffffff;
+      border-width: 4px;
     }`};
   ${props => props.disabled && 'opacity: 0.40;'};
 `;
