@@ -12,7 +12,12 @@ export const rootPersistConfig = {
 
 export default function () {
   const persistedReducer = persistCombineReducers(rootPersistConfig, RootReducer);
-  const store = createStore(persistedReducer);
+  /* eslint-disable no-underscore-dangle */
+  const store = createStore(
+    persistedReducer,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  );
+  /* eslint-enable */
   const persistor = persistStore(store);
   return { store, persistor };
 }

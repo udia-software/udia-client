@@ -77,6 +77,8 @@ export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
       localStorage.removeItem(AUTH_TOKEN);
       return {
         ...AuthState,
+        passwordResetToken: state.passwordResetToken, // trying to reset password
+        emailVerificationToken: state.emailVerificationToken, // trying to verify email
         jwt: null,
       };
     default:
