@@ -7,6 +7,7 @@ import Form from './Form';
 import FormContent from './FormContent';
 import FormField from './FormField';
 import FormFieldErrors from './FormFieldErrors';
+import FormFieldSuccesses from './FormFieldSuccesses';
 import GridLoadingOverlay from './GridLoadingOverlay';
 import Input from './Input';
 import Textarea from './Textarea';
@@ -21,6 +22,7 @@ export {
   FormContent,
   FormField,
   FormFieldErrors,
+  FormFieldSuccesses,
   GridLoadingOverlay,
   Input,
   Textarea,

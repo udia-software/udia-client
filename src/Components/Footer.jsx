@@ -64,7 +64,7 @@ const Footer = () => {
         <div>
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
-          <Link to="/web-crypto">Web Crypto</Link>
+          {/* <Link to="/web-crypto">Web Crypto</Link> */}
           <Link to="/contact">Contact</Link>
           {/* <Link to="/kitchen-sink">Kitchen Sink</Link> */}
         </div>

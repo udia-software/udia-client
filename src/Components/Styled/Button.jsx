@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const StyleComponent = styled.button`
   background-color: transparent;
   color: ${props => props.primaryColor};
-  border-color: ${props => props.primaryColor};
+  border-color: ${props => `${props.primaryColor}77`};
   text-decoration-color: ${props => props.primaryColor};
   border-radius: 0.4rem;
   border-width: 2px;
@@ -29,8 +29,8 @@ const StyleComponent = styled.button`
     }
     &:focus {
       outline: 0;
-      border-color: #ffffff;
-      border-width: 4px;
+      border-color: ${props.primaryColor};
+      border-width: 2px;
     }`};
   ${props => props.disabled && 'opacity: 0.40;'};
 `;
