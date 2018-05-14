@@ -27,6 +27,15 @@ const DEFAULT_DIGEST = 'sha512';
 const DEFAULT_PWFUNC = 'pbkdf2';
 
 export default class Crypto {
+  static validateUserInputtedPassword(password: string) {
+    const errors: string[] = [];
+    if (password.length < 8) {
+      errors.push('Master password must be 8 or more characters.');
+    }
+    return errors;
+  }
+
+
   static derivePassword(options: DerivePasswordOptions) {
     const newSalt = random.getBytesSync(128);
     const {

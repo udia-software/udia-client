@@ -190,10 +190,11 @@ class SignUpController extends Component<Props, State> {
 
   handlePasswordBlur = () => {
     const { password } = this.props;
+    const errors = Crypto.validateUserInputtedPassword(password);
     // password validation is done client side.
-    if (password.length < 8) {
+    if (errors.length > 0) {
       this.setState({
-        passwordErrors: ['Master password must be 8 or more characters.'],
+        passwordErrors: errors,
         passwordValidated: false,
       });
     } else {
