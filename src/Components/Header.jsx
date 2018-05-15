@@ -62,7 +62,6 @@ type State = {
 class HeaderController extends Component<Props, State> {
   constructor(props) {
     super(props);
-    console.log(props);
     const { data } = props;
     const { loading } = data;
     this.state = { userFetchLoading: loading };

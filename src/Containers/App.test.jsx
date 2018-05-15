@@ -10,7 +10,7 @@ import App from './App';
 import { configureStore } from '../Modules';
 import { REACT_APP_GRAPHQL_HTTP_ENDPOINT } from '../Constants';
 
-it.skip('renders without crashing', async (done) => {
+it('renders without crashing', async (done) => {
   const div = document.createElement('div');
   const { store } = configureStore();
   ReactDOM.render(
