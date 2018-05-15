@@ -77,7 +77,10 @@ class DerivePasswordComponent extends Component<Props, State> {
       keylen,
       digest,
       (err, key) => {
-        if (err) console.error(err);
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.error(err);
+        }
         const keylenThird = keylen / 3;
         const threekeys = {
           pw: decoder.decode(key.slice(0, keylenThird)),
