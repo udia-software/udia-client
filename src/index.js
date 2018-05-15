@@ -45,7 +45,7 @@ class RefreshingApolloProvider extends Component<Props, State> {
   }
   render() {
     // eslint-disable-next-line no-console
-    console.debug(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
+    console.log(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
     return <ApolloProvider {...this.props} client={this.state.client} />;
   }
 }

@@ -236,10 +236,8 @@ class ProfileController extends Component<Props, State> {
     }
   };
 
-  handleResendVerification = (email: string) => async (
-    event: SyntheticEvent<HTMLButtonElement>,
-  ) => {
-    event.preventDefault();
+  handleResendVerification = (email: string) => async (e: SyntheticEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     const { client } = this.props;
     this.setState({
       errors: [],
