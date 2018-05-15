@@ -8,6 +8,7 @@ import { Link, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { AuthActions, AuthSelectors } from '../Modules/Auth';
+import { AUTH_TOKEN } from '../Constants';
 
 const StyledHeader = styled.header`
   grid-area: header;
@@ -60,7 +61,7 @@ type State = {
 };
 
 class HeaderController extends Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     const { data } = props;
     const { loading } = data;
@@ -69,9 +70,12 @@ class HeaderController extends Component<Props, State> {
 
   componentDidMount() {
     this.props.subscribeToMe();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', this.handleLocalStorageJWTUpdated);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     const oldLoading = this.state.userFetchLoading;
     const { data, dispatch } = nextProps;
     const { error, loading, me } = data;
@@ -91,6 +95,15 @@ class HeaderController extends Component<Props, State> {
       }
     }
   }
+
+  handleLocalStorageJWTUpdated = () => {
+    const jwt = localStorage.getItem(AUTH_TOKEN);
+    if (jwt) {
+      this.props.dispatch(AuthActions.setAuthData({ jwt }));
+    } else {
+      this.props.dispatch(AuthActions.clearAuthData());
+    }
+  };
 
   handleClickSignOut = () => {
     this.props.dispatch(AuthActions.confirmSignOut());
@@ -244,7 +257,7 @@ const withSubscriptionData = graphql(CHECK_USER_MUTATION, {
     subscribeToMe: () =>
       props.data.subscribeToMore({
         document: ME_SUBSCRIPTION,
-        updateQuery: (prev, { subscrpitionData }) => ({ ...prev, ...subscrpitionData.data }),
+        updateQuery: (prev, { subscriptionData }) => ({ ...prev, ...subscriptionData.data }),
       }),
   }),
 });

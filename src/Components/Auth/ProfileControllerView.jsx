@@ -1,6 +1,6 @@
 // @flow
 import React, { Fragment } from 'react';
-import { utc } from 'moment';
+import { duration, utc } from 'moment';
 
 import {
   Button,
@@ -74,7 +74,14 @@ const ProfileControllerView = ({
                 display: 'grid',
                 gridAutoRows: 'auto',
                 gridTemplateAreas:
-                  '"joined ago" "time0 time0" "time1 time1" "time2 time2" "time3 time3" "time4 time4"',
+                  '"joined ago"' +
+                  '"time0 time0"' +
+                  '"time1 time1"' +
+                  '"time2 time2"' +
+                  '"time3 time3"' +
+                  '"time4 time4"' +
+                  '"time5 time5"' +
+                  '"time6 time6"',
               }}
             >
               <span style={{ gridArea: 'joined', justifySelf: 'start' }}>Joined &rarr;</span>
@@ -94,20 +101,42 @@ const ProfileControllerView = ({
             }}
           >
             on<br />
-            {utc(createdAt).format(MOMENT_FORMAT_STRING)}
+            {utc(createdAt)
+              .local()
+              .format(MOMENT_FORMAT_STRING)}
           </dd>
           {exactHumanCreatedAgo !== exactHumanUpdatedAgo && (
             <Fragment>
-              <dt>
-                Password last changed
-                {exactHumanUpdatedAgo
-                  .split(',')
-                  .map(segment => <span key={segment}>{segment}</span>)}{' '}
-                ago.
+              <dt style={{ paddingTop: '1em', textAlign: 'center', margin: '0' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridAutoRows: 'auto',
+                    gridTemplateAreas:
+                      '"password pwago"' +
+                      '"time0 time0"' +
+                      '"time1 time1"' +
+                      '"time2 time2"' +
+                      '"time3 time3"' +
+                      '"time4 time4"' +
+                      '"time5 time5"' +
+                      '"time6 time6"',
+                  }}
+                >
+                  <span style={{ gridArea: 'password', justifySelf: 'start' }}>PW changed</span>
+                  <span style={{ gridArea: 'pwago', justifySelf: 'end' }}>ago.</span>
+                  {exactHumanUpdatedAgo.split(',').map((segment, index) => (
+                    <span key={segment} style={{ justifySelf: 'center', gridArea: `time${index}` }}>
+                      {segment}
+                    </span>
+                  ))}
+                </div>
               </dt>
-              <dd>
+              <dd style={{ paddingTop: '1em', textAlign: 'center', margin: '0' }}>
                 on<br />
-                {utc(updatedAt).format(MOMENT_FORMAT_STRING)}
+                {utc(updatedAt)
+                  .local()
+                  .format(MOMENT_FORMAT_STRING)}
               </dd>
             </Fragment>
           )}
@@ -147,23 +176,25 @@ const ProfileControllerView = ({
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr 1fr',
-                gridTemplateRows: '1em auto',
-                gridTemplateAreas: "'email primary verified' 'sendverify setprimary delete'",
+                gridTemplateRows: 'auto auto',
+                gridTemplateAreas: "'verified primary email' 'sendverify setprimary delete'",
                 gridColumnGap: '1em',
                 justifyItems: 'stretch',
                 alignItems: 'stretch',
                 justifyContent: 'space-betwen',
               }}
             >
-              <strong style={{ gridArea: 'email', justifySelf: 'center' }}>
-                {userEmail.email}
-              </strong>
+              <span style={{ gridArea: 'verified', justifySelf: 'center' }}>
+                {userEmail.verified
+                  ? 'Verified'
+                  : `Token valid for ${duration(utc().diff(utc(userEmail.verificationExpiry))).humanize()}`}
+              </span>
               <span style={{ gridArea: 'primary', justifySelf: 'center' }}>
                 {userEmail.primary ? 'Primary' : 'Secondary'}
               </span>
-              <span style={{ gridArea: 'verified', justifySelf: 'center' }}>
-                {userEmail.verified ? 'Verified' : 'Not Verified'}
-              </span>
+              <strong style={{ gridArea: 'email', justifySelf: 'center' }}>
+                {userEmail.email}
+              </strong>
               <Button
                 style={{ gridArea: 'sendverify', justifySelf: 'center' }}
                 size="mini"
