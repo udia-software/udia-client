@@ -16,6 +16,8 @@ import {
 } from '../Styled';
 
 type Props = {
+  loading: boolean,
+  loadingText?: string,
   username: string,
   createdAt: Date,
   updatedAt: Date,
@@ -26,14 +28,23 @@ type Props = {
   addEmailInput: string,
   addEmailErrors: string[],
   emailValidated: boolean,
-  changingEmails: boolean,
   changeEmailSuccesses: string[],
+  oldPassword: string,
+  oldPasswordErrors: string[],
+  newPassword: string,
+  newPasswordErrors: string[],
+  newPasswordValidated: boolean,
+  updatePasswordSuccesses: string[],
   handleAddEmailSubmit: Function,
   handleChangeAddEmail: Function,
   handleEmailBlur: Function,
   handleResendVerification: Function,
   handleSetAsPrimary: Function,
   handleDeleteEmail: Function,
+  handleNewPasswordSubmit: Function,
+  handleNewPasswordBlur: Function,
+  handleChangeOldPassword: Function,
+  handleChangeNewPassword: Function,
 };
 
 const MOMENT_FORMAT_STRING = 'dddd, MMMM Do YYYY, h:mm:ss a';
@@ -49,17 +60,28 @@ const ProfileControllerView = ({
   addEmailInput,
   addEmailErrors,
   emailValidated,
-  changingEmails,
+  loading,
+  loadingText,
   changeEmailSuccesses,
+  oldPassword,
+  oldPasswordErrors,
+  newPassword,
+  newPasswordErrors,
+  newPasswordValidated,
+  updatePasswordSuccesses,
   handleAddEmailSubmit,
   handleChangeAddEmail,
   handleEmailBlur,
   handleResendVerification,
   handleSetAsPrimary,
   handleDeleteEmail,
+  handleNewPasswordSubmit,
+  handleNewPasswordBlur,
+  handleChangeOldPassword,
+  handleChangeNewPassword,
 }: Props) => (
   <Fragment>
-    <GridLoadingOverlay gridAreaName="content" loading={changingEmails} />
+    <GridLoadingOverlay gridAreaName="content" loading={loading} loadingText={loadingText} />
     <CenterContainer>
       <h1>My Profile</h1>
       <div>
@@ -147,13 +169,9 @@ const ProfileControllerView = ({
         <AuthFormFieldset>
           <legend>Add a new email.</legend>
           <FormContent>
-            <FormField
-              error={addEmailErrors.length > 0}
-              success={emailValidated}
-              warn={changingEmails}
-            >
+            <FormField error={addEmailErrors.length > 0} success={emailValidated}>
               <label htmlFor="addEmail">
-                Email:{changingEmails && ' \u2026'}
+                Email:
                 <Input
                   type="email"
                   id="addEmail"
@@ -169,7 +187,7 @@ const ProfileControllerView = ({
         </AuthFormFieldset>
         <AuthFormFieldset>
           <FormFieldErrors errors={errors} />
-          <FormFieldSuccesses successes={changeEmailSuccesses} style={{ paddingBottom: '3px' }} />
+          <FormFieldSuccesses successes={changeEmailSuccesses} style={{ paddingBottom: '1em' }} />
           {sortedEmails.map(userEmail => (
             <div
               key={userEmail.email}
@@ -223,8 +241,50 @@ const ProfileControllerView = ({
           ))}
         </AuthFormFieldset>
       </Form>
+      <h2 style={{ paddingTop: '3em' }}>Change Password</h2>
+      <Form onSubmit={handleNewPasswordSubmit} gridArea="">
+        <AuthFormFieldset>
+          <legend>Update password.</legend>
+          <FormFieldSuccesses
+            successes={updatePasswordSuccesses}
+            style={{ paddingBottom: '1em' }}
+          />
+          <FormContent>
+            <FormField error={oldPasswordErrors.length > 0}>
+              <label htmlFor="oldPassword">
+                Old Password
+                <Input
+                  type="password"
+                  id="oldPassword"
+                  onChange={handleChangeOldPassword}
+                  value={oldPassword}
+                />
+              </label>
+              <FormFieldErrors errors={oldPasswordErrors} />
+            </FormField>
+            <FormField error={newPasswordErrors.length > 0} success={newPasswordValidated}>
+              <label htmlFor="newPassword">
+                New Password
+                <Input
+                  type="password"
+                  id="newPassword"
+                  onChange={handleChangeNewPassword}
+                  onBlur={handleNewPasswordBlur}
+                  value={newPassword}
+                />
+              </label>
+              <FormFieldErrors errors={newPasswordErrors} />
+            </FormField>
+            <Button color="yellow">Update Password</Button>
+          </FormContent>
+        </AuthFormFieldset>
+      </Form>
     </CenterContainer>
   </Fragment>
 );
+
+ProfileControllerView.defaultProps = {
+  loadingText: 'Loading...',
+};
 
 export default ProfileControllerView;
