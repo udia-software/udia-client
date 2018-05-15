@@ -56,6 +56,30 @@ const ADD_EMAIL_MUTATION = gql`
   }
 `;
 
+const SET_PRIMARY_EMAIL_MUTATION = gql`
+  mutation SetPrimaryEmailMutation($email: String!) {
+    setPrimaryEmail(email: $email) {
+      uuid
+      username
+      emails {
+        email
+        primary
+        verified
+        createdAt
+        updatedAt
+        verificationExpiry
+      }
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const REMOVE_EMAIL_MUTATION = gql`
   mutation RemoveEmailMutation($email: String!) {
     removeEmail(email: $email) {
@@ -92,6 +116,9 @@ const CHECK_EMAIL_EXISTS = gql`
   }
 `;
 
+/**
+ * this could be refactored
+ */
 class ProfileController extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -166,7 +193,12 @@ class ProfileController extends Component<Props, State> {
     event.preventDefault();
     const { client, dispatch } = this.props;
     const { addEmailInput } = this.state;
-    this.setState({ emailValidated: false, changingEmails: true });
+    this.setState({
+      emailValidated: false,
+      changingEmails: true,
+      errors: [],
+      addEmailErrors: [],
+    });
     try {
       const { data } = await client.mutate({
         mutation: ADD_EMAIL_MUTATION,
@@ -211,6 +243,7 @@ class ProfileController extends Component<Props, State> {
     const { client } = this.props;
     this.setState({
       errors: [],
+      addEmailErrors: [],
       changingEmails: true,
       changeEmailSuccesses: [],
     });
@@ -245,9 +278,45 @@ class ProfileController extends Component<Props, State> {
     }
   };
 
-  handleSetAsPrimary = (event: SyntheticEvent<HTMLButtonElement>) => {
-    console.log('setting as primary');
+  handleSetAsPrimary = (email: string) => async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    const { client, dispatch } = this.props;
+    this.setState({
+      errors: [],
+      addEmailErrors: [],
+      changingEmails: true,
+      changeEmailSuccesses: [],
+    });
+    try {
+      const { data } = await client.mutate({
+        mutation: SET_PRIMARY_EMAIL_MUTATION,
+        variables: { email },
+      });
+      dispatch(AuthActions.setAuthUser(data.setPrimaryEmail));
+      this.setState({
+        changingEmails: false,
+        changeEmailSuccesses: [`Successfully set ${email} to be primary.`],
+      });
+    } catch (error) {
+      const {
+        graphQLErrors, networkError, message, extraInfo,
+      } = error;
+      // eslint-disable-next-line no-console
+      console.warn(message, graphQLErrors, networkError, extraInfo);
+      let errors = [];
+      graphQLErrors.forEach((graphQLError) => {
+        const errorState = graphQLError.state || {};
+        errors = errors.concat(errorState.email || []);
+      });
+      if (networkError) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        changingEmails: false,
+        changeEmailSuccesses: [],
+      });
+    }
   };
 
   handleDeleteEmail = (email: string) => async (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -255,6 +324,7 @@ class ProfileController extends Component<Props, State> {
     const { client, dispatch } = this.props;
     this.setState({
       errors: [],
+      addEmailErrors: [],
       changingEmails: true,
       changeEmailSuccesses: [],
     });

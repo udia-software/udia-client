@@ -62,15 +62,58 @@ const ProfileControllerView = ({
     <GridLoadingOverlay gridAreaName="content" loading={changingEmails} />
     <CenterContainer>
       <h1>My Profile</h1>
-      <dl>
-        <dt>Username</dt>
-        <dd>{username}</dd>
-        <dt>Joined UDIA {exactHumanCreatedAgo} ago.</dt>
-        <dd>{utc(createdAt).format(MOMENT_FORMAT_STRING)}</dd>
-        <dt>Password last changed {exactHumanUpdatedAgo} ago.</dt>
-        <dd>{utc(updatedAt).format(MOMENT_FORMAT_STRING)}</dd>
-      </dl>
-      <h3>Emails</h3>
+      <div>
+        <dl>
+          <div style={{ display: 'grid', gridTemplateAreas: '"usernameLabel usernameVal"' }}>
+            <dt style={{ gridArea: 'usernameLabel', justifySelf: 'center' }}>User &rarr;</dt>
+            <dd style={{ gridArea: 'usernameVal', justifySelf: 'center' }}>&larr; {username}</dd>
+          </div>
+          <dt>
+            <div
+              style={{
+                display: 'grid',
+                gridAutoRows: 'auto',
+                gridTemplateAreas:
+                  '"joined ago" "time0 time0" "time1 time1" "time2 time2" "time3 time3" "time4 time4"',
+              }}
+            >
+              <span style={{ gridArea: 'joined', justifySelf: 'start' }}>Joined &rarr;</span>
+              <span style={{ gridArea: 'ago', justifySelf: 'end' }}>&larr; ago.</span>
+              {exactHumanCreatedAgo.split(',').map((segments, index) => (
+                <span key={segments} style={{ justifySelf: 'center', gridArea: `time${index}` }}>
+                  {segments}
+                </span>
+              ))}
+            </div>
+          </dt>
+          <dd
+            style={{
+              paddingTop: '1em',
+              textAlign: 'center',
+              margin: '0',
+            }}
+          >
+            on<br />
+            {utc(createdAt).format(MOMENT_FORMAT_STRING)}
+          </dd>
+          {exactHumanCreatedAgo !== exactHumanUpdatedAgo && (
+            <Fragment>
+              <dt>
+                Password last changed
+                {exactHumanUpdatedAgo
+                  .split(',')
+                  .map(segment => <span key={segment}>{segment}</span>)}{' '}
+                ago.
+              </dt>
+              <dd>
+                on<br />
+                {utc(updatedAt).format(MOMENT_FORMAT_STRING)}
+              </dd>
+            </Fragment>
+          )}
+        </dl>
+      </div>
+      <h2 style={{ paddingTop: '3em' }}>Emails</h2>
       <Form onSubmit={handleAddEmailSubmit} gridArea="">
         <AuthFormFieldset>
           <legend>Add a new email.</legend>
@@ -97,7 +140,7 @@ const ProfileControllerView = ({
         </AuthFormFieldset>
         <AuthFormFieldset>
           <FormFieldErrors errors={errors} />
-          <FormFieldSuccesses successes={changeEmailSuccesses} />
+          <FormFieldSuccesses successes={changeEmailSuccesses} style={{ paddingBottom: '3px' }} />
           {sortedEmails.map(userEmail => (
             <div
               key={userEmail.email}
@@ -133,7 +176,7 @@ const ProfileControllerView = ({
                 style={{ gridArea: 'setprimary', justifySelf: 'center' }}
                 size="mini"
                 disabled={userEmail.primary}
-                onClick={handleSetAsPrimary}
+                onClick={handleSetAsPrimary(userEmail.email)}
               >
                 {userEmail.primary ? 'Is primary' : 'Set as Primary'}
               </Button>

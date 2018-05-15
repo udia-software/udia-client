@@ -1,4 +1,5 @@
 // @flow
+
 import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { graphql } from 'react-apollo';
@@ -48,6 +49,7 @@ type Props = {
   data: any,
   dispatch: Function,
   location: any,
+  subscribeToMe: Function,
   maybeAuthenticated: boolean,
   isAuthenticated: boolean,
   username: string,
@@ -60,9 +62,14 @@ type State = {
 class HeaderController extends Component<Props, State> {
   constructor(props) {
     super(props);
+    console.log(props);
     const { data } = props;
     const { loading } = data;
     this.state = { userFetchLoading: loading };
+  }
+
+  componentDidMount() {
+    this.props.subscribeToMe();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -207,6 +214,40 @@ const CHECK_USER_MUTATION = gql`
   }
 `;
 
-const Header = withRouter(connect(mapStateToProps)(graphql(CHECK_USER_MUTATION, { fetchPolicy: 'network-only' })(HeaderController)));
+const ME_SUBSCRIPTION = gql`
+  subscription MeSubscription {
+    me {
+      uuid
+      username
+      emails {
+        email
+        primary
+        verified
+        createdAt
+        updatedAt
+        verificationExpiry
+      }
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
-export default Header;
+const withSubscriptionData = graphql(CHECK_USER_MUTATION, {
+  fetchPolicy: 'network-only',
+  props: props => ({
+    ...props,
+    subscribeToMe: () =>
+      props.data.subscribeToMore({
+        document: ME_SUBSCRIPTION,
+        updateQuery: (prev, { subscrpitionData }) => ({ ...prev, ...subscrpitionData.data }),
+      }),
+  }),
+});
+
+export default withRouter(connect(mapStateToProps)(withSubscriptionData(HeaderController)));
