@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 
 import ProfileControllerView from './ProfileControllerView';
 import { AuthActions, AuthSelectors } from '../../Modules/Auth';
+import Crypto from '../../Modules/Crypto';
 import TimeHelper from '../../Modules/TimeHelper';
 
 type Props = {
@@ -18,9 +19,12 @@ type Props = {
   createdAt: Date,
   updatedAt: Date,
   emails: any[],
+  password: string,
 };
 
 type State = {
+  loading: boolean,
+  loadingText?: string,
   tickIntervalID: IntervalID,
   exactHumanCreatedAgo: string,
   exactHumanUpdatedAgo: string,
@@ -28,8 +32,12 @@ type State = {
   addEmailInput: string,
   addEmailErrors: string[],
   emailValidated: boolean,
-  changingEmails: boolean,
   changeEmailSuccesses: string[],
+  oldPasswordErrors: string[],
+  newPassword: string,
+  newPasswordErrors: string[],
+  newPasswordValidated: boolean,
+  updatePasswordSuccesses: string[],
 };
 
 const ADD_EMAIL_MUTATION = gql`
@@ -110,6 +118,58 @@ const SEND_VERIFICATION_EMAIL_MUTATION = gql`
   }
 `;
 
+const GET_AUTH_PARAMS_QUERY = gql`
+  query getAuthParamsQuery($email: String!) {
+    getUserAuthParams(email: $email) {
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
+    }
+  }
+`;
+
+const UPDATE_PASSWORD_MUTATION = gql`
+  mutation UpdatePasswordMutation(
+    $newPw: String!
+    $pw: String!
+    $pwFunc: String!
+    $pwDigest: String!
+    $pwCost: Int!
+    $pwKeySize: Int!
+    $pwSalt: String!
+  ) {
+    updatePassword(
+      newPw: $newPw
+      pw: $pw
+      pwFunc: $pwFunc
+      pwDigest: $pwDigest
+      pwCost: $pwCost
+      pwKeySize: $pwKeySize
+      pwSalt: $pwSalt
+    ) {
+      uuid
+      username
+      emails {
+        email
+        primary
+        verified
+        createdAt
+        updatedAt
+        verificationExpiry
+      }
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwSalt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const CHECK_EMAIL_EXISTS = gql`
   query CheckEmailExists($email: String!) {
     checkEmailExists(email: $email)
@@ -132,8 +192,13 @@ class ProfileController extends Component<Props, State> {
       addEmailInput: '',
       addEmailErrors: [],
       emailValidated: false,
-      changingEmails: false,
+      loading: false,
       changeEmailSuccesses: [],
+      oldPasswordErrors: [],
+      newPassword: '',
+      newPasswordErrors: [],
+      newPasswordValidated: false,
+      updatePasswordSuccesses: [],
     };
   }
 
@@ -149,7 +214,7 @@ class ProfileController extends Component<Props, State> {
     this.setState({
       addEmailInput: event.target.value,
       emailValidated: false,
-      changingEmails: false,
+      loading: false,
       addEmailErrors: [],
       errors: [],
     });
@@ -158,13 +223,13 @@ class ProfileController extends Component<Props, State> {
   handleEmailBlur = async () => {
     const { client } = this.props;
     const { addEmailInput } = this.state;
-    this.setState({ emailValidated: false, changingEmails: false });
+    this.setState({ emailValidated: false, loading: false });
     try {
       await client.query({
         query: CHECK_EMAIL_EXISTS,
         variables: { email: addEmailInput },
       });
-      this.setState({ emailValidated: true, changingEmails: false });
+      this.setState({ emailValidated: true, loading: false });
     } catch (error) {
       const {
         graphQLErrors, networkError, message, extraInfo,
@@ -184,7 +249,7 @@ class ProfileController extends Component<Props, State> {
         errors,
         addEmailErrors,
         emailValidated: false,
-        changingEmails: false,
+        loading: false,
       });
     }
   };
@@ -195,7 +260,7 @@ class ProfileController extends Component<Props, State> {
     const { addEmailInput } = this.state;
     this.setState({
       emailValidated: false,
-      changingEmails: true,
+      loading: true,
       errors: [],
       addEmailErrors: [],
     });
@@ -211,7 +276,7 @@ class ProfileController extends Component<Props, State> {
         addEmailInput: '',
         addEmailErrors: [],
         emailValidated: true,
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [`Successfully added ${addEmailInput}.`],
       });
     } catch (error) {
@@ -231,7 +296,7 @@ class ProfileController extends Component<Props, State> {
       this.setState({
         addEmailErrors,
         emailValidated: false,
-        changingEmails: false,
+        loading: false,
       });
     }
   };
@@ -242,7 +307,7 @@ class ProfileController extends Component<Props, State> {
     this.setState({
       errors: [],
       addEmailErrors: [],
-      changingEmails: true,
+      loading: true,
       changeEmailSuccesses: [],
     });
     try {
@@ -251,7 +316,7 @@ class ProfileController extends Component<Props, State> {
         variables: { email },
       });
       this.setState({
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [`Successfully resent verification to ${email}.`],
       });
     } catch (error) {
@@ -270,7 +335,7 @@ class ProfileController extends Component<Props, State> {
       }
       this.setState({
         errors,
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [],
       });
     }
@@ -282,7 +347,7 @@ class ProfileController extends Component<Props, State> {
     this.setState({
       errors: [],
       addEmailErrors: [],
-      changingEmails: true,
+      loading: true,
       changeEmailSuccesses: [],
     });
     try {
@@ -292,7 +357,7 @@ class ProfileController extends Component<Props, State> {
       });
       dispatch(AuthActions.setAuthUser(data.setPrimaryEmail));
       this.setState({
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [`Successfully set ${email} to be primary.`],
       });
     } catch (error) {
@@ -311,7 +376,7 @@ class ProfileController extends Component<Props, State> {
       }
       this.setState({
         errors,
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [],
       });
     }
@@ -323,7 +388,7 @@ class ProfileController extends Component<Props, State> {
     this.setState({
       errors: [],
       addEmailErrors: [],
-      changingEmails: true,
+      loading: true,
       changeEmailSuccesses: [],
     });
     try {
@@ -333,7 +398,7 @@ class ProfileController extends Component<Props, State> {
       });
       dispatch(AuthActions.setAuthUser(data.removeEmail));
       this.setState({
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [`Successfully deleted ${email}.`],
       });
     } catch (error) {
@@ -352,10 +417,111 @@ class ProfileController extends Component<Props, State> {
       }
       this.setState({
         errors,
-        changingEmails: false,
+        loading: false,
         changeEmailSuccesses: [],
       });
     }
+  };
+
+  handleNewPasswordSubmit = (event: SyntheticEvent<any>) => {
+    event.preventDefault();
+    const { client, emails, password } = this.props;
+
+    const { newPassword } = this.state;
+    const newPasswordErrors = Crypto.validateUserInputtedPassword(newPassword);
+    if (newPasswordErrors.length > 0) {
+      this.setState({ newPasswordErrors });
+      return;
+    }
+
+    this.setState({
+      loading: true,
+      loadingText: 'Fetching auth params...',
+      updatePasswordSuccesses: [],
+      newPasswordErrors: [],
+      oldPasswordErrors: [],
+    });
+    const uEmail = emails.reduce((acc, curr) => (curr.primary ? curr : acc));
+    let oldPassword: string = '';
+    client
+      .query({ query: GET_AUTH_PARAMS_QUERY, variables: { email: uEmail.email } })
+      .then(({ data }) => {
+        this.setState({ loadingText: 'Deriving old secure password...' });
+        const {
+          pwFunc, pwDigest, pwCost, pwKeySize, pwSalt,
+        } = data.getUserAuthParams;
+        return Crypto.derivePassword({
+          password,
+          pwFunc,
+          pwDigest,
+          pwCost,
+          pwKeySize,
+          pwSalt,
+        });
+      })
+      .then(({ pw }) => {
+        oldPassword = pw;
+        this.setState({ loadingText: 'Deriving new secure password...' });
+        return Crypto.derivePassword({
+          password: newPassword,
+        });
+      })
+      .then(({
+        pw, pwFunc, pwDigest, pwCost, pwKeySize, pwSalt,
+      }) => {
+        this.setState({ loadingText: 'Communicating with server...' });
+        return client.mutate({
+          mutation: UPDATE_PASSWORD_MUTATION,
+          variables: {
+            newPw: pw,
+            pw: oldPassword,
+            pwFunc,
+            pwDigest,
+            pwCost,
+            pwKeySize,
+            pwSalt,
+          },
+        });
+      })
+      .then(() => {
+        this.setState({
+          loading: false,
+          updatePasswordSuccesses: ['Successfully updated password.'],
+        });
+      })
+      .catch(({
+        graphQLErrors, networkError, message, extraInfo,
+      }) => {
+        // eslint-disable-next-line no-console
+        console.warn(message, graphQLErrors, networkError, extraInfo);
+        let oldPasswordErrors = [];
+        graphQLErrors.forEach((graphQLError) => {
+          const errorState = graphQLError.state || {};
+          oldPasswordErrors = oldPasswordErrors.concat(errorState.pw || []);
+        });
+        if (networkError) {
+          oldPasswordErrors.push(message);
+        }
+        this.setState({
+          oldPasswordErrors,
+          loading: false,
+          updatePasswordSuccesses: [],
+        });
+      });
+  };
+
+  handleNewPasswordBlur = () => {
+    const { newPassword } = this.state;
+    const newPasswordErrors = Crypto.validateUserInputtedPassword(newPassword);
+    this.setState({ newPasswordErrors });
+  };
+
+  handleChangeOldPassword = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    this.props.dispatch(AuthActions.setFormPassword(event.target.value));
+  };
+
+  handleChangeNewPassword = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    this.setState({ newPassword: event.target.value });
   };
 
   tickProfileTimes() {
@@ -369,7 +535,7 @@ class ProfileController extends Component<Props, State> {
 
   render() {
     const {
-      username, createdAt, updatedAt, emails,
+      username, createdAt, updatedAt, emails, password,
     } = this.props;
     const sortedEmails = [...emails].sort((a, b) => {
       if (!a.primary && b.primary) {
@@ -387,8 +553,14 @@ class ProfileController extends Component<Props, State> {
       addEmailInput,
       addEmailErrors,
       emailValidated,
-      changingEmails,
+      loading,
+      loadingText,
       changeEmailSuccesses,
+      oldPasswordErrors,
+      newPassword,
+      newPasswordErrors,
+      newPasswordValidated,
+      updatePasswordSuccesses,
     } = this.state;
     return (
       <ProfileControllerView
@@ -402,14 +574,25 @@ class ProfileController extends Component<Props, State> {
         addEmailInput={addEmailInput}
         addEmailErrors={addEmailErrors}
         emailValidated={emailValidated}
-        changingEmails={changingEmails}
+        loading={loading}
+        loadingText={loadingText}
         changeEmailSuccesses={changeEmailSuccesses}
+        oldPassword={password}
+        oldPasswordErrors={oldPasswordErrors}
+        newPassword={newPassword}
+        newPasswordErrors={newPasswordErrors}
+        newPasswordValidated={newPasswordValidated}
+        updatePasswordSuccesses={updatePasswordSuccesses}
         handleAddEmailSubmit={this.handleAddEmailSubmit}
         handleChangeAddEmail={this.handleChangeAddEmail}
         handleEmailBlur={this.handleEmailBlur}
         handleResendVerification={this.handleResendVerification}
         handleSetAsPrimary={this.handleSetAsPrimary}
         handleDeleteEmail={this.handleDeleteEmail}
+        handleNewPasswordSubmit={this.handleNewPasswordSubmit}
+        handleNewPasswordBlur={this.handleNewPasswordBlur}
+        handleChangeOldPassword={this.handleChangeOldPassword}
+        handleChangeNewPassword={this.handleChangeNewPassword}
       />
     );
   }
@@ -421,6 +604,7 @@ function mapStateToProps(state) {
     createdAt: AuthSelectors.getSelfCreatedAt(state),
     updatedAt: AuthSelectors.getSelfUpdatedAt(state),
     emails: AuthSelectors.getSelfEmails(state),
+    password: state.auth.password,
   };
 }
 

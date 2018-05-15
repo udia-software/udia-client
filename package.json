@@ -45,6 +45,7 @@
     "pretest": "yarn flow-coverage",
     "test": "CI=true react-scripts test --env=jsdom --coverage",
     "posttest": "yarn lint",
+    "prepublish": "yarn test",
     "lint": "eslint --config ./.eslintrc 'src/**/*.js' 'src/**/*.jsx'",
     "eject": "react-scripts eject",
     "deploy": "yarn run build && aws s3 sync build/ s3://udia-amazon --delete",

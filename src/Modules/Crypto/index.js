@@ -1,5 +1,5 @@
 // @flow
-import { pkcs5, random } from 'node-forge';
+import { pkcs5, random, util } from 'node-forge';
 
 type DerivePasswordOptions = {
   password: string | Buffer,
@@ -35,7 +35,6 @@ export default class Crypto {
     return errors;
   }
 
-
   static derivePassword(options: DerivePasswordOptions) {
     const newSalt = random.getBytesSync(128);
     const {
@@ -51,24 +50,31 @@ export default class Crypto {
     }
 
     return new Promise((resolve, reject) => {
-      pkcs5.pbkdf2(password, pwSalt, pwCost, pwKeySize, pwDigest, (err, derivedKey: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          const keylenThird = DEFAULT_KEYLEN / 3;
-          const result: DerivePasswordResult = {
-            pw: derivedKey.slice(0, keylenThird),
-            mk: derivedKey.slice(keylenThird, keylenThird * 2),
-            ak: derivedKey.slice(keylenThird * 2, DEFAULT_KEYLEN),
-            pwSalt,
-            pwCost,
-            pwKeySize,
-            pwDigest,
-            pwFunc,
-          };
-          resolve(result);
-        }
-      });
+      pkcs5.pbkdf2(
+        util.encodeUtf8(password),
+        util.encodeUtf8(pwSalt),
+        pwCost,
+        pwKeySize,
+        pwDigest,
+        (err, derivedKey: string) => {
+          if (err) {
+            reject(err);
+          } else {
+            const keylenThird = DEFAULT_KEYLEN / 3;
+            const result: DerivePasswordResult = {
+              pw: derivedKey.slice(0, keylenThird),
+              mk: derivedKey.slice(keylenThird, keylenThird * 2),
+              ak: derivedKey.slice(keylenThird * 2, DEFAULT_KEYLEN),
+              pwSalt,
+              pwCost,
+              pwKeySize,
+              pwDigest,
+              pwFunc,
+            };
+            resolve(result);
+          }
+        },
+      );
     });
   }
 }
