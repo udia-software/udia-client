@@ -86,28 +86,30 @@ const ProfileControllerView = ({
       <h1>My Profile</h1>
       <div>
         <dl>
-          <div style={{ display: 'grid', gridTemplateAreas: '"usernameLabel usernameVal"' }}>
-            <dt style={{ gridArea: 'usernameLabel', justifySelf: 'center' }}>User &rarr;</dt>
-            <dd style={{ gridArea: 'usernameVal', justifySelf: 'center' }}>&larr; {username}</dd>
-          </div>
-          <dt>
+          <dt style={{ textAlign: 'center', margin: '0' }}>
             <div
               style={{
                 display: 'grid',
-                gridAutoRows: 'auto',
+                gridTemplateRows: '2em auto',
+                gridTemplateColumns: '1fr 1fr 1fr',
                 gridTemplateAreas:
-                  '"joined ago"' +
-                  '"time0 time0"' +
-                  '"time1 time1"' +
-                  '"time2 time2"' +
-                  '"time3 time3"' +
-                  '"time4 time4"' +
-                  '"time5 time5"' +
-                  '"time6 time6"',
+                  '"user name joined"' +
+                  '". time0 ."' +
+                  '". time1 ."' +
+                  '". time2 ."' +
+                  '". time3 ."' +
+                  '". time4 ."' +
+                  '". time5 ."' +
+                  '". time6 ."',
               }}
             >
-              <span style={{ gridArea: 'joined', justifySelf: 'start' }}>Joined &rarr;</span>
-              <span style={{ gridArea: 'ago', justifySelf: 'end' }}>&larr; ago.</span>
+              <span style={{ gridArea: 'user', justifySelf: 'end' }}>User &rarr;</span>
+              <span
+                style={{ gridArea: 'name', justifySelf: 'center', textDecoration: 'underline' }}
+              >
+                {username}
+              </span>
+              <span style={{ gridArea: 'joined', justifySelf: 'start' }}>&larr; joined</span>
               {exactHumanCreatedAgo.split(',').map((segments, index) => (
                 <span key={segments} style={{ justifySelf: 'center', gridArea: `time${index}` }}>
                   {segments}
@@ -122,7 +124,7 @@ const ProfileControllerView = ({
               margin: '0',
             }}
           >
-            on<br />
+            ago on<br />
             {utc(createdAt)
               .local()
               .format(MOMENT_FORMAT_STRING)}
@@ -134,28 +136,31 @@ const ProfileControllerView = ({
                   style={{
                     display: 'grid',
                     gridAutoRows: 'auto',
+                    gridTemplateColumns: '1fr 1fr 1fr',
                     gridTemplateAreas:
-                      '"password pwago"' +
-                      '"time0 time0"' +
-                      '"time1 time1"' +
-                      '"time2 time2"' +
-                      '"time3 time3"' +
-                      '"time4 time4"' +
-                      '"time5 time5"' +
-                      '"time6 time6"',
+                      '"password . pwago"' +
+                      '". time0 ."' +
+                      '". time1 ."' +
+                      '". time2 ."' +
+                      '". time3 ."' +
+                      '". time4 ."' +
+                      '". time5 ."' +
+                      '". time6 ."',
+                    placeItems: 'center',
+                    placeContent: 'center',
                   }}
                 >
-                  <span style={{ gridArea: 'password', justifySelf: 'start' }}>PW changed</span>
-                  <span style={{ gridArea: 'pwago', justifySelf: 'end' }}>ago.</span>
                   {exactHumanUpdatedAgo.split(',').map((segment, index) => (
                     <span key={segment} style={{ justifySelf: 'center', gridArea: `time${index}` }}>
                       {segment}
                     </span>
                   ))}
+                  <span style={{ gridArea: 'password', justifySelf: 'center' }}>Password</span>
+                  <span style={{ gridArea: 'pwago', justifySelf: 'center' }}>changed</span>
                 </div>
               </dt>
               <dd style={{ paddingTop: '1em', textAlign: 'center', margin: '0' }}>
-                on<br />
+                ago on<br />
                 {utc(updatedAt)
                   .local()
                   .format(MOMENT_FORMAT_STRING)}

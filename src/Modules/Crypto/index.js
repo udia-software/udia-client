@@ -35,6 +35,10 @@ export default class Crypto {
     return errors;
   }
 
+  static getRandomCharacters(length: number = 6) {
+    return random.getBytesSync(length);
+  }
+
   static derivePassword(options: DerivePasswordOptions) {
     const newSalt = random.getBytesSync(128);
     const {

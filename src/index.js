@@ -34,18 +34,20 @@ class RefreshingApolloProvider extends Component<Props, State> {
       client: initializeApolloClient(),
     };
   }
+
   shouldComponentUpdate(nextProps) {
-    const update = this.props.jwt !== nextProps.jwt;
-    if (update) {
-      const newClient = initializeApolloClient();
-      newClient.resetStore();
-      this.setState({ client: newClient });
-    }
-    return update;
+    return this.props.jwt !== nextProps.jwt;
   }
+
+  componentDidUpdate = async () => {
+    const newClient = initializeApolloClient();
+    await newClient.resetStore();
+    this.setState({ client: newClient });
+  };
+
   render() {
     // eslint-disable-next-line no-console
-    console.log(`Rehydrated ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
+    console.log(`Refreshed ApolloProvider ${this.props.jwt ? '(JWT Set!)' : '(No JWT)'}`);
     return <ApolloProvider {...this.props} client={this.state.client} />;
   }
 }
