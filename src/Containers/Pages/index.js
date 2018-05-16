@@ -13,7 +13,6 @@ import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
 import VerifyEmail from './VerifyEmail';
-import WebCryptoPage from './WebCrypto';
 
 export {
   About,
@@ -28,5 +27,4 @@ export {
   SignOut,
   SignUp,
   VerifyEmail,
-  WebCryptoPage,
 };

@@ -74,12 +74,23 @@ class AboutPage extends Component<Props, State> {
     let clientNow = utc().local();
     const skew = clientNow.diff(serverNow, 'milliseconds');
     let serverDown = false;
-    if (!loading && timerHeartbeat.diff(serverNow, 'seconds') > 4) {
+    if (!loading && timerHeartbeat.diff(serverNow, 'minutes') > 1) {
       clientNow = timerHeartbeat;
       serverDown = true;
     }
+    let serverWarn = false;
+    if (!serverDown && !loading && timerHeartbeat.diff(serverNow, 'seconds') > 4) {
+      clientNow = timerHeartbeat;
+      serverWarn = true;
+    }
     if (loading) {
       serverNow = clientNow;
+    }
+    let serverColor = 'auto';
+    if (serverDown) {
+      serverColor = 'red';
+    } else if (serverWarn) {
+      serverColor = 'yellow';
     }
     return (
       <CenterContainer>
@@ -110,10 +121,11 @@ class AboutPage extends Component<Props, State> {
               </a>
             </pre>
           </dd>
-          <dt style={{ color: serverDown ? 'red' : undefined }}>
+          <dt style={{ color: serverColor }}>
             Server Time{serverDown && ' (ERR Server Down)'}
+            {serverWarn && ' (WARN High Skew)'}
           </dt>
-          <dd style={{ color: serverDown ? 'red' : undefined }}>
+          <dd style={{ color: serverColor }}>
             <pre>{serverNow.format(MOMENT_FORMAT_STRING)}</pre>
           </dd>
           <dt>Client Time (skew {skew}ms)</dt>
