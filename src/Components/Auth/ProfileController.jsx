@@ -228,6 +228,7 @@ class ProfileController extends Component<Props, State> {
       await client.query({
         query: CHECK_EMAIL_EXISTS,
         variables: { email: addEmailInput },
+        fetchPolicy: 'no-cache',
       });
       this.setState({ emailValidated: true, loading: false });
     } catch (error) {
@@ -270,6 +271,7 @@ class ProfileController extends Component<Props, State> {
         variables: {
           email: addEmailInput,
         },
+        fetchPolicy: 'no-cache',
       });
       dispatch(AuthActions.setAuthUser(data.addEmail));
       this.setState({
@@ -314,6 +316,7 @@ class ProfileController extends Component<Props, State> {
       await client.mutate({
         mutation: SEND_VERIFICATION_EMAIL_MUTATION,
         variables: { email },
+        fetchPolicy: 'no-cache',
       });
       this.setState({
         loading: false,
@@ -354,6 +357,7 @@ class ProfileController extends Component<Props, State> {
       const { data } = await client.mutate({
         mutation: SET_PRIMARY_EMAIL_MUTATION,
         variables: { email },
+        fetchPolicy: 'no-cache',
       });
       dispatch(AuthActions.setAuthUser(data.setPrimaryEmail));
       this.setState({
@@ -395,6 +399,7 @@ class ProfileController extends Component<Props, State> {
       const { data } = await client.mutate({
         mutation: REMOVE_EMAIL_MUTATION,
         variables: { email },
+        fetchPolicy: 'no-cache',
       });
       dispatch(AuthActions.setAuthUser(data.removeEmail));
       this.setState({
@@ -444,7 +449,11 @@ class ProfileController extends Component<Props, State> {
     const uEmail = emails.reduce((acc, curr) => (curr.primary ? curr : acc));
     let oldPassword: string = '';
     client
-      .query({ query: GET_AUTH_PARAMS_QUERY, variables: { email: uEmail.email } })
+      .query({
+        query: GET_AUTH_PARAMS_QUERY,
+        variables: { email: uEmail.email },
+        fetchPolicy: 'no-cache',
+      })
       .then(({ data }) => {
         this.setState({ loadingText: 'Deriving old secure password...' });
         const {
