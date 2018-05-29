@@ -7,7 +7,7 @@
 
 **Universal Dream | Infinite Awareness**
 
-[![UDIA](logo.svg)](https://udia.ca)
+[![UDIA](https://api.udia.ca/static/logo/logo-256x256.png)](https://udia.ca)
 
 ## Quickstart
 
@@ -25,11 +25,6 @@ Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 To test your react app:
 
 * Run the test with `yarn test`
-
-## Acknowledgements
-
-This project is trialing the Browserstack cross browser testing functionality.
-[![Browserstack](https://bstacksupport.zendesk.com/attachments/token/38rkoBZFSHEAe9MeHzCOTi1cS/?name=Logo-01.svg)](https://www.browserstack.com/)
 
 ## License
 
