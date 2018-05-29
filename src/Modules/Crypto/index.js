@@ -1,5 +1,5 @@
 // @flow
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer/'; // not a typo, using buffer browser polyfill
 
 /**
  * These are options that we receive from the server.
@@ -14,12 +14,12 @@ type DerivePasswordOptions = {
 };
 
 /**
- * These are the values that we send to the server.
+ * These are the derived values
  */
 type DerivePasswordResult = {
-  pw: string, // Proof of secret, derived from user password.
-  mk: string,
-  ak: string,
+  pw: string, // Proof of secret, derived from user password. Send to server
+  mk: string, // Do not send to server
+  ak: string, // Do not send to server
   pwSalt: string,
   pwCost: number,
   pwKeySize: number,
