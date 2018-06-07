@@ -14,9 +14,9 @@
 Setup server locally. Refer to [udia-software/udia](https://github.com/udia-software/udia).
 Afterwards, to start the client locally:
 
-* Clone Repo: `git clone git@github.com:udia-software/udia-client.git && cd udia-client`
-* Install dependencies with `yarn`
-* Run the client with `yarn start`
+- Clone Repo: `git clone git@github.com:udia-software/udia-client.git && cd udia-client`
+- Install dependencies with `yarn`
+- Run the client with `yarn start`
 
 Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 
@@ -24,7 +24,7 @@ Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 
 To test your react app:
 
-* Run the test with `yarn test`
+- Run the test with `yarn test`
 
 ## License
 
