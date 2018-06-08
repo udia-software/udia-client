@@ -21,7 +21,8 @@ html {
   width: 100%;
 }
 
-body {
+body,
+#root {
   padding: 0;
   margin: 0;
   min-height: 100%;
@@ -35,7 +36,9 @@ body {
   justify-content: center;
 }
 
+/* The no-script block of text must be distinct */
 #no-script-content {
+  background-color: #000000;
   border-color: #ffffff;
   border-radius: 3px;
   border-width: 1px;
@@ -43,35 +46,25 @@ body {
   padding: 1em;
 }
 
-#root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  margin: 0;
-}
-
+/* The loading logo must always look cool */
 #loading-logo {
   max-height: 80px;
   padding-top: 2em;
 }
-
-.loader-slash {
+#loading-logo>.loader-slash {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
 }
-
-.loader-bracket {
+#loading-logo>.loader-bracket {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
+  animation-delay: -0.1s;
 }
-
-.loader-hexagon {
+#loading-logo>.loader-hexagon {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
   animation-delay: -0.2s;
 }
-
 @keyframes pulse {
   0% {
     fill: hsla(0, 0%, 100%, 0);
