@@ -1,7 +1,9 @@
 import React from "react";
+import { ApolloProvider } from "react-apollo";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./Components/App";
+import initApolloClient from "./Modules/InitApolloClient";
 import registerServiceWorker from "./registerServiceWorker";
 
 function render(AppComponent: (() => JSX.Element), root: HTMLElement | null) {
@@ -10,9 +12,11 @@ function render(AppComponent: (() => JSX.Element), root: HTMLElement | null) {
   }
 
   ReactDOM.render(
-    <BrowserRouter>
-      <AppComponent />
-    </BrowserRouter>,
+    <ApolloProvider client={initApolloClient()}>
+      <BrowserRouter>
+        <AppComponent />
+      </BrowserRouter>
+    </ApolloProvider>,
     root
   );
 }
