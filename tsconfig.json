@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": ["es6", "dom", "dom.iterable", "scripthost"],
+    "lib": ["es6", "dom", "dom.iterable", "scripthost", "esnext.asynciterable"],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -25,8 +25,8 @@
     "target": "es6"
   },
   "include": [
-    "src/**/*",
-    "typings"
+    "images.d.ts",
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
