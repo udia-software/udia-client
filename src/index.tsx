@@ -1,11 +1,25 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from './App';
-import './index.css';
-import registerServiceWorker from './registerServiceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./Components/App";
+import registerServiceWorker from "./registerServiceWorker";
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root') as HTMLElement
-);
-registerServiceWorker();
+function render(AppComponent: (() => JSX.Element), root: HTMLElement | null) {
+  if (!root) {
+    throw new Error("Element `root` does not exist!");
+  }
+
+  ReactDOM.render(
+    <BrowserRouter>
+      <AppComponent />
+    </BrowserRouter>,
+    root
+  );
+}
+
+if (process.env.NODE_ENV !== "test") {
+  render(App, document.getElementById("root"));
+  registerServiceWorker();
+}
+
+export default render;
