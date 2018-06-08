@@ -9,5 +9,4 @@ cache:
 script:
   - yarn test
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -s ./flow-coverage -F flow -n 'Flow Types Coverage'
   - bash <(curl -s https://codecov.io/bash) -s ./coverage -F jest -n 'Jest Test Coverage'
