@@ -30,7 +30,8 @@ interface IMasterKeyBuffers {
 }
 
 /**
- * Collection of helper methods for encryption in accordance with the UDIA API specification
+ * Collection of helper methods for encryption, decryption, signing, and verification
+ * In accordance with the UDIA API specification
  */
 export default class CryptoManager {
   private static DEFAULT_ITERATIONS = 100000;
@@ -112,7 +113,7 @@ export default class CryptoManager {
     return randomValues;
   }
 
-  public async deriveMasterKeys(
+  public async deriveMasterKeyBuffers(
     options: IDerivePasswordOptions
   ): Promise<IMasterKeyBuffers> {
     const {
@@ -134,10 +135,10 @@ export default class CryptoManager {
       );
     }
 
-    const uipBuffer = new Buffer(uip, "utf8");
-    let pwSaltBuffer = new Buffer(this.getRandomValues());
+    const uipBuffer = Buffer.from(uip, "utf8");
+    let pwSaltBuffer = Buffer.from(this.getRandomValues().buffer);
     if (pwSalt) {
-      pwSaltBuffer = new Buffer(pwSalt, "base64");
+      pwSaltBuffer = Buffer.from(pwSalt, "base64");
     }
 
     const cryptoKey = await this.subtleCrypto.importKey(
@@ -148,7 +149,7 @@ export default class CryptoManager {
       ["deriveBits"]
     );
 
-    const masterKeyBuffer = await this.subtleCrypto.deriveBits(
+    const masterBuffer = await this.subtleCrypto.deriveBits(
       {
         name: pwFunc,
         salt: pwSaltBuffer,
@@ -158,15 +159,13 @@ export default class CryptoManager {
       cryptoKey,
       pwKeySize * 8 // 8 bits in a byte
     );
-    const sepPwIdx = masterKeyBuffer.byteLength / 3;
+    const sepPwIdx = masterBuffer.byteLength / 3;
     const sepMkIdx = sepPwIdx * 2;
 
     return {
-      pw: new Buffer(masterKeyBuffer.slice(0, sepPwIdx)),
-      mk: new Buffer(masterKeyBuffer.slice(sepPwIdx, sepMkIdx)),
-      ak: new Buffer(
-        masterKeyBuffer.slice(sepMkIdx, masterKeyBuffer.byteLength)
-      ),
+      pw: Buffer.from(masterBuffer.slice(0, sepPwIdx)),
+      mk: Buffer.from(masterBuffer.slice(sepPwIdx, sepMkIdx)),
+      ak: Buffer.from(masterBuffer.slice(sepMkIdx, masterBuffer.byteLength)),
       pwSalt: pwSaltBuffer,
       pwCost,
       pwKeySize,
@@ -174,4 +173,149 @@ export default class CryptoManager {
       pwFunc
     };
   }
+
+  /**
+   * Generate a new CryptoKey for symmetric encryption.
+   * Uses Advanced Encryption Standard - Galois Counter Mode, length 256
+   */
+  public async generateSymmetricEncryptionKey() {
+    return this.subtleCrypto.generateKey(
+      {
+        name: "AES-GCM",
+        length: 256
+      },
+      true,
+      ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
+    );
+  }
+
+  /**
+   * Generate a new CryptoKeyPair for asymmetric signing.
+   * Uses Elliptic Curve Digital Signature Algorithm, curve P-521
+   */
+  public async generateAsymmetricSigningKeyPair() {
+    return this.subtleCrypto.generateKey(
+      {
+        name: "ECDSA",
+        namedCurve: "P-521"
+      },
+      true,
+      ["sign", "verify"]
+    );
+  }
+
+  /**
+   * Generate a new CryptoKeyPair for asymmetric encryption.
+   * Rivest–Shamir–Adleman Optimal Asymmetric Encryption Padding, publicExponent 3, modulusLength 4096
+   */
+  public async generateAsymmetricEncryptionKeyPair() {
+    return this.subtleCrypto.generateKey(
+      {
+        name: "RSA-OAEP",
+        publicExponent: new Uint8Array([1, 0, 1]),
+        modulusLength: 4096,
+        hash: { name: "SHA-512" }
+      },
+      true,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  /**
+   * Export a crypto key as an array buffer
+   * @param {CryptoKey} key
+   */
+  public async exportRawKey(key: CryptoKey) {
+    return this.subtleCrypto.exportKey("raw", key);
+  }
+
+  /**
+   * Export a crypto key as a JSON Web Key
+   * @param {CryptoKey} key
+   */
+  public async exportJsonWebKey(key: CryptoKey) {
+    return this.subtleCrypto.exportKey("jwk", key);
+  }
+
+  /**
+   * Encrypt a buffer using a secret (like mk)
+   * Return a string payload of base64 encoded parameters separated by `:`
+   * @param {Buffer} unencryptedInput unencrypted buffer
+   * @param {Buffer} secret encryption secret key (usually mk)
+   */
+  public async encryptWithSecret(unencryptedInput: Buffer, secret: Buffer) {
+    const secretHash = await this.subtleCrypto.digest("SHA-512", secret);
+    const iv = this.getRandomValues(12);
+    const alg = { name: "AES-GCM", iv };
+    const key = await this.subtleCrypto.importKey(
+      "raw",
+      secretHash,
+      "AES-GCM",
+      false,
+      ["encrypt"]
+    );
+    const encryptedOutput = await this.subtleCrypto.encrypt(
+      alg,
+      key,
+      unencryptedInput
+    );
+    // convert to base64, join by colon
+    const ivBase64 = Buffer.from(iv.buffer).toString("base64");
+    const encBase64 = Buffer.from(encryptedOutput).toString("base64");
+    return `${ivBase64}:${encBase64}`;
+  }
+
+  /**
+   * Decrypt a string payload using a secret (like mk)
+   * Return an ArrayBuffer containing the original encrypted value
+   * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
+   * @param {Buffer} secret decryption secret key (usually mk)
+   */
+  public async decryptWithSecret(
+    encryptedPayload: string,
+    secret: Buffer
+  ) {
+    const encPayloadParts = encryptedPayload.split(":");
+    if (encPayloadParts.length !== 2) {
+      throw new Error(`EncryptedPayload must be in form "ivBase64:encBase64"`);
+    }
+    const [ivBase64, encBase64] = encPayloadParts;
+    const iv = Buffer.from(ivBase64, "base64");
+    const encData = Buffer.from(encBase64, "base64");
+
+    const secretHash = await this.subtleCrypto.digest("SHA-512", secret);
+    const key = await this.subtleCrypto.importKey(
+      "raw",
+      secretHash,
+      "AES-GCM",
+      false,
+      ["decrypt"]
+    );
+    return this.subtleCrypto.decrypt({
+      name: "AES-GCM",
+      iv,
+    }, key, encData);
+
+  }
+
+  /**
+   * Helper method for string payloads.
+   * @param {string} unencryptedString unencrypted string utf8 encoded
+   * @param {Buffer} secret encryption secret key (usually mk)
+   */
+  public async encryptFromStringWithSecret(unencryptedString: string, secret: Buffer) {
+    return this.encryptWithSecret(Buffer.from(unencryptedString), secret);
+  }
+
+  /**
+   * Helper method for returning string output.
+   * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
+   * @param {Buffer} secret decryption secret key (usually mk)
+   */
+  public async decryptToStringWithSecret(encryptedPayload: string, secret: Buffer) {
+    const decData = await this.decryptWithSecret(encryptedPayload, secret);
+    return Buffer.from(decData).toString();
+  }
+
+
 }
