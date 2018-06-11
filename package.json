@@ -2,6 +2,21 @@
   "name": "udia-client",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom --coverage",
+    "eject": "react-scripts-ts eject",
+    "lint": "tslint 'src/**/*.tsx' 'src/**/*.ts'"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ]
+  },
   "dependencies": {
     "apollo-cache-inmemory": "^1.2.2",
     "apollo-client": "^2.3.2",
@@ -22,13 +37,6 @@
     "redux-persist": "^5.10.0",
     "styled-components": "^3.3.2",
     "subscriptions-transport-ws": "^0.9.9"
-  },
-  "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom --coverage",
-    "eject": "react-scripts-ts eject",
-    "lint": "tslint 'src/**/*.tsx' 'src/**/*.ts'"
   },
   "devDependencies": {
     "@types/jest": "^23.0.0",
