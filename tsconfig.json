@@ -25,8 +25,8 @@
     "target": "es6"
   },
   "include": [
-    "images.d.ts",
-    "src/**/*"
+    "src/types/index.d.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

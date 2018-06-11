@@ -1,13 +1,14 @@
 import React from "react";
-import { RouteProps } from "react-router";
-import { Link, LinkProps } from "react-router-dom";
+import { Link, LinkProps, RouteProps } from "react-router-dom";
+import { withTheme } from "styled-components";
+import { ThemedComponentProps } from "../Types";
 import styled from "./AppStyles";
 
 const HeaderContainer = styled.div`
   grid-area: header;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: #040404;
+  background-color: ${props => props.theme.panelBackgroundColor};
   align-items: center;
   padding: 0 0.4em;
 `;
@@ -17,16 +18,14 @@ const StyledTitleLink = styled(Link)`
   justify-self: start;
   padding: 0.4em;
   font-weight: 400;
-  color: #fff;
-  text-decoration: none;
   font-size: x-large;
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
+  border-left: 1px solid ${props => props.theme.inverseColor};
+  border-right: 1px solid ${props => props.theme.inverseColor};
   transition-property: border-left, border-right;
   transition-duration: 0.2s;
   &:hover {
-    border-right: 1px solid #fff;
-    border-left: 1px solid #fff;
+    border-right: 1px solid ${props => props.theme.primaryColor};
+    border-left: 1px solid ${props => props.theme.primaryColor};
   }
 `;
 
@@ -40,24 +39,25 @@ const HeaderSubMenu = styled.div`
   align-content: center;
 `;
 
-export default class Header extends React.Component<RouteProps> {
+class Header extends React.Component<ThemedComponentProps<RouteProps>> {
   public render() {
-    const { location } = this.props;
+    const { location, theme } = this.props;
     const StyledSubTitleLink = StyledTitleLink.extend.attrs({
       style: ({ to }: LinkProps) => ({
         color:
           to === ((location && location.pathname) || "")
-            ? "hsla(0, 0%, 100%, 1)"
-            : "hsla(0, 0%, 100%, 0.5)"
+            ? theme.primaryColor
+            : theme.intermediateColor
       })
     })`
       font-size: medium;
       padding: 0.4em;
-      color: hsla(0, 0%, 100%, 0.5);
+      color: ${theme.intermediateColor};
+      border-right: 1px solid ${theme.inverseColor};
+      border-left: 1px solid ${theme.inverseColor};
       &:hover {
-        color: hsla(0, 0%, 100%, 1);
-        border-right: 1px solid #fff;
-        border-left: 1px solid #fff;
+        border-right: 1px solid ${theme.primaryColor};
+        border-left: 1px solid ${theme.primaryColor};
       }
     `;
 
@@ -71,3 +71,5 @@ export default class Header extends React.Component<RouteProps> {
     );
   }
 }
+
+export default withTheme(Header);

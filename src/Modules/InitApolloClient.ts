@@ -6,7 +6,6 @@ import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { OperationDefinitionNode } from "graphql";
 import {
-  AUTH_TOKEN,
   GRAPHQL_HTTP_ENDPOINT,
   GRAPHQL_SUBSCRIPTIONS_ENDPOINT
 } from "../Constants";
@@ -14,8 +13,9 @@ import {
 /**
  * Function for initalizing the Apollo Client for the app
  */
-export default function initApolloClient() {
-  const token = localStorage.getItem(AUTH_TOKEN);
+export default function initApolloClient(token: string | null) {
+  // tslint:disable-next-line:no-console
+  console.log(`Initializing ApolloProvider ${token ? "(JWT!)" : "(No JWT)"}`);
 
   // Build the Apollo HTTP Link with the authentication token.
   const middlewareAuthLink = new ApolloLink((operation, forward) => {
