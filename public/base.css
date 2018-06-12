@@ -15,8 +15,7 @@
 }
 
 html,
-body,
-#root {
+body {
   background-color: #141414;
   color: #ffffff;
   height: 100%;
@@ -41,22 +40,30 @@ body,
   border-style: dotted;
   padding: 1em;
 }
+#no-script-content a {
+  transition: color 0.1s ease;
+  text-decoration: none;
+  color: hsla(0, 0%, 100%, 0.4);
+}
+#no-script-content a:hover {
+  color: #ffffff;
+}
 
 /* The loading logo must always look cool */
-#loading-logo {
+.loading-logo {
   max-height: 80px;
   padding-top: 2em;
 }
-#loading-logo > .loader-slash {
+.loading-logo > .loader-slash {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
 }
-#loading-logo > .loader-bracket {
+.loading-logo > .loader-bracket {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
   animation-delay: -0.1s;
 }
-#loading-logo > .loader-hexagon {
+.loading-logo > .loader-hexagon {
   animation: pulse 2s ease-in-out infinite;
   -webkit-animation: pulse 2s ease-in-out infinite;
   animation-delay: -0.2s;

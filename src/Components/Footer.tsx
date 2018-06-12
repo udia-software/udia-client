@@ -1,6 +1,10 @@
 import React from "react";
-import { RouteProps } from "react-router";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { Dispatch } from "redux";
+import { IRootState } from "../Modules/Reducers/RootReducer";
+import { IToggleDarkThemeAction, toggleDarkTheme } from "../Modules/Reducers/Theme/Actions"
+import { isUsingDarkTheme } from "../Modules/Reducers/Theme/Selectors";
 import styled from "./AppStyles";
 import Logo from "./Static/Logo";
 
@@ -42,8 +46,18 @@ const StyledFooterLinksContainer = styled.div`
   }
 `;
 
-export default class Footer extends React.Component<RouteProps> {
+const ToggleThemeLink = styled.a`
+  cursor: pointer;
+`;
+
+interface IFooterProps {
+  isDarkTheme: boolean;
+  toggleTheme: () => IToggleDarkThemeAction
+}
+
+class Footer extends React.Component<IFooterProps> {
   public render() {
+    const { isDarkTheme, toggleTheme } = this.props;
     return (
       <FooterContainer>
         <StyledFooterMapContainer>
@@ -64,9 +78,20 @@ export default class Footer extends React.Component<RouteProps> {
             <Link to="/">Home</Link>
             <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>
+            <ToggleThemeLink onClick={toggleTheme}>Toggle {isDarkTheme ? "Light" : "Dark"} Theme</ToggleThemeLink>
           </div>
         </StyledFooterLinksContainer>
       </FooterContainer>
     );
   }
 }
+
+const mapStateToProps = (state: IRootState) => ({
+  isDarkTheme: isUsingDarkTheme(state)
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  toggleTheme: () => dispatch(toggleDarkTheme())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Footer);
