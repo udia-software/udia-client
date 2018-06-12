@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
-import styled, { DarkTheme } from "./AppStyles";
+import styled from "./AppStyles";
 import Footer from "./Footer";
 import Header from "./Header";
 import Home from "./Home";
@@ -22,6 +21,7 @@ const AppContainer = styled.div`
   color: ${props => props.theme.primaryColor};
 
   a {
+    transition: color 0.1s ease;
     text-decoration: none;
     color: ${props => props.theme.intermediateColor};
     &:hover {
@@ -34,19 +34,15 @@ const BodyContainer = styled.div`
   grid-template-area: content;
 `;
 
-const App = () => (
-  <ThemeProvider theme={DarkTheme}>
-    <AppContainer>
-      <Header />
-      <BodyContainer>
-        <Switch>
-          <Route exact={true} path="/" component={Home} />
-          <Route component={NotFound} />
-        </Switch>
-      </BodyContainer>
-      <Footer />
-    </AppContainer>
-  </ThemeProvider>
+export default () => (
+  <AppContainer>
+    <Header />
+    <BodyContainer>
+      <Switch>
+        <Route exact={true} path="/" component={Home} />
+        <Route component={NotFound} />
+      </Switch>
+    </BodyContainer>
+    <Footer />
+  </AppContainer>
 );
-
-export default App;

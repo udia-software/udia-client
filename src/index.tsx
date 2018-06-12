@@ -5,10 +5,14 @@ import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./Components/App";
 import RefreshingApolloProvider from "./Components/Wrapper/RefreshingApolloProvider";
+import ToggleableThemeProvider from "./Components/Wrapper/ToggleableThemeProvider";
 import configureReduxStore from "./Modules/ConfigureReduxStore";
 import registerServiceWorker from "./registerServiceWorker";
 
-function render(AppComponent: (() => JSX.Element), root: HTMLElement | null) {
+function render(
+  AppComponent: any, // Renderer accepts a ton of stuff, just pass in whatever
+  root: HTMLElement | null
+) {
   if (!root) {
     throw new Error("Element `root` does not exist!");
   }
@@ -17,9 +21,11 @@ function render(AppComponent: (() => JSX.Element), root: HTMLElement | null) {
     <ReduxProvider store={store}>
       <PersistGate persistor={persistor}>
         <RefreshingApolloProvider>
-          <BrowserRouter>
-            <AppComponent />
-          </BrowserRouter>
+          <ToggleableThemeProvider>
+            <BrowserRouter>
+              <AppComponent />
+            </BrowserRouter>
+          </ToggleableThemeProvider>
         </RefreshingApolloProvider>
       </PersistGate>
     </ReduxProvider>,
