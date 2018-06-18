@@ -3,7 +3,10 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { IRootState } from "../Modules/Reducers/RootReducer";
-import { IToggleDarkThemeAction, toggleDarkTheme } from "../Modules/Reducers/Theme/Actions"
+import {
+  IToggleDarkThemeAction,
+  toggleDarkTheme
+} from "../Modules/Reducers/Theme/Actions";
 import { isUsingDarkTheme } from "../Modules/Reducers/Theme/Selectors";
 import styled from "./AppStyles";
 import Logo from "./Static/Logo";
@@ -52,7 +55,7 @@ const ToggleThemeLink = styled.a`
 
 interface IFooterProps {
   isDarkTheme: boolean;
-  toggleTheme: () => IToggleDarkThemeAction
+  toggleTheme: () => IToggleDarkThemeAction;
 }
 
 class Footer extends React.Component<IFooterProps> {
@@ -76,9 +79,11 @@ class Footer extends React.Component<IFooterProps> {
           <h3>Links</h3>
           <div>
             <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
+            <Link to="/health">Health</Link>
             <Link to="/contact">Contact</Link>
-            <ToggleThemeLink onClick={toggleTheme}>Toggle {isDarkTheme ? "Light" : "Dark"} Theme</ToggleThemeLink>
+            <ToggleThemeLink onClick={toggleTheme}>
+              Toggle {isDarkTheme ? "Light" : "Dark"} Theme
+            </ToggleThemeLink>
           </div>
         </StyledFooterLinksContainer>
       </FooterContainer>
@@ -94,4 +99,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   toggleTheme: () => dispatch(toggleDarkTheme())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Footer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Footer);

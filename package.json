@@ -25,6 +25,7 @@
     "apollo-link-ws": "^1.0.8",
     "buffer": "^5.1.0",
     "graphql": "^0.13.0",
+    "graphql-tag": "^2.9.2",
     "localforage": "^1.7.1",
     "react": "^16.4.0",
     "react-apollo": "^2.1.4",
