@@ -11,18 +11,18 @@ declare var window: ICryptoWindow;
 
 interface IDerivePasswordOptions {
   userInputtedPassword: string; // raw user password (utf8 encoded string)
-  pwSalt?: string; // optional salt from getAuthParams (base64 encoded string)
+  pwNonce?: string; // optional salt from getAuthParams (base64 encoded string)
   pwCost?: number; // number of iterations
   pwKeySize?: number; // derived key buffer size
   pwDigest?: string; // webcrypto digest function to use
   pwFunc?: string; // webcrypto password derivation function to use
 }
 
-interface IMasterKeyBuffers {
+export interface IMasterKeyBuffers {
   pw: Buffer;
   mk: Buffer;
   ak: Buffer;
-  pwSalt: Buffer;
+  pwNonce: Buffer;
   pwCost: number;
   pwKeySize: number;
   pwDigest: string;
@@ -118,7 +118,7 @@ export default class CryptoManager {
   ): Promise<IMasterKeyBuffers> {
     const {
       userInputtedPassword: uip,
-      pwSalt,
+      pwNonce,
       pwCost = CryptoManager.DEFAULT_ITERATIONS,
       pwKeySize = CryptoManager.DEFAULT_KEYLEN,
       pwDigest = CryptoManager.DEFAULT_DIGEST,
@@ -135,11 +135,16 @@ export default class CryptoManager {
       );
     }
 
-    const uipBuffer = Buffer.from(uip, "utf8");
-    let pwSaltBuffer = Buffer.from(this.getRandomValues().buffer);
-    if (pwSalt) {
-      pwSaltBuffer = Buffer.from(pwSalt, "base64");
+    let pwNonceBuffer = Buffer.from(this.getRandomValues().buffer);
+    if (pwNonce) {
+      pwNonceBuffer = Buffer.from(pwNonce, "base64");
     }
+
+    const uipBuffer = Buffer.from(uip, "utf8");
+    const pwSaltBuffer = await this.subtleCrypto.digest(
+      pwDigest,
+      Buffer.concat([uipBuffer, pwNonceBuffer])
+    );
 
     const cryptoKey = await this.subtleCrypto.importKey(
       "raw",
@@ -149,12 +154,15 @@ export default class CryptoManager {
       ["deriveBits"]
     );
 
+    // tslint:disable-next-line:no-console
+    console.log(cryptoKey);
+
     const masterBuffer = await this.subtleCrypto.deriveBits(
       {
         name: pwFunc,
         salt: pwSaltBuffer,
         iterations: pwCost,
-        hash: pwDigest
+        hash: { name: pwDigest }
       },
       cryptoKey,
       pwKeySize * 8 // 8 bits in a byte
@@ -166,7 +174,7 @@ export default class CryptoManager {
       pw: Buffer.from(masterBuffer.slice(0, sepPwIdx)),
       mk: Buffer.from(masterBuffer.slice(sepPwIdx, sepMkIdx)),
       ak: Buffer.from(masterBuffer.slice(sepMkIdx, masterBuffer.byteLength)),
-      pwSalt: pwSaltBuffer,
+      pwNonce: pwNonceBuffer,
       pwCost,
       pwKeySize,
       pwDigest,
@@ -271,10 +279,7 @@ export default class CryptoManager {
    * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
    * @param {Buffer} secret decryption secret key (usually mk)
    */
-  public async decryptWithSecret(
-    encryptedPayload: string,
-    secret: Buffer
-  ) {
+  public async decryptWithSecret(encryptedPayload: string, secret: Buffer) {
     const encPayloadParts = encryptedPayload.split(":");
     if (encPayloadParts.length !== 2) {
       throw new Error(`EncryptedPayload must be in form "ivBase64:encBase64"`);
@@ -291,11 +296,14 @@ export default class CryptoManager {
       false,
       ["decrypt"]
     );
-    return this.subtleCrypto.decrypt({
-      name: "AES-GCM",
-      iv,
-    }, key, encData);
-
+    return this.subtleCrypto.decrypt(
+      {
+        name: "AES-GCM",
+        iv
+      },
+      key,
+      encData
+    );
   }
 
   /**
@@ -303,7 +311,10 @@ export default class CryptoManager {
    * @param {string} unencryptedString unencrypted string utf8 encoded
    * @param {Buffer} secret encryption secret key (usually mk)
    */
-  public async encryptFromStringWithSecret(unencryptedString: string, secret: Buffer) {
+  public async encryptFromStringWithSecret(
+    unencryptedString: string,
+    secret: Buffer
+  ) {
     return this.encryptWithSecret(Buffer.from(unencryptedString), secret);
   }
 
@@ -312,10 +323,11 @@ export default class CryptoManager {
    * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
    * @param {Buffer} secret decryption secret key (usually mk)
    */
-  public async decryptToStringWithSecret(encryptedPayload: string, secret: Buffer) {
+  public async decryptToStringWithSecret(
+    encryptedPayload: string,
+    secret: Buffer
+  ) {
     const decData = await this.decryptWithSecret(encryptedPayload, secret);
     return Buffer.from(decData).toString();
   }
-
-
 }
