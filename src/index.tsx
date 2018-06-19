@@ -2,12 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider as ReduxProvider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+// tslint:disable-next-line:no-submodule-imports
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./Components/App";
 import RefreshingApolloProvider from "./Components/Wrapper/RefreshingApolloProvider";
 import ToggleableThemeProvider from "./Components/Wrapper/ToggleableThemeProvider";
 import configureReduxStore from "./Modules/ConfigureReduxStore";
-import registerServiceWorker from "./registerServiceWorker";
+import { unregister } from "./registerServiceWorker";
 
 function render(
   AppComponent: any, // Renderer accepts a ton of stuff, just pass in whatever
@@ -35,7 +36,7 @@ function render(
 
 if (process.env.NODE_ENV !== "test") {
   render(App, document.getElementById("root"));
-  registerServiceWorker();
+  unregister(); // not using service workers for the time being
 }
 
 export default render;

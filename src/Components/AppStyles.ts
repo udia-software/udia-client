@@ -1,5 +1,8 @@
 import * as styledComponents from "styled-components";
 
+/**
+ * Define all of the colors and 
+ */
 export interface IThemeInterface {
   backgroundColor: string;
   panelBackgroundColor: string;
@@ -20,7 +23,7 @@ const BaseTheme = {
 const DarkTheme: IThemeInterface = {
   ...BaseTheme,
   backgroundColor: "#000000",
-  panelBackgroundColor: "#060606",
+  panelBackgroundColor: "#040404",
   primaryColor: "hsla(0, 0%, 100%, 1)",
   intermediateColor: "hsla(0, 0%, 100%, 0.4)",
   inverseColor: "hsla(0, 0%, 0%, 0)",
@@ -32,13 +35,13 @@ const DarkTheme: IThemeInterface = {
 const LightTheme: IThemeInterface = {
   ...BaseTheme,
   backgroundColor: "#ffffff",
-  panelBackgroundColor: "#F9F9F9",
+  panelBackgroundColor: "#FBFBFB",
   primaryColor: "hsla(0, 0%, 0%, 1)",
   intermediateColor: "hsla(0, 0%, 0%, 0.6)",
   inverseColor: "hsla(0, 0%, 100%, 1)",
   red: "darkred",
   green: "darkgreen",
-  yellow: "darkgoldenrod"
+  yellow: "goldenrod"
 };
 
 const StyledComponents = styledComponents as styledComponents.ThemedStyledComponentsModule<

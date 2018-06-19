@@ -7,7 +7,7 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom --coverage",
     "eject": "react-scripts-ts eject",
-    "lint": "tslint 'src/**/*.tsx' 'src/**/*.ts'"
+    "lint": "tslint -c tslint.json --project ."
   },
   "jest": {
     "collectCoverageFrom": [
@@ -23,6 +23,7 @@
     "apollo-link": "^1.2.2",
     "apollo-link-http": "^1.5.4",
     "apollo-link-ws": "^1.0.8",
+    "apollo-utilities": "^1.0.15",
     "buffer": "^5.1.0",
     "graphql": "^0.13.0",
     "graphql-tag": "^2.9.2",

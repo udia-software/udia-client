@@ -34,6 +34,7 @@ export interface IMasterKeyBuffers {
  * In accordance with the UDIA API specification
  */
 export default class CryptoManager {
+  private static PROTOCOL_VERSION = "001";
   private static DEFAULT_ITERATIONS = 100000;
   private static DEFAULT_KEYLEN = 2040;
   private static DEFAULT_DIGEST = "SHA-512";
@@ -134,21 +135,8 @@ export default class CryptoManager {
 
     this.validateDerivationFn(pwFunc);
     this.validateDerivedKeyLen(pwKeySize);
-
-    if (pwCost < CryptoManager.DEFAULT_ITERATIONS) {
-      throw new Error(
-        `Iteration cost cannot be less than ${
-          CryptoManager.DEFAULT_ITERATIONS
-        }, received ${pwCost}`
-      );
-    }
-    if (pwDigest !== CryptoManager.DEFAULT_DIGEST) {
-      throw new Error(
-        `Digest function must equal ${
-          CryptoManager.DEFAULT_DIGEST
-        }, received ${pwDigest}`
-      );
-    }
+    this.validateDerivationCost(pwCost);
+    this.validateDerivationDigest(pwDigest);
 
     // Create a nonce Buffer containng 512 bits of randomness, or load user provided Base64 string
     let pwNonceBuffer = Buffer.from(this.getRandomValues(64).buffer);
@@ -237,10 +225,9 @@ export default class CryptoManager {
     const sepMkIdx = sepPwIdx * 2;
 
     return {
-      pw: Buffer.from(masterBuffer.slice(0, sepPwIdx)).buffer,
-      mk: Buffer.from(masterBuffer.slice(sepPwIdx, sepMkIdx)).buffer,
-      ak: Buffer.from(masterBuffer.slice(sepMkIdx, masterBuffer.byteLength))
-        .buffer,
+      pw: masterBuffer.slice(0, sepPwIdx),
+      mk: masterBuffer.slice(sepPwIdx, sepMkIdx),
+      ak: masterBuffer.slice(sepMkIdx, masterBuffer.byteLength),
       pwNonce: pwNonceBuffer.buffer,
       pwCost,
       pwKeySize,
@@ -315,13 +302,26 @@ export default class CryptoManager {
   /**
    * Encrypt a buffer using a secret (like mk)
    * Return a string payload of base64 encoded parameters separated by `:`
-   * @param {Buffer} unencryptedInput unencrypted buffer
-   * @param {Buffer} secret encryption secret key (usually mk)
+   * @param {ArrayBuffer} unencryptedInput unencrypted buffer
+   * @param {ArrayBuffer} secret encryption secret key (like mk)
+   * @param {ArrayBuffer} add optional additional data (usually ECDSA signature)
    */
-  public async encryptWithSecret(unencryptedInput: Buffer, secret: Buffer) {
+  public async encryptWithSecret(
+    unencryptedInput: ArrayBuffer,
+    secret: ArrayBuffer,
+    add?: ArrayBuffer
+  ) {
+    // run through SHA-256 to ensure 256 bytes used in AES-GCM
     const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
-    const iv = this.getRandomValues(12);
-    const alg = { name: "AES-GCM", iv };
+    // ensure iv is 12 bytes (96 bits) for optimal calculation
+    const iv = this.getRandomValues(12).buffer;
+    // explicitly set tagLength to the max value of 128 bits
+    const alg: AesGcmParams = { name: "AES-GCM", iv, tagLength: 128 };
+    if (add) {
+      // chrome doesn't properly handle undefined, so we have to do conditional set
+      alg.additionalData = add;
+    }
+
     const key = await this.subtleCrypto.importKey(
       "raw",
       secretHash,
@@ -335,23 +335,42 @@ export default class CryptoManager {
       unencryptedInput
     );
     // convert to base64, join by colon
-    const ivBase64 = Buffer.from(iv.buffer).toString("base64");
+    const version = CryptoManager.PROTOCOL_VERSION;
+    const tagLenB64 = btoa(`${alg.tagLength}`);
+    const addB64 = add ? Buffer.from(add).toString("base64") : "";
+    const ivB64 = Buffer.from(iv).toString("base64");
     const encBase64 = Buffer.from(encryptedOutput).toString("base64");
-    return `${ivBase64}:${encBase64}`;
+    return `${version}:${tagLenB64}:${addB64}:${ivB64}:${encBase64}`;
   }
 
   /**
    * Decrypt a string payload using a secret (like mk)
    * Return an ArrayBuffer containing the original encrypted value
-   * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
-   * @param {Buffer} secret decryption secret key (usually mk)
+   * @param {string} encryptedPayload encrypted payload "ver:taglenBase64:addBase64:ivBase64:encBase64"
+   * @param {ArrayBuffer} secret decryption secret key (like mk)
    */
-  public async decryptWithSecret(encryptedPayload: string, secret: Buffer) {
+  public async decryptWithSecret(
+    encryptedPayload: string,
+    secret: ArrayBuffer
+  ) {
     const encPayloadParts = encryptedPayload.split(":");
-    if (encPayloadParts.length !== 2) {
-      throw new Error(`EncryptedPayload must be in form "ivBase64:encBase64"`);
+    if (encPayloadParts.length !== 5) {
+      throw new Error(
+        `EncryptedPayload must be in form "ver:taglenBase64:addBase64:ivBase64:encBase64"`
+      );
     }
-    const [ivBase64, encBase64] = encPayloadParts;
+    const [
+      version,
+      tagLenBase64,
+      addBase64,
+      ivBase64,
+      encBase64
+    ] = encPayloadParts;
+    if (version !== CryptoManager.PROTOCOL_VERSION) {
+      throw new Error(`Unsupported encryption version ${version}`);
+    }
+    const tagLength = parseInt(atob(tagLenBase64), 10);
+    const add = !!addBase64 ? Buffer.from(addBase64, "base64") : undefined;
     const iv = Buffer.from(ivBase64, "base64");
     const encData = Buffer.from(encBase64, "base64");
 
@@ -363,36 +382,42 @@ export default class CryptoManager {
       false,
       ["decrypt"]
     );
-    return this.subtleCrypto.decrypt(
-      {
-        name: "AES-GCM",
-        iv
-      },
-      key,
-      encData
-    );
+    const alg: AesGcmParams = {
+      name: "AES-GCM",
+      iv,
+      tagLength
+    };
+    if (add) {
+      alg.additionalData = add;
+    }
+    return this.subtleCrypto.decrypt(alg, key, encData);
   }
 
   /**
    * Helper method for string payloads.
    * @param {string} unencryptedString unencrypted string utf8 encoded
-   * @param {Buffer} secret encryption secret key (usually mk)
+   * @param {ArrayBuffer} secret encryption secret key (usually mk)
    */
   public async encryptFromStringWithSecret(
     unencryptedString: string,
-    secret: Buffer
+    secret: ArrayBuffer,
+    add?: ArrayBuffer
   ) {
-    return this.encryptWithSecret(Buffer.from(unencryptedString), secret);
+    return this.encryptWithSecret(
+      Buffer.from(unencryptedString).buffer,
+      secret,
+      add
+    );
   }
 
   /**
    * Helper method for returning string output.
    * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
-   * @param {Buffer} secret decryption secret key (usually mk)
+   * @param {ArrayBuffer} secret decryption secret key (like mk)
    */
   public async decryptToStringWithSecret(
     encryptedPayload: string,
-    secret: Buffer
+    secret: ArrayBuffer
   ) {
     const decData = await this.decryptWithSecret(encryptedPayload, secret);
     return Buffer.from(decData).toString();
@@ -427,6 +452,27 @@ export default class CryptoManager {
         `Derived bytes length must be ` +
           `divisible by 3 and divisible by 8 and be ` +
           `less than 2048 and be greater than or equal to 768, received ${pwKeySize}`
+      );
+    }
+  }
+
+  private validateDerivationCost(pwCost: number) {
+    if (pwCost < CryptoManager.DEFAULT_ITERATIONS) {
+      throw new Error(
+        `Iteration cost cannot be less than ${
+          CryptoManager.DEFAULT_ITERATIONS
+        }, received ${pwCost}`
+      );
+    }
+  }
+
+  private validateDerivationDigest(pwDigest: string) {
+    const VALID_DIGESTS = ["SHA-512", "SHA-256"];
+    if (!(VALID_DIGESTS.indexOf(pwDigest) > -1)) {
+      throw new Error(
+        `Digest function must be one of ${VALID_DIGESTS.join(
+          ", "
+        )}, received ${pwDigest}`
       );
     }
   }

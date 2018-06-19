@@ -14,9 +14,6 @@ import {
  * Function for initalizing the Apollo Client for the app
  */
 export default function initApolloClient(token: string | null) {
-  // tslint:disable-next-line:no-console
-  console.log(`Initializing ApolloProvider ${token ? "(JWT!)" : "(No JWT)"}`);
-
   // Build the Apollo HTTP Link with the authentication token.
   const middlewareAuthLink = new ApolloLink((operation, forward) => {
     const authorizationHeader = token ? `Bearer ${token}` : undefined;

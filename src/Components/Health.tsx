@@ -96,7 +96,7 @@ class Health extends Component<IProps, IState> {
       `Y5hXm6XSRE++oAEH20ZwJhvZ/HH5MW8mtXU15KaFsd0jdozdqPSQOLAiSQLnh9C` +
         `cE7S9hZsRrgek8fSrdNxvUWrMcNRGz/QKOIs8s4i1Gas6brIcKQ==`,
       "base64"
-    );
+    ).buffer;
     const output = await this.checkEncryptWithSecret(
       cryptoManager,
       payload,
@@ -114,6 +114,7 @@ class Health extends Component<IProps, IState> {
         encryptDecrypt = true;
       }
     }
+    cryptoOK = cryptoOK && encryptDecrypt;
     this.setState({ testEncryptDecrypt: encryptDecrypt });
   }
 
@@ -323,7 +324,7 @@ class Health extends Component<IProps, IState> {
               !testConsistantKeyGen
             }
           >
-            deriveMasterKeys Consistent
+            check deriveMasterKeys consistent
           </ErrorableListTitle>
           <SuccessableListDescription isOK={!!testConsistantKeyGen}>
             {typeof testConsistantKeyGen === "undefined"
@@ -340,7 +341,7 @@ class Health extends Component<IProps, IState> {
               typeof testEncryptDecrypt !== "undefined" && !testEncryptDecrypt
             }
           >
-            check Encrypt/Decrypt
+            check Encrypt/Decrypt with secret
           </ErrorableListTitle>
           <SuccessableListDescription isOK={!!testEncryptDecrypt}>
             {typeof testEncryptDecrypt === "undefined"
@@ -379,12 +380,9 @@ class Health extends Component<IProps, IState> {
   private checkRandomValues = (
     cryptoManagerInstance?: CryptoManager | null
   ) => {
-    let cryptoManager;
-    if (cryptoManagerInstance) {
-      cryptoManager = cryptoManagerInstance;
-    } else {
-      cryptoManager = this.state.cryptoManager;
-    }
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
         this.setState({
@@ -403,12 +401,9 @@ class Health extends Component<IProps, IState> {
   private async checkGenSymEncKey(
     cryptoManagerInstance?: CryptoManager | null
   ) {
-    let cryptoManager;
-    if (cryptoManagerInstance) {
-      cryptoManager = cryptoManagerInstance;
-    } else {
-      cryptoManager = this.state.cryptoManager;
-    }
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
         const symCryptoKey = await cryptoManager.generateSymmetricEncryptionKey();
@@ -430,12 +425,9 @@ class Health extends Component<IProps, IState> {
   private async checkGenAsymSignKey(
     cryptoManagerInstance?: CryptoManager | null
   ) {
-    let cryptoManager;
-    if (cryptoManagerInstance) {
-      cryptoManager = cryptoManagerInstance;
-    } else {
-      cryptoManager = this.state.cryptoManager;
-    }
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
         const asymCryptoKeyPair = await cryptoManager.generateAsymmetricSigningKeyPair();
@@ -459,12 +451,9 @@ class Health extends Component<IProps, IState> {
   private async checkGenAsymEncKey(
     cryptoManagerInstance?: CryptoManager | null
   ) {
-    let cryptoManager;
-    if (cryptoManagerInstance) {
-      cryptoManager = cryptoManagerInstance;
-    } else {
-      cryptoManager = this.state.cryptoManager;
-    }
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
         const asymCryptoKeyPair = await cryptoManager.generateAsymmetricEncryptionKeyPair();
@@ -488,7 +477,7 @@ class Health extends Component<IProps, IState> {
   private async checkEncryptWithSecret(
     cryptoManagerInstance: CryptoManager | null,
     payload: string,
-    secret: Buffer
+    secret: ArrayBuffer
   ) {
     let cryptoManager;
     if (cryptoManagerInstance) {
@@ -508,7 +497,7 @@ class Health extends Component<IProps, IState> {
   private async checkDecryptWithSecret(
     cryptoManagerInstance: CryptoManager | null,
     payload: string,
-    secret: Buffer
+    secret: ArrayBuffer
   ) {
     let cryptoManager;
     if (cryptoManagerInstance) {
@@ -528,12 +517,9 @@ class Health extends Component<IProps, IState> {
   private async checkDeriveMasterKeys(
     cryptoManagerInstance?: CryptoManager | null
   ) {
-    let cryptoManager;
-    if (cryptoManagerInstance) {
-      cryptoManager = cryptoManagerInstance;
-    } else {
-      cryptoManager = this.state.cryptoManager;
-    }
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       // quick smoke test to verify general case master key derivation success
       const TEST_UIP = "!~@#$%^F7DBYj {$} \\lkjsdf923+=;HUR";
