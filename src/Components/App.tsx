@@ -34,7 +34,7 @@ const AppContainer = styled.div`
 const BodyContainer = styled.div`
   grid-area: content;
   display: grid;
-  max-width: 100vw;
+  width: 100%;
   height: 100%;
 `;
 

@@ -1,11 +1,18 @@
 import localforage from "localforage";
 import { createStore, StoreEnhancer } from "redux";
-import { persistCombineReducers, persistStore } from "redux-persist";
+import {
+  persistCombineReducers,
+  PersistConfig,
+  persistStore
+} from "redux-persist";
 import rootReducer from "./Reducers/RootReducer";
 
-const persistConfig = {
+const storage = localforage.createInstance({ name: "UdiaPersistance" });
+
+const rootPersistConfig: PersistConfig = {
   key: "root",
-  storage: localforage.createInstance({ name: "UdiaPersistance" })
+  storage,
+  blacklist: ["auth"]
 };
 
 interface IDevToolsWindow extends Window {
@@ -14,7 +21,10 @@ interface IDevToolsWindow extends Window {
 declare var window: IDevToolsWindow;
 
 export default function configureReduxStore() {
-  const persistedReducer = persistCombineReducers(persistConfig, rootReducer);
+  const persistedReducer = persistCombineReducers(
+    rootPersistConfig,
+    rootReducer
+  );
   const store = createStore(
     persistedReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()

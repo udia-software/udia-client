@@ -4,6 +4,7 @@ import styled from "../AppStyles";
 export interface ILogoProps {
   width?: string;
   height?: string;
+  isLoading?: boolean;
 }
 
 const StyledSVG = styled.svg`
@@ -59,9 +60,11 @@ const HEXAGON_PATH = [
 ].join("");
 
 const Logo = (props: ILogoProps) => {
+  const isLoading = !!props.isLoading;
   return (
     <StyledSVG
       {...props}
+      className={isLoading ? "loading-logo" : undefined}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       version="1.1"
@@ -69,10 +72,10 @@ const Logo = (props: ILogoProps) => {
       y="0px"
       viewBox="0 0 90 90"
     >
-      <polygon points={LEFT_BRACKET_POLY} />
-      <polygon points={SLASH_POLY} />
-      <polygon points={RIGHT_BRACKET_POLY} />
-      <path d={HEXAGON_PATH} />
+      <polygon className={isLoading ? "loader-bracket" : undefined} points={LEFT_BRACKET_POLY} />
+      <polygon className={isLoading ? "loader-slash" : undefined} points={SLASH_POLY} />
+      <polygon className={isLoading ? "loader-bracket" : undefined} points={RIGHT_BRACKET_POLY} />
+      <path className={isLoading ? "loader-hexagon" : undefined} d={HEXAGON_PATH} />
     </StyledSVG>
   );
 };

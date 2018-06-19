@@ -1,5 +1,43 @@
 import { AUTH_TOKEN } from "../../../Constants";
-import AuthActions, { IAuthAction } from "./Actions";
+import {
+  CLEAR_AUTH_DATA,
+  CONFIRM_SIGN_OUT,
+  IAuthAction,
+  SET_AUTH_DATA,
+  SET_AUTH_USER,
+  SET_FORM_EMAIL,
+  SET_FORM_EMAIL_VERIFICATION_TOKEN,
+  SET_FORM_PASSWORD,
+  SET_FORM_PASSWORD_RESET_TOKEN,
+  SET_FORM_USERNAME
+} from "./Actions";
+
+export interface IUserEmail {
+  email: string;
+  primary: boolean;
+  verified: boolean;
+  createdAt: number;
+  updatedAt: number;
+  verificationExpiry: number;
+}
+
+export interface IFullUser {
+  uuid: string;
+  username: string;
+  emails: IUserEmail[];
+  encSecretKey: string;
+  pubSignKey: string;
+  encPrivSignKey: string;
+  pubEncKey: string;
+  encPrivEncKey: string;
+  pwFunc: string;
+  pwDigest: string;
+  pwCost: number;
+  pwKeySize: number;
+  pwNonce: string;
+  createdAt: number;
+  updatedAt: number;
+}
 
 export interface IAuthState {
   username: string | null;
@@ -7,12 +45,12 @@ export interface IAuthState {
   password: string | null;
   jwt: string | null;
   confirmSignOut: boolean;
-  authUser: any | null;
+  authUser: IFullUser | null; // nested FullUser data with emails
   emailVerificationToken: string | null;
   passwordResetToken: string | null;
 }
 
-const AuthState: IAuthState = {
+const DefaultAuthState: IAuthState = {
   username: null,
   email: null,
   password: null,
@@ -23,58 +61,61 @@ const AuthState: IAuthState = {
   passwordResetToken: null
 };
 
-export default (state: IAuthState = { ...AuthState }, action: IAuthAction) => {
+/**
+ * Auth reducer state is blacklisted from being persisted in IndexDB.
+ * However, JWT is stored in localstorage.
+ */
+export default (state: IAuthState = { ...DefaultAuthState }, action: IAuthAction) => {
   switch (action.type) {
-    case AuthActions.SET_FORM_USERNAME:
+    case SET_FORM_USERNAME:
       return {
         ...state,
         username: action.payload
       };
-    case AuthActions.SET_FORM_PASSWORD:
+    case SET_FORM_PASSWORD:
       return {
         ...state,
         password: action.payload
       };
-    case AuthActions.SET_FORM_EMAIL:
+    case SET_FORM_EMAIL:
       return {
         ...state,
         email: action.payload
       };
-    case AuthActions.SET_AUTH_USER:
+    case SET_AUTH_USER:
       return {
         ...state,
         authUser: action.payload
       };
-    case AuthActions.SET_AUTH_DATA:
+    case SET_AUTH_DATA:
       localStorage.setItem(AUTH_TOKEN, action.payload.jwt);
       return {
         ...state,
-        username: "",
-        email: "",
-        password: "",
-        understoodLesson: false,
+        username: null,
+        email: null,
+        password: null,
         authUser: action.payload.user,
         jwt: action.payload.jwt
       };
-    case AuthActions.SET_FORM_EMAIL_VERIFICATION_TOKEN:
+    case SET_FORM_EMAIL_VERIFICATION_TOKEN:
       return {
         ...state,
         emailVerificationToken: action.payload
       };
-    case AuthActions.SET_FORM_PASSWORD_RESET_TOKEN:
+    case SET_FORM_PASSWORD_RESET_TOKEN:
       return {
         ...state,
         passwordResetToken: action.payload
       };
-    case AuthActions.CONFIRM_SIGN_OUT:
+    case CONFIRM_SIGN_OUT:
       return {
         ...state,
         confirmSignOut: true
       };
-    case AuthActions.CLEAR_AUTH_DATA:
+    case CLEAR_AUTH_DATA:
       localStorage.removeItem(AUTH_TOKEN);
       return {
-        ...AuthState,
+        ...DefaultAuthState,
         passwordResetToken: state.passwordResetToken, // trying to reset password
         emailVerificationToken: state.emailVerificationToken, // trying to verify email
         jwt: null

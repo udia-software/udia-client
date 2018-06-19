@@ -1,58 +1,60 @@
-const SET_FORM_USERNAME: 'auth/SET_FORM_USERNAME' = 'auth/SET_FORM_USERNAME';
-const SET_FORM_PASSWORD: 'auth/SET_FORM_PASSWORD' = 'auth/SET_FORM_PASSWORD';
-const SET_FORM_EMAIL: 'auth/SET_FORM_EMAIL' = 'auth/SET_FORM_EMAIL';
-const SET_AUTH_USER: 'auth/SET_AUTH_USER' = 'auth/SET_AUTH_USER';
-const SET_AUTH_DATA: 'auth/SET_AUTH_DATA' = 'auth/SET_AUTH_DATA';
-const SET_FORM_EMAIL_VERIFICATION_TOKEN: 'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN' =
-  'auth/SET_FORM_EMAIL_VERIFICATION_TOKEN';
-const SET_FORM_PASSWORD_RESET_TOKEN: 'auth/SET_FORM_PASSWORD_RESET_TOKEN' =
-  'auth/SET_FORM_PASSWORD_RESET_TOKEN';
-const CONFIRM_SIGN_OUT: 'auth/CONFIRM_SIGN_OUT' = 'auth/CONFIRM_SIGN_OUT';
-const CLEAR_AUTH_DATA: 'auth/CLEAR_AUTH_DATA' = 'auth/CLEAR_AUTH_DATA';
+import { IFullUser } from "./Reducer";
 
-interface ISetFormUsernameAuthAction {
+// Action serializable and unique type strings
+export const SET_FORM_USERNAME: "auth/SET_FORM_USERNAME" = "auth/SET_FORM_USERNAME";
+export const SET_FORM_PASSWORD: "auth/SET_FORM_PASSWORD" = "auth/SET_FORM_PASSWORD";
+export const SET_FORM_EMAIL: "auth/SET_FORM_EMAIL" = "auth/SET_FORM_EMAIL";
+export const SET_AUTH_USER: "auth/SET_AUTH_USER" = "auth/SET_AUTH_USER";
+export const SET_AUTH_DATA: "auth/SET_AUTH_DATA" = "auth/SET_AUTH_DATA";
+export const SET_FORM_EMAIL_VERIFICATION_TOKEN: "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN" =
+  "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN";
+export const SET_FORM_PASSWORD_RESET_TOKEN: "auth/SET_FORM_PASSWORD_RESET_TOKEN" =
+  "auth/SET_FORM_PASSWORD_RESET_TOKEN";
+export const CONFIRM_SIGN_OUT: "auth/CONFIRM_SIGN_OUT" = "auth/CONFIRM_SIGN_OUT";
+export const CLEAR_AUTH_DATA: "auth/CLEAR_AUTH_DATA" = "auth/CLEAR_AUTH_DATA";
+
+// Action interfaces
+export interface ISetFormUsernameAuthAction {
   type: typeof SET_FORM_USERNAME;
   payload: string;
 }
 
-interface ISetFormEmailAuthAction {
+export interface ISetFormEmailAuthAction {
   type: typeof SET_FORM_EMAIL;
   payload: string;
 }
 
-interface ISetFormPasswordAuthAction {
+export interface ISetFormPasswordAuthAction {
   type: typeof SET_FORM_PASSWORD;
   payload: string;
 }
 
-interface ISetAuthUserAuthAction {
+export interface ISetAuthUserAuthAction {
   type: typeof SET_AUTH_USER;
-  payload: any;
+  payload: IFullUser;
 }
 
-interface ISetAuthDataAuthAction {
+export interface ISetAuthDataAuthAction {
   type: typeof SET_AUTH_DATA;
-  payload: any;
+  payload: { user: IFullUser; jwt: string };
 }
 
-interface ISetFormEmailVerificationTokenAction {
+export interface ISetFormEmailVerificationTokenAction {
   type: typeof SET_FORM_EMAIL_VERIFICATION_TOKEN;
   payload: string;
 }
 
-interface ISetFormPasswordResetTokenAction {
+export interface ISetFormPasswordResetTokenAction {
   type: typeof SET_FORM_PASSWORD_RESET_TOKEN;
   payload: string;
 }
 
-interface IConfirmSignOutAuthAction {
+export interface IConfirmSignOutAuthAction {
   type: typeof CONFIRM_SIGN_OUT;
-  payload?: any;
 }
 
-interface IClearAuthDataAuthActions {
+export interface IClearAuthDataAuthActions {
   type: typeof CLEAR_AUTH_DATA;
-  payload?: any;
 }
 
 export type IAuthAction =
@@ -66,69 +68,55 @@ export type IAuthAction =
   | IConfirmSignOutAuthAction
   | IClearAuthDataAuthActions;
 
-const setFormUsername = (username: string): ISetFormUsernameAuthAction => ({
+export const setFormUsername = (username: string): ISetFormUsernameAuthAction => ({
   type: SET_FORM_USERNAME,
-  payload: username,
+  payload: username
 });
 
-const setFormEmail = (email: string): ISetFormEmailAuthAction => ({
+export const setFormEmail = (email: string): ISetFormEmailAuthAction => ({
   type: SET_FORM_EMAIL,
-  payload: email,
+  payload: email
 });
 
-const setFormPassword = (password: string): ISetFormPasswordAuthAction => ({
+export const setFormPassword = (password: string): ISetFormPasswordAuthAction => ({
   type: SET_FORM_PASSWORD,
-  payload: password,
+  payload: password
 });
 
-const setAuthUser = (user: any): ISetAuthUserAuthAction => ({
+export const setAuthUser = (user: IFullUser): ISetAuthUserAuthAction => ({
   type: SET_AUTH_USER,
-  payload: user,
+  payload: user
 });
 
-const setAuthData = ({ user, jwt }: any): ISetAuthDataAuthAction => ({
+export const setAuthData = ({
+  user,
+  jwt
+}: {
+  user: IFullUser;
+  jwt: string;
+}): ISetAuthDataAuthAction => ({
   type: SET_AUTH_DATA,
-  payload: { user, jwt },
+  payload: { user, jwt }
 });
 
-const setFormEmailVerificationToken = (token: string): ISetFormEmailVerificationTokenAction => ({
+export const setFormEmailVerificationToken = (
+  token: string
+): ISetFormEmailVerificationTokenAction => ({
   type: SET_FORM_EMAIL_VERIFICATION_TOKEN,
-  payload: token,
+  payload: token
 });
 
-const setFormPasswordResetToken = (token: string): ISetFormPasswordResetTokenAction => ({
+export const setFormPasswordResetToken = (
+  token: string
+): ISetFormPasswordResetTokenAction => ({
   type: SET_FORM_PASSWORD_RESET_TOKEN,
-  payload: token,
+  payload: token
 });
 
-const confirmSignOut = (): IConfirmSignOutAuthAction => ({
-  type: CONFIRM_SIGN_OUT,
+export const confirmSignOut = (): IConfirmSignOutAuthAction => ({
+  type: CONFIRM_SIGN_OUT
 });
 
-const clearAuthData = (): IClearAuthDataAuthActions => ({
-  type: CLEAR_AUTH_DATA,
+export const clearAuthData = (): IClearAuthDataAuthActions => ({
+  type: CLEAR_AUTH_DATA
 });
-
-export default {
-  // action type strings
-  SET_FORM_USERNAME,
-  SET_FORM_PASSWORD,
-  SET_FORM_EMAIL,
-  SET_AUTH_USER,
-  SET_AUTH_DATA,
-  SET_FORM_EMAIL_VERIFICATION_TOKEN,
-  SET_FORM_PASSWORD_RESET_TOKEN,
-  CONFIRM_SIGN_OUT,
-  CLEAR_AUTH_DATA,
-
-  // action creation functions
-  setFormUsername,
-  setFormEmail,
-  setFormPassword,
-  setAuthUser,
-  setAuthData,
-  setFormEmailVerificationToken,
-  setFormPasswordResetToken,
-  confirmSignOut,
-  clearAuthData,
-};
