@@ -7,12 +7,15 @@ export interface IThemeInterface {
   intermediateColor: string;
   inverseColor: string;
 
+  red: string;
   purple: string;
+  green: string;
+  yellow: string;
 }
 
 const BaseTheme = {
   purple: "rebeccapurple"
-}
+};
 
 const DarkTheme: IThemeInterface = {
   ...BaseTheme,
@@ -21,6 +24,9 @@ const DarkTheme: IThemeInterface = {
   primaryColor: "hsla(0, 0%, 100%, 1)",
   intermediateColor: "hsla(0, 0%, 100%, 0.4)",
   inverseColor: "hsla(0, 0%, 0%, 0)",
+  red: "red",
+  green: "green",
+  yellow: "yellow"
 };
 
 const LightTheme: IThemeInterface = {
@@ -30,7 +36,10 @@ const LightTheme: IThemeInterface = {
   primaryColor: "hsla(0, 0%, 0%, 1)",
   intermediateColor: "hsla(0, 0%, 0%, 0.6)",
   inverseColor: "hsla(0, 0%, 100%, 1)",
-}
+  red: "darkred",
+  green: "darkgreen",
+  yellow: "darkgoldenrod"
+};
 
 const StyledComponents = styledComponents as styledComponents.ThemedStyledComponentsModule<
   IThemeInterface

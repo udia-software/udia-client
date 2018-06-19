@@ -19,10 +19,10 @@ interface IDerivePasswordOptions {
 }
 
 export interface IMasterKeyBuffers {
-  pw: Buffer;
-  mk: Buffer;
-  ak: Buffer;
-  pwNonce: Buffer;
+  pw: ArrayBuffer;
+  mk: ArrayBuffer;
+  ak: ArrayBuffer;
+  pwNonce: ArrayBuffer;
   pwCost: number;
   pwKeySize: number;
   pwDigest: string;
@@ -35,7 +35,7 @@ export interface IMasterKeyBuffers {
  */
 export default class CryptoManager {
   private static DEFAULT_ITERATIONS = 100000;
-  private static DEFAULT_KEYLEN = 768;
+  private static DEFAULT_KEYLEN = 2040;
   private static DEFAULT_DIGEST = "SHA-512";
   private static DEFAULT_PWFUNC = "PBKDF2";
 
@@ -113,6 +113,13 @@ export default class CryptoManager {
     return randomValues;
   }
 
+  /**
+   * Given user input, nonce (or a randome one will be generated), plus encryption options
+   * derive three 256 bit secrets pw, mk, ak and return options for next time
+   * This method may throw an error, ensure it is caught!
+   * @param {IDerivePasswordOptions} options - Options for generating the three derived secrets
+   * @returns {Promise<IMasterKeyBuffers>} - Contains the secrets for encryption/decryption on the clietn
+   */
   public async deriveMasterKeyBuffers(
     options: IDerivePasswordOptions
   ): Promise<IMasterKeyBuffers> {
@@ -125,56 +132,116 @@ export default class CryptoManager {
       pwFunc = CryptoManager.DEFAULT_PWFUNC
     } = options;
 
-    // Future: handle other password derivation functions?
-    if (pwFunc !== CryptoManager.DEFAULT_PWFUNC) {
-      throw new Error(`Unsupported key derivation function ${pwFunc}`);
-    }
-    if (pwKeySize % 3 !== 0) {
+    this.validateDerivationFn(pwFunc);
+    this.validateDerivedKeyLen(pwKeySize);
+
+    if (pwCost < CryptoManager.DEFAULT_ITERATIONS) {
       throw new Error(
-        `Derived bytes length must be multiple of 3, received ${pwKeySize}`
+        `Iteration cost cannot be less than ${
+          CryptoManager.DEFAULT_ITERATIONS
+        }, received ${pwCost}`
+      );
+    }
+    if (pwDigest !== CryptoManager.DEFAULT_DIGEST) {
+      throw new Error(
+        `Digest function must equal ${
+          CryptoManager.DEFAULT_DIGEST
+        }, received ${pwDigest}`
       );
     }
 
-    let pwNonceBuffer = Buffer.from(this.getRandomValues().buffer);
+    // Create a nonce Buffer containng 512 bits of randomness, or load user provided Base64 string
+    let pwNonceBuffer = Buffer.from(this.getRandomValues(64).buffer);
     if (pwNonce) {
       pwNonceBuffer = Buffer.from(pwNonce, "base64");
     }
 
+    // Always assume user input is a UTF-8 string. Convert it to a Buffer
     const uipBuffer = Buffer.from(uip, "utf8");
-    const pwSaltBuffer = await this.subtleCrypto.digest(
-      pwDigest,
-      Buffer.concat([uipBuffer, pwNonceBuffer])
-    );
 
-    const cryptoKey = await this.subtleCrypto.importKey(
-      "raw",
-      uipBuffer,
-      pwFunc,
-      false,
-      ["deriveBits"]
-    );
+    // Generate a salt buffer using the provided Nonce
+    let pwSaltBuffer: Buffer;
+    try {
+      // String representation of pwCost + nonce run through SHA-512 once
+      pwSaltBuffer = Buffer.from(
+        await this.subtleCrypto.digest(
+          "SHA-512",
+          Buffer.concat([
+            Buffer.from(JSON.stringify(pwCost), "utf8"),
+            pwNonceBuffer
+          ])
+        )
+      );
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error(
+        "ERR subtleCrypto.digest",
+        "SHA-512",
+        Buffer.concat([
+          Buffer.from(JSON.stringify(pwCost), "utf8"),
+          pwNonceBuffer
+        ])
+      );
+      throw err;
+    }
 
-    // tslint:disable-next-line:no-console
-    console.log(cryptoKey);
+    // Derive the base key using PBKDF2 and the user inputted password buffer
+    let baseKey;
+    try {
+      baseKey = await this.subtleCrypto.importKey(
+        "raw",
+        uipBuffer,
+        pwFunc,
+        false,
+        ["deriveBits"]
+      );
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error(
+        "ERR subtleCrypto.importKey",
+        "raw",
+        uipBuffer,
+        pwFunc,
+        false,
+        ["deriveBits"]
+      );
+      throw err;
+    }
 
-    const masterBuffer = await this.subtleCrypto.deriveBits(
-      {
-        name: pwFunc,
-        salt: pwSaltBuffer,
-        iterations: pwCost,
-        hash: { name: pwDigest }
-      },
-      cryptoKey,
-      pwKeySize * 8 // 8 bits in a byte
-    );
+    // Derive the master buffer secret using the derived base key, at least 100000 iterations of "PBKDF2" & SHA-512
+    let masterBuffer;
+    const algorithm = {
+      name: pwFunc,
+      salt: pwSaltBuffer,
+      iterations: pwCost,
+      hash: pwDigest
+    };
+    try {
+      masterBuffer = await this.subtleCrypto.deriveBits(
+        algorithm,
+        baseKey,
+        pwKeySize
+      );
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error(
+        `ERR subtleCrypto.deriveBits ${pwKeySize}`,
+        algorithm,
+        baseKey
+      );
+      throw err;
+    }
+
+    // Split the master buffer to three derived keys
     const sepPwIdx = masterBuffer.byteLength / 3;
     const sepMkIdx = sepPwIdx * 2;
 
     return {
-      pw: Buffer.from(masterBuffer.slice(0, sepPwIdx)),
-      mk: Buffer.from(masterBuffer.slice(sepPwIdx, sepMkIdx)),
-      ak: Buffer.from(masterBuffer.slice(sepMkIdx, masterBuffer.byteLength)),
-      pwNonce: pwNonceBuffer,
+      pw: Buffer.from(masterBuffer.slice(0, sepPwIdx)).buffer,
+      mk: Buffer.from(masterBuffer.slice(sepPwIdx, sepMkIdx)).buffer,
+      ak: Buffer.from(masterBuffer.slice(sepMkIdx, masterBuffer.byteLength))
+        .buffer,
+      pwNonce: pwNonceBuffer.buffer,
       pwCost,
       pwKeySize,
       pwDigest,
@@ -252,7 +319,7 @@ export default class CryptoManager {
    * @param {Buffer} secret encryption secret key (usually mk)
    */
   public async encryptWithSecret(unencryptedInput: Buffer, secret: Buffer) {
-    const secretHash = await this.subtleCrypto.digest("SHA-512", secret);
+    const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
     const iv = this.getRandomValues(12);
     const alg = { name: "AES-GCM", iv };
     const key = await this.subtleCrypto.importKey(
@@ -288,7 +355,7 @@ export default class CryptoManager {
     const iv = Buffer.from(ivBase64, "base64");
     const encData = Buffer.from(encBase64, "base64");
 
-    const secretHash = await this.subtleCrypto.digest("SHA-512", secret);
+    const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
     const key = await this.subtleCrypto.importKey(
       "raw",
       secretHash,
@@ -329,5 +396,38 @@ export default class CryptoManager {
   ) {
     const decData = await this.decryptWithSecret(encryptedPayload, secret);
     return Buffer.from(decData).toString();
+  }
+
+  /**
+   * In the future, would be nice to support BCrypt, Argon2, Scrypt, etc.
+   * @param {string} pwFunc password function to be used in deriving keys
+   */
+  private validateDerivationFn(pwFunc: string) {
+    if (pwFunc !== CryptoManager.DEFAULT_PWFUNC) {
+      throw new Error(
+        `Password function must be ${
+          CryptoManager.DEFAULT_PWFUNC
+        }, received ${pwFunc}`
+      );
+    }
+  }
+
+  /**
+   * Quick check to make sure that we can generate proper output keys
+   * @param {number} pwKeySize length of the root buffer to derive from pbkdf2
+   */
+  private validateDerivedKeyLen(pwKeySize: number) {
+    const ok =
+      pwKeySize % 3 === 0 &&
+      pwKeySize % 8 === 0 &&
+      pwKeySize < 2048 &&
+      pwKeySize >= 768;
+    if (!ok) {
+      throw new Error(
+        `Derived bytes length must be ` +
+          `divisible by 3 and divisible by 8 and be ` +
+          `less than 2048 and be greater than or equal to 768, received ${pwKeySize}`
+      );
+    }
   }
 }
