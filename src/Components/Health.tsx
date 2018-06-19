@@ -3,9 +3,7 @@ import React, { Component } from "react";
 import { DataValue, graphql, OperationVariables } from "react-apollo";
 import { ThemedStyledProps } from "styled-components";
 import { APP_VERSION } from "../Constants";
-import CryptoManager, {
-  IMasterKeyBuffers
-} from "../Modules/Crypto/CryptoManager";
+import CryptoManager from "../Modules/Crypto/CryptoManager";
 import styled, { IThemeInterface } from "./AppStyles";
 
 const HealthContainer = styled.div`
@@ -31,7 +29,20 @@ const ErrorableListTitle = styled.dt`
       IThemeInterface
     > & { isErr?: boolean; isWarn?: boolean }
   ) =>
-    props.isErr ? "red" : props.isWarn ? "yellow" : props.theme.primaryColor};
+    props.isErr
+      ? props.theme.red
+      : props.isWarn
+        ? props.theme.yellow
+        : props.theme.primaryColor};
+`;
+
+const SuccessableListDescription = styled.dd`
+  color: ${(
+    props: ThemedStyledProps<
+      React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>,
+      IThemeInterface
+    > & { isOK?: boolean }
+  ) => (props.isOK ? props.theme.green : props.theme.primaryColor)};
 `;
 
 interface IProps {
@@ -49,6 +60,7 @@ interface IState {
   testAsymSignKeyGen?: string | false;
   testAsymEncKeyGen?: string | false;
   testConsistantKeyGen?: boolean;
+  testEncryptDecrypt?: boolean;
 }
 
 const WARN_SKEW_MS = 4000;
@@ -77,6 +89,32 @@ class Health extends Component<IProps, IState> {
     cryptoOK = cryptoOK && (await this.checkGenAsymSignKey(cryptoManager));
     cryptoOK = cryptoOK && (await this.checkGenAsymEncKey(cryptoManager));
     cryptoOK = cryptoOK && (await this.checkDeriveMasterKeys(cryptoManager));
+
+    // quick encrypt/decrypt test
+    const payload = "whatever, bruh";
+    const secret = Buffer.from(
+      `Y5hXm6XSRE++oAEH20ZwJhvZ/HH5MW8mtXU15KaFsd0jdozdqPSQOLAiSQLnh9C` +
+        `cE7S9hZsRrgek8fSrdNxvUWrMcNRGz/QKOIs8s4i1Gas6brIcKQ==`,
+      "base64"
+    );
+    const output = await this.checkEncryptWithSecret(
+      cryptoManager,
+      payload,
+      secret
+    );
+    let encryptDecrypt = false;
+    if (output) {
+      const decryptOutput = await this.checkDecryptWithSecret(
+        cryptoManager,
+        output,
+        secret
+      );
+
+      if (decryptOutput === payload) {
+        encryptDecrypt = true;
+      }
+    }
+    this.setState({ testEncryptDecrypt: encryptDecrypt });
   }
 
   public componentWillUnmount() {
@@ -123,7 +161,8 @@ class Health extends Component<IProps, IState> {
       testSymEncKeyGen,
       testAsymSignKeyGen,
       testAsymEncKeyGen,
-      testConsistantKeyGen
+      testConsistantKeyGen,
+      testEncryptDecrypt
     } = this.state;
     let version = "ERR! SERVER DOWN";
     let serverNow = new Date(0);
@@ -146,7 +185,7 @@ class Health extends Component<IProps, IState> {
           <ErrorableListTitle isWarn={loading} isErr={!loading && !health}>
             Application Version
           </ErrorableListTitle>
-          <dd>
+          <SuccessableListDescription>
             <code>
               Client: {APP_VERSION + " "}
               <a
@@ -168,7 +207,7 @@ class Health extends Component<IProps, IState> {
                 src
               </a>
             </code>
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={!loading && skewMs > WARN_SKEW_MS}
             isErr={!loading && skewMs > 10 * WARN_SKEW_MS}
@@ -184,7 +223,7 @@ class Health extends Component<IProps, IState> {
                 })`
               : ""}
           </ErrorableListTitle>
-          <dd>
+          <SuccessableListDescription>
             <code>
               <span>Client: </span>
               {clientNow.toISOString()}
@@ -194,7 +233,7 @@ class Health extends Component<IProps, IState> {
               <span>Server: </span>
               {!loading ? serverNow.toISOString() : "Loading..."}
             </code>
-          </dd>
+          </SuccessableListDescription>
         </dl>
         <h3>Crypto Sanity Check</h3>
         <dl>
@@ -202,49 +241,47 @@ class Health extends Component<IProps, IState> {
             isWarn={typeof cryptoManager === "undefined"}
             isErr={typeof cryptoManager !== "undefined" && !cryptoManager}
           >
-            Crypto &amp; Subtle Crypto
+            check Crypto &amp; Subtle Crypto
           </ErrorableListTitle>
-          <dd>
+          <SuccessableListDescription isOK={!!cryptoManager}>
             {typeof cryptoManager === "undefined"
               ? "Loading..."
               : `CHECK: ${
-                  !!cryptoManager ? !!cryptoManager : `ERR! ${!!cryptoManager}`
+                  !!cryptoManager
+                    ? `OK ${!!cryptoManager}`
+                    : `ERR! ${!!cryptoManager}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={typeof randomValues === "undefined"}
             isErr={typeof randomValues !== "undefined" && !randomValues}
           >
             globalCrypto.getRandomValues
           </ErrorableListTitle>
-          <dd>
+          <SuccessableListDescription isOK={!!randomValues}>
             {typeof randomValues === "undefined"
               ? "Loading..."
               : `CHECK: ${
-                  !!randomValues ? randomValues : `ERR! ${!!randomValues}`
+                  !!randomValues
+                    ? `OK ${randomValues}`
+                    : `ERR! ${!!randomValues}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={typeof testSymEncKeyGen === "undefined"}
             isErr={typeof testSymEncKeyGen !== "undefined" && !testSymEncKeyGen}
           >
             subtleCrypto.genKey AES-GCM 256
           </ErrorableListTitle>
-          <dd
-            style={{
-              wordBreak: "break-all",
-              wordWrap: "break-word",
-              maxWidth: "24em"
-            }}
-          >
+          <SuccessableListDescription isOK={!!testSymEncKeyGen}>
             {typeof testSymEncKeyGen === "undefined"
               ? "Loading..."
               : `CHECK: ${
                   !!testSymEncKeyGen
-                    ? testSymEncKeyGen
+                    ? `OK ${testSymEncKeyGen}`
                     : `ERR! ${!!testSymEncKeyGen}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={typeof testAsymSignKeyGen === "undefined"}
             isErr={
@@ -253,21 +290,15 @@ class Health extends Component<IProps, IState> {
           >
             subtleCrypto.genKey ECDSA P-521
           </ErrorableListTitle>
-          <dd
-            style={{
-              wordBreak: "break-all",
-              wordWrap: "break-word",
-              maxWidth: "24em"
-            }}
-          >
+          <SuccessableListDescription isOK={!!testAsymSignKeyGen}>
             {typeof testAsymSignKeyGen === "undefined"
               ? "Loading..."
               : `CHECK: ${
                   !!testAsymSignKeyGen
-                    ? testAsymSignKeyGen
+                    ? `OK ${testAsymSignKeyGen}`
                     : `ERR! ${!!testAsymSignKeyGen}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={typeof testAsymEncKeyGen === "undefined"}
             isErr={
@@ -276,21 +307,15 @@ class Health extends Component<IProps, IState> {
           >
             subtleCrypto.genKey RSA-OAEP EXP 3 MOD 4096 SHA-512
           </ErrorableListTitle>
-          <dd
-            style={{
-              wordBreak: "break-all",
-              wordWrap: "break-word",
-              maxWidth: "24em"
-            }}
-          >
+          <SuccessableListDescription isOK={!!testAsymEncKeyGen}>
             {typeof testAsymEncKeyGen === "undefined"
               ? "Loading..."
               : `CHECK: ${
                   !!testAsymEncKeyGen
-                    ? testAsymEncKeyGen
+                    ? `OK ${testAsymEncKeyGen}`
                     : `ERR! ${!!testAsymEncKeyGen}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
           <ErrorableListTitle
             isWarn={typeof testConsistantKeyGen === "undefined"}
             isErr={
@@ -300,21 +325,32 @@ class Health extends Component<IProps, IState> {
           >
             deriveMasterKeys Consistent
           </ErrorableListTitle>
-          <dd
-            style={{
-              wordBreak: "break-all",
-              wordWrap: "break-word",
-              maxWidth: "24em"
-            }}
-          >
+          <SuccessableListDescription isOK={!!testConsistantKeyGen}>
             {typeof testConsistantKeyGen === "undefined"
               ? "Loading..."
               : `CHECK: ${
                   !!testConsistantKeyGen
-                    ? testConsistantKeyGen
+                    ? `OK ${testConsistantKeyGen}`
                     : `ERR! ${!!testConsistantKeyGen}`
                 }`}
-          </dd>
+          </SuccessableListDescription>
+          <ErrorableListTitle
+            isWarn={typeof testEncryptDecrypt === "undefined"}
+            isErr={
+              typeof testEncryptDecrypt !== "undefined" && !testEncryptDecrypt
+            }
+          >
+            check Encrypt/Decrypt
+          </ErrorableListTitle>
+          <SuccessableListDescription isOK={!!testEncryptDecrypt}>
+            {typeof testEncryptDecrypt === "undefined"
+              ? "Loading..."
+              : `CHECK: ${
+                  !!testEncryptDecrypt
+                    ? `OK ${testEncryptDecrypt}`
+                    : `ERR! ${!!testEncryptDecrypt}`
+                }`}
+          </SuccessableListDescription>
         </dl>
         <CenterParagraph>
           It is I and You being one and inseperable.
@@ -449,6 +485,46 @@ class Health extends Component<IProps, IState> {
     return false;
   }
 
+  private async checkEncryptWithSecret(
+    cryptoManagerInstance: CryptoManager | null,
+    payload: string,
+    secret: Buffer
+  ) {
+    let cryptoManager;
+    if (cryptoManagerInstance) {
+      cryptoManager = cryptoManagerInstance;
+    }
+    if (typeof cryptoManager !== "boolean" && cryptoManager) {
+      try {
+        return await cryptoManager.encryptFromStringWithSecret(payload, secret);
+      } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.error(err);
+      }
+    }
+    return false;
+  }
+
+  private async checkDecryptWithSecret(
+    cryptoManagerInstance: CryptoManager | null,
+    payload: string,
+    secret: Buffer
+  ) {
+    let cryptoManager;
+    if (cryptoManagerInstance) {
+      cryptoManager = cryptoManagerInstance;
+    }
+    if (typeof cryptoManager !== "boolean" && cryptoManager) {
+      try {
+        return await cryptoManager.decryptToStringWithSecret(payload, secret);
+      } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.error(err);
+      }
+    }
+    return false;
+  }
+
   private async checkDeriveMasterKeys(
     cryptoManagerInstance?: CryptoManager | null
   ) {
@@ -459,80 +535,46 @@ class Health extends Component<IProps, IState> {
       cryptoManager = this.state.cryptoManager;
     }
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
-      const REFERENCE: IMasterKeyBuffers = JSON.parse(
-        `{
-          "pw":{
-            "type":"Buffer",
-            "data":[165,193,186,97,141,236,247,112,132,190,220,10,40,53,173,84,188,14,85,148,201,50,221,254,250,62,90,
-              52,4,185,26,255,83,146,175,64,65,248,174,229,181,86,180,124,251,138,77,212,151,138,65,65,227,12,84,190,
-              234,5,116,90,99,0,218,153,219,13,198,19,17,131,135,220,211,174,51,238,57,254,89,173,203,19,72,61,244,53,
-              9,205,251,33,72,159,144,175,243,225,40,220,223,205,123,5,172,213,25,182,98,47,128,135,54,192,244,240,99,
-              68,145,135,187,254,26,206,66,72,158,162,182,251,253,78,159,98,226,0,190,70,223,36,123,215,249,36,198,244,
-              34,125,36,186,144,18,215,75,253,60,100,192,245,23,14,72,24,213,69,118,217,108,60,21,99,59,68,172,107,102,
-              95,208,90,114,155,119,107,31,66,116,26,101,228,149,99,186,60,227,108,132,183,43,92,110,247,253,25,100,
-              140,164,208,223,120,53,202,33,160,125,48,13,189,56,165,80,42,191,172,136,125,198,211,0,239,155,135,234,
-              120,9,185,251,30,39,50,66,110,71,203,126,114,174,181,150,3,217,45,130,161,69,158,175,218,0]
-            },
-          "mk":{
-            "type":"Buffer",
-            "data":[250,140,238,66,144,72,133,120,171,130,189,249,18,169,222,129,105,99,153,99,61,181,182,70,176,229,
-              110,31,14,77,19,27,35,24,251,120,59,90,74,158,110,94,90,171,58,22,212,74,71,147,65,56,58,3,93,234,4,162,
-              116,65,114,15,193,99,250,82,236,159,135,224,180,128,130,39,228,95,241,143,29,163,229,216,83,55,92,82,34,
-              134,83,7,170,47,156,148,248,81,1,205,186,99,137,157,251,131,135,64,247,200,121,198,103,118,166,173,239,
-              44,233,178,239,157,23,17,185,14,94,89,18,240,114,23,173,136,18,121,124,121,43,214,55,156,165,233,251,58,
-              60,53,128,187,109,186,10,179,190,79,98,84,5,222,99,174,35,35,75,152,142,63,121,148,205,113,129,41,164,17,
-              253,47,122,20,152,114,72,156,72,57,244,210,20,13,44,126,39,243,8,4,208,96,147,46,161,53,89,242,2,230,234,
-              145,166,118,250,77,226,32,2,54,49,75,74,170,116,197,112,227,115,223,186,53,92,140,161,76,65,51,22,226,
-              161,51,86,233,187,65,100,186,204,253,106,95,218,175,211,169,174,172,42,0,203,92]
-            },
-          "ak":{
-            "type":"Buffer",
-            "data":[116,173,152,230,226,191,37,25,222,115,224,136,169,121,206,51,232,226,49,67,211,205,209,67,230,15,
-              14,99,179,32,155,52,198,228,136,126,250,144,172,173,179,92,106,64,62,55,208,236,194,189,148,154,172,176,
-              207,217,190,7,214,57,208,92,238,252,83,80,39,179,161,89,75,227,72,243,254,40,218,139,45,104,79,74,22,56,
-              87,148,250,31,150,132,226,249,73,182,112,253,12,53,167,204,128,134,96,45,98,20,112,86,189,60,246,149,103,
-              16,39,77,61,115,255,208,162,132,178,240,194,182,191,84,146,248,137,79,245,19,106,109,11,103,3,153,147,
-              206,207,87,183,75,113,74,5,4,43,75,241,9,169,254,86,183,202,98,87,120,30,58,84,82,197,210,148,117,85,105,
-              60,133,105,217,239,17,6,133,226,227,171,37,215,49,149,247,244,227,48,77,176,181,42,23,14,81,198,136,234,
-              115,77,15,121,123,209,209,179,247,156,57,250,242,40,111,235,86,170,149,178,243,152,49,254,140,89,104,64,
-              92,32,250,159,46,137,195,180,219,77,35,153,192,140,210,76,175,34,210,6,20,49,227,100,148,28,35]
-            },
-          "pwNonce":{
-            "type":"Buffer",
-            "data":[22,237,67,218,92,122,117,14,194,174,112,90,151,237,199,144,254,208,27,153,247,190,222,32,101,88,
-              155,71,161,87,190,37,128,12,68,12,39,75,28,104,27,230,79,183,242,133,117,55,251,215,14,44,179,146,4,220,
-              129,175,68,147,236,126,99,57,169,153,85,211,70,170,149,155,189,220,26,89,21,121,82,87,14,123,132,200,92,
-              249,69,2,8,89,226,204,100,96,15,34,225,194,110,82,170,77,8,80,94,18,13,59,130,126,49,218,142,5,179,92,
-              146,124,41,12,154,236,244,216,63,18,8,118]
-          },
-          "pwCost":100000,
-          "pwKeySize":768,
-          "pwDigest":"SHA-512",
-          "pwFunc":"PBKDF2"
-        }`
-      );
+      // quick smoke test to verify general case master key derivation success
+      const TEST_UIP = "!~@#$%^F7DBYj {$} \\lkjsdf923+=;HUR";
+      const TEST_NONCE =
+        `Fu1D2lx6dQ7CrnBal+3HkP7QG5n3vt4gZVibR6FXviWADEQMJ0scaBvmT7fyhXU3+9cOLLOSBNyBr0ST7H5jOamZVdN` +
+        `GqpWbvdwaWRV5UlcOe4TIXPlFAghZ4sxkYA8i4cJuUqpNCFBeEg07gn4x2o4Fs1ySfCkMmuz02D8SCHY=`;
+      const REFERENCE_AK =
+        `V3fArme1PwobGkEfEOvzYQhe3utaJ/a0mDeKo49TpXL195eMCsqIPaXxpDMbWOtQx7eOdjR+I2TjLJyPZQPLwF46` +
+        `/EHdfnbOymNH1yMNCK9H0+nOBg==`;
+      const REFERENCE_MK =
+        `C2ZSujyX7nO5x4i4aRcIkJ26JgqoJd/26DCjO+AO24HXoCabZNwYmKUOyTPp+TxARam1sL06tb80IilSFbCiohn+` +
+        `/1MLleasoXi+WJUYFs1IekxMTQ==`;
+      const REFERENCE_PW =
+        `RJq0gPJLvmDSj3S/KFu9MnoTAeK+va/iR0d9XHQWAWWEuQFmEs60dTkLh1sLipk57cI0o5kfWihaZcU0WiPyB3mu` +
+        `0vR2qhyfAsejezR5Qbi7O5l8JQ==`;
       try {
         const dummyInputs = {
-          userInputtedPassword: "!~@#$%^F7DBYjlkjsdf923+=;HUR",
-          pwNonce:
-            "Fu1D2lx6dQ7CrnBal+3HkP7QG5n3vt4gZVibR6FXviWADEQMJ0scaBvmT7fyhXU3+9cOLLOSBNyBr0ST7H5jOamZVdNGqpWbv" +
-            "dwaWRV5UlcOe4TIXPlFAghZ4sxkYA8i4cJuUqpNCFBeEg07gn4x2o4Fs1ySfCkMmuz02D8SCHY="
+          userInputtedPassword: TEST_UIP,
+          pwNonce: TEST_NONCE
         };
         const output = await cryptoManager.deriveMasterKeyBuffers(dummyInputs);
 
         let ok = true;
-        ok = ok && Buffer.from(output.ak).equals(Buffer.from(REFERENCE.ak));
-        ok = ok && Buffer.from(output.mk).equals(Buffer.from(REFERENCE.mk));
-        ok = ok && Buffer.from(output.pw).equals(Buffer.from(REFERENCE.pw));
         ok =
           ok &&
-          Buffer.from(output.pwNonce).equals(Buffer.from(REFERENCE.pwNonce));
+          Buffer.from(output.ak).equals(Buffer.from(REFERENCE_AK, "base64"));
+        ok =
+          ok &&
+          Buffer.from(output.mk).equals(Buffer.from(REFERENCE_MK, "base64"));
+        ok =
+          ok &&
+          Buffer.from(output.pw).equals(Buffer.from(REFERENCE_PW, "base64"));
+        ok =
+          ok &&
+          Buffer.from(output.pwNonce).equals(Buffer.from(TEST_NONCE, "base64"));
 
         this.setState({ testConsistantKeyGen: ok });
         return ok;
       } catch (err) {
         // tslint:disable-next-line:no-console
-        console.error(err);
+        console.error("ERR deriveMasterKeyBuffers", err);
         this.setState({ testConsistantKeyGen: false });
       }
     }
