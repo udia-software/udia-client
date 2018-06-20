@@ -1,4 +1,5 @@
 import { AUTH_TOKEN } from "../../../Constants";
+import { FullUser } from "../../../Types";
 import {
   CLEAR_AUTH_DATA,
   CONFIRM_SIGN_OUT,
@@ -12,53 +13,26 @@ import {
   SET_FORM_USERNAME
 } from "./Actions";
 
-export interface IUserEmail {
-  email: string;
-  primary: boolean;
-  verified: boolean;
-  createdAt: number;
-  updatedAt: number;
-  verificationExpiry: number;
-}
-
-export interface IFullUser {
-  uuid: string;
-  username: string;
-  emails: IUserEmail[];
-  encSecretKey: string;
-  pubSignKey: string;
-  encPrivSignKey: string;
-  pubEncKey: string;
-  encPrivEncKey: string;
-  pwFunc: string;
-  pwDigest: string;
-  pwCost: number;
-  pwKeySize: number;
-  pwNonce: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
 export interface IAuthState {
-  username: string | null;
-  email: string | null;
-  password: string | null;
+  username: string;
+  email: string;
+  password: string;
   jwt: string | null;
   confirmSignOut: boolean;
-  authUser: IFullUser | null; // nested FullUser data with emails
-  emailVerificationToken: string | null;
-  passwordResetToken: string | null;
+  authUser: FullUser | null; // nested FullUser data with emails
+  emailVerificationToken: string;
+  passwordResetToken: string;
 }
 
 const DefaultAuthState: IAuthState = {
-  username: null,
-  email: null,
-  password: null,
+  username: "",
+  email: "",
+  password: "",
   jwt: localStorage.getItem(AUTH_TOKEN),
   confirmSignOut: false,
   authUser: null,
-  emailVerificationToken: null,
-  passwordResetToken: null
+  emailVerificationToken: "",
+  passwordResetToken: ""
 };
 
 /**

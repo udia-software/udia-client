@@ -1,8 +1,7 @@
 import React from "react";
-import { Link, LinkProps, RouteProps } from "react-router-dom";
+import { Link, RouteProps } from "react-router-dom";
 import { withTheme } from "styled-components";
-import { ThemedComponentProps } from "../Types";
-import styled from "./AppStyles";
+import styled, { IThemeInterface } from "./AppStyles";
 
 const HeaderContainer = styled.div`
   grid-area: header;
@@ -13,9 +12,9 @@ const HeaderContainer = styled.div`
   padding: 0 0.4em;
 `;
 
-
 const StyledTitleLink = styled(Link)`
   justify-self: start;
+  align-self: center;
   padding: 0.4em;
   font-weight: 400;
   font-size: x-large;
@@ -31,6 +30,7 @@ const StyledTitleLink = styled(Link)`
 
 const HeaderSubMenu = styled.div`
   justify-self: end;
+  align-self: center;
   grid-auto-flow: column;
   display: grid;
   justify-items: end;
@@ -39,20 +39,20 @@ const HeaderSubMenu = styled.div`
   align-content: center;
 `;
 
-class Header extends React.Component<ThemedComponentProps<RouteProps>> {
+export interface IProps extends RouteProps {
+  theme: IThemeInterface;
+}
+
+class Header extends React.Component<IProps> {
   public render() {
     const { location, theme } = this.props;
-    const StyledSubTitleLink = StyledTitleLink.extend.attrs({
-      style: ({ to }: LinkProps) => ({
-        color:
-          to === ((location && location.pathname) || "")
-            ? theme.primaryColor
-            : theme.intermediateColor
-      })
-    })`
+    const StyledSubTitleLink = StyledTitleLink.extend`
       font-size: medium;
       padding: 0.4em;
-      color: ${theme.intermediateColor};
+      color: ${props =>
+        props.to === location && location.pathname
+          ? props.theme.primaryColor
+          : props.theme.intermediateColor};
       border-right: 1px solid ${theme.inverseColor};
       border-left: 1px solid ${theme.inverseColor};
       &:hover {
