@@ -6,6 +6,7 @@ export interface IThemeInterface {
   primaryColor: string;
   intermediateColor: string;
   inverseColor: string;
+  pulse: string;
 
   red: string;
   purple: string;
@@ -17,6 +18,13 @@ export interface IThemeInterface {
   inputErrorBackgroundColor: string;
   inputBaseBackgroundColor: string;
 }
+
+const StyledComponents = styledComponents as styledComponents.ThemedStyledComponentsModule<
+  IThemeInterface
+>;
+
+const { default: styled, css, injectGlobal, keyframes } = StyledComponents;
+const ThemeProvider: React.ComponentClass = StyledComponents.ThemeProvider;
 
 const BaseTheme = {
   purple: "rebeccapurple",
@@ -32,6 +40,17 @@ const DarkTheme: IThemeInterface = {
   primaryColor: "hsla(0, 0%, 100%, 1)",
   intermediateColor: "hsla(0, 0%, 100%, 0.4)",
   inverseColor: "hsla(0, 0%, 0%, 1)",
+  pulse: keyframes`
+    0% {
+      fill: hsla(0, 0%, 100%, 0);
+    }
+    80% {
+      fill: hsla(0, 0%, 100%, 1);
+    }
+    100% {
+      fill: hsla(0, 0%, 100%, 8);
+    }
+  `,
   red: "red",
   green: "green",
   yellow: "yellow",
@@ -45,6 +64,17 @@ const LightTheme: IThemeInterface = {
   primaryColor: "hsla(0, 0%, 0%, 1)",
   intermediateColor: "hsla(0, 0%, 0%, 0.6)",
   inverseColor: "hsla(0, 0%, 100%, 1)",
+  pulse: keyframes`
+    0% {
+      fill: hsla(0, 0%, 0%, 0);
+    }
+    80% {
+      fill: hsla(0, 0%, 0%, 1);
+    }
+    100% {
+      fill: hsla(0, 0%, 0%, 8);
+    }
+  `,
 
   red: "darkred",
   green: "darkgreen",
@@ -52,13 +82,6 @@ const LightTheme: IThemeInterface = {
 
   inputBaseBackgroundColor: "hsla(0, 0%, 0%, 0.05)"
 };
-
-const StyledComponents = styledComponents as styledComponents.ThemedStyledComponentsModule<
-  IThemeInterface
->;
-
-const { default: styled, css, injectGlobal, keyframes } = StyledComponents;
-const ThemeProvider: React.ComponentClass = StyledComponents.ThemeProvider;
 
 export default styled;
 export { css, injectGlobal, keyframes, ThemeProvider, DarkTheme, LightTheme };
