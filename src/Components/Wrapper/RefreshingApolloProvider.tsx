@@ -10,7 +10,7 @@ import {
   clearAuthData,
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
-import { IFullUser } from "../../Modules/Reducers/Auth/Reducer";
+import { FullUser } from "../../Types";
 
 interface IState {
   token: string | null;
@@ -159,19 +159,20 @@ class RefreshingApolloProvider extends React.Component<IProps, IState> {
       }
 
       // Perform gql query to get the user
-      const meQueryResponse = await client.query<IFullUser | null>({
+      const meQueryResponse = await client.query<FullUser | null>({
         fetchPolicy: "network-only",
         query: GET_ME_QUERY
       });
       if (!meQueryResponse.data) {
         dispatch(clearAuthData());
       } else {
+        // If the user just logged in or signed up, this should be unnecessary
         dispatch(setAuthUser(meQueryResponse.data));
       }
 
       // Setup a websocket subscription for listening to user changes
       const newUserObserver = client
-        .subscribe<IFullUser | null>({
+        .subscribe<FullUser | null>({
           query: ME_SUBSCRIPTION
         })
         .subscribe(

@@ -596,19 +596,17 @@ interface IHealthResponseData {
 const withHealthSubscriptionData = graphql<IProps, IHealthResponseData, {}>(
   HEALTH_METRIC_QUERY,
   {
-    props: props => {
-      return {
-        ...props,
-        subscribeToNewHealthMetrics: () =>
-          props.data!.subscribeToMore({
-            document: HEALTH_METRIC_SUBSCRIPTION,
-            updateQuery: (prev, { subscriptionData }) => ({
-              ...prev,
-              ...subscriptionData.data
-            })
+    props: props => ({
+      ...props,
+      subscribeToNewHealthMetrics: () =>
+        props.data!.subscribeToMore({
+          document: HEALTH_METRIC_SUBSCRIPTION,
+          updateQuery: (prev, { subscriptionData }) => ({
+            ...prev,
+            ...subscriptionData.data
           })
-      };
-    }
+        })
+    })
   }
 );
 

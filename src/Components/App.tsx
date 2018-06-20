@@ -1,11 +1,13 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import styled from "./AppStyles";
+import SignInController from "./Auth/SignInController";
 import Footer from "./Footer";
 import Header from "./Header";
 import Health from "./Health";
 import Home from "./Home";
 import NotFound from "./NotFound";
+import WithAuthentication from "./Wrapper/WithAuthentication";
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;
@@ -45,6 +47,16 @@ export default () => (
       <Switch>
         <Route exact={true} path="/" component={Home} />
         <Route exact={true} path="/health" component={Health} />
+        <Route
+          exact={true}
+          path="/sign-in"
+          component={WithAuthentication(
+            SignInController,
+            false,
+            "/",
+            "/sign-in"
+          )}
+        />
         <Route component={NotFound} />
       </Switch>
     </BodyContainer>

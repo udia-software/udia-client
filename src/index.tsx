@@ -11,7 +11,7 @@ import configureReduxStore from "./Modules/ConfigureReduxStore";
 import { unregister } from "./registerServiceWorker";
 
 function render(
-  AppComponent: any, // Renderer accepts a ton of stuff, just pass in whatever
+  AppComponent: () => JSX.Element,
   root: HTMLElement | null
 ) {
   if (!root) {
