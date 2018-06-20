@@ -4,6 +4,7 @@ import styled from "../AppStyles";
 import Button from "../PureHelpers/Button";
 import FormField from "../PureHelpers/FormField";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 
 export interface IProps {
   loading: boolean;
@@ -44,7 +45,7 @@ const SignInLinks = styled.div`
   justify-content: space-around;
   text-align: center;
   padding-top: 0.5em;
-  &>a {
+  & > a {
     padding-top: 0.5em;
   }
 `;
@@ -83,6 +84,11 @@ const SignInView = ({
   handleSubmit
 }: IProps) => (
   <SignInContainer>
+    <GridTemplateLoadingOverlay
+      loading={loading}
+      loadingText={loadingText}
+      gridAreaName="form"
+    />
     <SignInTitle>Sign In</SignInTitle>
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>

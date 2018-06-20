@@ -7,9 +7,24 @@ export interface ILogoProps {
   isLoading?: boolean;
 }
 
-const StyledSVG = styled.svg`
+const StyledSVG = styled.svg.attrs<ILogoProps>({})`
   fill: ${props => props.theme.primaryColor};
   color: ${props => props.theme.primaryColor};
+  ${props =>
+    props.isLoading &&
+    `
+  &>.loader-slash {
+    animation: ${props.theme.pulse} 2s ease-in-out infinite;
+  }
+  &>.loader-bracket {
+    animation: ${props.theme.pulse} 2s ease-in-out infinite;
+    animation-delay: -0.1s;
+  }
+  &>.loader-hexagon {
+    animation: ${props.theme.pulse} 2s ease-in-out infinite;
+    animation-delay: -0.2s;
+  }
+  `};
 `;
 
 const LEFT_BRACKET_POLY = [
@@ -72,10 +87,22 @@ const Logo = (props: ILogoProps) => {
       y="0px"
       viewBox="0 0 90 90"
     >
-      <polygon className={isLoading ? "loader-bracket" : undefined} points={LEFT_BRACKET_POLY} />
-      <polygon className={isLoading ? "loader-slash" : undefined} points={SLASH_POLY} />
-      <polygon className={isLoading ? "loader-bracket" : undefined} points={RIGHT_BRACKET_POLY} />
-      <path className={isLoading ? "loader-hexagon" : undefined} d={HEXAGON_PATH} />
+      <polygon
+        className={isLoading ? "loader-bracket" : undefined}
+        points={LEFT_BRACKET_POLY}
+      />
+      <polygon
+        className={isLoading ? "loader-slash" : undefined}
+        points={SLASH_POLY}
+      />
+      <polygon
+        className={isLoading ? "loader-bracket" : undefined}
+        points={RIGHT_BRACKET_POLY}
+      />
+      <path
+        className={isLoading ? "loader-hexagon" : undefined}
+        d={HEXAGON_PATH}
+      />
     </StyledSVG>
   );
 };

@@ -63,37 +63,22 @@ body {
 }
 
 /* The loading logo must always look cool */
-.loading-logo {
+#root-loading {
   max-height: 80px;
   padding-top: 2em;
 }
-.loading-logo > .loader-slash {
+#root-loading > .loader-slash {
   animation: pulse 2s ease-in-out infinite;
-  -webkit-animation: pulse 2s ease-in-out infinite;
 }
-.loading-logo > .loader-bracket {
+#root-loading > .loader-bracket {
   animation: pulse 2s ease-in-out infinite;
-  -webkit-animation: pulse 2s ease-in-out infinite;
   animation-delay: -0.1s;
 }
-.loading-logo > .loader-hexagon {
+#root-loading > .loader-hexagon {
   animation: pulse 2s ease-in-out infinite;
-  -webkit-animation: pulse 2s ease-in-out infinite;
   animation-delay: -0.2s;
 }
 @keyframes pulse {
-  0% {
-    fill: hsla(0, 0%, 100%, 0);
-  }
-  80% {
-    fill: hsla(0, 0%, 100%, 1);
-  }
-  100% {
-    fill: hsla(0, 0%, 100%, 8);
-  }
-}
-
-@-webkit-keyframes pulse {
   0% {
     fill: hsla(0, 0%, 100%, 0);
   }

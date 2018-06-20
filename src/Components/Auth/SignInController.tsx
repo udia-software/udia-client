@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
+import { GraphQLError } from "graphql";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
@@ -148,6 +149,7 @@ class SignInController extends Component<IProps, IState> {
       this.setState({
         loading: true,
         loadingText: "Initializing CryptoManager...",
+        errors: [],
         emailErrors: [],
         passwordErrors: []
       });
@@ -193,36 +195,38 @@ class SignInController extends Component<IProps, IState> {
       this.setState({ loadingText: "Setting up client..." });
       dispatch(setAuthData({ user, jwt }));
     } catch (err) {
-      // tslint:disable-next-line:no-console
-      console.error(err);
+      const { graphQLErrors, networkError, message } = err;
+      const errors = [];
+      let emailErrors: string[] = [];
+      let passwordErrors: string[] = [];
+      if (graphQLErrors && graphQLErrors.length) {
+        graphQLErrors.forEach(
+          (
+            graphQLError: GraphQLError & {
+              state: { email?: string[]; pw?: string[] };
+            }
+          ) => {
+            const errorState = graphQLError.state || {};
+            emailErrors = emailErrors.concat(errorState.email || []);
+            passwordErrors = passwordErrors.concat(errorState.pw || []);
+          }
+        );
+      }
+      const catchAll = emailErrors.length === 0 && passwordErrors.length === 0;
+      if (networkError || catchAll) {
+        errors.push(message);
+      }
+      this.setState({
+        errors,
+        emailErrors,
+        passwordErrors
+      });
     } finally {
       this.setState({
         loading: false,
         loadingText: undefined
-      })
+      });
     }
-
-    // .catch(({ graphQLErrors, networkError, message, extraInfo }) => {
-    //   // eslint-disable-next-line no-console
-    //   console.warn(message, graphQLErrors, networkError, extraInfo);
-    //   const errors = [];
-    //   let emailErrors = [];
-    //   let passwordErrors = [];
-    //   graphQLErrors.forEach(graphQLError => {
-    //     const errorState = graphQLError.state || {};
-    //     emailErrors = emailErrors.concat(errorState.email || []);
-    //     passwordErrors = passwordErrors.concat(errorState.pw || []);
-    //   });
-    //   if (networkError) {
-    //     errors.push(message);
-    //   }
-    //   this.setState({
-    //     errors,
-    //     emailErrors,
-    //     passwordErrors,
-    //     loading: false
-    //   });
-    // });
   };
 }
 
