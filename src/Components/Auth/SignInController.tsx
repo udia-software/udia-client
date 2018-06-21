@@ -1,12 +1,11 @@
+import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
+import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component, FormEventHandler } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import { GraphQLError } from "graphql";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
@@ -30,6 +29,7 @@ export interface IState {
   errors: string[];
   emailErrors: string[];
   passwordErrors: string[];
+  cryptoManager: CryptoManager | null;
 }
 
 const SIGN_IN_MUTATION = gql`
@@ -97,11 +97,20 @@ class SignInController extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     document.title = "Sign In - UDIA";
+    const errors: string[] = [];
+    let cryptoManager: CryptoManager | null = null;
+    try {
+      cryptoManager = new CryptoManager();
+    } catch (err) {
+      errors.push(err.message);
+    }
+
     this.state = {
-      errors: [],
+      errors,
       emailErrors: [],
       passwordErrors: [],
-      loading: false
+      loading: false,
+      cryptoManager
     };
   }
 
@@ -144,19 +153,20 @@ class SignInController extends Component<IProps, IState> {
     try {
       e.preventDefault();
       const { client, dispatch, email, password } = this.props;
+      const { cryptoManager } = this.state;
 
-      // 1) Initialize CryptoManager instance
+      if (!cryptoManager) {
+        throw new Error("Browser does not support WebCrypto!");
+      }
+
+      // Fetch authentication parameters
       this.setState({
         loading: true,
-        loadingText: "Initializing CryptoManager...",
+        loadingText: "Fetching auth params...",
         errors: [],
         emailErrors: [],
         passwordErrors: []
       });
-      const cryptoManager = new CryptoManager();
-
-      // 2) Fetch authentication parameters
-      this.setState({ loadingText: "Fetching auth params..." });
       const queryResponse = await client.query<IGetAuthParamsQueryResponse>({
         query: GET_AUTH_PARAMS_QUERY,
         variables: { email }
@@ -164,12 +174,12 @@ class SignInController extends Component<IProps, IState> {
       const {
         data: {
           getUserAuthParams: { pwNonce, pwCost, pwKeySize, pwDigest, pwFunc }
-        } /* errors */
+        }
       } = queryResponse;
 
-      // 3) Derive secure master key buffers
+      // Derive secure master key buffers
       this.setState({
-        loadingText: "Deriving encryption keys and password..."
+        loadingText: "Deriving master password..."
       });
       const derivedBufferOutput = await cryptoManager.deriveMasterKeyBuffers({
         userInputtedPassword: password,
@@ -181,7 +191,7 @@ class SignInController extends Component<IProps, IState> {
       });
       const pw = Buffer.from(derivedBufferOutput.pw).toString("base64");
 
-      // 4) Communicate with the server to sign in
+      // Communicate with the server to sign in
       this.setState({ loadingText: "Communicating with server..." });
       const mutationResponse = await client.mutate<ISignInMutationResponse>({
         mutation: SIGN_IN_MUTATION,
@@ -191,12 +201,12 @@ class SignInController extends Component<IProps, IState> {
         signInUser: { jwt, user }
       } = mutationResponse.context!;
 
-      // 5) Set up the client given the successful response
+      // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
       dispatch(setAuthData({ user, jwt }));
     } catch (err) {
       const { graphQLErrors, networkError, message } = err;
-      const errors = [];
+      const errors: string[] = [];
       let emailErrors: string[] = [];
       let passwordErrors: string[] = [];
       if (graphQLErrors && graphQLErrors.length) {
@@ -214,7 +224,9 @@ class SignInController extends Component<IProps, IState> {
       }
       const catchAll = emailErrors.length === 0 && passwordErrors.length === 0;
       if (networkError || catchAll) {
-        errors.push(message);
+        // tslint:disable-next-line:no-console
+        console.warn(err);
+        errors.push(message || "Failed to sign in!");
       }
       this.setState({
         errors,

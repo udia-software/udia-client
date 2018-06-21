@@ -2,12 +2,13 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import styled from "./AppStyles";
 import SignInController from "./Auth/SignInController";
+import SignUpController from "./Auth/SignUpController";
 import Footer from "./Footer";
 import Header from "./Header";
 import Health from "./Health";
 import Home from "./Home";
 import NotFound from "./NotFound";
-import WithAuthentication from "./Wrapper/WithAuthentication";
+import WithAuth from "./Wrapper/WithAuth";
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;
@@ -38,6 +39,7 @@ const BodyContainer = styled.div`
   display: grid;
   width: 100%;
   height: 100%;
+  min-height: 50vh;
 `;
 
 export default () => (
@@ -50,12 +52,12 @@ export default () => (
         <Route
           exact={true}
           path="/sign-in"
-          component={WithAuthentication(
-            SignInController,
-            false,
-            "/",
-            "/sign-in"
-          )}
+          component={WithAuth(SignInController, false, "/", "/sign-in")}
+        />
+        <Route
+          exact={true}
+          path="/sign-up"
+          component={WithAuth(SignUpController, false, "/", "/sign-up")}
         />
         <Route component={NotFound} />
       </Switch>

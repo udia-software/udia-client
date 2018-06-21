@@ -66,6 +66,7 @@ class Header extends React.Component<IProps> {
         <StyledTitleLink to="/">UDIA</StyledTitleLink>
         <HeaderSubMenu>
           <StyledSubTitleLink to="/sign-in">Sign In</StyledSubTitleLink>
+          <StyledSubTitleLink to="/sign-up">Sign Up</StyledSubTitleLink>
         </HeaderSubMenu>
       </HeaderContainer>
     );

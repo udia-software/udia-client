@@ -1,5 +1,6 @@
-// tslint:disable-next-line
-const { version } = require("../package.json"); // breaks when using import syntax
+// tslint:disable-next-line:no-var-requires (idky this breaks when using import syntax)
+const { version } = require("../package.json");
+// import { version } from "../package.json";
 
 export const APP_VERSION = version;
 
