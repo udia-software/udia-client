@@ -1,9 +1,14 @@
+/**
+ * This is a kludgy class to quickly make sure all the web crypto API calls I make do what I expect, more or less
+ */
 import gql from "graphql-tag";
 import React, { Component } from "react";
 import { DataValue, graphql, OperationVariables } from "react-apollo";
 import { ThemedStyledProps } from "styled-components";
 import { APP_VERSION } from "../Constants";
-import CryptoManager from "../Modules/Crypto/CryptoManager";
+import CryptoManager, {
+  IMasterKeyBuffers
+} from "../Modules/Crypto/CryptoManager";
 import styled, { IThemeInterface } from "./AppStyles";
 
 const HealthContainer = styled.div`
@@ -61,6 +66,7 @@ interface IState {
   testAsymEncKeyGen?: string | false;
   testConsistantKeyGen?: boolean;
   testEncryptDecrypt?: boolean;
+  testExportImportSecKey?: boolean;
 }
 
 const WARN_SKEW_MS = 4000;
@@ -82,7 +88,7 @@ class Health extends Component<IProps, IState> {
     this.props.subscribeToNewHealthMetrics();
     const cryptoManager = this.initCryptoManager();
 
-    // do a quick smoke test on client webcrypto
+    // do a quick smoke test on client webcrypto keygen
     let cryptoOK = true;
     cryptoOK = cryptoOK && this.checkRandomValues(cryptoManager);
     cryptoOK = cryptoOK && (await this.checkGenSymEncKey(cryptoManager));
@@ -116,6 +122,16 @@ class Health extends Component<IProps, IState> {
     }
     cryptoOK = cryptoOK && encryptDecrypt;
     this.setState({ testEncryptDecrypt: encryptDecrypt });
+
+    // verify export key functionality
+    if (cryptoOK && cryptoManager) {
+      const masterBufs = await cryptoManager.deriveMasterKeyBuffers({
+        userInputtedPassword: "UDIAtest48!@uip"
+      });
+      cryptoOK =
+        cryptoOK &&
+        (await this.checkExportImportSecKey(masterBufs, cryptoManager));
+    }
   }
 
   public componentWillUnmount() {
@@ -163,7 +179,8 @@ class Health extends Component<IProps, IState> {
       testAsymSignKeyGen,
       testAsymEncKeyGen,
       testConsistantKeyGen,
-      testEncryptDecrypt
+      testEncryptDecrypt,
+      testExportImportSecKey
     } = this.state;
     let version = "ERR! SERVER DOWN";
     let serverNow = new Date(0);
@@ -352,6 +369,24 @@ class Health extends Component<IProps, IState> {
                     : `ERR! ${!!testEncryptDecrypt}`
                 }`}
           </SuccessableListDescription>
+          <ErrorableListTitle
+            isWarn={typeof testExportImportSecKey === "undefined"}
+            isErr={
+              typeof testExportImportSecKey !== "undefined" &&
+              !testExportImportSecKey
+            }
+          >
+            check Export→Crypt→Import→Test Enc Key
+          </ErrorableListTitle>
+          <SuccessableListDescription isOK={!!testExportImportSecKey}>
+            {typeof testExportImportSecKey === "undefined"
+              ? "Loading..."
+              : `CHECK: ${
+                  !!testExportImportSecKey
+                    ? `OK ${testExportImportSecKey}`
+                    : `ERR! ${!!testExportImportSecKey}`
+                }`}
+          </SuccessableListDescription>
         </dl>
         <CenterParagraph>
           It is I and You being one and inseperable.
@@ -485,7 +520,10 @@ class Health extends Component<IProps, IState> {
     }
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
-        return await cryptoManager.encryptFromStringWithSecret(payload, secret);
+        return await cryptoManager.encryptWithSecret(
+          Buffer.from(payload).buffer,
+          secret
+        );
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error(err);
@@ -505,7 +543,11 @@ class Health extends Component<IProps, IState> {
     }
     if (typeof cryptoManager !== "boolean" && cryptoManager) {
       try {
-        return await cryptoManager.decryptToStringWithSecret(payload, secret);
+        const outputBuf = await cryptoManager.decryptWithSecret(
+          payload,
+          secret
+        );
+        return Buffer.from(outputBuf).toString();
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error(err);
@@ -566,6 +608,63 @@ class Health extends Component<IProps, IState> {
     }
     return false;
   }
+
+  private checkExportImportSecKey = async (
+    masterBufs: IMasterKeyBuffers,
+    cryptoManagerInstance?: CryptoManager | null
+  ) => {
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
+    if (typeof cryptoManager !== "boolean" && cryptoManager) {
+      try {
+        let ok = true;
+        // Export
+        const { mk, ak } = masterBufs;
+        const mkBuf = Buffer.from(mk);
+        const akBuf = Buffer.from(ak);
+        const secretKey = await cryptoManager.generateSymmetricEncryptionKey();
+        const secretKeyBuf = await cryptoManager.exportRawKey(secretKey);
+
+        // Encrypt | Decrypt
+        const secretKeySecret = Buffer.concat([mkBuf, akBuf]).buffer;
+        const encSecretKey = await cryptoManager.encryptWithSecret(
+          secretKeyBuf,
+          secretKeySecret
+        );
+        const decryptedSecretKeyBuf = await cryptoManager.decryptWithSecret(
+          encSecretKey,
+          secretKeySecret
+        );
+        ok =
+          ok &&
+          Buffer.from(secretKeyBuf).equals(Buffer.from(decryptedSecretKeyBuf));
+
+        // Import & Verification
+        const regendSecretKey = await cryptoManager.importRawSecretKey(
+          decryptedSecretKeyBuf
+        );
+        const testData = cryptoManager.getRandomValues(32).buffer;
+        const genCryptOut = await cryptoManager.encryptWithSecretKey(
+          testData,
+          regendSecretKey
+        );
+        const refTestData = await cryptoManager.decryptWithSecretKey(
+          genCryptOut,
+          secretKey
+        );
+        ok = ok && Buffer.from(refTestData).equals(Buffer.from(testData));
+
+        this.setState({ testExportImportSecKey: ok });
+        return ok;
+      } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.error("ERR exportSymKey", err);
+        this.setState({ testExportImportSecKey: false });
+      }
+    }
+    return false;
+  };
 }
 
 const HEALTH_METRIC_QUERY = gql`
