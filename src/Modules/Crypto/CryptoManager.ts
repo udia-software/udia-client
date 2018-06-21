@@ -292,6 +292,19 @@ export default class CryptoManager {
   }
 
   /**
+   * Import the symmetric encryption key from an array buffer.
+   * @param {ArrayBuffer} rawAB - raw array buffer
+   */
+  public async importRawSecretKey(rawAB: ArrayBuffer) {
+    return this.subtleCrypto.importKey("raw", rawAB, "AES-GCM", true, [
+      "encrypt",
+      "decrypt",
+      "wrapKey",
+      "unwrapKey"
+    ]);
+  }
+
+  /**
    * Export a crypto key as a JSON Web Key
    * @param {CryptoKey} key
    */
@@ -304,7 +317,7 @@ export default class CryptoManager {
    * Return a string payload of base64 encoded parameters separated by `:`
    * @param {ArrayBuffer} unencryptedInput unencrypted buffer
    * @param {ArrayBuffer} secret encryption secret key (like mk)
-   * @param {ArrayBuffer} add optional additional data (usually ECDSA signature)
+   * @param {ArrayBuffer?} add optional additional data (usually ECDSA signature)
    */
   public async encryptWithSecret(
     unencryptedInput: ArrayBuffer,
@@ -313,14 +326,6 @@ export default class CryptoManager {
   ) {
     // run through SHA-256 to ensure 256 bytes used in AES-GCM
     const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
-    // ensure iv is 12 bytes (96 bits) for optimal calculation
-    const iv = this.getRandomValues(12).buffer;
-    // explicitly set tagLength to the max value of 128 bits
-    const alg: AesGcmParams = { name: "AES-GCM", iv, tagLength: 128 };
-    if (add) {
-      // chrome doesn't properly handle undefined, so we have to do conditional set
-      alg.additionalData = add;
-    }
 
     const key = await this.subtleCrypto.importKey(
       "raw",
@@ -329,6 +334,51 @@ export default class CryptoManager {
       false,
       ["encrypt"]
     );
+    return this.encryptWithSecretKey(unencryptedInput, key, add);
+  }
+
+  /**
+   * Decrypt a string payload using a secret (like mk)
+   * Return an ArrayBuffer containing the original encrypted value
+   * @param {string} encryptedPayload encrypted payload "ver:taglenBase64:addBase64:ivBase64:encBase64"
+   * @param {ArrayBuffer} secret decryption secret key (like mk)
+   */
+  public async decryptWithSecret(
+    encryptedPayload: string,
+    secret: ArrayBuffer
+  ) {
+    const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
+    const key = await this.subtleCrypto.importKey(
+      "raw",
+      secretHash,
+      "AES-GCM",
+      false,
+      ["decrypt"]
+    );
+    return this.decryptWithSecretKey(encryptedPayload, key);
+  }
+
+  /**
+   * Encrypt a buffer using a CryptoKey
+   * @param {ArrayBuffer} unencryptedInput unencrypted buffer
+   * @param {CryptoKey} key crypto key (should be from generateSymmetricEncryptionKey method)
+   * @param {ArrayBuffer?} add optional additional data (usually ECDSA signature)
+   */
+  public async encryptWithSecretKey(
+    unencryptedInput: ArrayBuffer,
+    key: CryptoKey,
+    add?: ArrayBuffer
+  ) {
+    // ensure iv is 12 bytes (96 bits) for optimal calculation
+    const iv = this.getRandomValues(12).buffer;
+
+    // explicitly set tagLength to the max value of 128 bits
+    const alg: AesGcmParams = { name: "AES-GCM", iv, tagLength: 128 };
+    if (add) {
+      // chrome doesn't properly handle undefined, so we have to do conditional set
+      alg.additionalData = add;
+    }
+
     const encryptedOutput = await this.subtleCrypto.encrypt(
       alg,
       key,
@@ -343,16 +393,7 @@ export default class CryptoManager {
     return `${version}:${tagLenB64}:${addB64}:${ivB64}:${encBase64}`;
   }
 
-  /**
-   * Decrypt a string payload using a secret (like mk)
-   * Return an ArrayBuffer containing the original encrypted value
-   * @param {string} encryptedPayload encrypted payload "ver:taglenBase64:addBase64:ivBase64:encBase64"
-   * @param {ArrayBuffer} secret decryption secret key (like mk)
-   */
-  public async decryptWithSecret(
-    encryptedPayload: string,
-    secret: ArrayBuffer
-  ) {
+  public async decryptWithSecretKey(encryptedPayload: string, key: CryptoKey) {
     const encPayloadParts = encryptedPayload.split(":");
     if (encPayloadParts.length !== 5) {
       throw new Error(
@@ -374,14 +415,6 @@ export default class CryptoManager {
     const iv = Buffer.from(ivBase64, "base64");
     const encData = Buffer.from(encBase64, "base64");
 
-    const secretHash = await this.subtleCrypto.digest("SHA-256", secret);
-    const key = await this.subtleCrypto.importKey(
-      "raw",
-      secretHash,
-      "AES-GCM",
-      false,
-      ["decrypt"]
-    );
     const alg: AesGcmParams = {
       name: "AES-GCM",
       iv,
@@ -390,37 +423,8 @@ export default class CryptoManager {
     if (add) {
       alg.additionalData = add;
     }
+
     return this.subtleCrypto.decrypt(alg, key, encData);
-  }
-
-  /**
-   * Helper method for string payloads.
-   * @param {string} unencryptedString unencrypted string utf8 encoded
-   * @param {ArrayBuffer} secret encryption secret key (usually mk)
-   */
-  public async encryptFromStringWithSecret(
-    unencryptedString: string,
-    secret: ArrayBuffer,
-    add?: ArrayBuffer
-  ) {
-    return this.encryptWithSecret(
-      Buffer.from(unencryptedString).buffer,
-      secret,
-      add
-    );
-  }
-
-  /**
-   * Helper method for returning string output.
-   * @param {string} encryptedPayload encrypted payload ivBase64:encBase64
-   * @param {ArrayBuffer} secret decryption secret key (like mk)
-   */
-  public async decryptToStringWithSecret(
-    encryptedPayload: string,
-    secret: ArrayBuffer
-  ) {
-    const decData = await this.decryptWithSecret(encryptedPayload, secret);
-    return Buffer.from(decData).toString();
   }
 
   /**

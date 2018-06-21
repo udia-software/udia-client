@@ -244,24 +244,7 @@ class SignUpController extends Component<IProps, IState> {
   };
 
   public handlePasswordBlur: FocusEventHandler<HTMLInputElement> = () => {
-    const { password } = this.props;
-    const { cryptoManager } = this.state;
-    if (cryptoManager) {
-      const errors = cryptoManager.validateUserInputtedPassword(password);
-      if (errors.length > 0) {
-        this.setState({
-          passwordErrors: errors,
-          passwordValidated: false
-        });
-      } else {
-        this.setState({
-          passwordErrors: [],
-          passwordValidated: true
-        });
-        return true;
-      }
-    }
-    return false;
+    this.validatePassword();
   };
 
   public handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
@@ -279,10 +262,9 @@ class SignUpController extends Component<IProps, IState> {
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
       }
-      const invalidPassword =
-        cryptoManager.validateUserInputtedPassword(password).length > 0;
+      const passwordOK = this.validatePassword();
       if (
-        invalidPassword ||
+        !passwordOK ||
         usernameErrors.length > 0 ||
         emailErrors.length > 0 ||
         passwordErrors.length > 0
@@ -466,6 +448,27 @@ class SignUpController extends Component<IProps, IState> {
       />
     );
   }
+
+  private validatePassword = () => {
+    const { password } = this.props;
+    const { cryptoManager } = this.state;
+    if (cryptoManager) {
+      const errors = cryptoManager.validateUserInputtedPassword(password);
+      if (errors.length > 0) {
+        this.setState({
+          passwordErrors: errors,
+          passwordValidated: false
+        });
+      } else {
+        this.setState({
+          passwordErrors: [],
+          passwordValidated: true
+        });
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 function mapStateToProps(state: IRootState) {
