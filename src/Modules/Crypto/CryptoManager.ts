@@ -99,6 +99,10 @@ export default class CryptoManager {
     }
   }
 
+  /**
+   * Check here to see if the user's password is long enough.
+   * @param {string} userInputtedPassword user entered string
+   */
   public validateUserInputtedPassword(userInputtedPassword: string) {
     const bufferedPassword = Buffer.from(userInputtedPassword, "utf8");
     const errors: string[] = [];
@@ -108,6 +112,10 @@ export default class CryptoManager {
     return errors;
   }
 
+  /**
+   * Return a randomly initialized Uint8Array of given length
+   * @param {number} length size of array, or bytes to generate
+   */
   public getRandomValues(length: number = 128) {
     const randomValues = new Uint8Array(length);
     this.globalCrypto.getRandomValues(randomValues);
@@ -285,7 +293,7 @@ export default class CryptoManager {
 
   /**
    * Export a crypto key as an array buffer
-   * @param {CryptoKey} key
+   * @param {CryptoKey} key should be AES-GCM symmetric CryptoKey
    */
   public async exportRawKey(key: CryptoKey) {
     return this.subtleCrypto.exportKey("raw", key);
@@ -295,7 +303,7 @@ export default class CryptoManager {
    * Import the symmetric encryption key from an array buffer.
    * @param {ArrayBuffer} rawAB - raw array buffer
    */
-  public async importRawSecretKey(rawAB: ArrayBuffer) {
+  public async importRawSymmetricEncryptionKey(rawAB: ArrayBuffer) {
     return this.subtleCrypto.importKey("raw", rawAB, "AES-GCM", true, [
       "encrypt",
       "decrypt",
@@ -305,11 +313,39 @@ export default class CryptoManager {
   }
 
   /**
-   * Export a crypto key as a JSON Web Key
-   * @param {CryptoKey} key
+   * Export the crypto key as a JSON Web Key
+   * @param {CryptoKey} key should be one of the ECDSA CryptoKeys from keypair
    */
   public async exportJsonWebKey(key: CryptoKey) {
     return this.subtleCrypto.exportKey("jwk", key);
+  }
+
+  /**
+   * Import the public verification key from a JsonWebKey
+   * @param {JsonWebKey} rawJWK should be the public ECDSA verification key
+   */
+  public async importPublicVerifyJsonWebKey(rawJWK: JsonWebKey) {
+    return this.subtleCrypto.importKey(
+      "jwk",
+      rawJWK,
+      { name: "ECDSA", namedCurve: "P-521" },
+      true,
+      ["verify"]
+    );
+  }
+
+  /**
+   * Import the private signing key from a JsonWebKey
+   * @param {JsonWebKey} rawJWK  should be the private ECDSA signing key
+   */
+  public async importPrivateSignJsonWebKey(rawJWK: JsonWebKey) {
+    return this.subtleCrypto.importKey(
+      "jwk",
+      rawJWK,
+      { name: "ECDSA", namedCurve: "P-521" },
+      true,
+      ["sign"]
+    );
   }
 
   /**
@@ -361,7 +397,7 @@ export default class CryptoManager {
   /**
    * Encrypt a buffer using a CryptoKey
    * @param {ArrayBuffer} unencryptedInput unencrypted buffer
-   * @param {CryptoKey} key crypto key (should be from generateSymmetricEncryptionKey method)
+   * @param {CryptoKey} key should be from generateSymmetricEncryptionKey method
    * @param {ArrayBuffer?} add optional additional data (usually ECDSA signature)
    */
   public async encryptWithSecretKey(
@@ -425,6 +461,38 @@ export default class CryptoManager {
     }
 
     return this.subtleCrypto.decrypt(alg, key, encData);
+  }
+
+  /**
+   * Verify a message using the asymmetric public verification key (ECDSA keypair publicKey value)
+   * @param {CryptoKey} publicKey public ECDSA SHA-512 verification key
+   * @param {ArrayBuffer} signature signature that was generated with the key and data provided
+   * @param {ArrayBuffer} data payload that was signed
+   */
+  public async verifyWithPublicKey(
+    publicKey: CryptoKey,
+    signature: ArrayBuffer,
+    data: ArrayBuffer
+  ) {
+    return this.subtleCrypto.verify(
+      { name: "ECDSA", hash: { name: "SHA-512" } },
+      publicKey,
+      signature,
+      data
+    );
+  }
+
+  /**
+   * Sign a message using the asymmetric private signing key (ECDSA keypair privateKey value)
+   * @param {CryptoKey} privateKey private ECDSA SHA-512 signing key
+   * @param {ArrayBuffer} data payload to sign
+   */
+  public async signWithPrivateKey(privateKey: CryptoKey, data: ArrayBuffer) {
+    return this.subtleCrypto.sign(
+      { name: "ECDSA", hash: { name: "SHA-512" } },
+      privateKey,
+      data
+    );
   }
 
   /**

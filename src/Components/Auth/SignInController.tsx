@@ -199,7 +199,7 @@ class SignInController extends Component<IProps, IState> {
       });
       const {
         signInUser: { jwt, user }
-      } = mutationResponse.context!;
+      } = mutationResponse.data as ISignInMutationResponse;
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
