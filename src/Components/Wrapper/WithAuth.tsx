@@ -33,7 +33,7 @@ interface IProps {
  * @param {string} redirectToPath Where to redirect to if requireAuthentication not satisfied?
  * @param {string} redirectReferrer Who is this being referred from?
  */
-export default function WithAuthentication(
+export default function WithAuth(
   WrappedComponent: any, // should be a react component like thing
   requireAuthentication: boolean,
   redirectToPath: string,
