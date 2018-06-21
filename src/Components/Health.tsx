@@ -66,7 +66,8 @@ interface IState {
   testAsymEncKeyGen?: string | false;
   testConsistantKeyGen?: boolean;
   testEncryptDecrypt?: boolean;
-  testExportImportSecKey?: boolean;
+  testExportImportSecKey?: string | false;
+  testExportImportSignKeyPair?: boolean;
 }
 
 const WARN_SKEW_MS = 4000;
@@ -131,6 +132,9 @@ class Health extends Component<IProps, IState> {
       cryptoOK =
         cryptoOK &&
         (await this.checkExportImportSecKey(masterBufs, cryptoManager));
+      cryptoOK =
+        cryptoOK &&
+        (await this.checkExportImportSignKeyPair(masterBufs, cryptoManager));
     }
   }
 
@@ -180,7 +184,8 @@ class Health extends Component<IProps, IState> {
       testAsymEncKeyGen,
       testConsistantKeyGen,
       testEncryptDecrypt,
-      testExportImportSecKey
+      testExportImportSecKey,
+      testExportImportSignKeyPair
     } = this.state;
     let version = "ERR! SERVER DOWN";
     let serverNow = new Date(0);
@@ -376,7 +381,7 @@ class Health extends Component<IProps, IState> {
               !testExportImportSecKey
             }
           >
-            check Export→Crypt→Import→Test Enc Key
+            check Export→Crypt→Import→Test Enc|Dec Key
           </ErrorableListTitle>
           <SuccessableListDescription isOK={!!testExportImportSecKey}>
             {typeof testExportImportSecKey === "undefined"
@@ -385,6 +390,24 @@ class Health extends Component<IProps, IState> {
                   !!testExportImportSecKey
                     ? `OK ${testExportImportSecKey}`
                     : `ERR! ${!!testExportImportSecKey}`
+                }`}
+          </SuccessableListDescription>
+          <ErrorableListTitle
+            isWarn={typeof testExportImportSignKeyPair === "undefined"}
+            isErr={
+              typeof testExportImportSignKeyPair !== "undefined" &&
+              !testExportImportSignKeyPair
+            }
+          >
+            check Export→Crypt→Import→Test Sign|Ver KeyPair
+          </ErrorableListTitle>
+          <SuccessableListDescription isOK={!!testExportImportSignKeyPair}>
+            {typeof testExportImportSignKeyPair === "undefined"
+              ? "Loading..."
+              : `CHECK: ${
+                  !!testExportImportSignKeyPair
+                    ? `OK ${testExportImportSignKeyPair}`
+                    : `ERR! ${!!testExportImportSignKeyPair}`
                 }`}
           </SuccessableListDescription>
         </dl>
@@ -626,7 +649,7 @@ class Health extends Component<IProps, IState> {
         const secretKey = await cryptoManager.generateSymmetricEncryptionKey();
         const secretKeyBuf = await cryptoManager.exportRawKey(secretKey);
 
-        // Encrypt | Decrypt
+        // Encrypt/Decrypt
         const secretKeySecret = Buffer.concat([mkBuf, akBuf]).buffer;
         const encSecretKey = await cryptoManager.encryptWithSecret(
           secretKeyBuf,
@@ -641,7 +664,7 @@ class Health extends Component<IProps, IState> {
           Buffer.from(secretKeyBuf).equals(Buffer.from(decryptedSecretKeyBuf));
 
         // Import & Verification
-        const regendSecretKey = await cryptoManager.importRawSecretKey(
+        const regendSecretKey = await cryptoManager.importRawSymmetricEncryptionKey(
           decryptedSecretKeyBuf
         );
         const testData = cryptoManager.getRandomValues(32).buffer;
@@ -655,12 +678,106 @@ class Health extends Component<IProps, IState> {
         );
         ok = ok && Buffer.from(refTestData).equals(Buffer.from(testData));
 
-        this.setState({ testExportImportSecKey: ok });
+        this.setState({
+          testExportImportSecKey:
+            ok &&
+            Buffer.from(testData)
+              .toString("base64")
+              .substr(0, 10)
+        });
         return ok;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error("ERR exportSymKey", err);
         this.setState({ testExportImportSecKey: false });
+      }
+    }
+    return false;
+  };
+
+  private checkExportImportSignKeyPair = async (
+    masterBufs: IMasterKeyBuffers,
+    cryptoManagerInstance?: CryptoManager | null
+  ) => {
+    const cryptoManager = cryptoManagerInstance
+      ? cryptoManagerInstance
+      : this.state.cryptoManager;
+    if (typeof cryptoManager !== "boolean" && cryptoManager) {
+      try {
+        let ok = true;
+
+        // Export
+        const { ak } = masterBufs;
+        const signKeyPair = await cryptoManager.generateAsymmetricSigningKeyPair();
+        const pubVerifyJWK = await cryptoManager.exportJsonWebKey(
+          signKeyPair.publicKey
+        );
+        const serializedPubVerifyKey = JSON.stringify(pubVerifyJWK);
+        ok = ok && !!serializedPubVerifyKey;
+        const privSignJWK = await cryptoManager.exportJsonWebKey(
+          signKeyPair.privateKey
+        );
+        const serializedPrivSignJWK = JSON.stringify(privSignJWK);
+
+        // Encrypt
+        const encPrivSignKey = await cryptoManager.encryptWithSecret(
+          Buffer.from(serializedPrivSignJWK, "utf8").buffer,
+          ak
+        );
+
+        // Decrypt & Import
+        const decryptedPrivSignKeyBuf = await cryptoManager.decryptWithSecret(
+          encPrivSignKey,
+          ak
+        );
+        const serializedRegenedPrivSignKey = Buffer.from(
+          decryptedPrivSignKeyBuf
+        ).toString("utf8");
+        const parsedRegenedPrivSignKey = JSON.parse(
+          serializedRegenedPrivSignKey
+        );
+        const regendPrivSignKey = await cryptoManager.importPrivateSignJsonWebKey(
+          parsedRegenedPrivSignKey
+        );
+        const parsedRegenedPubVerifyKey = JSON.parse(serializedPubVerifyKey);
+        const regendPubVerifyKey = await cryptoManager.importPublicVerifyJsonWebKey(
+          parsedRegenedPubVerifyKey
+        );
+
+        // Verify Original Sign to Regenerated Verify
+        const dataTestO2R = cryptoManager.getRandomValues(32).buffer;
+        const origSig = await cryptoManager.signWithPrivateKey(
+          signKeyPair.privateKey,
+          dataTestO2R
+        );
+        const origSigOK = await cryptoManager.verifyWithPublicKey(
+          regendPubVerifyKey,
+          origSig,
+          dataTestO2R
+        );
+        ok = ok && origSigOK;
+
+        // Verify Regenerated Sign to Original Verify
+        const dataTestR2O = cryptoManager.getRandomValues(32).buffer;
+        const regenSig = await cryptoManager.signWithPrivateKey(
+          regendPrivSignKey,
+          dataTestR2O
+        );
+        const regenSigOK = await cryptoManager.verifyWithPublicKey(
+          signKeyPair.publicKey,
+          regenSig,
+          dataTestR2O
+        );
+        ok = ok && regenSigOK;
+
+        this.setState({
+          testExportImportSignKeyPair: ok
+        });
+        return ok;
+      } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.error("ERR exportSymKey", err);
+        this.setState({ testExportImportSignKeyPair: false });
       }
     }
     return false;

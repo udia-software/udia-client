@@ -297,7 +297,7 @@ class SignUpController extends Component<IProps, IState> {
       const secretKey = await cryptoManager.generateSymmetricEncryptionKey();
       const secretKeyBuf = await cryptoManager.exportRawKey(secretKey);
       const secretKeySecret = Buffer.concat([mkBuf, akBuf]).buffer;
-      const encSecretKey = cryptoManager.encryptWithSecret(
+      const encSecretKey = await cryptoManager.encryptWithSecret(
         secretKeyBuf,
         secretKeySecret
       );
@@ -307,15 +307,16 @@ class SignUpController extends Component<IProps, IState> {
         loadingText: "Generating asymmetric signing key pair..."
       });
       const signKeyPair = await cryptoManager.generateAsymmetricSigningKeyPair();
-      const pubSignJWK = await cryptoManager.exportJsonWebKey(
+      const pubVerJWK = await cryptoManager.exportJsonWebKey(
         signKeyPair.publicKey
       );
-      const pubSignKey = JSON.stringify(pubSignJWK);
-      const privSignKeyBuf = await cryptoManager.exportRawKey(
+      const serializedPubVerKey = JSON.stringify(pubVerJWK);
+      const privSignJWK = await cryptoManager.exportJsonWebKey(
         signKeyPair.privateKey
       );
+      const serializedPrivSignKey = JSON.stringify(privSignJWK);
       const encPrivSignKey = await cryptoManager.encryptWithSecret(
-        privSignKeyBuf,
+        Buffer.from(serializedPrivSignKey, "utf8").buffer,
         ak
       );
 
@@ -327,12 +328,13 @@ class SignUpController extends Component<IProps, IState> {
       const pubEncJWK = await cryptoManager.exportJsonWebKey(
         encKeyPair.publicKey
       );
-      const pubEncKey = JSON.stringify(pubEncJWK);
-      const privEncKeyBuf = await cryptoManager.exportRawKey(
+      const serializedPubEncKey = JSON.stringify(pubEncJWK);
+      const privDecJWK = await cryptoManager.exportJsonWebKey(
         encKeyPair.privateKey
       );
-      const encPrivEncKey = await cryptoManager.encryptWithSecret(
-        privEncKeyBuf,
+      const serializedPrivDecKey = JSON.stringify(privDecJWK);
+      const encPrivDecKey = await cryptoManager.encryptWithSecret(
+        Buffer.from(serializedPrivDecKey, "utf8").buffer,
         mk
       );
 
@@ -349,16 +351,16 @@ class SignUpController extends Component<IProps, IState> {
           pwCost: derivedBufferOutput.pwCost,
           pwKeySize: derivedBufferOutput.pwKeySize,
           pwNonce,
-          pubSignKey,
+          pubSignKey: serializedPubVerKey,
           encPrivSignKey,
           encSecretKey,
-          pubEncKey,
-          encPrivEncKey
+          pubEncKey: serializedPubEncKey,
+          encPrivEncKey: encPrivDecKey
         }
       });
       const {
         createUser: { jwt, user }
-      } = mutationResponse.context!;
+      } = mutationResponse.data as ISignUpMutationResponse;
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
