@@ -5,10 +5,6 @@ import { IThemeInterface } from "src/Components/AppStyles";
 declare module "*.svg";
 declare module "*.png";
 declare module "*.jpg";
-declare module "*package.json" {
-  export const name: string;
-  export const version: string;
-}
 
 declare interface UserEmail {
   email: string;

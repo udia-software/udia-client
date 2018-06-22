@@ -1,3 +1,9 @@
+import {
+  DetailedHTMLProps,
+  FormHTMLAttributes,
+  HTMLAttributes,
+  InputHTMLAttributes
+} from "react";
 import { StyledComponentClass } from "styled-components";
 import styled, { IThemeInterface } from "../AppStyles";
 
@@ -7,9 +13,8 @@ import styled, { IThemeInterface } from "../AppStyles";
 // idk
 
 export const SignViewContainer: StyledComponentClass<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-  IThemeInterface,
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+  DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+  IThemeInterface
 > = styled.div`
   display: grid;
   grid-template-areas:
@@ -22,37 +27,22 @@ export const SignViewContainer: StyledComponentClass<
 `;
 
 export const SignViewTitle: StyledComponentClass<
-  React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLHeadingElement>,
-    HTMLHeadingElement
-  >,
-  IThemeInterface,
-  React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLHeadingElement>,
-    HTMLHeadingElement
-  >
+  DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>,
+  IThemeInterface
 > = styled.h1`
   grid-area: title;
 `;
 
 export const FormContainer: StyledComponentClass<
-  React.DetailedHTMLProps<
-    React.FormHTMLAttributes<HTMLFormElement>,
-    HTMLFormElement
-  >,
-  IThemeInterface,
-  React.DetailedHTMLProps<
-    React.FormHTMLAttributes<HTMLFormElement>,
-    HTMLFormElement
-  >
+  DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>,
+  IThemeInterface
 > = styled.form`
   grid-area: form;
 `;
 
 export const SignViewLinks: StyledComponentClass<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-  IThemeInterface,
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+  DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+  IThemeInterface
 > = styled.div`
   grid-area: silinks;
   display: flex;
@@ -66,9 +56,8 @@ export const SignViewLinks: StyledComponentClass<
 `;
 
 export const FormContent: StyledComponentClass<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-  IThemeInterface,
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+  DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+  IThemeInterface
 > = styled.div`
   display: flex;
   height: 100%;
@@ -77,15 +66,8 @@ export const FormContent: StyledComponentClass<
 `;
 
 export const FormInput: StyledComponentClass<
-  React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >,
-  IThemeInterface,
-  React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >
+  DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+  IThemeInterface
 > = styled.input`
   flex: 1 0 auto;
   width: auto;

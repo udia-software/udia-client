@@ -12,13 +12,13 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { FullUser } from "../../Types";
 
-interface IState {
+export interface IState {
   token: string | null;
   client: ApolloClient<NormalizedCacheObject>;
   userObserver: ZenObservable.Subscription | null;
 }
 
-interface IProps extends DispatchProp {
+export interface IProps extends DispatchProp {
   children: ReactNode; // Child must exist, this is a wrapper
 }
 
@@ -79,6 +79,10 @@ const ME_SUBSCRIPTION = gql`
     }
   }
 `;
+
+interface IMeResponseData {
+  me: FullUser;
+}
 
 /**
  * Wrapper component for managing Apollo Client and web app auth state
@@ -157,30 +161,29 @@ class RefreshingApolloProvider extends React.Component<IProps, IState> {
       if (userObserver) {
         userObserver.unsubscribe();
       }
-
       // Perform gql query to get the user
-      const meQueryResponse = await client.query<FullUser | null>({
+      const meQueryResponse = await client.query<IMeResponseData | null>({
         fetchPolicy: "network-only",
         query: GET_ME_QUERY
       });
-      if (!meQueryResponse.data) {
+      if (!meQueryResponse.data || !meQueryResponse.data.me) {
         dispatch(clearAuthData());
       } else {
-        // If the user just logged in or signed up, this should be unnecessary
-        dispatch(setAuthUser(meQueryResponse.data));
+        // If the user just logged in or signed up, this should be unnecessary but harmless
+        dispatch(setAuthUser(meQueryResponse.data.me));
       }
 
       // Setup a websocket subscription for listening to user changes
       const newUserObserver = client
-        .subscribe<FullUser | null>({
+        .subscribe<IMeResponseData | null>({
           query: ME_SUBSCRIPTION
         })
         .subscribe(
           data => {
-            if (!data) {
+            if (!data || !data.me) {
               dispatch(clearAuthData());
             } else {
-              dispatch(setAuthUser(data));
+              dispatch(setAuthUser(data.me));
             }
           },
           err => {
