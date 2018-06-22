@@ -17,7 +17,8 @@ const AuthenticationLoadingContainer = styled.div`
 
 const AuthenticationLoadingComponent = (
   <AuthenticationLoadingContainer>
-    <Logo isLoading={true} />
+    <Logo isLoading={true} height="80px" />
+    <span>Fetching user data...</span>
   </AuthenticationLoadingContainer>
 );
 
