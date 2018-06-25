@@ -1,6 +1,8 @@
 import * as styledComponents from "styled-components";
 
 export interface IThemeInterface {
+  smScrnBrkPx: number;
+
   backgroundColor: string;
   panelBackgroundColor: string;
   primaryColor: string;
@@ -27,6 +29,7 @@ const { default: styled, css, injectGlobal, keyframes } = StyledComponents;
 const ThemeProvider: React.ComponentClass = StyledComponents.ThemeProvider;
 
 const BaseTheme = {
+  smScrnBrkPx: 768,
   purple: "rebeccapurple",
   inputErrorColor: "#9f3a38",
   inputErrorBorderColor: "#e0b4b4",
