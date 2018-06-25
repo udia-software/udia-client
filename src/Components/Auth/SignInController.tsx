@@ -48,10 +48,10 @@ const SIGN_IN_MUTATION = gql`
           verificationExpiry
         }
         encSecretKey
-        pubSignKey
-        encPrivSignKey
-        pubEncKey
-        encPrivEncKey
+        pubVerifyKey
+        encPrivateSignKey
+        pubEncryptKey
+        encPrivateDecryptKey
         pwFunc
         pwDigest
         pwCost

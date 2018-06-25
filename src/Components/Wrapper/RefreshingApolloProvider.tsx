@@ -36,10 +36,10 @@ const GET_ME_QUERY = gql`
         verificationExpiry
       }
       encSecretKey
-      pubSignKey
-      encPrivSignKey
-      pubEncKey
-      encPrivEncKey
+      pubVerifyKey
+      encPrivateSignKey
+      pubEncryptKey
+      encPrivateDecryptKey
       pwFunc
       pwDigest
       pwCost
@@ -65,10 +65,10 @@ const ME_SUBSCRIPTION = gql`
         verificationExpiry
       }
       encSecretKey
-      pubSignKey
-      encPrivSignKey
-      pubEncKey
-      encPrivEncKey
+      pubVerifyKey
+      encPrivateSignKey
+      pubEncryptKey
+      encPrivateDecryptKey
       pwFunc
       pwDigest
       pwCost

@@ -292,29 +292,8 @@ export default class CryptoManager {
   }
 
   /**
-   * Export a crypto key as an array buffer
-   * @param {CryptoKey} key should be AES-GCM symmetric CryptoKey
-   */
-  public async exportRawKey(key: CryptoKey) {
-    return this.subtleCrypto.exportKey("raw", key);
-  }
-
-  /**
-   * Import the symmetric encryption key from an array buffer.
-   * @param {ArrayBuffer} rawAB - raw array buffer
-   */
-  public async importRawSymmetricEncryptionKey(rawAB: ArrayBuffer) {
-    return this.subtleCrypto.importKey("raw", rawAB, "AES-GCM", true, [
-      "encrypt",
-      "decrypt",
-      "wrapKey",
-      "unwrapKey"
-    ]);
-  }
-
-  /**
    * Export the crypto key as a JSON Web Key
-   * @param {CryptoKey} key should be one of the ECDSA CryptoKeys from keypair
+   * @param {CryptoKey} key should be one of the client generated crypto keys
    */
   public async exportJsonWebKey(key: CryptoKey) {
     return this.subtleCrypto.exportKey("jwk", key);
@@ -345,6 +324,50 @@ export default class CryptoManager {
       { name: "ECDSA", namedCurve: "P-521" },
       true,
       ["sign"]
+    );
+  }
+
+  /**
+   * Import the secret encryption key from a JsonWebKey
+   * @param rawJWK should be the AES-GCM secret key
+   */
+  public async importSecretJsonWebKey(rawJWK: JsonWebKey) {
+    return this.subtleCrypto.importKey("jwk", rawJWK, "AES-GCM", true, [
+      "encrypt",
+      "decrypt",
+      "wrapKey",
+      "unwrapKey"
+    ]);
+  }
+
+  /**
+   * Import the public encryption key from a JsonWebKey
+   * @param rawJWK should be the RSA-OAEP public encryption key
+   */
+  public async importPublicEncryptJsonWebKey(rawJWK: JsonWebKey) {
+    return this.subtleCrypto.importKey(
+      "jwk",
+      rawJWK,
+      {
+        name: "RSA-OAEP",
+        hash: { name: "SHA-512" }
+      },
+      true,
+      ["encrypt"]
+    );
+  }
+
+  /**
+   * Import the public encryption key from a JsonWebKey
+   * @param rawJWK should be the RSA-OAEP private decryption key
+   */
+  public async importPrivateDecryptionJsonWebKey(rawJWK: JsonWebKey) {
+    return this.subtleCrypto.importKey(
+      "jwt",
+      rawJWK,
+      { name: "RSA-OAEP", hash: "SHA-512" },
+      true,
+      ["decrypt"]
     );
   }
 
