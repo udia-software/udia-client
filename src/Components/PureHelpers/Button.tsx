@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "../AppStyles";
 
-const StyleComponent = styled.button.attrs<{ fontSize: number }>({})`
+export const StyleComponent = styled.button.attrs<{ fontSize?: number }>({})`
   color: ${props => props.theme.primaryColor};
   border-color: ${props => `${props.theme.primaryColor}`};
   background-color: ${props => props.theme.inverseColor};
@@ -12,7 +12,7 @@ const StyleComponent = styled.button.attrs<{ fontSize: number }>({})`
   padding: 0.3em 1.5em;
   margin: 0.5em 0;
   font-weight: 100;
-  font-size: ${props => props.fontSize}rem;
+  font-size: ${props => props.fontSize ? props.fontSize : 1}rem;
   transition-property: all;
   transition-duration: 0.2s;
   ${props =>

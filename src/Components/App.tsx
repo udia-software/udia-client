@@ -1,15 +1,14 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBars, faUser, faUserSlash } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
-import { Route, Switch } from "react-router-dom";
 import styled from "./AppStyles";
-import SignInController from "./Auth/SignInController";
-import SignOutController from "./Auth/SignOutController";
-import SignUpController from "./Auth/SignUpController";
 import Footer from "./Footer";
 import Header from "./Header";
-import Health from "./Health";
-import Home from "./Home";
-import NotFound from "./NotFound";
-import WithAuth from "./Wrapper/WithAuth";
+import AppRoutes from "./Routes/AppRoutes";
+
+library.add(faUser);
+library.add(faUserSlash);
+library.add(faBars);
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;
@@ -47,26 +46,7 @@ export default () => (
   <AppContainer>
     <Header />
     <BodyContainer>
-      <Switch>
-        <Route exact={true} path="/" component={Home} />
-        <Route exact={true} path="/health" component={Health} />
-        <Route
-          exact={true}
-          path="/sign-in"
-          component={WithAuth(SignInController, false, "/", "/sign-in")}
-        />
-        <Route
-          exact={true}
-          path="/sign-up"
-          component={WithAuth(SignUpController, false, "/", "/sign-up")}
-        />
-        <Route
-          exact={true}
-          path="/sign-out"
-          component={WithAuth(SignOutController, true, "/", "/sign-out")}
-        />
-        <Route component={NotFound} />
-      </Switch>
+      <AppRoutes />
     </BodyContainer>
     <Footer />
   </AppContainer>

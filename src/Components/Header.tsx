@@ -90,11 +90,9 @@ class Header extends Component<IProps> {
             )}
           {maybeAuthenticated &&
             isAuthenticated && (
-              <Fragment>
-                <StyledSubTitleLink to="/sign-out">
-                  {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
-                </StyledSubTitleLink>
-              </Fragment>
+              <StyledSubTitleLink to="/auth/profile">
+                {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
+              </StyledSubTitleLink>
             )}
           {maybeAuthenticated &&
             !isAuthenticated && <span>Loading User..</span>}
