@@ -34,3 +34,7 @@ declare interface FullUser {
   updatedAt: number;
 }
 
+// gross code to handle try/catch/finally logic in the app
+declare interface isMountable {
+  isMountableMounted: boolean;
+}

@@ -22,7 +22,7 @@ const AuthenticationLoadingComponent = (
   </AuthenticationLoadingContainer>
 );
 
-interface IProps {
+export interface IProps {
   isAuthenticated: boolean;
   maybeAuthenticated: boolean;
 }

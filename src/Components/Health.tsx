@@ -9,6 +9,7 @@ import { APP_VERSION } from "../Constants";
 import CryptoManager, {
   IMasterKeyBuffers
 } from "../Modules/Crypto/CryptoManager";
+import { isMountable } from "../Types";
 import styled, { IThemeInterface } from "./AppStyles";
 
 const HealthContainer = styled.div`
@@ -72,7 +73,9 @@ interface IState {
 
 const WARN_SKEW_MS = 4000;
 
-class Health extends Component<IProps, IState> {
+class Health extends Component<IProps, IState> implements isMountable {
+  public isMountableMounted = false;
+
   constructor(props: IProps) {
     super(props);
     document.title = "Health - UDIA";
@@ -86,6 +89,7 @@ class Health extends Component<IProps, IState> {
    * once component mounts, perform a basic browser/server sanity check
    */
   public async componentDidMount() {
+    this.isMountableMounted = true;
     this.props.subscribeToNewHealthMetrics();
     const cryptoManager = this.initCryptoManager();
 
@@ -122,7 +126,9 @@ class Health extends Component<IProps, IState> {
       }
     }
     cryptoOK = cryptoOK && encryptDecrypt;
-    this.setState({ testEncryptDecrypt: encryptDecrypt });
+    if (this.isMountableMounted) {
+      this.setState({ testEncryptDecrypt: encryptDecrypt });
+    }
 
     // verify export key functionality
     if (cryptoOK && cryptoManager) {
@@ -139,6 +145,7 @@ class Health extends Component<IProps, IState> {
   }
 
   public componentWillUnmount() {
+    this.isMountableMounted = false;
     clearInterval(this.state.intervalId);
   }
 
@@ -421,7 +428,9 @@ class Health extends Component<IProps, IState> {
   }
 
   private intervalCallback = () => {
-    this.setState({ timerHeartbeat: new Date() });
+    if (this.isMountableMounted) {
+      this.setState({ timerHeartbeat: new Date() });
+    }
   };
 
   private initCryptoManager = () => {
@@ -466,15 +475,19 @@ class Health extends Component<IProps, IState> {
       try {
         const symCryptoKey = await cryptoManager.generateSymmetricEncryptionKey();
         const exptJWK = await cryptoManager.exportJsonWebKey(symCryptoKey);
-        this.setState({
-          testSymEncKeyGen:
-            JSON.stringify(exptJWK, null, 2).substr(0, 22) + "... }"
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            testSymEncKeyGen:
+              JSON.stringify(exptJWK, null, 2).substr(0, 22) + "... }"
+          });
+        }
         return true;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error(err);
-        this.setState({ testSymEncKeyGen: false });
+        if (this.isMountableMounted) {
+          this.setState({ testSymEncKeyGen: false });
+        }
       }
     }
     return false;
@@ -492,15 +505,19 @@ class Health extends Component<IProps, IState> {
         const exptJWK = await cryptoManager.exportJsonWebKey(
           asymCryptoKeyPair.publicKey
         );
-        this.setState({
-          testAsymSignKeyGen:
-            JSON.stringify(exptJWK, null, 2).substr(0, 20) + "... }"
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            testAsymSignKeyGen:
+              JSON.stringify(exptJWK, null, 2).substr(0, 20) + "... }"
+          });
+        }
         return true;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error(err);
-        this.setState({ testAsymSignKeyGen: false });
+        if (this.isMountableMounted) {
+          this.setState({ testAsymSignKeyGen: false });
+        }
       }
     }
     return false;
@@ -518,15 +535,19 @@ class Health extends Component<IProps, IState> {
         const exptJWK = await cryptoManager.exportJsonWebKey(
           asymCryptoKeyPair.publicKey
         );
-        this.setState({
-          testAsymEncKeyGen:
-            JSON.stringify(exptJWK, null, 2).substr(0, 28) + "... }"
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            testAsymEncKeyGen:
+              JSON.stringify(exptJWK, null, 2).substr(0, 28) + "... }"
+          });
+        }
         return true;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error(err);
-        this.setState({ testAsymEncKeyGen: false });
+        if (this.isMountableMounted) {
+          this.setState({ testAsymEncKeyGen: false });
+        }
       }
     }
     return false;
@@ -621,12 +642,16 @@ class Health extends Component<IProps, IState> {
           ok &&
           Buffer.from(output.pwNonce).equals(Buffer.from(TEST_NONCE, "base64"));
 
-        this.setState({ testConsistantKeyGen: ok });
+        if (this.isMountableMounted) {
+          this.setState({ testConsistantKeyGen: ok });
+        }
         return ok;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error("ERR deriveMasterKeyBuffers", err);
-        this.setState({ testConsistantKeyGen: false });
+        if (this.isMountableMounted) {
+          this.setState({ testConsistantKeyGen: false });
+        }
       }
     }
     return false;
@@ -683,18 +708,22 @@ class Health extends Component<IProps, IState> {
         );
         ok = ok && Buffer.from(refTestData).equals(Buffer.from(testData));
 
-        this.setState({
-          testExportImportSecKey:
-            ok &&
-            Buffer.from(testData)
-              .toString("base64")
-              .substr(0, 10)
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            testExportImportSecKey:
+              ok &&
+              Buffer.from(testData)
+                .toString("base64")
+                .substr(0, 10)
+          });
+        }
         return ok;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error("ERR exportSymKey", err);
-        this.setState({ testExportImportSecKey: false });
+        if (this.isMountableMounted) {
+          this.setState({ testExportImportSecKey: false });
+        }
       }
     }
     return false;
@@ -775,14 +804,18 @@ class Health extends Component<IProps, IState> {
         );
         ok = ok && regenSigOK;
 
-        this.setState({
-          testExportImportSignKeyPair: ok
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            testExportImportSignKeyPair: ok
+          });
+        }
         return ok;
       } catch (err) {
         // tslint:disable-next-line:no-console
         console.error("ERR exportSymKey", err);
-        this.setState({ testExportImportSignKeyPair: false });
+        if (this.isMountableMounted) {
+          this.setState({ testExportImportSignKeyPair: false });
+        }
       }
     }
     return false;

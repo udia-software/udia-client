@@ -1,6 +1,13 @@
-import React from "react";
+import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import { Link, RouteProps } from "react-router-dom";
 import { withTheme } from "styled-components";
+import {
+  isAuthenticated as selectIsAuth,
+  maybeAuthenticated as selectMaybeAuth,
+  selectSelfUsername
+} from "../Modules/Reducers/Auth/Selectors";
+import { IRootState } from "../Modules/Reducers/RootReducer";
 import styled, { IThemeInterface } from "./AppStyles";
 
 const HeaderContainer = styled.div`
@@ -41,11 +48,20 @@ const HeaderSubMenu = styled.div`
 
 export interface IProps extends RouteProps {
   theme: IThemeInterface;
+  isAuthenticated: boolean;
+  maybeAuthenticated: boolean;
+  selfUsername: string | false;
 }
 
-class Header extends React.Component<IProps> {
+class Header extends Component<IProps> {
   public render() {
-    const { location, theme } = this.props;
+    const {
+      location,
+      theme,
+      isAuthenticated,
+      maybeAuthenticated,
+      selfUsername
+    } = this.props;
     const StyledSubTitleLink = StyledTitleLink.extend`
       font-size: medium;
       padding: 0.4em;
@@ -65,12 +81,35 @@ class Header extends React.Component<IProps> {
       <HeaderContainer>
         <StyledTitleLink to="/">UDIA</StyledTitleLink>
         <HeaderSubMenu>
-          <StyledSubTitleLink to="/sign-in">Sign In</StyledSubTitleLink>
-          <StyledSubTitleLink to="/sign-up">Sign Up</StyledSubTitleLink>
+          {!maybeAuthenticated &&
+            !isAuthenticated && (
+              <Fragment>
+                <StyledSubTitleLink to="/sign-in">Sign In</StyledSubTitleLink>
+                <StyledSubTitleLink to="/sign-up">Sign Up</StyledSubTitleLink>
+              </Fragment>
+            )}
+          {maybeAuthenticated &&
+            isAuthenticated && (
+              <Fragment>
+                <StyledSubTitleLink to="/sign-out">
+                  {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
+                </StyledSubTitleLink>
+              </Fragment>
+            )}
+          {maybeAuthenticated &&
+            !isAuthenticated && <span>Loading User..</span>}
         </HeaderSubMenu>
       </HeaderContainer>
     );
   }
 }
 
-export default withTheme(Header);
+function mapStateToProps(state: IRootState) {
+  return {
+    maybeAuthenticated: selectMaybeAuth(state),
+    isAuthenticated: selectIsAuth(state),
+    selfUsername: selectSelfUsername(state)
+  };
+}
+
+export default withTheme(connect(mapStateToProps)(Header));

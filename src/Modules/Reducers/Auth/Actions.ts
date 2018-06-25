@@ -7,6 +7,7 @@ export const SET_FORM_PASSWORD: "auth/SET_FORM_PASSWORD" =
   "auth/SET_FORM_PASSWORD";
 export const SET_FORM_EMAIL: "auth/SET_FORM_EMAIL" = "auth/SET_FORM_EMAIL";
 export const SET_AUTH_USER: "auth/SET_AUTH_USER" = "auth/SET_AUTH_USER";
+export const SET_AUTH_JWT: "auth/SET_AUTH_JWT" = "auth/SET_AUTH_JWT";
 export const SET_AUTH_DATA: "auth/SET_AUTH_DATA" = "auth/SET_AUTH_DATA";
 export const SET_FORM_EMAIL_VERIFICATION_TOKEN: "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN" =
   "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN";
@@ -37,6 +38,11 @@ export interface ISetAuthUserAuthAction {
   payload: FullUser;
 }
 
+export interface ISetAuthJWTAuthAction {
+  type: typeof SET_AUTH_JWT;
+  payload: string | null;
+}
+
 export interface ISetAuthDataAuthAction {
   type: typeof SET_AUTH_DATA;
   payload: { user: FullUser; jwt: string };
@@ -65,6 +71,7 @@ export type IAuthAction =
   | ISetFormEmailAuthAction
   | ISetFormPasswordAuthAction
   | ISetAuthUserAuthAction
+  | ISetAuthJWTAuthAction
   | ISetAuthDataAuthAction
   | ISetFormEmailVerificationTokenAction
   | ISetFormPasswordResetTokenAction
@@ -93,6 +100,11 @@ export const setFormPassword = (
 export const setAuthUser = (user: FullUser): ISetAuthUserAuthAction => ({
   type: SET_AUTH_USER,
   payload: user
+});
+
+export const setAuthJWT = (jwt: string | null): ISetAuthJWTAuthAction => ({
+  type: SET_AUTH_JWT,
+  payload: jwt
 });
 
 export const setAuthData = ({
