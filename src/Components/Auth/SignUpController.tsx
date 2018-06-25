@@ -67,11 +67,11 @@ const SIGN_UP_MUTATION = gql`
     $pwCost: Int!
     $pwKeySize: Int!
     $pwNonce: String!
-    $pubSignKey: String!
-    $encPrivSignKey: String!
+    $pubVerifyKey: String!
+    $encPrivateSignKey: String!
     $encSecretKey: String!
-    $pubEncKey: String!
-    $encPrivEncKey: String!
+    $pubEncryptKey: String!
+    $encPrivateDecryptKey: String!
   ) {
     createUser(
       username: $username
@@ -82,11 +82,11 @@ const SIGN_UP_MUTATION = gql`
       pwCost: $pwCost
       pwKeySize: $pwKeySize
       pwNonce: $pwNonce
-      pubSignKey: $pubSignKey
-      encPrivSignKey: $encPrivSignKey
+      pubVerifyKey: $pubVerifyKey
+      encPrivateSignKey: $encPrivateSignKey
       encSecretKey: $encSecretKey
-      pubEncKey: $pubEncKey
-      encPrivEncKey: $encPrivEncKey
+      pubEncryptKey: $pubEncryptKey
+      encPrivateDecryptKey: $encPrivateDecryptKey
     ) {
       jwt
       user {
@@ -101,10 +101,10 @@ const SIGN_UP_MUTATION = gql`
           verificationExpiry
         }
         encSecretKey
-        pubSignKey
-        encPrivSignKey
-        pubEncKey
-        encPrivEncKey
+        pubVerifyKey
+        encPrivateSignKey
+        pubEncryptKey
+        encPrivateDecryptKey
         pwFunc
         pwDigest
         pwCost
@@ -295,7 +295,9 @@ class SignUpController extends Component<IProps, IState> {
       // Generate symmetric encryption key
       this.setState({ loadingText: "Generating symmetric encryption key..." });
       const secretKey = await cryptoManager.generateSymmetricEncryptionKey();
-      const secretKeyBuf = await cryptoManager.exportRawKey(secretKey);
+      const secretJWK = await cryptoManager.exportJsonWebKey(secretKey);
+      const serializedSecretJWK = JSON.stringify(secretJWK);
+      const secretKeyBuf = Buffer.from(serializedSecretJWK, "utf8").buffer;
       const secretKeySecret = Buffer.concat([mkBuf, akBuf]).buffer;
       const encSecretKey = await cryptoManager.encryptWithSecret(
         secretKeyBuf,
@@ -315,7 +317,7 @@ class SignUpController extends Component<IProps, IState> {
         signKeyPair.privateKey
       );
       const serializedPrivSignKey = JSON.stringify(privSignJWK);
-      const encPrivSignKey = await cryptoManager.encryptWithSecret(
+      const encPrivateSignKey = await cryptoManager.encryptWithSecret(
         Buffer.from(serializedPrivSignKey, "utf8").buffer,
         ak
       );
@@ -333,7 +335,7 @@ class SignUpController extends Component<IProps, IState> {
         encKeyPair.privateKey
       );
       const serializedPrivDecKey = JSON.stringify(privDecJWK);
-      const encPrivDecKey = await cryptoManager.encryptWithSecret(
+      const encPrivateDecryptKey = await cryptoManager.encryptWithSecret(
         Buffer.from(serializedPrivDecKey, "utf8").buffer,
         mk
       );
@@ -351,11 +353,11 @@ class SignUpController extends Component<IProps, IState> {
           pwCost: derivedBufferOutput.pwCost,
           pwKeySize: derivedBufferOutput.pwKeySize,
           pwNonce,
-          pubSignKey: serializedPubVerKey,
-          encPrivSignKey,
+          pubVerifyKey: serializedPubVerKey,
+          encPrivateSignKey,
           encSecretKey,
-          pubEncKey: serializedPubEncKey,
-          encPrivEncKey: encPrivDecKey
+          pubEncryptKey: serializedPubEncKey,
+          encPrivateDecryptKey
         }
       });
       const {

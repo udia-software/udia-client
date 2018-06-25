@@ -647,8 +647,9 @@ class Health extends Component<IProps, IState> {
         const mkBuf = Buffer.from(mk);
         const akBuf = Buffer.from(ak);
         const secretKey = await cryptoManager.generateSymmetricEncryptionKey();
-        const secretKeyBuf = await cryptoManager.exportRawKey(secretKey);
-
+        const secretJWK = await cryptoManager.exportJsonWebKey(secretKey);
+        const serializedSecretJWK = JSON.stringify(secretJWK);
+        const secretKeyBuf = Buffer.from(serializedSecretJWK, "utf8").buffer;
         // Encrypt/Decrypt
         const secretKeySecret = Buffer.concat([mkBuf, akBuf]).buffer;
         const encSecretKey = await cryptoManager.encryptWithSecret(
@@ -664,8 +665,12 @@ class Health extends Component<IProps, IState> {
           Buffer.from(secretKeyBuf).equals(Buffer.from(decryptedSecretKeyBuf));
 
         // Import & Verification
-        const regendSecretKey = await cryptoManager.importRawSymmetricEncryptionKey(
+        const decryptedSerializedSecretJWK = Buffer.from(
           decryptedSecretKeyBuf
+        ).toString("utf8");
+        const decryptedSecretJWK = JSON.parse(decryptedSerializedSecretJWK);
+        const regendSecretKey = await cryptoManager.importSecretJsonWebKey(
+          decryptedSecretJWK
         );
         const testData = cryptoManager.getRandomValues(32).buffer;
         const genCryptOut = await cryptoManager.encryptWithSecretKey(

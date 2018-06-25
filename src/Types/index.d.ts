@@ -21,10 +21,10 @@ declare interface FullUser {
   username: string;
   emails: UserEmail[];
   encSecretKey: string;
-  pubSignKey: string;
-  encPrivSignKey: string;
-  pubEncKey: string;
-  encPrivEncKey: string;
+  pubVerifyKey: string;
+  encPrivateSignKey: string;
+  pubEncryptKey: string;
+  encPrivateDecryptKey: string;
   pwFunc: string;
   pwDigest: string;
   pwCost: number;
