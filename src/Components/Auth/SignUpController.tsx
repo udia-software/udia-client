@@ -19,7 +19,7 @@ import {
   setFormUsername
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
-import { FullUser } from "../../Types";
+import { FullUser, isMountable } from "../../Types";
 import SignUpView from "./SignUpView";
 
 export interface IProps {
@@ -124,7 +124,10 @@ interface ISignUpMutationResponse {
   };
 }
 
-class SignUpController extends Component<IProps, IState> {
+
+class SignUpController extends Component<IProps, IState> implements isMountable {
+  public isMountableMounted = false;
+
   constructor(props: IProps) {
     super(props);
     document.title = "Sign Up - UDIA";
@@ -148,6 +151,14 @@ class SignUpController extends Component<IProps, IState> {
       passwordErrors: [],
       cryptoManager
     };
+  }
+
+  public componentDidMount() {
+    this.isMountableMounted = true;
+  }
+
+  public componentWillUnmount() {
+    this.isMountableMounted = false;
   }
 
   public handleChangeEmail: ChangeEventHandler<HTMLInputElement> = e => {
@@ -404,10 +415,12 @@ class SignUpController extends Component<IProps, IState> {
         passwordErrors
       });
     } finally {
-      this.setState({
-        loading: false,
-        loadingText: undefined
-      });
+      if (this.isMountableMounted) {
+        this.setState({
+          loading: false,
+          loadingText: undefined
+        });
+      }
     }
   };
 

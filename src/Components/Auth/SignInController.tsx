@@ -13,7 +13,7 @@ import {
   setFormPassword
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
-import { FullUser } from "../../Types";
+import { FullUser, isMountable } from "../../Types";
 import SignInView from "./SignInView";
 
 export interface IProps {
@@ -93,7 +93,9 @@ interface IGetAuthParamsQueryResponse {
   };
 }
 
-class SignInController extends Component<IProps, IState> {
+class SignInController extends Component<IProps, IState> implements isMountable {
+  public isMountableMounted = false;
+
   constructor(props: IProps) {
     super(props);
     document.title = "Sign In - UDIA";
@@ -112,6 +114,14 @@ class SignInController extends Component<IProps, IState> {
       loading: false,
       cryptoManager
     };
+  }
+
+  public componentDidMount() {
+    this.isMountableMounted = true;
+  }
+
+  public componentWillUnmount() {
+    this.isMountableMounted = false;
   }
 
   public render() {
@@ -234,10 +244,12 @@ class SignInController extends Component<IProps, IState> {
         passwordErrors
       });
     } finally {
-      this.setState({
-        loading: false,
-        loadingText: undefined
-      });
+      if (this.isMountableMounted) {
+        this.setState({
+          loading: false,
+          loadingText: undefined
+        });
+      }
     }
   };
 }

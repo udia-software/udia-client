@@ -5,6 +5,7 @@ import {
   CONFIRM_SIGN_OUT,
   IAuthAction,
   SET_AUTH_DATA,
+  SET_AUTH_JWT,
   SET_AUTH_USER,
   SET_FORM_EMAIL,
   SET_FORM_EMAIL_VERIFICATION_TOKEN,
@@ -39,7 +40,10 @@ const DefaultAuthState: IAuthState = {
  * Auth reducer state is blacklisted from being persisted in IndexDB.
  * However, JWT is stored in localstorage.
  */
-export default (state: IAuthState = { ...DefaultAuthState }, action: IAuthAction) => {
+export default (
+  state: IAuthState = { ...DefaultAuthState },
+  action: IAuthAction
+) => {
   switch (action.type) {
     case SET_FORM_USERNAME:
       return {
@@ -60,6 +64,11 @@ export default (state: IAuthState = { ...DefaultAuthState }, action: IAuthAction
       return {
         ...state,
         authUser: action.payload
+      };
+    case SET_AUTH_JWT:
+      return {
+        ...state,
+        jwt: action.payload
       };
     case SET_AUTH_DATA:
       localStorage.setItem(AUTH_TOKEN, action.payload.jwt);

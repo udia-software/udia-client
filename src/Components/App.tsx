@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import styled from "./AppStyles";
 import SignInController from "./Auth/SignInController";
+import SignOutController from "./Auth/SignOutController";
 import SignUpController from "./Auth/SignUpController";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -58,6 +59,11 @@ export default () => (
           exact={true}
           path="/sign-up"
           component={WithAuth(SignUpController, false, "/", "/sign-up")}
+        />
+        <Route
+          exact={true}
+          path="/sign-out"
+          component={WithAuth(SignOutController, true, "/", "/sign-out")}
         />
         <Route component={NotFound} />
       </Switch>

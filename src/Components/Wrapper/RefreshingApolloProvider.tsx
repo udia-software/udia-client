@@ -1,25 +1,30 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import React, { ReactNode } from "react";
+import React, { Component, ReactNode } from "react";
 import { ApolloProvider } from "react-apollo";
 import { connect, DispatchProp } from "react-redux";
+import { Dispatch } from "redux";
 import { AUTH_TOKEN } from "../../Constants";
 import initApolloClient from "../../Modules/InitApolloClient";
 import {
   clearAuthData,
+  setAuthJWT,
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
+import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
+import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser } from "../../Types";
 
 export interface IState {
-  token: string | null;
   client: ApolloClient<NormalizedCacheObject>;
   userObserver: ZenObservable.Subscription | null;
 }
 
 export interface IProps extends DispatchProp {
   children: ReactNode; // Child must exist, this is a wrapper
+  dispatch: Dispatch;
+  token: string | null;
 }
 
 const GET_ME_QUERY = gql`
@@ -87,18 +92,20 @@ interface IMeResponseData {
 /**
  * Wrapper component for managing Apollo Client and web app auth state
  */
-class RefreshingApolloProvider extends React.Component<IProps, IState> {
-  constructor(props: any) {
+class RefreshingApolloProvider extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
-    const token = localStorage.getItem(AUTH_TOKEN);
+    const token = props.token;
     this.state = {
-      token,
       client: initApolloClient(token),
       userObserver: null
     };
     // tslint:disable-next-line:no-console
-    console.info(`Initialized ApolloProvider ${token ? "(JWT!)" : "(No JWT)"}`);
-    this.handleLocalStorageUpdated.bind(this);
+    console.info(
+      `Initialized ApolloProvider Client ${
+        token ? `(${token})` : "(No JWT)"
+      }`
+    );
   }
 
   public async componentDidMount() {
@@ -108,17 +115,19 @@ class RefreshingApolloProvider extends React.Component<IProps, IState> {
   }
 
   public shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-    return nextState.token !== this.state.token;
+    return nextProps.token !== this.props.token;
   }
 
   public async componentDidUpdate(prevProps: IProps, prevState: IState) {
     // Only do stuff if the token changed
-    if (this.state.token !== prevState.token) {
-      const newClient = initApolloClient(this.state.token);
+    if (this.props.token !== prevProps.token) {
+      const newClient = initApolloClient(this.props.token);
       await newClient.resetStore();
       // tslint:disable-next-line:no-console
       console.info(
-        `Refreshed ApolloProvider ${this.state.token ? "(JWT!)" : "(No JWT)"}`
+        `Refreshed ApolloProvider Client ${
+          this.props.token ? `(${this.props.token})` : "(No JWT)"
+        }`
       );
       await this.fetchAndSubscribeToUser(newClient);
       this.setState({ client: newClient });
@@ -141,11 +150,11 @@ class RefreshingApolloProvider extends React.Component<IProps, IState> {
    * Detect when to re-initialize the apollo client from the server (usually when JWT changes)
    * @param {StorageEvent} e - when localstorage changed, check if the key was the AUTH_TOKEN.
    */
-  protected async handleLocalStorageUpdated(e: StorageEvent) {
+  public handleLocalStorageUpdated = (e: StorageEvent) => {
     if (e.key === AUTH_TOKEN && e.newValue !== e.oldValue) {
-      this.setState({ token: e.newValue });
+      this.props.dispatch(setAuthJWT(e.newValue));
     }
-  }
+  };
 
   /**
    * Get the logged in user and set an observable to detect users changes via server subscription callback
@@ -204,4 +213,10 @@ class RefreshingApolloProvider extends React.Component<IProps, IState> {
   }
 }
 
-export default connect()(RefreshingApolloProvider);
+function mapStateToProps(state: IRootState) {
+  return {
+    token: selectSelfJWT(state)
+  };
+}
+
+export default connect(mapStateToProps)(RefreshingApolloProvider);
