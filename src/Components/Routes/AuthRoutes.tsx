@@ -29,7 +29,7 @@ const AuthBodyContainer = styled.div`
   height: 100%;
 `;
 
-const AuthSidebar = styled.div.attrs<{ showSidebar: boolean }>({})`
+const AuthSidebar = styled.div.attrs<{ showsidebar?: string }>({})`
   display: grid;
   grid-area: auth-sidebar;
   grid-row-gap: 1em;
@@ -41,7 +41,7 @@ const AuthSidebar = styled.div.attrs<{ showSidebar: boolean }>({})`
   transition: all 0.2s;
   @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
     ${props =>
-      props.showSidebar
+      props.showsidebar
         ? `overflow: visible; width: auto;`
         : `overflow: hidden; width: 0px;`};
   }
@@ -52,7 +52,7 @@ const AuthSidebar = styled.div.attrs<{ showSidebar: boolean }>({})`
 
 const activeClassName = "sidebar-nav-active";
 const StyledAuthSidebarLink = styled(NavLink).attrs<{
-  showSidebar: boolean;
+  showsidebar?: string;
   activeClassName: string;
 }>({ activeClassName })`
   margin-top: 1em;
@@ -72,21 +72,21 @@ const StyledAuthSidebarLink = styled(NavLink).attrs<{
   }
   @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
     ${props =>
-      props.showSidebar ? `overflow: visible; width: 8em;` : `display: none`};
+      props.showsidebar ? `overflow: visible; width: 8em;` : `display: none`};
   }
   &.${activeClassName} {
     color: ${props => props.theme.primaryColor};
   }
 `;
 
-const SidebarToggleButton = Button.extend.attrs<{ showSidebar: boolean }>({})`
+const SidebarToggleButton = Button.extend.attrs<{ showsidebar?: string }>({})`
   &:active {
     opacity: 0;  
   }
-  ${props => (props.showSidebar ? "transform: rotate(90deg);" : "")}
+  ${props => (props.showsidebar ? "transform: rotate(90deg);" : "")}
   @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
     grid-area: ${props =>
-      props.showSidebar ? `auth-sidebar;` : `auth-content;`}
+      props.showsidebar ? `auth-sidebar;` : `auth-content;`}
     opacity: 100;
     place-self: end;
     height: 4em;
@@ -106,12 +106,13 @@ class AuthRoutes extends Component<IProps> {
   };
 
   public render() {
-    const { showSidebar } = this.props;
+    const { showSidebar: showSidebarProp } = this.props;
+    const showSidebar = showSidebarProp ? "true" : undefined ;
     return (
       <AuthContainer>
-        <AuthSidebar showSidebar={showSidebar}>
+        <AuthSidebar showsidebar={showSidebar}>
           <StyledAuthSidebarLink
-            showSidebar={showSidebar}
+            showsidebar={showSidebar}
             to="/auth/profile"
             activeClassName={activeClassName}
           >
@@ -119,7 +120,7 @@ class AuthRoutes extends Component<IProps> {
             Profile
           </StyledAuthSidebarLink>
           <StyledAuthSidebarLink
-            showSidebar={showSidebar}
+            showsidebar={showSidebar}
             to="/auth/sign-out"
             activeClassName={activeClassName}
           >
@@ -143,7 +144,7 @@ class AuthRoutes extends Component<IProps> {
           </Switch>
         </AuthBodyContainer>
         <SidebarToggleButton
-          showSidebar={showSidebar}
+          showsidebar={showSidebar}
           onClick={this.handleToggleAuthSidebar}
         >
           <FontAwesomeIcon icon="bars" size="2x" />
