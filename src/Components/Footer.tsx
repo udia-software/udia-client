@@ -20,6 +20,7 @@ const FooterContainer = styled.div`
   justify-items: stretch;
   align-items: center;
   place-content: stretch;
+  margin-top: 1em;
   padding: 1em;
   @media screen and (max-width: 480px) {
     grid-template-columns: 1fr;

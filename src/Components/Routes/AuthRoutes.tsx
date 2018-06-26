@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import { connect, Dispatch } from "react-redux";
-import {  NavLink, Route, Switch } from "react-router-dom";
+import { NavLink, Route, Switch } from "react-router-dom";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
@@ -37,15 +37,16 @@ const AuthSidebar = styled.div.attrs<{ showsidebar?: string }>({})`
   grid-auto-flow: row;
   align-items: start;
   justify-items: center;
-  background-color: ${props => props.theme.panelBackgroundColor};
+  background-color: ${({ theme }) => theme.panelBackgroundColor};
   transition: all 0.2s;
-  @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
-    ${props =>
-      props.showsidebar
+  @media only screen and (max-width: ${({ theme }) =>
+      theme.smScrnBrkPx - 1}px) {
+    ${({ showsidebar }) =>
+      showsidebar
         ? `overflow: visible; width: auto;`
         : `overflow: hidden; width: 0px;`};
   }
-  @media only screen and (min-width: ${props => props.theme.smScrnBrkPx}px) {
+  @media only screen and (min-width: ${({ theme }) => theme.smScrnBrkPx}px) {
     width: 8em;
   }
 `;
@@ -63,19 +64,20 @@ const StyledAuthSidebarLink = styled(NavLink).attrs<{
   align-content: space-evenly;
   justify-content: center;
   place-self: center;
-  border-top: 1px solid ${props => props.theme.inverseColor};
-  border-bottom: 1px solid ${props => props.theme.inverseColor};
+  border-top: 1px solid ${({ theme }) => theme.inverseColor};
+  border-bottom: 1px solid ${({ theme }) => theme.inverseColor};
   transition-property: all 0.2s;
   &:hover {
-    border-top: 1px solid ${props => props.theme.primaryColor};
-    border-bottom: 1px solid ${props => props.theme.primaryColor};
+    border-top: 1px solid ${({ theme }) => theme.primaryColor};
+    border-bottom: 1px solid ${({ theme }) => theme.primaryColor};
   }
-  @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
-    ${props =>
-      props.showsidebar ? `overflow: visible; width: 8em;` : `display: none`};
+  @media only screen and (max-width: ${({ theme }) =>
+      theme.smScrnBrkPx - 1}px) {
+    ${({ showsidebar }) =>
+      showsidebar ? `overflow: visible; width: 8em;` : `display: none`};
   }
   &.${activeClassName} {
-    color: ${props => props.theme.primaryColor};
+    color: ${({ theme }) => theme.primaryColor};
   }
 `;
 
@@ -83,10 +85,11 @@ const SidebarToggleButton = Button.extend.attrs<{ showsidebar?: string }>({})`
   &:active {
     opacity: 0;  
   }
-  ${props => (props.showsidebar ? "transform: rotate(90deg);" : "")}
-  @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
-    grid-area: ${props =>
-      props.showsidebar ? `auth-sidebar;` : `auth-content;`}
+  ${props => (props.showsidebar ? "transform: rotate(90deg);" : undefined)}
+  @media only screen and (max-width: ${({ theme }) =>
+    theme.smScrnBrkPx - 1}px) {
+    grid-area: ${({ showsidebar }) =>
+      showsidebar ? `auth-sidebar;` : `auth-content;`}
     opacity: 100;
     place-self: end;
     height: 4em;
@@ -107,7 +110,7 @@ class AuthRoutes extends Component<IProps> {
 
   public render() {
     const { showSidebar: showSidebarProp } = this.props;
-    const showSidebar = showSidebarProp ? "true" : undefined ;
+    const showSidebar = showSidebarProp ? "true" : undefined;
     return (
       <AuthContainer>
         <AuthSidebar showsidebar={showSidebar}>

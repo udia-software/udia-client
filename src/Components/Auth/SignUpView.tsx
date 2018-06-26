@@ -78,12 +78,12 @@ const SignUpView = ({
         <FormContent>
           <FormField
             error={usernameErrors.length > 0}
-            // success={usernameValidated}
+            success={usernameValidated}
             // warn={usernameValidating}
           >
             <label htmlFor="username">
               Username:{usernameValidating && " \u2026"}
-              {usernameValidated && " \u2713"}
+              {usernameValidated && " \u2714"}
               <FormInput
                 type="text"
                 id="username"
@@ -97,12 +97,12 @@ const SignUpView = ({
           </FormField>
           <FormField
             error={emailErrors.length > 0}
-            // success={emailValidated}
+            success={emailValidated}
             // warn={emailValidating}
           >
             <label htmlFor="email">
               Email:{emailValidating && " \u2026"}
-              {emailValidated && " \u2713"}
+              {emailValidated && " \u2714"}
               <FormInput
                 type="email"
                 id="email"
@@ -116,10 +116,10 @@ const SignUpView = ({
           </FormField>
           <FormField
             error={passwordErrors.length > 0}
-            // success={passwordValidated}
+            success={passwordValidated}
           >
             <label htmlFor="pw">
-              Password:
+              Password:{passwordValidated && " \u2714"}
               <FormInput
                 type="password"
                 id="pw"

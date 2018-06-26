@@ -18,6 +18,9 @@ export interface IThemeInterface {
   inputErrorColor: string;
   inputErrorBorderColor: string;
   inputErrorBackgroundColor: string;
+  inputSuccessColor: string;
+  inputSuccessBorderColor: string;
+  inputSuccessBackgroundColor: string;
   inputBaseBackgroundColor: string;
 }
 
@@ -32,8 +35,11 @@ const BaseTheme = {
   smScrnBrkPx: 768,
   purple: "rebeccapurple",
   inputErrorColor: "#9f3a38",
-  inputErrorBorderColor: "#e0b4b4",
-  inputErrorBackgroundColor: "#fff6f6"
+  inputErrorBorderColor: "red",
+  inputErrorBackgroundColor: "#fff6f6",
+  inputSuccessColor: "#2c662d",
+  inputSuccessBorderColor: "green",
+  inputSuccessBackgroundColor: "#fcfff5"
 };
 
 const DarkTheme: IThemeInterface = {
