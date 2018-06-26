@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
+import ForgotPasswordController from "../Auth/ForgotPasswordController";
 import SignInController from "../Auth/SignInController";
 import SignUpController from "../Auth/SignUpController";
 import Health from "../Health";
@@ -7,7 +8,6 @@ import Home from "../Home";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
 import AuthRoutes from "./AuthRoutes";
-
 
 export default () => (
   <Switch>
@@ -22,6 +22,16 @@ export default () => (
       exact={true}
       path="/sign-up"
       component={WithAuth(SignUpController, false, "/", "/sign-up")}
+    />
+    <Route
+      exact={true}
+      path="/forgot-password"
+      component={WithAuth(
+        ForgotPasswordController,
+        false,
+        "/",
+        "/forgot-password"
+      )}
     />
     <Route path="/auth" component={WithAuth(AuthRoutes, true, "/", "/auth")} />
     <Route component={NotFound} />
