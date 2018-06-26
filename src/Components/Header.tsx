@@ -19,6 +19,7 @@ const HeaderContainer = styled.div`
   padding: 0 0.4em;
 `;
 
+// nav active styles defined outside of the literal due to styled-components minificiation + react-router integration
 const activeClassName = "header-nav-active";
 const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
   activeClassName
@@ -56,7 +57,7 @@ const HeaderSubMenu = styled.div`
   align-content: center;
 `;
 
-export interface IProps {
+interface IProps {
   isAuthenticated: boolean;
   maybeAuthenticated: boolean;
   selfUsername: string | false;
@@ -92,7 +93,7 @@ class Header extends Component<IProps> {
           {maybeAuthenticated &&
             isAuthenticated && (
               <StyledSubTitleLink
-                to="/auth/profile"
+                to="/auth"
                 activeClassName={activeClassName}
               >
                 {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
@@ -114,4 +115,5 @@ function mapStateToProps(state: IRootState) {
   };
 }
 
+// Pure: false here is necessary to get the NavLinks active styles working
 export default withTheme(connect(mapStateToProps, null, null, { pure: false })(Header));

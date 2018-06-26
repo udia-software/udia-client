@@ -12,6 +12,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import AppRoutes from "./Routes/AppRoutes";
 
+// Font awesome icons must be loaded before use in the app
 library.add(faUser);
 library.add(faUserSlash);
 library.add(faBars);
@@ -49,6 +50,7 @@ const BodyContainer = styled.div`
   height: 100%;
   min-height: 75vh;
   word-break: break-word;
+  margin-bottom: 1em;
 `;
 
 export default () => (

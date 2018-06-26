@@ -1,14 +1,15 @@
-import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component, FormEventHandler } from "react";
 import { graphql, MutateProps } from "react-apollo";
-import { connect, Dispatch } from "react-redux";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import { setFormEmail } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { isMountable } from "../../Types";
+import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import ForgotPasswordView from "./ForgotPasswordView";
 
-export interface IProps
+interface IProps
   extends MutateProps<
       ISendForgotPasswordResponseData,
       ISendForgotPasswordVariables
@@ -17,7 +18,7 @@ export interface IProps
   email: string;
 }
 
-export interface IState {
+interface IState {
   loading: boolean;
   loadingText?: string;
   errors: string[];
@@ -66,24 +67,10 @@ class ForgotPasswordController extends Component<IProps, IState>
       await mutate({ variables: { email } });
       this.setState({ requestSent: true });
     } catch (err) {
-      const { graphQLErrors, networkError, message } = err;
-      const errors: string[] = [];
-      let emailErrors: string[] = [];
-      if (graphQLErrors && graphQLErrors.length) {
-        graphQLErrors.forEach(
-          (graphQLError: GraphQLError & { state: { email?: string[] } }) => {
-            const errorState = graphQLError.state || {};
-            emailErrors = emailErrors.concat(errorState.email || []);
-          }
-        );
-      }
-      const catchAll = emailErrors.length === 0;
-
-      if (networkError || catchAll) {
-        // tslint:disable-next-line:no-console
-        console.warn(err);
-        errors.push(message || "Failed to request password reset!");
-      }
+      const { errors, emailErrors } = parseGraphQLError(
+        err,
+        "Failed to request password reset!"
+      );
       this.setState({
         errors,
         emailErrors,
@@ -123,12 +110,6 @@ class ForgotPasswordController extends Component<IProps, IState>
   }
 }
 
-function mapStateToProps(state: IRootState) {
-  return {
-    email: state.auth.email
-  };
-}
-
 const SEND_FORGOT_PASSWORD_EMAIL = gql`
   mutation SendForgotPasswordEmail($email: String!) {
     sendForgotPasswordEmail(email: $email)
@@ -142,6 +123,10 @@ interface ISendForgotPasswordResponseData {
 interface ISendForgotPasswordVariables {
   email: string;
 }
+
+const mapStateToProps = (state: IRootState) => ({
+  email: state.auth.email
+});
 
 export default connect(mapStateToProps)(
   graphql<

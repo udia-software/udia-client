@@ -1,7 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
-import { connect, Dispatch } from "react-redux";
-import { NavLink, Route, Switch } from "react-router-dom";
+import { connect } from "react-redux";
+import { NavLink, Redirect, Route, Switch } from "react-router-dom";
+import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
@@ -11,7 +12,7 @@ import NotFound from "../NotFound";
 import { StyleComponent as Button } from "../PureHelpers/Button";
 import WithAuth from "../Wrapper/WithAuth";
 
-export interface IProps {
+interface IProps {
   dispatch: Dispatch;
   showSidebar: boolean;
 }
@@ -133,6 +134,7 @@ class AuthRoutes extends Component<IProps> {
         </AuthSidebar>
         <AuthBodyContainer>
           <Switch>
+            <Redirect exact={true} from="/auth" to="/auth/profile" />
             <Route
               exact={true}
               path="/auth/sign-out"

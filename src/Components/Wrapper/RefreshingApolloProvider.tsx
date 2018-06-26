@@ -16,12 +16,12 @@ import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser } from "../../Types";
 
-export interface IState {
+interface IState {
   client: ApolloClient<NormalizedCacheObject>;
   userObserver: ZenObservable.Subscription | null;
 }
 
-export interface IProps extends DispatchProp {
+interface IProps extends DispatchProp {
   children: ReactNode; // Child must exist, this is a wrapper
   dispatch: Dispatch;
   token: string | null;

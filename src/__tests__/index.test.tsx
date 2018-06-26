@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
-import App from "./Components/App";
-import render from "./index";
+import App from "../Components/App";
+import render from "../index";
 
 it("renders without crashing", () => {
   expect.assertions(1);

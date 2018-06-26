@@ -1,6 +1,5 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import React, {
   ChangeEventHandler,
@@ -21,9 +20,10 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser, isMountable } from "../../Types";
+import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import SignUpView from "./SignUpView";
 
-export interface IProps {
+interface IProps {
   dispatch: Dispatch;
   client: ApolloClient<NormalizedCacheObject>;
   email: string;
@@ -31,7 +31,7 @@ export interface IProps {
   password: string;
 }
 
-export interface IState {
+interface IState {
   loading: boolean;
   loadingText?: string;
   emailValidating: boolean;
@@ -45,85 +45,6 @@ export interface IState {
   passwordErrors: string[];
   cryptoManager: CryptoManager | null;
   showPassword: boolean;
-}
-
-const CHECK_EMAIL_EXISTS = gql`
-  query CheckEmailExists($email: String!) {
-    checkEmailExists(email: $email)
-  }
-`;
-
-const CHECK_USERNAME_EXISTS = gql`
-  query CheckUsernameExists($username: String!) {
-    checkUsernameExists(username: $username)
-  }
-`;
-
-const SIGN_UP_MUTATION = gql`
-  mutation CreateUserMutation(
-    $username: String!
-    $email: String!
-    $pw: String!
-    $pwFunc: String!
-    $pwDigest: String!
-    $pwCost: Int!
-    $pwKeySize: Int!
-    $pwNonce: String!
-    $pubVerifyKey: String!
-    $encPrivateSignKey: String!
-    $encSecretKey: String!
-    $pubEncryptKey: String!
-    $encPrivateDecryptKey: String!
-  ) {
-    createUser(
-      username: $username
-      email: $email
-      pw: $pw
-      pwFunc: $pwFunc
-      pwDigest: $pwDigest
-      pwCost: $pwCost
-      pwKeySize: $pwKeySize
-      pwNonce: $pwNonce
-      pubVerifyKey: $pubVerifyKey
-      encPrivateSignKey: $encPrivateSignKey
-      encSecretKey: $encSecretKey
-      pubEncryptKey: $pubEncryptKey
-      encPrivateDecryptKey: $encPrivateDecryptKey
-    ) {
-      jwt
-      user {
-        uuid
-        username
-        emails {
-          email
-          primary
-          verified
-          createdAt
-          updatedAt
-          verificationExpiry
-        }
-        encSecretKey
-        pubVerifyKey
-        encPrivateSignKey
-        pubEncryptKey
-        encPrivateDecryptKey
-        pwFunc
-        pwDigest
-        pwCost
-        pwKeySize
-        pwNonce
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-interface ISignUpMutationResponse {
-  createUser: {
-    jwt: string;
-    user: FullUser;
-  };
 }
 
 class SignUpController extends Component<IProps, IState>
@@ -230,23 +151,10 @@ class SignUpController extends Component<IProps, IState>
         this.setState({ emailValidated: true });
       }
     } catch (err) {
-      const { graphQLErrors, networkError, message } = err;
-      const errors: string[] = [];
-      let emailErrors: string[] = [];
-      if (graphQLErrors && graphQLErrors.length) {
-        graphQLErrors.forEach(
-          (graphQLError: GraphQLError & { state: { email?: string[] } }) => {
-            const errorState = graphQLError.state || {};
-            emailErrors = emailErrors.concat(errorState.email || []);
-          }
-        );
-      }
-      const catchAll = emailErrors.length === 0;
-      if (networkError || catchAll) {
-        // tslint:disable-next-line:no-console
-        console.warn(err);
-        errors.push(message || "Failed to check email!");
-      }
+      const { errors, emailErrors } = parseGraphQLError(
+        err,
+        "Failed to check email!"
+      );
       if (this.isMountableMounted) {
         this.setState({
           errors,
@@ -284,23 +192,10 @@ class SignUpController extends Component<IProps, IState>
         this.setState({ usernameValidated: true });
       }
     } catch (err) {
-      const { graphQLErrors, networkError, message } = err;
-      const errors: string[] = [];
-      let usernameErrors: string[] = [];
-      if (graphQLErrors && graphQLErrors.length) {
-        graphQLErrors.forEach(
-          (graphQLError: GraphQLError & { state: { username?: string[] } }) => {
-            const errorState = graphQLError.state || {};
-            usernameErrors = usernameErrors.concat(errorState.username || []);
-          }
-        );
-      }
-      const catchAll = usernameErrors.length === 0;
-      if (networkError || catchAll) {
-        // tslint:disable-next-line:no-console
-        console.warn(err);
-        errors.push(message || "Failed to check username!");
-      }
+      const { errors, usernameErrors } = parseGraphQLError(
+        err,
+        "Failed to check username!"
+      );
       if (this.isMountableMounted) {
         this.setState({
           errors,
@@ -329,13 +224,11 @@ class SignUpController extends Component<IProps, IState>
   };
 
   protected handleTogglePassword: MouseEventHandler<HTMLAnchorElement> = e => {
-    if (this.isMountableMounted) {
-      this.setState({
-        showPassword: !this.state.showPassword,
-        passwordErrors: [],
-        passwordValidated: false
-      });
-    }
+    this.setState({
+      showPassword: !this.state.showPassword,
+      passwordErrors: [],
+      passwordValidated: false
+    });
   };
 
   protected handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
@@ -460,35 +353,12 @@ class SignUpController extends Component<IProps, IState>
       this.setState({ loadingText: "Setting up client..." });
       dispatch(setAuthData({ jwt, user }));
     } catch (err) {
-      const { graphQLErrors, networkError, message } = err;
-      const errors: string[] = [];
-      let emailErrors: string[] = [];
-      let usernameErrors: string[] = [];
-      let passwordErrors: string[] = [];
-
-      if (graphQLErrors && graphQLErrors.length) {
-        graphQLErrors.forEach(
-          (
-            graphQLError: GraphQLError & {
-              state: { email?: string[]; pw?: string[]; username?: string[] };
-            }
-          ) => {
-            const errorState = graphQLError.state || {};
-            emailErrors = emailErrors.concat(errorState.email || []);
-            usernameErrors = usernameErrors.concat(errorState.username || []);
-            passwordErrors = passwordErrors.concat(errorState.pw || []);
-          }
-        );
-      }
-      const catchAll =
-        emailErrors.length === 0 &&
-        passwordErrors.length === 0 &&
-        usernameErrors.length === 0;
-      if (networkError || catchAll) {
-        // tslint:disable-next-line:no-console
-        console.warn(err);
-        errors.push(message || "Failed to sign up!");
-      }
+      const {
+        errors,
+        emailErrors,
+        usernameErrors,
+        passwordErrors
+      } = parseGraphQLError(err, "Failed to sign up!");
       this.setState({
         errors,
         emailErrors,
@@ -511,19 +381,15 @@ class SignUpController extends Component<IProps, IState>
     if (cryptoManager) {
       const errors = cryptoManager.validateUserInputtedPassword(password);
       if (errors.length > 0) {
-        if (this.isMountableMounted) {
-          this.setState({
-            passwordErrors: errors,
-            passwordValidated: false
-          });
-        }
+        this.setState({
+          passwordErrors: errors,
+          passwordValidated: false
+        });
       } else {
-        if (this.isMountableMounted) {
-          this.setState({
-            passwordErrors: [],
-            passwordValidated: true
-          });
-        }
+        this.setState({
+          passwordErrors: [],
+          passwordValidated: true
+        });
         return true;
       }
     }
@@ -531,12 +397,89 @@ class SignUpController extends Component<IProps, IState>
   };
 }
 
-function mapStateToProps(state: IRootState) {
-  return {
-    email: state.auth.email,
-    username: state.auth.username,
-    password: state.auth.password
+const CHECK_EMAIL_EXISTS = gql`
+  query CheckEmailExists($email: String!) {
+    checkEmailExists(email: $email)
+  }
+`;
+
+const CHECK_USERNAME_EXISTS = gql`
+  query CheckUsernameExists($username: String!) {
+    checkUsernameExists(username: $username)
+  }
+`;
+
+const SIGN_UP_MUTATION = gql`
+  mutation CreateUserMutation(
+    $username: String!
+    $email: String!
+    $pw: String!
+    $pwFunc: String!
+    $pwDigest: String!
+    $pwCost: Int!
+    $pwKeySize: Int!
+    $pwNonce: String!
+    $pubVerifyKey: String!
+    $encPrivateSignKey: String!
+    $encSecretKey: String!
+    $pubEncryptKey: String!
+    $encPrivateDecryptKey: String!
+  ) {
+    createUser(
+      username: $username
+      email: $email
+      pw: $pw
+      pwFunc: $pwFunc
+      pwDigest: $pwDigest
+      pwCost: $pwCost
+      pwKeySize: $pwKeySize
+      pwNonce: $pwNonce
+      pubVerifyKey: $pubVerifyKey
+      encPrivateSignKey: $encPrivateSignKey
+      encSecretKey: $encSecretKey
+      pubEncryptKey: $pubEncryptKey
+      encPrivateDecryptKey: $encPrivateDecryptKey
+    ) {
+      jwt
+      user {
+        uuid
+        username
+        emails {
+          email
+          primary
+          verified
+          createdAt
+          updatedAt
+          verificationExpiry
+        }
+        encSecretKey
+        pubVerifyKey
+        encPrivateSignKey
+        pubEncryptKey
+        encPrivateDecryptKey
+        pwFunc
+        pwDigest
+        pwCost
+        pwKeySize
+        pwNonce
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+interface ISignUpMutationResponse {
+  createUser: {
+    jwt: string;
+    user: FullUser;
   };
 }
+
+const mapStateToProps = (state: IRootState) => ({
+  email: state.auth.email,
+  username: state.auth.username,
+  password: state.auth.password
+});
 
 export default connect(mapStateToProps)(withApollo(SignUpController));

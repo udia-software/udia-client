@@ -34,7 +34,7 @@ export const StyleComponent = styled.button.attrs<{ fontSize?: number }>({})`
     }`};
 `;
 
-export interface IProps {
+interface IProps {
   size?: string;
   children?: ReactNode;
 }
