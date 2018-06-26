@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import { Link, RouteProps } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { withTheme } from "styled-components";
 import {
   isAuthenticated as selectIsAuth,
@@ -8,7 +8,7 @@ import {
   selectSelfUsername
 } from "../Modules/Reducers/Auth/Selectors";
 import { IRootState } from "../Modules/Reducers/RootReducer";
-import styled, { IThemeInterface } from "./AppStyles";
+import styled from "./AppStyles";
 
 const HeaderContainer = styled.div`
   grid-area: header;
@@ -19,7 +19,10 @@ const HeaderContainer = styled.div`
   padding: 0 0.4em;
 `;
 
-const StyledTitleLink = styled(Link)`
+const activeClassName = "header-nav-active";
+const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
+  activeClassName
+})`
   justify-self: start;
   align-self: center;
   padding: 0.4em;
@@ -33,6 +36,13 @@ const StyledTitleLink = styled(Link)`
     border-right: 1px solid ${props => props.theme.primaryColor};
     border-left: 1px solid ${props => props.theme.primaryColor};
   }
+  &.${activeClassName} {
+    color: ${props => props.theme.primaryColor};
+  }
+`;
+
+const StyledSubTitleLink = StyledTitleLink.extend`
+  font-size: medium;
 `;
 
 const HeaderSubMenu = styled.div`
@@ -46,8 +56,7 @@ const HeaderSubMenu = styled.div`
   align-content: center;
 `;
 
-export interface IProps extends RouteProps {
-  theme: IThemeInterface;
+export interface IProps {
   isAuthenticated: boolean;
   maybeAuthenticated: boolean;
   selfUsername: string | false;
@@ -55,42 +64,37 @@ export interface IProps extends RouteProps {
 
 class Header extends Component<IProps> {
   public render() {
-    const {
-      location,
-      theme,
-      isAuthenticated,
-      maybeAuthenticated,
-      selfUsername
-    } = this.props;
-    const StyledSubTitleLink = StyledTitleLink.extend`
-      font-size: medium;
-      padding: 0.4em;
-      color: ${props =>
-        props.to === location && location.pathname
-          ? props.theme.primaryColor
-          : props.theme.intermediateColor};
-      border-right: 1px solid ${theme.inverseColor};
-      border-left: 1px solid ${theme.inverseColor};
-      &:hover {
-        border-right: 1px solid ${theme.primaryColor};
-        border-left: 1px solid ${theme.primaryColor};
-      }
-    `;
+    const { isAuthenticated, maybeAuthenticated, selfUsername } = this.props;
 
     return (
       <HeaderContainer>
-        <StyledTitleLink to="/">UDIA</StyledTitleLink>
+        <StyledTitleLink to="/" activeClassName={activeClassName}>
+          UDIA
+        </StyledTitleLink>
         <HeaderSubMenu>
           {!maybeAuthenticated &&
             !isAuthenticated && (
               <Fragment>
-                <StyledSubTitleLink to="/sign-in">Sign In</StyledSubTitleLink>
-                <StyledSubTitleLink to="/sign-up">Sign Up</StyledSubTitleLink>
+                <StyledSubTitleLink
+                  to="/sign-in"
+                  activeClassName={activeClassName}
+                >
+                  Sign In
+                </StyledSubTitleLink>
+                <StyledSubTitleLink
+                  to="/sign-up"
+                  activeClassName={activeClassName}
+                >
+                  Sign Up
+                </StyledSubTitleLink>
               </Fragment>
             )}
           {maybeAuthenticated &&
             isAuthenticated && (
-              <StyledSubTitleLink to="/auth/profile">
+              <StyledSubTitleLink
+                to="/auth/profile"
+                activeClassName={activeClassName}
+              >
                 {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
               </StyledSubTitleLink>
             )}
@@ -110,4 +114,4 @@ function mapStateToProps(state: IRootState) {
   };
 }
 
-export default withTheme(connect(mapStateToProps)(Header));
+export default withTheme(connect(mapStateToProps, null, null, { pure: false })(Header));
