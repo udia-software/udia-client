@@ -2,7 +2,12 @@ import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
-import React, { ChangeEventHandler, Component, FormEventHandler } from "react";
+import React, {
+  ChangeEventHandler,
+  Component,
+  FormEventHandler,
+  MouseEventHandler
+} from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -30,6 +35,7 @@ export interface IState {
   emailErrors: string[];
   passwordErrors: string[];
   cryptoManager: CryptoManager | null;
+  showPassword: boolean;
 }
 
 const SIGN_IN_MUTATION = gql`
@@ -93,7 +99,8 @@ interface IGetAuthParamsQueryResponse {
   };
 }
 
-class SignInController extends Component<IProps, IState> implements isMountable {
+class SignInController extends Component<IProps, IState>
+  implements isMountable {
   public isMountableMounted = false;
 
   constructor(props: IProps) {
@@ -112,7 +119,8 @@ class SignInController extends Component<IProps, IState> implements isMountable 
       emailErrors: [],
       passwordErrors: [],
       loading: false,
-      cryptoManager
+      cryptoManager,
+      showPassword: false
     };
   }
 
@@ -130,7 +138,8 @@ class SignInController extends Component<IProps, IState> implements isMountable 
       loadingText,
       errors,
       passwordErrors,
-      emailErrors
+      emailErrors,
+      showPassword
     } = this.state;
     const { email, password } = this.props;
     return (
@@ -142,24 +151,39 @@ class SignInController extends Component<IProps, IState> implements isMountable 
         errors={errors}
         emailErrors={emailErrors}
         passwordErrors={passwordErrors}
+        showPassword={showPassword}
         handleChangeEmail={this.handleChangeEmail}
         handleChangePassword={this.handleChangePassword}
+        handleTogglePassword={this.handleTogglePassword}
         handleSubmit={this.handleSubmit}
       />
     );
   }
 
   protected handleChangeEmail: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setFormEmail(e.currentTarget.value));
-    this.setState({ emailErrors: [] });
+    if (!this.state.loading) {
+      this.props.dispatch(setFormEmail(e.currentTarget.value));
+      this.setState({ emailErrors: [] });
+    }
   };
 
   protected handleChangePassword: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setFormPassword(e.target.value));
-    this.setState({ passwordErrors: [] });
+    if (!this.state.loading) {
+      this.props.dispatch(setFormPassword(e.target.value));
+      this.setState({ passwordErrors: [] });
+    }
+  };
+
+  protected handleTogglePassword: MouseEventHandler<HTMLAnchorElement> = e => {
+    if (!this.state.loading) {
+      this.setState({ showPassword: !this.state.showPassword });
+    }
   };
 
   protected handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
+    if (this.state.loading) {
+      return;
+    }
     try {
       e.preventDefault();
       const { client, dispatch, email, password } = this.props;
@@ -173,6 +197,7 @@ class SignInController extends Component<IProps, IState> implements isMountable 
       this.setState({
         loading: true,
         loadingText: "Fetching auth params...",
+        showPassword: false,
         errors: [],
         emailErrors: [],
         passwordErrors: []

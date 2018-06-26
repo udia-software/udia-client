@@ -6,7 +6,8 @@ import React, {
   ChangeEventHandler,
   Component,
   FocusEventHandler,
-  FormEventHandler
+  FormEventHandler,
+  MouseEventHandler
 } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
@@ -43,6 +44,7 @@ export interface IState {
   usernameErrors: string[];
   passwordErrors: string[];
   cryptoManager: CryptoManager | null;
+  showPassword: boolean;
 }
 
 const CHECK_EMAIL_EXISTS = gql`
@@ -124,8 +126,8 @@ interface ISignUpMutationResponse {
   };
 }
 
-
-class SignUpController extends Component<IProps, IState> implements isMountable {
+class SignUpController extends Component<IProps, IState>
+  implements isMountable {
   public isMountableMounted = false;
 
   constructor(props: IProps) {
@@ -149,7 +151,8 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
       emailErrors: [],
       usernameErrors: [],
       passwordErrors: [],
-      cryptoManager
+      cryptoManager,
+      showPassword: false
     };
   }
 
@@ -161,20 +164,71 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
     this.isMountableMounted = false;
   }
 
-  public handleChangeEmail: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setFormEmail(e.currentTarget.value));
-    this.setState({ emailErrors: [], emailValidated: false });
+  public render() {
+    const { email, username, password } = this.props;
+    const {
+      loading,
+      loadingText,
+      emailValidating,
+      emailValidated,
+      usernameValidating,
+      usernameValidated,
+      passwordValidated,
+      errors,
+      emailErrors,
+      usernameErrors,
+      passwordErrors,
+      showPassword
+    } = this.state;
+    return (
+      <SignUpView
+        loading={loading}
+        loadingText={loadingText}
+        emailValidating={emailValidating}
+        emailValidated={emailValidated}
+        usernameValidating={usernameValidating}
+        usernameValidated={usernameValidated}
+        passwordValidated={passwordValidated}
+        email={email}
+        username={username}
+        password={password}
+        errors={errors}
+        emailErrors={emailErrors}
+        usernameErrors={usernameErrors}
+        passwordErrors={passwordErrors}
+        showPassword={showPassword}
+        handleChangeEmail={this.handleChangeEmail}
+        handleEmailBlur={this.handleEmailBlur}
+        handleChangeUsername={this.handleChangeUsername}
+        handleUsernameBlur={this.handleUNameBlur}
+        handleChangePassword={this.handleChangePassword}
+        handlePasswordBlur={this.handlePasswordBlur}
+        handleTogglePassword={this.handleTogglePassword}
+        handleSubmit={this.handleSubmit}
+      />
+    );
+  }
+
+  protected handleChangeEmail: ChangeEventHandler<HTMLInputElement> = e => {
+    if (!this.state.loading) {
+      this.props.dispatch(setFormEmail(e.currentTarget.value));
+      this.setState({ emailErrors: [], emailValidated: false });
+    }
   };
 
-  public handleEmailBlur: FocusEventHandler<HTMLInputElement> = async () => {
+  protected handleEmailBlur: FocusEventHandler<HTMLInputElement> = async () => {
     const { client, email } = this.props;
-    this.setState({ emailValidated: false, emailValidating: true });
+    if (this.isMountableMounted) {
+      this.setState({ emailValidated: false, emailValidating: true });
+    }
     try {
       await client.query({
         query: CHECK_EMAIL_EXISTS,
         variables: { email }
       });
-      this.setState({ emailValidated: true });
+      if (this.isMountableMounted) {
+        this.setState({ emailValidated: true });
+      }
     } catch (err) {
       const { graphQLErrors, networkError, message } = err;
       const errors: string[] = [];
@@ -193,32 +247,42 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
         console.warn(err);
         errors.push(message || "Failed to check email!");
       }
-      this.setState({
-        errors,
-        emailErrors,
-        emailValidated: false
-      });
+      if (this.isMountableMounted) {
+        this.setState({
+          errors,
+          emailErrors,
+          emailValidated: false
+        });
+      }
     } finally {
-      this.setState({
-        emailValidating: false
-      });
+      if (this.isMountableMounted) {
+        this.setState({
+          emailValidating: false
+        });
+      }
     }
   };
 
-  public handleChangeUsername: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setFormUsername(e.currentTarget.value));
-    this.setState({ usernameErrors: [], usernameValidated: false });
+  protected handleChangeUsername: ChangeEventHandler<HTMLInputElement> = e => {
+    if (!this.state.loading) {
+      this.props.dispatch(setFormUsername(e.currentTarget.value));
+      this.setState({ usernameErrors: [], usernameValidated: false });
+    }
   };
 
-  public handleUNameBlur: FocusEventHandler<HTMLInputElement> = async () => {
+  protected handleUNameBlur: FocusEventHandler<HTMLInputElement> = async () => {
     const { client, username } = this.props;
-    this.setState({ usernameValidated: false, usernameValidating: true });
+    if (this.isMountableMounted) {
+      this.setState({ usernameValidated: false, usernameValidating: true });
+    }
     try {
       await client.query({
         query: CHECK_USERNAME_EXISTS,
         variables: { username }
       });
-      this.setState({ usernameValidated: true });
+      if (this.isMountableMounted) {
+        this.setState({ usernameValidated: true });
+      }
     } catch (err) {
       const { graphQLErrors, networkError, message } = err;
       const errors: string[] = [];
@@ -237,28 +301,44 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
         console.warn(err);
         errors.push(message || "Failed to check username!");
       }
-      this.setState({
-        errors,
-        usernameErrors,
-        usernameValidated: false
-      });
+      if (this.isMountableMounted) {
+        this.setState({
+          errors,
+          usernameErrors,
+          usernameValidated: false
+        });
+      }
     } finally {
+      if (this.isMountableMounted) {
+        this.setState({
+          usernameValidating: false
+        });
+      }
+    }
+  };
+
+  protected handleChangePassword: ChangeEventHandler<HTMLInputElement> = e => {
+    if (!this.state.loading) {
+      this.props.dispatch(setFormPassword(e.target.value));
+      this.setState({ passwordErrors: [], passwordValidated: false });
+    }
+  };
+
+  protected handlePasswordBlur: FocusEventHandler<HTMLInputElement> = () => {
+    this.validatePassword();
+  };
+
+  protected handleTogglePassword: MouseEventHandler<HTMLAnchorElement> = e => {
+    if (this.isMountableMounted) {
       this.setState({
-        usernameValidating: false
+        showPassword: !this.state.showPassword,
+        passwordErrors: [],
+        passwordValidated: false
       });
     }
   };
 
-  public handleChangePassword: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setFormPassword(e.target.value));
-    this.setState({ passwordErrors: [], passwordValidated: false });
-  };
-
-  public handlePasswordBlur: FocusEventHandler<HTMLInputElement> = () => {
-    this.validatePassword();
-  };
-
-  public handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
+  protected handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
     try {
       e.preventDefault();
       const { client, dispatch, email, username, password } = this.props;
@@ -287,6 +367,7 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
       this.setState({
         loading: true,
         loadingText: "Deriving master password...",
+        showPassword: false,
         errors: [],
         emailErrors: [],
         usernameErrors: [],
@@ -424,63 +505,25 @@ class SignUpController extends Component<IProps, IState> implements isMountable 
     }
   };
 
-  public render() {
-    const { email, username, password } = this.props;
-    const {
-      loading,
-      loadingText,
-      emailValidating,
-      emailValidated,
-      usernameValidating,
-      usernameValidated,
-      passwordValidated,
-      errors,
-      emailErrors,
-      usernameErrors,
-      passwordErrors
-    } = this.state;
-    return (
-      <SignUpView
-        loading={loading}
-        loadingText={loadingText}
-        emailValidating={emailValidating}
-        emailValidated={emailValidated}
-        usernameValidating={usernameValidating}
-        usernameValidated={usernameValidated}
-        passwordValidated={passwordValidated}
-        email={email}
-        username={username}
-        password={password}
-        errors={errors}
-        emailErrors={emailErrors}
-        usernameErrors={usernameErrors}
-        passwordErrors={passwordErrors}
-        handleChangeEmail={this.handleChangeEmail}
-        handleEmailBlur={this.handleEmailBlur}
-        handleChangeUsername={this.handleChangeUsername}
-        handleUsernameBlur={this.handleUNameBlur}
-        handleChangePassword={this.handleChangePassword}
-        handlePasswordBlur={this.handlePasswordBlur}
-        handleSubmit={this.handleSubmit}
-      />
-    );
-  }
-
   private validatePassword = () => {
     const { password } = this.props;
     const { cryptoManager } = this.state;
     if (cryptoManager) {
       const errors = cryptoManager.validateUserInputtedPassword(password);
       if (errors.length > 0) {
-        this.setState({
-          passwordErrors: errors,
-          passwordValidated: false
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            passwordErrors: errors,
+            passwordValidated: false
+          });
+        }
       } else {
-        this.setState({
-          passwordErrors: [],
-          passwordValidated: true
-        });
+        if (this.isMountableMounted) {
+          this.setState({
+            passwordErrors: [],
+            passwordValidated: true
+          });
+        }
         return true;
       }
     }
