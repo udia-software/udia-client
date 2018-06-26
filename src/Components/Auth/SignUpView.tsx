@@ -1,7 +1,9 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {
   ChangeEventHandler,
   FocusEventHandler,
-  FormEventHandler
+  FormEventHandler,
+  MouseEventHandler
 } from "react";
 import { Link } from "react-router-dom";
 import Button from "../PureHelpers/Button";
@@ -12,6 +14,8 @@ import {
   FormContainer,
   FormContent,
   FormInput,
+  PasswordLabelFlex,
+  PasswordViewToggle,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -32,12 +36,14 @@ export interface IProps {
   emailErrors: string[];
   usernameErrors: string[];
   passwordErrors: string[];
+  showPassword: boolean;
   handleChangeEmail: ChangeEventHandler<HTMLInputElement>;
   handleEmailBlur: FocusEventHandler<HTMLInputElement>;
   handleChangeUsername: ChangeEventHandler<HTMLInputElement>;
   handleUsernameBlur: FocusEventHandler<HTMLInputElement>;
   handleChangePassword: ChangeEventHandler<HTMLInputElement>;
   handlePasswordBlur: FocusEventHandler<HTMLInputElement>;
+  handleTogglePassword: MouseEventHandler<HTMLAnchorElement>;
   handleSubmit: FormEventHandler<HTMLFormElement>;
 }
 
@@ -56,12 +62,14 @@ const SignUpView = ({
   emailErrors,
   usernameErrors,
   passwordErrors,
+  showPassword,
   handleChangeEmail,
   handleEmailBlur,
   handleChangeUsername,
   handleUsernameBlur,
   handleChangePassword,
   handlePasswordBlur,
+  handleTogglePassword,
   handleSubmit
 }: IProps) => (
   <SignViewContainer>
@@ -119,13 +127,19 @@ const SignUpView = ({
             success={passwordValidated}
           >
             <label htmlFor="pw">
-              Password:{passwordValidated && " \u2714"}
+              <PasswordLabelFlex>
+                <span>Password:{passwordValidated && " \u2714"}</span>
+                <PasswordViewToggle onClick={handleTogglePassword}>
+                  <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
+                  {showPassword ? "Hide Password" : "Show Password"}
+                </PasswordViewToggle>
+              </PasswordLabelFlex>
               <FormInput
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="pw"
-                placeholder="••••••••"
+                placeholder={showPassword ? "password" : "••••••••"}
                 onChange={handleChangePassword}
-                onBlur={handlePasswordBlur}
+                // onBlur={handlePasswordBlur}
                 value={password}
               />
             </label>

@@ -1,4 +1,9 @@
-import React, { ChangeEventHandler, FormEventHandler } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, {
+  ChangeEventHandler,
+  FormEventHandler,
+  MouseEventHandler
+} from "react";
 import { Link } from "react-router-dom";
 import Button from "../PureHelpers/Button";
 import FormField from "../PureHelpers/FormField";
@@ -8,6 +13,8 @@ import {
   FormContainer,
   FormContent,
   FormInput,
+  PasswordLabelFlex,
+  PasswordViewToggle,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -21,8 +28,10 @@ export interface IProps {
   errors: string[];
   emailErrors: string[];
   passwordErrors: string[];
+  showPassword: boolean;
   handleChangeEmail: ChangeEventHandler<HTMLInputElement>;
   handleChangePassword: ChangeEventHandler<HTMLInputElement>;
+  handleTogglePassword: MouseEventHandler<HTMLAnchorElement>;
   handleSubmit: FormEventHandler<HTMLFormElement>;
 }
 
@@ -34,8 +43,10 @@ const SignInView = ({
   errors,
   emailErrors,
   passwordErrors,
+  showPassword,
   handleChangeEmail,
   handleChangePassword,
+  handleTogglePassword,
   handleSubmit
 }: IProps) => (
   <SignViewContainer>
@@ -65,11 +76,17 @@ const SignInView = ({
           </FormField>
           <FormField error={passwordErrors.length > 0}>
             <label htmlFor="pw">
-              Password:
+              <PasswordLabelFlex>
+                <span>Password:</span>
+                <PasswordViewToggle onClick={handleTogglePassword}>
+                  <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
+                  {showPassword ? "Hide Password" : "Show Password"}
+                </PasswordViewToggle>
+              </PasswordLabelFlex>
               <FormInput
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="pw"
-                placeholder="••••••••"
+                placeholder={showPassword ? "password" : "••••••••"}
                 onChange={handleChangePassword}
                 value={password}
               />

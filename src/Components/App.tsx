@@ -1,5 +1,11 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBars, faUser, faUserSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faEye,
+  faEyeSlash,
+  faUser,
+  faUserSlash
+} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import styled from "./AppStyles";
 import Footer from "./Footer";
@@ -9,6 +15,8 @@ import AppRoutes from "./Routes/AppRoutes";
 library.add(faUser);
 library.add(faUserSlash);
 library.add(faBars);
+library.add(faEye);
+library.add(faEyeSlash);
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;

@@ -1,4 +1,5 @@
 import {
+  AnchorHTMLAttributes,
   DetailedHTMLProps,
   FormHTMLAttributes,
   HTMLAttributes,
@@ -80,4 +81,16 @@ export const FormInput: StyledComponentClass<
     outline: 1px solid ${props => props.theme.purple};
     border: 1px solid ${props => props.theme.purple};
   }
+`;
+
+export const PasswordViewToggle: StyledComponentClass<
+  DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>,
+  IThemeInterface
+> = styled.a`
+  cursor: pointer;
+`;
+
+export const PasswordLabelFlex = styled.span`
+  display: flex;
+  justify-content: space-between;
 `;
