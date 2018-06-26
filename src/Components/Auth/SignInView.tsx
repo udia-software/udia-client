@@ -20,7 +20,7 @@ import {
   SignViewTitle
 } from "./SignViewShared";
 
-export interface IProps {
+interface IProps {
   loading: boolean;
   loadingText?: string;
   email: string;

@@ -60,10 +60,8 @@ class SignOutController extends Component<IProps> {
   }
 }
 
-function mapStateToProps(state: IRootState) {
-  return {
-    confirmSignOutVal: state.auth.confirmSignOut
-  };
-}
+const mapStateToProps = (state: IRootState) => ({
+  confirmSignOutVal: state.auth.confirmSignOut
+});
 
 export default connect(mapStateToProps)(SignOutController);

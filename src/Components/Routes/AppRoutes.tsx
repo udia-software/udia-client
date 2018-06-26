@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import ForgotPasswordController from "../Auth/ForgotPasswordController";
 import SignInController from "../Auth/SignInController";
 import SignUpController from "../Auth/SignUpController";
+import VerifyEmailController from "../Auth/VerifyEmailController";
 import Health from "../Health";
 import Home from "../Home";
 import NotFound from "../NotFound";
@@ -33,6 +34,12 @@ export default () => (
         "/forgot-password"
       )}
     />
+    <Route
+      exact={true}
+      path="/verify-email/:verificationToken"
+      component={VerifyEmailController}
+    />
+    <Route exact={true} path="/verify-email" component={VerifyEmailController} />
     <Route path="/auth" component={WithAuth(AuthRoutes, true, "/", "/auth")} />
     <Route component={NotFound} />
   </Switch>

@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ForgotPasswordView correctly 1`] = `
+<div
+  className="sc-EHOje lmsJbc"
+>
+  <div
+    className="sc-ifAKCX dUGfmN"
+  >
+    <svg
+      className="sc-bxivhb ghBLrZ"
+      height="80px"
+      version="1.1"
+      viewBox="0 0 90 90"
+      x="0px"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      y="0px"
+    >
+      <polygon
+        className={undefined}
+        points="38.182,57.753 20.18,47.91 20.18,42.455 38.182,32.652 38.182,39.074 25.625,45.113 38.182,51.379"
+      />
+      <polygon
+        className={undefined}
+        points="39.848,62.08 46.351,27.918 50.136,27.918 43.56,62.08"
+      />
+      <polygon
+        className={undefined}
+        points="51.8,57.78 51.8,51.4 64.372,45.181 51.8,39.028 51.8,32.696 69.82,42.5 69.82,47.91"
+      />
+      <path
+        className={undefined}
+        d="M44.999,86.031L9.465,65.517V24.484L44.999,3.969l35.536,20.516v41.029L44.999,86.031ZM13.07,63.434l31.929,18.434L76.93,63.434V26.566L44.999,8.131L13.07,26.565V63.434L13.07,63.434Z"
+      />
+    </svg>
+    Loading...
+  </div>
+  <h1
+    className="sc-bZQynM cfIIyJ"
+  >
+    Sign In
+  </h1>
+  <form
+    className="sc-gzVnrw djchdN"
+    onSubmit={[Function]}
+  >
+    <fieldset>
+      <legend>
+        Welcome back, User.
+      </legend>
+      <ul
+        className="sc-htpNat dteELs"
+      />
+      <div
+        className="sc-dnqmqq dflbqI"
+      >
+        <div
+          className="sc-bwzfXH gyFtNu"
+        >
+          <label
+            htmlFor="email"
+          >
+            Email:
+            <input
+              className="sc-iwsKbI dljrXr"
+              id="email"
+              onChange={[Function]}
+              placeholder="your@email.tld"
+              type="email"
+              value=""
+            />
+          </label>
+          <ul
+            className="sc-htpNat dteELs"
+          />
+        </div>
+        <div
+          className="sc-bwzfXH gyFtNu"
+        >
+          <label
+            htmlFor="pw"
+          >
+            <span
+              className="sc-gqjmRU dgXNLS"
+            >
+              <span>
+                Password:
+              </span>
+              <a
+                className="sc-gZMcBi Qfbta"
+                onClick={[Function]}
+              >
+                <svg
+                  aria-hidden="true"
+                  className="svg-inline--fa fa-eye fa-w-18 "
+                  data-icon="eye"
+                  data-prefix="fas"
+                  role="img"
+                  style={Object {}}
+                  viewBox="0 0 576 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M569.354 231.631C512.969 135.949 407.81 72 288 72 168.14 72 63.004 135.994 6.646 231.631a47.999 47.999 0 0 0 0 48.739C63.031 376.051 168.19 440 288 440c119.86 0 224.996-63.994 281.354-159.631a47.997 47.997 0 0 0 0-48.738zM288 392c-75.162 0-136-60.827-136-136 0-75.162 60.826-136 136-136 75.162 0 136 60.826 136 136 0 75.162-60.826 136-136 136zm104-136c0 57.438-46.562 104-104 104s-104-46.562-104-104c0-17.708 4.431-34.379 12.236-48.973l-.001.032c0 23.651 19.173 42.823 42.824 42.823s42.824-19.173 42.824-42.823c0-23.651-19.173-42.824-42.824-42.824l-.032.001C253.621 156.431 270.292 152 288 152c57.438 0 104 46.562 104 104z"
+                    fill="currentColor"
+                    style={Object {}}
+                  />
+                </svg>
+                 
+                Show Password
+              </a>
+            </span>
+            <input
+              className="sc-iwsKbI dljrXr"
+              id="pw"
+              onChange={[Function]}
+              placeholder="••••••••"
+              type="password"
+              value=""
+            />
+          </label>
+          <ul
+            className="sc-htpNat dteELs"
+          />
+        </div>
+        <button
+          className="sc-bdVaJa iiIcte"
+          fontSize={1}
+        >
+          Sign In
+        </button>
+      </div>
+    </fieldset>
+  </form>
+  <div
+    className="sc-htoDjs giFMdD"
+  >
+    <a
+      href="/sign-up"
+      onClick={[Function]}
+    >
+      I don't have an account →
+    </a>
+    <a
+      href="/forgot-password"
+      onClick={[Function]}
+    >
+      I forgot my password.
+    </a>
+  </div>
+</div>
+`;

@@ -16,7 +16,7 @@ const StyledGridLoadingOverlay = styled.div.attrs<IProps>({})`
   grid-area: ${props => props.gridAreaName};
 `;
 
-export interface IProps {
+interface IProps {
   gridAreaName: string;
   loading: boolean;
   loadingText?: string;

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "../AppStyles";
 
-export interface IProps {
+interface IProps {
   error?: boolean;
   success?: boolean;
 }

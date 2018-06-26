@@ -1,6 +1,5 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import React, {
   ChangeEventHandler,
@@ -19,16 +18,17 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser, isMountable } from "../../Types";
+import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import SignInView from "./SignInView";
 
-export interface IProps {
+interface IProps {
   dispatch: Dispatch;
   client: ApolloClient<NormalizedCacheObject>;
   email: string;
   password: string;
 }
 
-export interface IState {
+interface IState {
   loading: boolean;
   loadingText?: string;
   errors: string[];
@@ -36,67 +36,6 @@ export interface IState {
   passwordErrors: string[];
   cryptoManager: CryptoManager | null;
   showPassword: boolean;
-}
-
-const SIGN_IN_MUTATION = gql`
-  mutation SignInMutation($email: String!, $pw: String!) {
-    signInUser(email: $email, pw: $pw) {
-      jwt
-      user {
-        uuid
-        username
-        emails {
-          email
-          primary
-          verified
-          createdAt
-          updatedAt
-          verificationExpiry
-        }
-        encSecretKey
-        pubVerifyKey
-        encPrivateSignKey
-        pubEncryptKey
-        encPrivateDecryptKey
-        pwFunc
-        pwDigest
-        pwCost
-        pwKeySize
-        pwNonce
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-interface ISignInMutationResponse {
-  signInUser: {
-    jwt: string;
-    user: FullUser;
-  };
-}
-
-const GET_AUTH_PARAMS_QUERY = gql`
-  query GetAuthParamsQuery($email: String!) {
-    getUserAuthParams(email: $email) {
-      pwFunc
-      pwDigest
-      pwCost
-      pwKeySize
-      pwNonce
-    }
-  }
-`;
-
-interface IGetAuthParamsQueryResponse {
-  getUserAuthParams: {
-    pwFunc: string;
-    pwDigest: string;
-    pwCost: number;
-    pwKeySize: number;
-    pwNonce: string;
-  };
 }
 
 class SignInController extends Component<IProps, IState>
@@ -240,29 +179,10 @@ class SignInController extends Component<IProps, IState>
       this.setState({ loadingText: "Setting up client..." });
       dispatch(setAuthData({ user, jwt }));
     } catch (err) {
-      const { graphQLErrors, networkError, message } = err;
-      const errors: string[] = [];
-      let emailErrors: string[] = [];
-      let passwordErrors: string[] = [];
-      if (graphQLErrors && graphQLErrors.length) {
-        graphQLErrors.forEach(
-          (
-            graphQLError: GraphQLError & {
-              state: { email?: string[]; pw?: string[] };
-            }
-          ) => {
-            const errorState = graphQLError.state || {};
-            emailErrors = emailErrors.concat(errorState.email || []);
-            passwordErrors = passwordErrors.concat(errorState.pw || []);
-          }
-        );
-      }
-      const catchAll = emailErrors.length === 0 && passwordErrors.length === 0;
-      if (networkError || catchAll) {
-        // tslint:disable-next-line:no-console
-        console.warn(err);
-        errors.push(message || "Failed to sign in!");
-      }
+      const { errors, emailErrors, passwordErrors } = parseGraphQLError(
+        err,
+        "Failed to sign in!"
+      );
       this.setState({
         errors,
         emailErrors,
@@ -279,11 +199,70 @@ class SignInController extends Component<IProps, IState>
   };
 }
 
-function mapStateToProps(state: IRootState) {
-  return {
-    email: state.auth.email,
-    password: state.auth.password
+const SIGN_IN_MUTATION = gql`
+  mutation SignInMutation($email: String!, $pw: String!) {
+    signInUser(email: $email, pw: $pw) {
+      jwt
+      user {
+        uuid
+        username
+        emails {
+          email
+          primary
+          verified
+          createdAt
+          updatedAt
+          verificationExpiry
+        }
+        encSecretKey
+        pubVerifyKey
+        encPrivateSignKey
+        pubEncryptKey
+        encPrivateDecryptKey
+        pwFunc
+        pwDigest
+        pwCost
+        pwKeySize
+        pwNonce
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+interface ISignInMutationResponse {
+  signInUser: {
+    jwt: string;
+    user: FullUser;
   };
 }
+
+const GET_AUTH_PARAMS_QUERY = gql`
+  query GetAuthParamsQuery($email: String!) {
+    getUserAuthParams(email: $email) {
+      pwFunc
+      pwDigest
+      pwCost
+      pwKeySize
+      pwNonce
+    }
+  }
+`;
+
+interface IGetAuthParamsQueryResponse {
+  getUserAuthParams: {
+    pwFunc: string;
+    pwDigest: string;
+    pwCost: number;
+    pwKeySize: number;
+    pwNonce: string;
+  };
+}
+
+const mapStateToProps = (state: IRootState) => ({
+  email: state.auth.email,
+  password: state.auth.password
+});
 
 export default connect(mapStateToProps)(withApollo(SignInController));

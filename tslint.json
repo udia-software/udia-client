@@ -2,9 +2,10 @@
   "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier"],
   "rules": {
     "object-literal-sort-keys": false,
-    "no-unused-expression": [true, "allow-tagged-template"]
+    "no-unused-expression": [true, "allow-tagged-template"],
+    "no-implicit-dependencies": [true, "dev"]
   },
   "linterOptions": {
-    "exclude": ["config/**/*.js", "node_modules/**/*.ts"]
+    "exclude": ["config/**/*.js", "node_modules/**/*"]
   }
 }
