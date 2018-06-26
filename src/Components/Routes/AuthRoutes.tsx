@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import { connect, Dispatch } from "react-redux";
-import { Link, Route, Switch } from "react-router-dom";
+import {  NavLink, Route, Switch } from "react-router-dom";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
@@ -42,18 +42,19 @@ const AuthSidebar = styled.div.attrs<{ showSidebar: boolean }>({})`
   @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
     ${props =>
       props.showSidebar
-        ? `overflow: visible;
-        width: 8em;`
-        : `overflow: hidden;
-    min-width: 0px;
-    width: 0px;`};
+        ? `overflow: visible; width: auto;`
+        : `overflow: hidden; width: 0px;`};
   }
   @media only screen and (min-width: ${props => props.theme.smScrnBrkPx}px) {
     width: 8em;
   }
 `;
 
-const StyledAuthSidebarLink = styled(Link)`
+const activeClassName = "sidebar-nav-active";
+const StyledAuthSidebarLink = styled(NavLink).attrs<{
+  showSidebar: boolean;
+  activeClassName: string;
+}>({ activeClassName })`
   margin-top: 1em;
   font-size: large;
   display: grid;
@@ -69,13 +70,20 @@ const StyledAuthSidebarLink = styled(Link)`
     border-top: 1px solid ${props => props.theme.primaryColor};
     border-bottom: 1px solid ${props => props.theme.primaryColor};
   }
+  @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
+    ${props =>
+      props.showSidebar ? `overflow: visible; width: 8em;` : `display: none`};
+  }
+  &.${activeClassName} {
+    color: ${props => props.theme.primaryColor};
+  }
 `;
 
 const SidebarToggleButton = Button.extend.attrs<{ showSidebar: boolean }>({})`
   &:active {
     opacity: 0;  
   }
-  ${props => props.showSidebar ? 'transform: rotate(90deg);' : ''}
+  ${props => (props.showSidebar ? "transform: rotate(90deg);" : "")}
   @media only screen and (max-width: ${props => props.theme.smScrnBrkPx}px) {
     grid-area: ${props =>
       props.showSidebar ? `auth-sidebar;` : `auth-content;`}
@@ -102,11 +110,19 @@ class AuthRoutes extends Component<IProps> {
     return (
       <AuthContainer>
         <AuthSidebar showSidebar={showSidebar}>
-          <StyledAuthSidebarLink to="/auth/profile">
+          <StyledAuthSidebarLink
+            showSidebar={showSidebar}
+            to="/auth/profile"
+            activeClassName={activeClassName}
+          >
             <FontAwesomeIcon icon="user" size="lg" />
             Profile
           </StyledAuthSidebarLink>
-          <StyledAuthSidebarLink to="/auth/sign-out">
+          <StyledAuthSidebarLink
+            showSidebar={showSidebar}
+            to="/auth/sign-out"
+            activeClassName={activeClassName}
+          >
             <FontAwesomeIcon icon="user-slash" size="lg" />
             Sign Out
           </StyledAuthSidebarLink>

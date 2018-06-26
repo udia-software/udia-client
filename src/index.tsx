@@ -17,13 +17,14 @@ function render(
   if (!root) {
     throw new Error("Element `root` does not exist!");
   }
+  const supportsHistory = 'pushState' in window.history;
   const { persistor, store } = configureReduxStore();
   ReactDOM.render(
     <ReduxProvider store={store}>
       <PersistGate persistor={persistor}>
         <RefreshingApolloProvider>
           <ToggleableThemeProvider>
-            <BrowserRouter>
+            <BrowserRouter forceRefresh={!supportsHistory}>
               <AppComponent />
             </BrowserRouter>
           </ToggleableThemeProvider>

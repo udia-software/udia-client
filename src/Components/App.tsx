@@ -30,7 +30,7 @@ const AppContainer = styled.div`
     color: ${props => props.theme.intermediateColor};
     &:hover {
       color: ${props => props.theme.primaryColor};
-    }
+    }  
   }
 `;
 
@@ -39,7 +39,8 @@ const BodyContainer = styled.div`
   display: grid;
   width: 100%;
   height: 100%;
-  min-height: 50vh;
+  min-height: 75vh;
+  word-break: break-word;
 `;
 
 export default () => (
