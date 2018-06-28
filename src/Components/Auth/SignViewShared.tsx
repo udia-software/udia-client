@@ -70,7 +70,6 @@ export const FormInput: StyledComponentClass<
   DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
   IThemeInterface
 > = styled.input`
-  flex: 1 0 auto;
   width: auto;
   padding: 0.5em;
   font-size: medium;
@@ -83,6 +82,22 @@ export const FormInput: StyledComponentClass<
   }
 `;
 
+export const FormTextArea: StyledComponentClass<
+  DetailedHTMLProps<
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    HTMLTextAreaElement
+  >,
+  IThemeInterface
+> = styled.textarea`
+  flex: 1 0 auto;
+  font-size: medium;
+  background: ${props => props.theme.inputBaseBackgroundColor};
+  border: 1px solid ${props => props.theme.inverseColor};
+  border-radius: 3px;
+  overflow: hidden;
+  word-break: break-all;
+`;
+
 export const PasswordViewToggle: StyledComponentClass<
   DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>,
   IThemeInterface
@@ -93,4 +108,54 @@ export const PasswordViewToggle: StyledComponentClass<
 export const PasswordLabelFlex = styled.span`
   display: flex;
   justify-content: space-between;
+`;
+
+interface IFormFieldProps {
+  error?: boolean;
+  success?: boolean;
+}
+
+export const FormField: StyledComponentClass<
+  React.ClassAttributes<HTMLDivElement> &
+    HTMLAttributes<HTMLDivElement> &
+    IFormFieldProps,
+  IThemeInterface
+> = styled.div.attrs<IFormFieldProps>({})`
+  padding: 0.5em 0;
+  flex-direction: column;
+  > label {
+    display: flex;
+    flex-direction: column;
+    color: ${props =>
+      props.error
+        ? props.theme.inputErrorColor
+        : props.success
+          ? props.theme.inputSuccessColor
+          : "auto"};
+    > input {
+      grid-area: input;
+      justify-items: stretch;
+      align-items: center;
+      justify-content: stretch;
+      color: ${props =>
+        props.error
+          ? props.theme.inputErrorColor
+          : props.success
+            ? props.theme.inputSuccessColor
+            : "auto"};
+      background-color: ${props =>
+        props.error
+          ? props.theme.inputErrorBackgroundColor
+          : props.success
+            ? props.theme.inputSuccessBackgroundColor
+            : "auto"};
+      border: 1px solid
+        ${props =>
+          props.error
+            ? props.theme.inputErrorBorderColor
+            : props.success
+              ? props.theme.inputSuccessBorderColor
+              : "auto"};
+    }
+  }
 `;
