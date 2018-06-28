@@ -48,7 +48,7 @@ const BodyContainer = styled.div`
   display: grid;
   width: 100%;
   height: 100%;
-  min-height: 75vh;
+  min-height: 74vh;
   word-break: break-word;
   margin-bottom: 1em;
 `;

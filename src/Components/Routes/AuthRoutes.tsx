@@ -7,6 +7,7 @@ import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
 import styled from "../AppStyles";
+import Profile from "../Auth/Profile";
 import SignOutController from "../Auth/SignOutController";
 import NotFound from "../NotFound";
 import { StyleComponent as Button } from "../PureHelpers/Button";
@@ -19,12 +20,15 @@ interface IProps {
 
 const AuthContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas: "auth-content auth-sidebar";
+  grid-auto-flow: row;
+  grid-template-rows: auto;
+  grid-template-areas: "auth-content";
 `;
 
 const AuthBodyContainer = styled.div`
   grid-area: auth-content;
+  grid-auto-rows: 1fr auto;
+  grid-auto-flow: row;
   display: grid;
   width: 100%;
   height: 100%;
@@ -32,7 +36,8 @@ const AuthBodyContainer = styled.div`
 
 const AuthSidebar = styled.div.attrs<{ showsidebar?: string }>({})`
   display: grid;
-  grid-area: auth-sidebar;
+  grid-area: auth-content;
+  justify-self: end;
   grid-row-gap: 1em;
   grid-auto-rows: 3em;
   grid-auto-flow: row;
@@ -50,6 +55,7 @@ const AuthSidebar = styled.div.attrs<{ showsidebar?: string }>({})`
   @media only screen and (min-width: ${({ theme }) => theme.smScrnBrkPx}px) {
     width: 8em;
   }
+  z-index: 1;
 `;
 
 const activeClassName = "sidebar-nav-active";
@@ -75,7 +81,7 @@ const StyledAuthSidebarLink = styled(NavLink).attrs<{
   @media only screen and (max-width: ${({ theme }) =>
       theme.smScrnBrkPx - 1}px) {
     ${({ showsidebar }) =>
-      showsidebar ? `overflow: visible; width: 8em;` : `display: none`};
+      showsidebar ? `width: 8em;` : `overflow: hidden; width: 0px;`};
   }
   &.${activeClassName} {
     color: ${({ theme }) => theme.primaryColor};
@@ -87,12 +93,13 @@ const SidebarToggleButton = Button.extend.attrs<{ showsidebar?: string }>({})`
     opacity: 0;  
   }
   ${props => (props.showsidebar ? "transform: rotate(90deg);" : undefined)}
-  @media only screen and (max-width: ${({ theme }) =>
-    theme.smScrnBrkPx - 1}px) {
-    grid-area: ${({ showsidebar }) =>
-      showsidebar ? `auth-sidebar;` : `auth-content;`}
+  @media only screen and (
+    max-width: ${({ theme: { smScrnBrkPx } }) => smScrnBrkPx - 1}px
+  ) {
+    justify-self: end;
+    position: sticky;
+    bottom: 1em;
     opacity: 100;
-    place-self: end;
     height: 4em;
     width: 4em;
     border-radius: 50%;
@@ -102,13 +109,10 @@ const SidebarToggleButton = Button.extend.attrs<{ showsidebar?: string }>({})`
   @media only screen and (min-width: ${props => props.theme.smScrnBrkPx}px) {
     display: none;
   }
+  z-index: 1;
 `;
 
 class AuthRoutes extends Component<IProps> {
-  public handleToggleAuthSidebar = () => {
-    this.props.dispatch(toggleAuthSidebar());
-  };
-
   public render() {
     const { showSidebar: showSidebarProp } = this.props;
     const showSidebar = showSidebarProp ? "true" : undefined;
@@ -119,6 +123,7 @@ class AuthRoutes extends Component<IProps> {
             showsidebar={showSidebar}
             to="/auth/profile"
             activeClassName={activeClassName}
+            onClick={this.handleCloseAuthSidebar}
           >
             <FontAwesomeIcon icon="user" size="lg" />
             Profile
@@ -127,6 +132,7 @@ class AuthRoutes extends Component<IProps> {
             showsidebar={showSidebar}
             to="/auth/sign-out"
             activeClassName={activeClassName}
+            onClick={this.handleCloseAuthSidebar}
           >
             <FontAwesomeIcon icon="user-slash" size="lg" />
             Sign Out
@@ -135,6 +141,11 @@ class AuthRoutes extends Component<IProps> {
         <AuthBodyContainer>
           <Switch>
             <Redirect exact={true} from="/auth" to="/auth/profile" />
+            <Route
+              exact={true}
+              path="/auth/profile"
+              component={WithAuth(Profile, true, "/", "/auth/profile")}
+            />
             <Route
               exact={true}
               path="/auth/sign-out"
@@ -147,16 +158,27 @@ class AuthRoutes extends Component<IProps> {
             />
             <Route component={NotFound} />
           </Switch>
+          <SidebarToggleButton
+            showsidebar={showSidebar}
+            onClick={this.handleToggleAuthSidebar}
+          >
+            <FontAwesomeIcon icon="bars" size="2x" />
+          </SidebarToggleButton>
         </AuthBodyContainer>
-        <SidebarToggleButton
-          showsidebar={showSidebar}
-          onClick={this.handleToggleAuthSidebar}
-        >
-          <FontAwesomeIcon icon="bars" size="2x" />
-        </SidebarToggleButton>
       </AuthContainer>
     );
   }
+
+  protected handleToggleAuthSidebar = () => {
+    this.props.dispatch(toggleAuthSidebar());
+  };
+
+  protected handleCloseAuthSidebar = () => {
+    const { showSidebar } = this.props;
+    if (showSidebar) {
+      this.props.dispatch(toggleAuthSidebar());
+    }
+  };
 }
 
 const mapStateToProps = (state: IRootState) => ({

@@ -7,12 +7,12 @@ import React, {
 } from "react";
 import { Link } from "react-router-dom";
 import Button from "../PureHelpers/Button";
-import FormField from "../PureHelpers/FormField";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   FormContainer,
   FormContent,
+  FormField,
   FormInput,
   PasswordLabelFlex,
   PasswordViewToggle,

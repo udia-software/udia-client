@@ -102,9 +102,7 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
     };
     // tslint:disable-next-line:no-console
     console.info(
-      `Initialized ApolloProvider Client ${
-        token ? `(${token})` : "(No JWT)"
-      }`
+      `Initialized ApolloProvider Client ${token ? `(${token})` : "(No JWT)"}`
     );
   }
 
@@ -152,6 +150,8 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
    */
   public handleLocalStorageUpdated = (e: StorageEvent) => {
     if (e.key === AUTH_TOKEN && e.newValue !== e.oldValue) {
+      // tslint:disable-next-line:no-console
+      console.log(e);
       this.props.dispatch(setAuthJWT(e.newValue));
     }
   };
@@ -184,11 +184,11 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
 
       // Setup a websocket subscription for listening to user changes
       const newUserObserver = client
-        .subscribe<IMeResponseData | null>({
+        .subscribe<{ data?: IMeResponseData }>({
           query: ME_SUBSCRIPTION
         })
         .subscribe(
-          data => {
+          ({ data }) => {
             if (!data || !data.me) {
               dispatch(clearAuthData());
             } else {
