@@ -63,7 +63,7 @@ exports[`renders SignUpView correctly 1`] = `
           >
             Username:
             <input
-              className="sc-htoDjs brBwEe"
+              className="sc-htoDjs ckfwtn"
               id="username"
               onBlur={[Function]}
               onChange={[Function]}
@@ -84,7 +84,7 @@ exports[`renders SignUpView correctly 1`] = `
           >
             Email:
             <input
-              className="sc-htoDjs brBwEe"
+              className="sc-htoDjs ckfwtn"
               id="email"
               onBlur={[Function]}
               onChange={[Function]}
@@ -134,7 +134,7 @@ exports[`renders SignUpView correctly 1`] = `
               </a>
             </span>
             <input
-              className="sc-htoDjs brBwEe"
+              className="sc-htoDjs ckfwtn"
               id="pw"
               onChange={[Function]}
               placeholder="••••••••"
