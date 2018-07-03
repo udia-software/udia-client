@@ -14,7 +14,7 @@ import {
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PasswordViewToggle,
+  PointerAnchor,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -78,10 +78,10 @@ const SignInView = ({
             <label htmlFor="pw">
               <PasswordLabelFlex>
                 <span>Password:</span>
-                <PasswordViewToggle onClick={handleTogglePassword}>
+                <PointerAnchor onClick={handleTogglePassword}>
                   <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
                   {showPassword ? "Hide Password" : "Show Password"}
-                </PasswordViewToggle>
+                </PointerAnchor>
               </PasswordLabelFlex>
               <FormInput
                 type={showPassword ? "text" : "password"}

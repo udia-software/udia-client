@@ -419,16 +419,25 @@ const RESET_PASSWORD_MUTATION = gql`
       jwt
       user {
         uuid
+        username
+        emails {
+          email
+          primary
+          verified
+          createdAt
+          updatedAt
+          verificationExpiry
+        }
+        encSecretKey
+        pubVerifyKey
+        encPrivateSignKey
+        pubEncryptKey
+        encPrivateDecryptKey
         pwFunc
         pwDigest
         pwCost
         pwKeySize
         pwNonce
-        pubVerifyKey
-        encPrivateSignKey
-        encSecretKey
-        pubEncryptKey
-        encPrivateDecryptKey
         createdAt
         updatedAt
       }

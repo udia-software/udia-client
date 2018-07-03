@@ -209,6 +209,7 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
       if (userObserver) {
         userObserver.unsubscribe();
       }
+      this.props.dispatch(clearAuthData());
     }
   }
 }

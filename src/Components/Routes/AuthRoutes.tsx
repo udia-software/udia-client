@@ -10,6 +10,7 @@ import styled from "../AppStyles";
 import Profile from "../Auth/Profile";
 import SignOutController from "../Auth/SignOutController";
 import { Button } from "../Auth/SignViewShared";
+import UserEmailController from "../Auth/UserEmailController";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
 
@@ -85,6 +86,8 @@ const StyledAuthSidebarLink = styled(NavLink).attrs<{
   }
   &.${activeClassName} {
     color: ${({ theme }) => theme.primaryColor};
+    border-top: 1px solid ${({ theme }) => theme.primaryColor};
+    border-bottom: 1px solid ${({ theme }) => theme.primaryColor};
   }
 `;
 
@@ -130,6 +133,16 @@ class AuthRoutes extends Component<IProps> {
           </StyledAuthSidebarLink>
           <StyledAuthSidebarLink
             showsidebar={showSidebar}
+            to="/auth/emails"
+            activeClassName={activeClassName}
+            onClick={this.handleCloseAuthSidebar}
+          >
+            <FontAwesomeIcon icon="envelope" size="lg" />
+            Emails
+          </StyledAuthSidebarLink>
+
+          <StyledAuthSidebarLink
+            showsidebar={showSidebar}
             to="/auth/sign-out"
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
@@ -145,6 +158,11 @@ class AuthRoutes extends Component<IProps> {
               exact={true}
               path="/auth/profile"
               component={WithAuth(Profile, true, "/", "/auth/profile")}
+            />
+            <Route
+              exact={true}
+              path="/auth/emails"
+              component={WithAuth(UserEmailController, true, "/", "/auth/emails")}
             />
             <Route
               exact={true}

@@ -74,9 +74,9 @@ export default (
       localStorage.setItem(AUTH_TOKEN, action.payload.jwt);
       return {
         ...state,
-        username: null,
-        email: null,
-        password: null,
+        username: "",
+        email: "",
+        password: "",
         authUser: action.payload.user,
         jwt: action.payload.jwt
       };

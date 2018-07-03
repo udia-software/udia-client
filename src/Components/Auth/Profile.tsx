@@ -135,10 +135,8 @@ class ProfileController extends Component<IProps> {
   }
 }
 
-function mapStateToProps(state: IRootState) {
-  return {
-    user: state.auth.authUser! // User is always defined here, thanks to WithAuth wrapper
-  };
-}
+const mapStateToProps = (state: IRootState) => ({
+  user: state.auth.authUser! // User is always defined here, thanks to WithAuth wrapper
+});
 
 export default connect(mapStateToProps)(ProfileController);
