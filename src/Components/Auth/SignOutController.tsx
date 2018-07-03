@@ -7,8 +7,8 @@ import {
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
-import Button from "../PureHelpers/Button";
 import {
+  Button,
   FormContainer,
   SignViewContainer,
   SignViewLinks,

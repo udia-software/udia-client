@@ -6,6 +6,7 @@ interface IGraphQLErrorExtended extends GraphQLError {
     pw?: string[];
     username?: string[];
     emailToken?: string[];
+    resetToken?: string[];
   };
 }
 
@@ -25,6 +26,7 @@ const parseGraphQLError = (
   let passwordErrors: string[] = [];
   let usernameErrors: string[] = [];
   let emailTokenErrors: string[] = [];
+  let resetTokenErrors: string[] = [];
 
   try {
     if (graphQLErrors && graphQLErrors.length) {
@@ -34,13 +36,15 @@ const parseGraphQLError = (
         passwordErrors = passwordErrors.concat(errorState.pw || []);
         usernameErrors = usernameErrors.concat(errorState.username || []);
         emailTokenErrors = emailTokenErrors.concat(errorState.emailToken || []);
+        resetTokenErrors = resetTokenErrors.concat(errorState.resetToken || []);
       });
     }
     const catchAll =
       emailErrors.length === 0 &&
       passwordErrors.length === 0 &&
       usernameErrors.length === 0 &&
-      emailTokenErrors.length === 0;
+      emailTokenErrors.length === 0 && 
+      resetTokenErrors.length === 0;
     if (networkError) {
       errors.push(message);
     } else if (catchAll) {
@@ -57,7 +61,8 @@ const parseGraphQLError = (
     emailErrors,
     passwordErrors,
     usernameErrors,
-    emailTokenErrors
+    emailTokenErrors,
+    resetTokenErrors
   };
 };
 

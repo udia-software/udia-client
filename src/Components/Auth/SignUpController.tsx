@@ -121,7 +121,7 @@ class SignUpController extends Component<IProps, IState>
         handleChangeEmail={this.handleChangeEmail}
         handleEmailBlur={this.handleEmailBlur}
         handleChangeUsername={this.handleChangeUsername}
-        handleUsernameBlur={this.handleUNameBlur}
+        handleUsernameBlur={this.handleUsernameBlur}
         handleChangePassword={this.handleChangePassword}
         handlePasswordBlur={this.handlePasswordBlur}
         handleTogglePassword={this.handleTogglePassword}
@@ -178,7 +178,9 @@ class SignUpController extends Component<IProps, IState>
     }
   };
 
-  protected handleUNameBlur: FocusEventHandler<HTMLInputElement> = async () => {
+  protected handleUsernameBlur: FocusEventHandler<
+    HTMLInputElement
+  > = async () => {
     const { client, username } = this.props;
     if (this.isMountableMounted) {
       this.setState({ usernameValidated: false, usernameValidating: true });
