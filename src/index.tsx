@@ -8,7 +8,7 @@ import App from "./Components/App";
 import RefreshingApolloProvider from "./Components/Wrapper/RefreshingApolloProvider";
 import ToggleableThemeProvider from "./Components/Wrapper/ToggleableThemeProvider";
 import configureReduxStore from "./Modules/ConfigureReduxStore";
-import { unregister } from "./registerServiceWorker";
+import register from "./registerServiceWorker";
 
 function render(
   AppComponent: () => JSX.Element,
@@ -37,7 +37,8 @@ function render(
 
 if (process.env.NODE_ENV !== "test") {
   render(App, document.getElementById("root"));
-  unregister(); // not using service workers for the time being
+  register();
+  // unregister();
 }
 
 export default render;
