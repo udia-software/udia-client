@@ -140,7 +140,15 @@ class AuthRoutes extends Component<IProps> {
             <FontAwesomeIcon icon="envelope" size="lg" />
             Emails
           </StyledAuthSidebarLink>
-
+          {/* <StyledAuthSidebarLink
+            showsidebar={showSidebar}
+            to="/auth/password"
+            activeClassName={activeClassName}
+            onClick={this.handleCloseAuthSidebar}
+          >
+            <FontAwesomeIcon icon="key" size="lg" />
+            Password
+          </StyledAuthSidebarLink> */}
           <StyledAuthSidebarLink
             showsidebar={showSidebar}
             to="/auth/sign-out"

@@ -90,6 +90,9 @@ class UserEmailController extends Component<IProps, IState> {
 
   protected handleEmailBlur: FocusEventHandler<HTMLInputElement> = async () => {
     const { client, formEmail } = this.props;
+    if (!formEmail) {
+      return;
+    }
     this.setState({ emailSuccess: false, emailValidating: true });
     try {
       await client.query({
