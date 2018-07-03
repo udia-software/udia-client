@@ -1,7 +1,7 @@
 {
-  "name": "udia-client",
+  "name": "@udia/udia-client",
   "version": "0.1.0",
-  "private": true,
+  "description": "Javascript Client for Udia",
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
@@ -9,6 +9,17 @@
     "eject": "react-scripts-ts eject",
     "lint": "tslint -c tslint.json --project ."
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/udia-software/udia-client.git"
+  },
+  "homepage": "https://udia.ca",
+  "author": {
+    "name": "Alexander Wong",
+    "email": "alex@udia.ca",
+    "url": "https://udia.ca"
+  },
+  "license": "AGPL-3.0",
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
