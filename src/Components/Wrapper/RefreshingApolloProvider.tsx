@@ -120,7 +120,7 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
     // Only do stuff if the token changed
     if (this.props.token !== prevProps.token) {
       const newClient = initApolloClient(this.props.token);
-      await newClient.resetStore();
+      // await newClient.resetStore();
       // tslint:disable-next-line:no-console
       console.info(
         `Refreshed ApolloProvider Client ${
