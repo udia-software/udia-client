@@ -63,7 +63,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
           >
             Email:
             <input
-              className="sc-htoDjs gbmFqJ"
+              className="sc-htoDjs brBwEe"
               id="email"
               onChange={[Function]}
               placeholder="your@email.tld"
@@ -112,7 +112,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
               </a>
             </span>
             <input
-              className="sc-htoDjs gbmFqJ"
+              className="sc-htoDjs brBwEe"
               id="pw"
               onChange={[Function]}
               placeholder="••••••••"
