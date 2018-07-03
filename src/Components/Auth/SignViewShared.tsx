@@ -75,6 +75,7 @@ export const FormInput: StyledComponentClass<
   font-size: medium;
   background: ${props => props.theme.inputBaseBackgroundColor};
   border: 1px solid ${props => props.theme.inverseColor};
+  color: ${props => props.theme.primaryColor};
   border-radius: 3px;
   :focus {
     outline: 1px solid ${props => props.theme.purple};
@@ -93,6 +94,7 @@ export const FormTextArea: StyledComponentClass<
   font-size: medium;
   background: ${props => props.theme.inputBaseBackgroundColor};
   border: 1px solid ${props => props.theme.inverseColor};
+  color: ${props => props.theme.primaryColor};
   border-radius: 3px;
   overflow: hidden;
   word-break: break-all;
