@@ -5,6 +5,7 @@ import ResetPasswordController from "../Auth/ResetPasswordController";
 import SignInController from "../Auth/SignInController";
 import SignUpController from "../Auth/SignUpController";
 import VerifyEmailController from "../Auth/VerifyEmailController";
+import Contact from "../Contact";
 import Health from "../Health";
 import Home from "../Home";
 import NotFound from "../NotFound";
@@ -15,6 +16,7 @@ export default () => (
   <Switch>
     <Route exact={true} path="/" component={Home} />
     <Route exact={true} path="/health" component={Health} />
+    <Route exact={true} path="/contact" component={Contact} />
     <Route
       exact={true}
       path="/sign-in"

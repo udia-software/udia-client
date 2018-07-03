@@ -4,6 +4,7 @@ import {
   faEnvelope,
   faEye,
   faEyeSlash,
+  faKey,
   faUser,
   faUserSlash
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +21,7 @@ library.add(faBars);
 library.add(faEye);
 library.add(faEyeSlash);
 library.add(faEnvelope);
+library.add(faKey);
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;

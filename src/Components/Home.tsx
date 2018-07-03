@@ -12,7 +12,6 @@ const Home = () => {
   return (
     <HomeContainer>
       <h1>UDIA</h1>
-      <p>Work in progress. Don't publish yet.</p>
     </HomeContainer>
   );
 };
