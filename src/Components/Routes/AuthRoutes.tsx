@@ -9,8 +9,8 @@ import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
 import styled from "../AppStyles";
 import Profile from "../Auth/Profile";
 import SignOutController from "../Auth/SignOutController";
+import { Button } from "../Auth/SignViewShared";
 import NotFound from "../NotFound";
-import { StyleComponent as Button } from "../PureHelpers/Button";
 import WithAuth from "../Wrapper/WithAuth";
 
 interface IProps {

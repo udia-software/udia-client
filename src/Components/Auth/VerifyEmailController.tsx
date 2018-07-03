@@ -44,7 +44,7 @@ class VerifyEmailController extends Component<IProps, IState> {
       this.props.match.params.verificationToken || "";
     if (urlVerificationToken) {
       this.props.dispatch(setFormEmailVerificationToken(urlVerificationToken));
-      this.handleGraphQLMutate(urlVerificationToken);
+      await this.handleGraphQLMutate(urlVerificationToken);
     }
   }
 

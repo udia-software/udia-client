@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -51,7 +52,9 @@ class ProfileController extends Component<IProps> {
                   <FormInput
                     type="text"
                     id="createdAt"
-                    value={new Date(user.createdAt).toISOString()}
+                    value={DateTime.fromMillis(user.createdAt).toLocaleString(
+                      DateTime.DATETIME_FULL_WITH_SECONDS
+                    )}
                     disabled={true}
                   />
                 </label>
@@ -62,7 +65,9 @@ class ProfileController extends Component<IProps> {
                   <FormInput
                     type="text"
                     id="createdAt"
-                    value={new Date(user.updatedAt).toISOString()}
+                    value={DateTime.fromMillis(user.updatedAt).toLocaleString(
+                      DateTime.DATETIME_FULL_WITH_SECONDS
+                    )}
                     disabled={true}
                   />
                 </label>

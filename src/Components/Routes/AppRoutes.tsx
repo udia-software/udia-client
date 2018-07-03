@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import ForgotPasswordController from "../Auth/ForgotPasswordController";
+import ResetPasswordController from "../Auth/ResetPasswordController";
 import SignInController from "../Auth/SignInController";
 import SignUpController from "../Auth/SignUpController";
 import VerifyEmailController from "../Auth/VerifyEmailController";
@@ -39,7 +40,32 @@ export default () => (
       path="/verify-email/:verificationToken"
       component={VerifyEmailController}
     />
-    <Route exact={true} path="/verify-email" component={VerifyEmailController} />
+    <Route
+      exact={true}
+      path="/verify-email"
+      component={VerifyEmailController}
+    />
+    <Route
+      exact={true}
+      path="/reset-password/:verificationToken"
+      component={WithAuth(
+        ResetPasswordController,
+        false,
+        "/",
+        "/reset-password"
+      )}
+    />
+    <Route
+      exact={true}
+      path="/reset-password"
+      component={WithAuth(
+        ResetPasswordController,
+        false,
+        "/",
+        "/reset-password"
+      )}
+    />
+
     <Route path="/auth" component={WithAuth(AuthRoutes, true, "/", "/auth")} />
     <Route component={NotFound} />
   </Switch>
