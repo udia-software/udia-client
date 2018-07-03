@@ -98,7 +98,7 @@ export const FormTextArea: StyledComponentClass<
   word-break: break-all;
 `;
 
-export const PasswordViewToggle: StyledComponentClass<
+export const PointerAnchor: StyledComponentClass<
   DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>,
   IThemeInterface
 > = styled.a`

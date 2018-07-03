@@ -1,6 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
+  faEnvelope,
   faEye,
   faEyeSlash,
   faUser,
@@ -18,6 +19,7 @@ library.add(faUserSlash);
 library.add(faBars);
 library.add(faEye);
 library.add(faEyeSlash);
+library.add(faEnvelope);
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;
