@@ -96,13 +96,14 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     const token = props.token;
+    const client = initApolloClient(token);
     this.state = {
-      client: initApolloClient(token),
+      client,
       userObserver: null
     };
     // tslint:disable-next-line:no-console
     console.info(
-      `Initialized ApolloProvider Client ${token ? `(${token})` : "(No JWT)"}`
+      `Initialized ApolloProvider Client ${token ? `(JWT Set)` : "(No JWT)"}`
     );
   }
 
@@ -119,14 +120,16 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
   public async componentDidUpdate(prevProps: IProps, prevState: IState) {
     // Only do stuff if the token changed
     if (this.props.token !== prevProps.token) {
+      const oldClient = this.state.client;
+      await oldClient.resetStore();
       const newClient = initApolloClient(this.props.token);
-      // await newClient.resetStore();
       // tslint:disable-next-line:no-console
       console.info(
         `Refreshed ApolloProvider Client ${
-          this.props.token ? `(${this.props.token})` : "(No JWT)"
+          this.props.token ? `(JWT Set)` : "(No JWT)"
         }`
       );
+      await newClient.resetStore();
       await this.fetchAndSubscribeToUser(newClient);
       this.setState({ client: newClient });
     }
@@ -151,7 +154,7 @@ class RefreshingApolloProvider extends Component<IProps, IState> {
   public handleLocalStorageUpdated = (e: StorageEvent) => {
     if (e.key === AUTH_TOKEN && e.newValue !== e.oldValue) {
       // tslint:disable-next-line:no-console
-      console.log(e);
+      console.info(e);
       this.props.dispatch(setAuthJWT(e.newValue));
     }
   };
