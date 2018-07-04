@@ -6,21 +6,7 @@ import {
   maybeAuthenticated as selectMaybeAuth
 } from "../../Modules/Reducers/Auth/Selectors";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
-import styled from "../AppStyles";
-import Logo from "../Static/Logo";
-
-const AuthenticationLoadingContainer = styled.div`
-  display: grid;
-  place-content: center;
-  place-items: center;
-`;
-
-const AuthenticationLoadingComponent = (
-  <AuthenticationLoadingContainer>
-    <Logo isLoading={true} height="80px" />
-    <span>Fetching user data...</span>
-  </AuthenticationLoadingContainer>
-);
+import { WrapperLoadingComponent } from "./WrapperViewShared";
 
 interface IProps {
   isAuthenticated: boolean;
@@ -72,19 +58,19 @@ export default function WithAuth(
       if (redirect) {
         return RedirectToComponent;
       } else if (pending) {
-        return AuthenticationLoadingComponent;
+        return WrapperLoadingComponent({
+          loadingText: "Fetching user data..."
+        });
       } else {
         return <WrappedComponent {...this.props} />;
       }
     }
   }
 
-  function mapStateToProps(state: IRootState) {
-    return {
-      maybeAuthenticated: selectMaybeAuth(state),
-      isAuthenticated: selectIsAuth(state)
-    };
-  }
+  const mapStateToProps = (state: IRootState) => ({
+    maybeAuthenticated: selectMaybeAuth(state),
+    isAuthenticated: selectIsAuth(state)
+  });
 
   return connect(mapStateToProps)(AuthenticationWrapper);
 }

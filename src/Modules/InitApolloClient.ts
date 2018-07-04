@@ -57,6 +57,7 @@ export default function initApolloClient(token: string | null) {
 
   return new ApolloClient({
     link,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    ssrMode: false
   });
 }
