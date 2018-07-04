@@ -10,6 +10,7 @@ import styled from "../AppStyles";
 import Profile from "../Auth/Profile";
 import SignOutController from "../Auth/SignOutController";
 import { Button } from "../Auth/SignViewShared";
+import UpdatePasswordController from "../Auth/UpdatePasswordController";
 import UserEmailController from "../Auth/UserEmailController";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
@@ -72,6 +73,7 @@ const StyledAuthSidebarLink = styled(NavLink).attrs<{
   align-content: space-evenly;
   justify-content: center;
   place-self: center;
+  text-align: center;
   border-top: 1px solid ${({ theme }) => theme.inverseColor};
   border-bottom: 1px solid ${({ theme }) => theme.inverseColor};
   transition-property: all 0.2s;
@@ -140,15 +142,15 @@ class AuthRoutes extends Component<IProps> {
             <FontAwesomeIcon icon="envelope" size="lg" />
             Emails
           </StyledAuthSidebarLink>
-          {/* <StyledAuthSidebarLink
+          <StyledAuthSidebarLink
             showsidebar={showSidebar}
             to="/auth/password"
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
           >
             <FontAwesomeIcon icon="key" size="lg" />
-            Password
-          </StyledAuthSidebarLink> */}
+            Update<br/>Password
+          </StyledAuthSidebarLink>
           <StyledAuthSidebarLink
             showsidebar={showSidebar}
             to="/auth/sign-out"
@@ -171,6 +173,11 @@ class AuthRoutes extends Component<IProps> {
               exact={true}
               path="/auth/emails"
               component={WithAuth(UserEmailController, true, "/", "/auth/emails")}
+            />
+            <Route
+              exact={true}
+              path="/auth/password"
+              component={WithAuth(UpdatePasswordController, true, "/", "/auth/password")}
             />
             <Route
               exact={true}
