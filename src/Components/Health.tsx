@@ -208,7 +208,7 @@ class Health extends Component<IProps, IState> implements isMountable {
         <h1>UDIA</h1>
         <CenterParagraph>UDIA is the universal wildcard.</CenterParagraph>
         <CenterParagraph>
-          It&apos;s listening to the unvierse dance with words and logic.
+          It&apos;s listening to the universe dance with words and logic.
         </CenterParagraph>
         <h3>Health</h3>
         <dl>
