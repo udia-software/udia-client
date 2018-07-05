@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 // tslint:disable-next-line:no-submodule-imports
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./Components/App";
-import RefreshingApolloProviderWrapper from "./Components/Wrapper/RefreshingApolloProvider";
+import ApolloProviderWrapper from "./Components/Wrapper/ApolloProviderWrapper";
 import ToggleableThemeProvider from "./Components/Wrapper/ToggleableThemeProvider";
 import configureReduxStore from "./Modules/ConfigureReduxStore";
 import register from "./registerServiceWorker";
@@ -15,18 +15,18 @@ function render(AppComponent: () => JSX.Element, root: HTMLElement | null) {
     throw new Error("Element `root` does not exist!");
   }
   const supportsHistory = "pushState" in window.history;
-  const ApolloEnabledApp = RefreshingApolloProviderWrapper(
-    <ToggleableThemeProvider>
-      <BrowserRouter forceRefresh={!supportsHistory}>
-        <AppComponent />
-      </BrowserRouter>
-    </ToggleableThemeProvider>
+  const ApolloEnabledApp = ApolloProviderWrapper(
+    <BrowserRouter forceRefresh={!supportsHistory}>
+      <AppComponent />
+    </BrowserRouter>
   );
   const { persistor, store } = configureReduxStore();
   ReactDOM.render(
     <ReduxProvider store={store}>
       <PersistGate persistor={persistor}>
-        <ApolloEnabledApp />
+        <ToggleableThemeProvider>
+          <ApolloEnabledApp />
+        </ToggleableThemeProvider>
       </PersistGate>
     </ReduxProvider>,
     root

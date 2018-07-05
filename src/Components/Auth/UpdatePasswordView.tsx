@@ -63,7 +63,7 @@ const UpdatePasswordView = ({
         loading={loading}
         loadingText={loadingText}
       />
-      <SignViewTitle>Update password</SignViewTitle>
+      <SignViewTitle>Update Password</SignViewTitle>
       <FormContainer onSubmit={handleSubmit}>
         <fieldset>
           <legend>Changing your password, User?</legend>
