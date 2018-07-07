@@ -1,14 +1,15 @@
 import AuthReducer, { IAuthState } from "./Auth/Reducer";
+import NotesReducer, { INotesState } from "./Notes/Reducer";
 import ThemeReducer, { IThemeState } from "./Theme/Reducer";
 
 export interface IRootState {
   auth: IAuthState;
+  notes: INotesState;
   theme: IThemeState;
 }
 
-const RootReducer = {
+export default {
   auth: AuthReducer,
-  theme: ThemeReducer,
+  notes: NotesReducer,
+  theme: ThemeReducer
 };
-
-export default RootReducer;

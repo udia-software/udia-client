@@ -13,6 +13,7 @@ import {
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
 import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
+import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser } from "../../Types";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
@@ -124,6 +125,7 @@ export default function RefreshingApolloProviderWrapper(
         });
         if (!meQueryResponse.data || !meQueryResponse.data.me) {
           dispatch(clearAuthData());
+          dispatch(clearNotesData());
         } else {
           // If the user just logged in or signed up, this should be unnecessary but harmless
           dispatch(setAuthUser(meQueryResponse.data.me));
@@ -138,6 +140,7 @@ export default function RefreshingApolloProviderWrapper(
             ({ data }) => {
               if (!data || !data.me) {
                 dispatch(clearAuthData());
+                dispatch(clearNotesData());
               } else {
                 dispatch(setAuthUser(data.me));
               }
@@ -151,12 +154,14 @@ export default function RefreshingApolloProviderWrapper(
         // set the observer in state, so we can unsubscribe later
         this.setState({ userObserver: newUserObserver });
       } catch (err) {
+        const { dispatch } = this.props;
         const { userObserver } = this.state;
         // If the server is down, clear the user and the subscription
         if (userObserver) {
           userObserver.unsubscribe();
         }
-        this.props.dispatch(clearAuthData());
+        dispatch(clearAuthData());
+        dispatch(clearNotesData());
       }
     }
   }

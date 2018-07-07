@@ -6,6 +6,7 @@ import {
   clearAuthData,
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
+import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import {
   Button,
@@ -24,20 +25,14 @@ class SignOutController extends Component<IProps> {
   constructor(props: IProps) {
     super(props);
     document.title = "Sign Out - UDIA";
-    const { confirmSignOutVal, dispatch } = props;
-    if (confirmSignOutVal) {
-      dispatch(clearAuthData());
-    }
+    this.handleSignOut();
   }
 
   public componentWillReceiveProps(nextProps: IProps) {
-    const { confirmSignOutVal, dispatch } = nextProps;
-    if (confirmSignOutVal) {
-      dispatch(clearAuthData());
-    }
+    this.handleSignOut();
   }
 
-  public handleSignOut: FormEventHandler<HTMLFormElement> = e => {
+  public handleSubmit: FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault();
     this.props.dispatch(confirmSignOut());
   };
@@ -46,7 +41,7 @@ class SignOutController extends Component<IProps> {
     return (
       <SignViewContainer>
         <SignViewTitle>Sign Out</SignViewTitle>
-        <FormContainer onSubmit={this.handleSignOut}>
+        <FormContainer onSubmit={this.handleSubmit}>
           <fieldset>
             <legend>Are you leaving?</legend>
             <Button>Yes, farewell.</Button>
@@ -58,6 +53,14 @@ class SignOutController extends Component<IProps> {
       </SignViewContainer>
     );
   }
+
+  private handleSignOut = () => {
+    const { confirmSignOutVal, dispatch } = this.props;
+    if (confirmSignOutVal) {
+      dispatch(clearAuthData());
+      dispatch(clearNotesData());
+    }
+  };
 }
 
 const mapStateToProps = (state: IRootState) => ({

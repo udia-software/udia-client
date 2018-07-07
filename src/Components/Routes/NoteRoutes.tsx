@@ -6,10 +6,7 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
-import Profile from "../Auth/Profile";
-import SignOutController from "../Auth/SignOutController";
-import UpdatePasswordController from "../Auth/UpdatePasswordController";
-import UserEmailController from "../Auth/UserEmailController";
+import CreateNoteController from "../Notes/DraftNoteController";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
 import {
@@ -26,7 +23,9 @@ interface IProps {
   showSidebar: boolean;
 }
 
-class AuthRoutes extends Component<IProps> {
+const Todo = () => <h1>todo</h1>;
+
+class NoteRoutes extends Component<IProps> {
   public render() {
     const { showSidebar: showSidebarProp } = this.props;
     const showSidebar = showSidebarProp ? "true" : undefined;
@@ -35,78 +34,48 @@ class AuthRoutes extends Component<IProps> {
         <Sidebar showsidebar={showSidebar}>
           <StyledSidebarLink
             showsidebar={showSidebar}
-            to="/auth/profile"
+            to="/note/draft"
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
           >
-            <FontAwesomeIcon icon="user" size="lg" />
-            Profile
+            Draft Note
           </StyledSidebarLink>
           <StyledSidebarLink
             showsidebar={showSidebar}
-            to="/auth/emails"
+            to="/note/list"
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
           >
-            <FontAwesomeIcon icon="envelope" size="lg" />
-            Emails
-          </StyledSidebarLink>
-          <StyledSidebarLink
-            showsidebar={showSidebar}
-            to="/auth/password"
-            activeClassName={activeClassName}
-            onClick={this.handleCloseAuthSidebar}
-          >
-            <FontAwesomeIcon icon="key" size="lg" />
-            Update<br />Password
-          </StyledSidebarLink>
-          <StyledSidebarLink
-            showsidebar={showSidebar}
-            to="/auth/sign-out"
-            activeClassName={activeClassName}
-            onClick={this.handleCloseAuthSidebar}
-          >
-            <FontAwesomeIcon icon="user-slash" size="lg" />
-            Sign Out
+            My Notes
           </StyledSidebarLink>
         </Sidebar>
         <WithSidebarContentContainer>
           <Switch>
-            <Redirect exact={true} from="/auth" to="/auth/profile" />
+            <Redirect exact={true} from="/note" to="/note/list" />
             <Route
               exact={true}
-              path="/auth/profile"
-              component={WithAuth(Profile, true, "/", "/auth/profile")}
-            />
-            <Route
-              exact={true}
-              path="/auth/emails"
+              path="/note/draft"
               component={WithAuth(
-                UserEmailController,
+                CreateNoteController,
                 true,
                 "/",
-                "/auth/emails"
+                "/note/draft"
               )}
             />
             <Route
               exact={true}
-              path="/auth/password"
-              component={WithAuth(
-                UpdatePasswordController,
-                true,
-                "/",
-                "/auth/password"
-              )}
+              path="/note/list"
+              component={WithAuth(Todo, true, "/", "/note/list")}
             />
             <Route
               exact={true}
-              path="/auth/sign-out"
-              component={WithAuth(
-                SignOutController,
-                true,
-                "/",
-                "/auth/sign-out"
-              )}
+              path="/note/view"
+              component={WithAuth(Todo, true, "/", "/note/view")}
+            />
+            <Route
+              exact={true}
+              path="/note/edit"
+              component={WithAuth(Todo, true, "/", "/note/edit")}
             />
             <Route component={NotFound} />
           </Switch>
@@ -137,4 +106,4 @@ const mapStateToProps = (state: IRootState) => ({
   showSidebar: isShowingAuthSidebar(state)
 });
 
-export default connect(mapStateToProps)(AuthRoutes);
+export default connect(mapStateToProps)(NoteRoutes);

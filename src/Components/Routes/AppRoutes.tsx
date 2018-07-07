@@ -11,6 +11,7 @@ import Home from "../Home";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
 import AuthRoutes from "./AuthRoutes";
+import NoteRoutes from "./NoteRoutes";
 
 export default () => (
   <Switch>
@@ -69,6 +70,7 @@ export default () => (
     />
 
     <Route path="/auth" component={WithAuth(AuthRoutes, true, "/", "/auth")} />
+    <Route path="/note" component={NoteRoutes} />
     <Route component={NotFound} />
   </Switch>
 );
