@@ -25,11 +25,13 @@ class SignOutController extends Component<IProps> {
   constructor(props: IProps) {
     super(props);
     document.title = "Sign Out - UDIA";
-    this.handleSignOut();
+    const { confirmSignOutVal, dispatch } = props;
+    this.handleSignOut({ confirmSignOutVal, dispatch });
   }
 
   public componentWillReceiveProps(nextProps: IProps) {
-    this.handleSignOut();
+    const { confirmSignOutVal, dispatch } = nextProps;
+    this.handleSignOut({ confirmSignOutVal, dispatch });
   }
 
   public handleSubmit: FormEventHandler<HTMLFormElement> = e => {
@@ -54,8 +56,13 @@ class SignOutController extends Component<IProps> {
     );
   }
 
-  private handleSignOut = () => {
-    const { confirmSignOutVal, dispatch } = this.props;
+  private handleSignOut = ({
+    confirmSignOutVal,
+    dispatch
+  }: {
+    confirmSignOutVal: boolean;
+    dispatch: Dispatch;
+  }) => {
     if (confirmSignOutVal) {
       dispatch(clearAuthData());
       dispatch(clearNotesData());

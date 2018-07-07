@@ -19,6 +19,7 @@ import {
   setFormUsername
 } from "../../Modules/Reducers/Auth/Actions";
 import { IRootState } from "../../Modules/Reducers/RootReducer";
+import { setBase64AK, setBase64MK } from "../../Modules/Reducers/Secrets/Actions";
 import { FullUser, isMountable } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import SignUpView from "./SignUpView";
@@ -353,6 +354,8 @@ class SignUpController extends Component<IProps, IState>
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
+      dispatch(setBase64MK(Buffer.from(mk).toString("base64")));
+      dispatch(setBase64AK(Buffer.from(ak).toString("base64")));
       dispatch(setAuthData({ jwt, user }));
     } catch (err) {
       const {

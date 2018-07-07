@@ -34,6 +34,15 @@ declare interface FullUser {
   updatedAt: number;
 }
 
+// Not the full user, but the 'publicly visible' user
+declare interface User {
+  uuid: string;
+  username: string;
+  createdAt: number;
+  pubVerifyKey: string;
+  pubEncryptKey: string;
+}
+
 // gross workaround to handle setState after unmounted try/catch/finally logic in the app
 declare interface isMountable {
   isMountableMounted: boolean;
