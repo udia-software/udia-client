@@ -92,12 +92,20 @@ class Header extends Component<IProps> {
             )}
           {maybeAuthenticated &&
             isAuthenticated && (
-              <StyledSubTitleLink
-                to="/auth"
-                activeClassName={activeClassName}
-              >
-                {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
-              </StyledSubTitleLink>
+              <Fragment>
+                <StyledSubTitleLink
+                  to="/note"
+                  activeClassName={activeClassName}
+                >
+                  Note
+                </StyledSubTitleLink>
+                <StyledSubTitleLink
+                  to="/auth"
+                  activeClassName={activeClassName}
+                >
+                  {selfUsername ? selfUsername : "ERR"}
+                </StyledSubTitleLink>
+              </Fragment>
             )}
           {maybeAuthenticated &&
             !isAuthenticated && <span>Loading User..</span>}
@@ -116,4 +124,11 @@ function mapStateToProps(state: IRootState) {
 }
 
 // Pure: false here is necessary to get the NavLinks active styles working
-export default withTheme(connect(mapStateToProps, null, null, { pure: false })(Header));
+export default withTheme(
+  connect(
+    mapStateToProps,
+    null,
+    null,
+    { pure: false }
+  )(Header)
+);
