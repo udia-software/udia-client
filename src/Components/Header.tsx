@@ -97,7 +97,7 @@ class Header extends Component<IProps> {
                   to="/note"
                   activeClassName={activeClassName}
                 >
-                  Note
+                  Secret Notes
                 </StyledSubTitleLink>
                 <StyledSubTitleLink
                   to="/auth"

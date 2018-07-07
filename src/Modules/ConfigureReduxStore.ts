@@ -12,7 +12,8 @@ const storage = localforage.createInstance({ name: "UdiaPersistance" });
 const rootPersistConfig: PersistConfig = {
   key: "root",
   storage,
-  blacklist: ["auth"]
+  blacklist: ["auth"],
+  whitelist: ["notes", "secrets", "theme"]
 };
 
 interface IDevToolsWindow extends Window {

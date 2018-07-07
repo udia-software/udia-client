@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
 import styled from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
+import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 
 const NoteViewContainer = styled.div`
   display: grid;
@@ -50,31 +51,42 @@ const DraftNoteContent = styled.textarea`
 
 const NoValue = styled.span`
   font-style: italic;
-  color: ${props => props.theme.intermediateColor};
+  color: ${props => props.theme.inputErrorColor};
 `;
 
 interface IProps {
+  loading: boolean;
+  loadingText?: string;
   preview: boolean;
   draftNote: IDraftNote;
   handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
   handleChangeNoteTitle: ChangeEventHandler<HTMLInputElement>;
   handleChangeNoteContent: ChangeEventHandler<HTMLTextAreaElement>;
+  handleSubmit: MouseEventHandler<HTMLButtonElement>;
 }
 
 const DraftNoteView = ({
+  loading,
+  loadingText,
   preview,
   draftNote,
   handleTogglePreview,
   handleChangeNoteTitle,
-  handleChangeNoteContent
+  handleChangeNoteContent,
+  handleSubmit
 }: IProps) => {
   return (
     <NoteViewContainer>
+      <GridTemplateLoadingOverlay
+        gridAreaName="with-sidebar-content"
+        loading={loading}
+        loadingText={loadingText}
+      />
       <NoteStateHolder>
         {preview ? (
           <Fragment>
             <Button onClick={handleTogglePreview}>Edit</Button>
-            <Button>Submit</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
           </Fragment>
         ) : (
           <Fragment>
