@@ -1,11 +1,14 @@
 import {
   CLEAR_NOTES_DATA,
+  DISCARD_DRAFT,
   INotesAction,
   SET_DRAFT_CONTENT,
   SET_DRAFT_ID,
   SET_DRAFT_TITLE,
   SET_DRAFT_TYPE
 } from "./Actions";
+
+export const NEW_DRAFT_NOTE = "n";
 
 export interface IDraftNote {
   itemId?: string; // undefined if this is a new note
@@ -91,6 +94,14 @@ export default (
             type
           }
         }
+      };
+    }
+    case DISCARD_DRAFT: {
+      const drafts = { ...state.drafts };
+      delete drafts[action.payload];
+      return {
+        ...state,
+        drafts
       };
     }
     case CLEAR_NOTES_DATA: {

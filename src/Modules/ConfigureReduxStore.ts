@@ -2,7 +2,7 @@ import localforage from "localforage";
 import { combineReducers, createStore, StoreEnhancer } from "redux";
 import { PersistConfig, persistReducer, persistStore } from "redux-persist";
 // tslint:disable-next-line:no-submodule-imports
-// import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
+import hardSet from "redux-persist/es/stateReconciler/hardSet";
 import AuthReducer, {
   AuthPersistBlacklist,
   IAuthState
@@ -28,7 +28,7 @@ const authPersistConfig: PersistConfig = {
 
 const notesPersistConfig: PersistConfig = {
   key: "notes",
-  // stateReconciler: autoMergeLevel2,
+  stateReconciler: hardSet,
   debug: true,
   storage
 };

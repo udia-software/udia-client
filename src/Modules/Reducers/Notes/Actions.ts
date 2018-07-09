@@ -3,6 +3,7 @@ export const SET_DRAFT_ID = "notes/SET_DRAFT_ID";
 export const SET_DRAFT_TITLE = "notes/SET_DRAFT_TITLE";
 export const SET_DRAFT_CONTENT = "notes/SET_DRAFT_CONTENT";
 export const SET_DRAFT_TYPE = "notes/SET_DRAFT_TYPE";
+export const DISCARD_DRAFT = "notes/DISCARD_DRAFT";
 export const CLEAR_NOTES_DATA = "notes/CLEAR_NOTES_DATA";
 
 // Action interfaces
@@ -38,6 +39,11 @@ export interface ISetDraftNoteTypeAction {
   };
 }
 
+export interface IDiscardDraftNoteAction {
+  type: typeof DISCARD_DRAFT;
+  payload: string;
+}
+
 export interface IClearNotesDataAction {
   type: typeof CLEAR_NOTES_DATA;
 }
@@ -47,6 +53,7 @@ export type INotesAction =
   | ISetDraftNoteTitleAction
   | ISetDraftNoteContentAction
   | ISetDraftNoteTypeAction
+  | IDiscardDraftNoteAction
   | IClearNotesDataAction;
 
 export const setDraftNoteID = (
@@ -91,6 +98,11 @@ export const setDraftNoteType = (
     parentId,
     type
   }
+});
+
+export const discardDraft = (parentId: string): IDiscardDraftNoteAction => ({
+  type: DISCARD_DRAFT,
+  payload: parentId
 });
 
 export const clearNotesData = (): IClearNotesDataAction => ({
