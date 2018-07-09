@@ -32,7 +32,7 @@ const StyledComponents = styledComponents as styledComponents.ThemedStyledCompon
 const { default: styled, css, injectGlobal, keyframes } = StyledComponents;
 const ThemeProvider: React.ComponentClass = StyledComponents.ThemeProvider;
 
-const BaseTheme = {
+export const BaseTheme = {
   smScrnBrkPx: 768,
   lgScrnBrkPx: 992,
   purple: "rebeccapurple",

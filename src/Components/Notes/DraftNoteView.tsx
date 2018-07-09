@@ -1,7 +1,12 @@
-import React, { ChangeEventHandler, Fragment, MouseEventHandler } from "react";
+import React, {
+  ChangeEventHandler,
+  Component,
+  Fragment,
+  MouseEventHandler
+} from "react";
 import ReactMarkdown from "react-markdown";
 import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
-import styled from "../AppStyles";
+import styled, { BaseTheme } from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
@@ -17,17 +22,11 @@ const NoteViewContainer = styled.div`
 const NoteViewContent = styled.div`
   grid-area: note-draft-view;
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  grid-flow-auto: row;
+  grid-auto-rows: auto auto 1fr;
+  grid-auto-columns: auto;
+  grid-auto-flow: row;
   margin: 1em;
   max-width: 100%;
-  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
-      lgScrnBrkPx - 1}px) {
-    grid-template-areas:
-      "state-holder"
-      "note-title"
-      "note-content";
-  }
   @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
     grid-template-areas:
       "state-holder state-holder"
@@ -35,6 +34,14 @@ const NoteViewContent = styled.div`
       "note-editor-content note-preview-content";
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 1em;
+  }
+  @media only screen and (max-width: ${props =>
+      props.theme.lgScrnBrkPx - 1}px) {
+    grid-template-areas:
+      "state-holder"
+      "note-title"
+      "note-content";
+    grid-template-columns: auto;
   }
 `;
 
@@ -72,15 +79,7 @@ const NoteStateResponse = styled.div`
   grid-auto-rows: auto;
 `;
 
-const EditNoteTitle = styled.textarea.attrs<{ preview?: boolean }>({})`
-  @media only screen and (max-width: ${props =>
-      props.theme.lgScrnBrkPx - 1}px) {
-    grid-area: note-title;
-    ${({ preview }) => preview && "display: none;"};
-  }
-  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
-    grid-area: note-editor-title;
-  }
+const EditNoteTitle = styled.textarea`
   background: transparent;
   border: none;
   color: ${props => props.theme.primaryColor};
@@ -91,25 +90,12 @@ const EditNoteTitle = styled.textarea.attrs<{ preview?: boolean }>({})`
   width: 100%;
 `;
 
-const ViewNoteTitle = styled.h1.attrs<{ preview?: boolean }>({})`
-  ${({ preview, theme: { lgScrnBrkPx } }) =>
-    preview !== undefined
-      ? `@media only screen and (max-width: ${lgScrnBrkPx - 1}px) {
-        display: ${preview ? "inline-block" : "none"};
-      }`
-      : ""} padding: 0;
+const ViewNoteTitle = styled.h1`
+  padding: 0;
   margin: 0.2em 0;
 `;
 
-const DraftNoteContent = styled.textarea.attrs<{ preview?: boolean }>({})`
-  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
-      lgScrnBrkPx - 1}px) {
-    ${({ preview }) => preview && "display: none;"};
-    grid-area: note-content;
-  }
-  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
-    grid-area: note-editor-content;
-  }
+const EditNoteContent = styled.textarea`
   background: transparent;
   border: none;
   color: ${props => props.theme.primaryColor};
@@ -117,40 +103,9 @@ const DraftNoteContent = styled.textarea.attrs<{ preview?: boolean }>({})`
   width: 100%;
 `;
 
-const HideOnLargeScreenButton = Button.extend`
-  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
-      lgScrnBrkPx - 1}px) {
-    display: inline-block;
-  }
-  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
-    display: none;
-  }
-`;
+const NoteMarkdownContent = styled(ReactMarkdown)``;
 
-const ShowOnLargeScreenButton = Button.extend`
-  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
-      lgScrnBrkPx - 1}px) {
-    display: none;
-  }
-  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
-    display: inline-block;
-  }
-`;
-
-const NoteMarkdownContent = styled(ReactMarkdown).attrs<{ preview?: boolean }>(
-  {}
-)`
-  @media only screen and (max-width: ${props =>
-      props.theme.lgScrnBrkPx - 1}px) {
-    ${({ preview }) => !preview && "display: none;"};
-  }
-`;
-
-const NoteTextContent = styled.div.attrs<{ preview?: boolean }>({})`
-  @media only screen and (max-width: ${props =>
-    props.theme.lgScrnBrkPx - 1}px) {
-    ${({ preview }) => !preview && "display: none;"};
-  }
+const NoteTextContent = styled.div`
   white-space pre-line;
 `;
 
@@ -177,122 +132,154 @@ interface IProps {
   handleSubmit: MouseEventHandler<HTMLButtonElement>;
 }
 
-const DraftNoteView = ({
-  loading,
-  loadingText,
-  errors,
-  preview,
-  draftNote,
-  handleDiscardDraftNote,
-  handleTogglePreview,
-  handleToggleNoteType,
-  handleChangeNoteTitle,
-  handleChangeNoteContent,
-  handleSubmit
-}: IProps) => {
-  return (
-    <NoteViewContainer>
-      <GridTemplateLoadingOverlay
-        gridAreaName="note-draft-view"
-        loading={loading}
-        loadingText={loadingText}
-      />
-      <NoteViewContent>
-        <NoteStateHolder>
-          <NoteStateActions>
-            <ViewNoteTitle>
-              {preview ? "View Note" : "Draft Note"}
-            </ViewNoteTitle>
-            {!preview && (
-              <Fragment>
-                {(draftNote.content || draftNote.title) && (
-                  <HideOnLargeScreenButton onClick={handleDiscardDraftNote}>
-                    Discard Note
-                  </HideOnLargeScreenButton>
-                )}
-                <HideOnLargeScreenButton onClick={handleTogglePreview}>
-                  Preview
-                </HideOnLargeScreenButton>
-              </Fragment>
-            )}
-            {preview && (
-              <Fragment>
-                <HideOnLargeScreenButton onClick={handleTogglePreview}>
-                  Edit
-                </HideOnLargeScreenButton>
-                <HideOnLargeScreenButton onClick={handleSubmit}>
-                  Submit
-                </HideOnLargeScreenButton>
-              </Fragment>
-            )}
-            {(draftNote.content || draftNote.title) && (
-              <ShowOnLargeScreenButton onClick={handleDiscardDraftNote}>
-                Discard Note
-              </ShowOnLargeScreenButton>
-            )}
-            <ShowOnLargeScreenButton onClick={handleSubmit}>
-              Submit
-            </ShowOnLargeScreenButton>
-          </NoteStateActions>
-          <ToggleNoteTypeContainer>
-            <ToggleNoteTypeLabel>
-              <input
-                type="radio"
-                name="noteType"
-                value="text"
-                checked={draftNote.noteType === "text"}
-                onChange={handleToggleNoteType}
-              />
-              Text
-            </ToggleNoteTypeLabel>
-            <ToggleNoteTypeLabel>
-              <input
-                type="radio"
-                name="noteType"
-                value="markdown"
-                checked={draftNote.noteType === "markdown"}
-                onChange={handleToggleNoteType}
-              />
-              Markdown
-            </ToggleNoteTypeLabel>
-          </ToggleNoteTypeContainer>
-          <NoteStateResponse>
-            <FormFieldErrors errors={errors} />
-          </NoteStateResponse>
-          <HorizontalLine />
-        </NoteStateHolder>
-        <EditNoteTitle
-          preview={preview}
-          placeholder="Note Title"
-          onChange={handleChangeNoteTitle}
-          value={draftNote.title}
-        />
-        <ViewNoteTitle preview={preview}>
-          {draftNote.title || (
-            <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-          )}
-        </ViewNoteTitle>
+// I guess, due to css magic, this view needs some viewport state logic for responsive DOM
+interface IState {
+  width: number;
+}
 
-        {draftNote.content ? (
-          draftNote.noteType === "markdown" ? (
-            <NoteMarkdownContent source={draftNote.content} />
-          ) : (
-            <NoteTextContent preview={preview}>
-              {draftNote.content}
-            </NoteTextContent>
-          )
-        ) : (
-          <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-        )}
-        <DraftNoteContent
-          preview={preview}
-          placeholder="Note Content"
-          onChange={handleChangeNoteContent}
-          value={draftNote.content}
+class DraftNoteView extends Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+    this.state = { width: window.innerWidth };
+  }
+
+  public componentDidMount() {
+    window.addEventListener("resize", this.handleResizeEvent);
+  }
+
+  public render() {
+    const {
+      loading,
+      loadingText,
+      errors,
+      preview,
+      draftNote,
+      handleDiscardDraftNote,
+      handleTogglePreview,
+      handleToggleNoteType,
+      handleChangeNoteTitle,
+      handleChangeNoteContent,
+      handleSubmit
+    } = this.props;
+    const { width } = this.state;
+    const { lgScrnBrkPx } = BaseTheme;
+    const isLargeScreen = width >= lgScrnBrkPx;
+
+    // tslint:disable-next-line:no-console
+    console.log(`isLargeScreen? ${isLargeScreen}`, width, lgScrnBrkPx);
+
+    return (
+      <NoteViewContainer>
+        <GridTemplateLoadingOverlay
+          gridAreaName="note-draft-view"
+          loading={loading}
+          loadingText={loadingText}
         />
-      </NoteViewContent>
-    </NoteViewContainer>
-  );
-};
+        <NoteViewContent>
+          <NoteStateHolder>
+            <NoteStateActions>
+              <ViewNoteTitle>
+                {preview ? "View Note" : "Draft Note"}
+              </ViewNoteTitle>
+              {isLargeScreen && (
+                <Fragment>
+                  {(draftNote.content || draftNote.title) && (
+                    <Button onClick={handleDiscardDraftNote}>
+                      Discard Note
+                    </Button>
+                  )}
+                  <Button onClick={handleSubmit}>Submit</Button>
+                </Fragment>
+              )}
+              {!isLargeScreen &&
+                (preview ? (
+                  <Fragment>
+                    <Button onClick={handleTogglePreview}>Edit</Button>
+                    <Button onClick={handleSubmit}>Submit</Button>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {(draftNote.content || draftNote.title) && (
+                      <Button onClick={handleDiscardDraftNote}>
+                        Discard Note
+                      </Button>
+                    )}
+                    <Button onClick={handleTogglePreview}>Preview</Button>
+                  </Fragment>
+                ))}
+            </NoteStateActions>
+            <ToggleNoteTypeContainer>
+              <ToggleNoteTypeLabel>
+                <input
+                  type="radio"
+                  name="noteType"
+                  value="text"
+                  checked={draftNote.noteType === "text"}
+                  onChange={handleToggleNoteType}
+                />
+                Text
+              </ToggleNoteTypeLabel>
+              <ToggleNoteTypeLabel>
+                <input
+                  type="radio"
+                  name="noteType"
+                  value="markdown"
+                  checked={draftNote.noteType === "markdown"}
+                  onChange={handleToggleNoteType}
+                />
+                Markdown
+              </ToggleNoteTypeLabel>
+            </ToggleNoteTypeContainer>
+            <NoteStateResponse>
+              <FormFieldErrors errors={errors} />
+            </NoteStateResponse>
+            <HorizontalLine />
+          </NoteStateHolder>
+          {(isLargeScreen || !preview) && (
+            <EditNoteTitle
+              placeholder="Note Title"
+              onChange={handleChangeNoteTitle}
+              value={draftNote.title}
+            />
+          )}
+          {(isLargeScreen || preview) && (
+            <ViewNoteTitle>
+              {!!draftNote.title ? (
+                draftNote.title
+              ) : (
+                <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+              )}
+            </ViewNoteTitle>
+          )}
+          {(isLargeScreen || !preview) && (
+            <EditNoteContent
+              placeholder="Note Content"
+              onChange={handleChangeNoteContent}
+              value={draftNote.content}
+            />
+          )}
+          {(isLargeScreen || preview) &&
+            (draftNote.content ? (
+              draftNote.noteType === "markdown" ? (
+                <NoteMarkdownContent source={draftNote.content} />
+              ) : (
+                <NoteTextContent>{draftNote.content}</NoteTextContent>
+              )
+            ) : (
+              <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+            ))}
+        </NoteViewContent>
+      </NoteViewContainer>
+    );
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResizeEvent);
+  }
+
+  protected handleResizeEvent = () => {
+    this.setState({ width: window.innerWidth });
+  };
+}
 
 export default DraftNoteView;
