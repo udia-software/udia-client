@@ -9,12 +9,15 @@ import {
 } from "./Actions";
 
 export const NEW_DRAFT_NOTE = "n";
+export const NOTE_TYPE_TEXT = "text";
+export const NOTE_TYPE_MARKDOWN = "markdown";
+export type NoteType = typeof NOTE_TYPE_TEXT | typeof NOTE_TYPE_MARKDOWN;
 
 export interface IDraftNote {
   itemId?: string; // undefined if this is a new note
   title: string;
   content: string;
-  noteType: "text" | "markdown";
+  noteType: NoteType;
 }
 
 export interface INotesState {
@@ -39,7 +42,7 @@ export default (
         [parentId]: {
           title: "",
           content: "",
-          type: "markdown",
+          type: NOTE_TYPE_MARKDOWN,
           ...state.drafts[parentId],
           itemId: id
         }
@@ -55,7 +58,7 @@ export default (
         ...state.drafts,
         [parentId]: {
           content: "",
-          noteType: "markdown",
+          noteType: NOTE_TYPE_MARKDOWN,
           ...state.drafts[parentId],
           title
         }
@@ -71,7 +74,7 @@ export default (
         ...state.drafts,
         [parentId]: {
           title: "",
-          noteType: "markdown",
+          noteType: NOTE_TYPE_MARKDOWN,
           ...state.drafts[parentId],
           content
         }
@@ -91,7 +94,7 @@ export default (
             title: "",
             content: "",
             ...state.drafts[parentId],
-            type
+            noteType: type
           }
         }
       };
