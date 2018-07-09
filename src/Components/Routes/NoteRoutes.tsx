@@ -102,8 +102,10 @@ class NoteRoutes extends Component<IProps> {
   };
 }
 
-const mapStateToProps = (state: IRootState) => ({
-  showSidebar: isShowingAuthSidebar(state)
-});
+const mapStateToProps = (state: IRootState) => {
+  return {
+    showSidebar: isShowingAuthSidebar(state)
+  };
+};
 
 export default connect(mapStateToProps)(NoteRoutes);

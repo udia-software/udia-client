@@ -1,13 +1,23 @@
-import React, { ChangeEventHandler, Fragment, MouseEventHandler } from "react";
+import React, { ChangeEventHandler, MouseEventHandler } from "react";
 import ReactMarkdown from "react-markdown";
 import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
 import styled from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
+import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 
 const NoteViewContainer = styled.div`
   display: grid;
-  grid-template-rows: 3em auto 1fr;
+  grid-template-areas: "note-draft-view";
+  margin: 1em;
+  max-width: 100%;
+  height: 100%;
+`;
+
+const NoteViewContent = styled.div`
+  grid-area: note-draft-view;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
   grid-template-areas:
     "state-holder"
     "note-title"
@@ -24,8 +34,23 @@ const StaticNoteTitle = styled.h1`
 const NoteStateHolder = styled.div`
   grid-area: state-holder;
   display: grid;
-  grid-auto-columns: 1fr 1fr;
+  grid-template-areas:
+    "note-actions"
+    "note-response";
+`;
+
+const NoteStateActions = styled.div`
+  display: grid;
+  grid-area: note-actions;
   grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+`;
+
+const NoteStateResponse = styled.div`
+  display: grid;
+  grid-area: note-response;
+  grid-auto-flow: row;
+  grid-auto-rows: auto;
 `;
 
 const DraftNoteTitle = styled.input`
@@ -57,8 +82,10 @@ const NoValue = styled.span`
 interface IProps {
   loading: boolean;
   loadingText?: string;
+  errors: string[];
   preview: boolean;
   draftNote: IDraftNote;
+  handleDiscardDraftNote: MouseEventHandler<HTMLButtonElement>;
   handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
   handleChangeNoteTitle: ChangeEventHandler<HTMLInputElement>;
   handleChangeNoteContent: ChangeEventHandler<HTMLTextAreaElement>;
@@ -68,8 +95,10 @@ interface IProps {
 const DraftNoteView = ({
   loading,
   loadingText,
+  errors,
   preview,
   draftNote,
+  handleDiscardDraftNote,
   handleTogglePreview,
   handleChangeNoteTitle,
   handleChangeNoteContent,
@@ -78,49 +107,58 @@ const DraftNoteView = ({
   return (
     <NoteViewContainer>
       <GridTemplateLoadingOverlay
-        gridAreaName="with-sidebar-content"
+        gridAreaName="note-draft-view"
         loading={loading}
         loadingText={loadingText}
       />
-      <NoteStateHolder>
-        {preview ? (
-          <Fragment>
-            <Button onClick={handleTogglePreview}>Edit</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <StaticNoteTitle>Draft Note</StaticNoteTitle>
-            <Button onClick={handleTogglePreview}>Preview</Button>
-          </Fragment>
-        )}
-      </NoteStateHolder>
-      {preview ? (
-        <StaticNoteTitle>
-          {draftNote.title || (
-            <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+      <NoteViewContent>
+        <NoteStateHolder>
+          {preview ? (
+            <NoteStateActions>
+              <StaticNoteTitle>View Note</StaticNoteTitle>
+              <Button onClick={handleTogglePreview}>Edit</Button>
+              <Button onClick={handleSubmit}>Submit</Button>
+            </NoteStateActions>
+          ) : (
+            <NoteStateActions>
+              <StaticNoteTitle>Draft Note</StaticNoteTitle>
+              {(draftNote.content || draftNote.title) && (
+                <Button onClick={handleDiscardDraftNote}>Discard Note</Button>
+              )}
+              <Button onClick={handleTogglePreview}>Preview</Button>
+            </NoteStateActions>
           )}
-        </StaticNoteTitle>
-      ) : (
-        <DraftNoteTitle
-          placeholder="Note Title"
-          onChange={handleChangeNoteTitle}
-          value={draftNote.title}
-        />
-      )}
-      {preview ? (
-        draftNote.content ? (
-          <ReactMarkdown source={draftNote.content} />
+          <NoteStateResponse>
+            <FormFieldErrors errors={errors} />
+          </NoteStateResponse>
+        </NoteStateHolder>
+        {preview ? (
+          <StaticNoteTitle>
+            {draftNote.title || (
+              <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+            )}
+          </StaticNoteTitle>
         ) : (
-          <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-        )
-      ) : (
-        <DraftNoteContent
-          placeholder="Note Content"
-          onChange={handleChangeNoteContent}
-          value={draftNote.content}
-        />
-      )}
+          <DraftNoteTitle
+            placeholder="Note Title"
+            onChange={handleChangeNoteTitle}
+            value={draftNote.title}
+          />
+        )}
+        {preview ? (
+          draftNote.content ? (
+            <ReactMarkdown source={draftNote.content} />
+          ) : (
+            <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+          )
+        ) : (
+          <DraftNoteContent
+            placeholder="Note Content"
+            onChange={handleChangeNoteContent}
+            value={draftNote.content}
+          />
+        )}
+      </NoteViewContent>
     </NoteViewContainer>
   );
 };

@@ -8,10 +8,14 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
+  discardDraft,
   setDraftNoteContent,
   setDraftNoteTitle
 } from "../../Modules/Reducers/Notes/Actions";
-import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
+import {
+  IDraftNote,
+  NEW_DRAFT_NOTE
+} from "../../Modules/Reducers/Notes/Reducer";
 import { FullUser, User } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
@@ -30,11 +34,12 @@ interface IState {
   loadingText?: string;
   preview: boolean;
   errors: string[];
+  titleErrors: string[];
+  contentErrors: string[];
   cryptoManager: CryptoManager | null;
 }
 
 const itemContentType = "note";
-const parentId = "n";
 
 class CreateNoteController extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -51,21 +56,30 @@ class CreateNoteController extends Component<IProps, IState> {
       loading: false,
       preview: false,
       errors,
+      titleErrors: [],
+      contentErrors: [],
       cryptoManager
     };
   }
 
   public render() {
     const { draftNote } = this.props;
-    const { loading, loadingText, preview } = this.state;
+    const {
+      loading,
+      loadingText,
+      errors,
+      titleErrors,
+      contentErrors,
+      preview
+    } = this.state;
     return (
       <DraftNoteView
         loading={loading}
         loadingText={loadingText}
+        errors={[...errors, ...titleErrors, ...contentErrors]}
         preview={preview}
-        draftNote={
-          draftNote || { content: "", title: "", noteType: "markdown" }
-        }
+        draftNote={draftNote}
+        handleDiscardDraftNote={this.handleDiscardDraftNote}
         handleTogglePreview={this.handleTogglePreview}
         handleChangeNoteTitle={this.handleChangeNoteTitle}
         handleChangeNoteContent={this.handleChangeNoteContent}
@@ -75,13 +89,25 @@ class CreateNoteController extends Component<IProps, IState> {
   }
 
   protected handleChangeNoteTitle: ChangeEventHandler<HTMLInputElement> = e => {
-    this.props.dispatch(setDraftNoteTitle(parentId, e.currentTarget.value));
+    this.props.dispatch(
+      setDraftNoteTitle(NEW_DRAFT_NOTE, e.currentTarget.value)
+    );
+    this.setState({ titleErrors: [] });
   };
 
   protected handleChangeNoteContent: ChangeEventHandler<
     HTMLTextAreaElement
   > = e => {
-    this.props.dispatch(setDraftNoteContent(parentId, e.currentTarget.value));
+    this.props.dispatch(
+      setDraftNoteContent(NEW_DRAFT_NOTE, e.currentTarget.value)
+    );
+    this.setState({ contentErrors: [] });
+  };
+
+  protected handleDiscardDraftNote: MouseEventHandler<
+    HTMLButtonElement
+  > = e => {
+    this.props.dispatch(discardDraft(NEW_DRAFT_NOTE));
   };
 
   protected handleTogglePreview: MouseEventHandler<HTMLButtonElement> = e => {
@@ -100,14 +126,16 @@ class CreateNoteController extends Component<IProps, IState> {
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
       }
-      if (
-        !draftNote ||
-        !draftNote.content ||
-        !draftNote.title ||
-        !akB64 ||
-        !mkB64
-      ) {
+      if (!draftNote.title) {
+        this.setState({ titleErrors: ["Title cannot be empty!"] });
         return;
+      }
+      if (!draftNote.content) {
+        this.setState({ contentErrors: ["Content cannot be empty!"] });
+        return;
+      }
+      if (!akB64 || !mkB64) {
+        throw new Error("Encryption secrets not set! Please re-authenticate.");
       }
 
       // Decrypt the user's private signing key
@@ -185,6 +213,13 @@ class CreateNoteController extends Component<IProps, IState> {
 
       // tslint:disable-next-line:no-console
       console.log(mutationResponse);
+      this.setState({
+        loading: false,
+        loadingText: undefined,
+        errors: [],
+        titleErrors: [],
+        contentErrors: []
+      });
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to create note!");
       this.setState({ loading: false, loadingText: undefined, errors });
@@ -201,6 +236,8 @@ const CREATE_ITEM_MUTATION = gql`
       encItemKey
       user {
         uuid
+        username
+        pubVerifyKey
       }
       deleted
       createdAt
@@ -233,7 +270,11 @@ const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser!, // WithAuth wrapper ensures user is defined
   akB64: state.secrets.akB64,
   mkB64: state.secrets.mkB64,
-  draftNote: state.notes.drafts[parentId]
+  draftNote: state.notes.drafts[NEW_DRAFT_NOTE] || {
+    content: "",
+    title: "",
+    noteType: "markdown"
+  }
 });
 
 export default connect(mapStateToProps)(withApollo(CreateNoteController));
