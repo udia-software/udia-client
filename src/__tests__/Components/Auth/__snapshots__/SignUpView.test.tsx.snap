@@ -147,7 +147,7 @@ exports[`renders SignUpView correctly 1`] = `
           />
         </div>
         <button
-          className="sc-VigVT cnwtaG"
+          className="sc-VigVT geCmAL"
         >
           Sign Up
         </button>
