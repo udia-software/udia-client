@@ -6,6 +6,7 @@ import { ApolloProvider } from "react-apollo";
 import { connect, DispatchProp } from "react-redux";
 import { Dispatch } from "redux";
 import { AUTH_TOKEN } from "../../Constants";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import initApolloClient from "../../Modules/InitApolloClient";
 import {
   clearAuthData,
@@ -14,7 +15,6 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser } from "../../Types";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 

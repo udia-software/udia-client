@@ -1,19 +1,46 @@
 import localforage from "localforage";
-import { createStore, StoreEnhancer } from "redux";
-import {
-  persistCombineReducers,
-  PersistConfig,
-  persistStore
-} from "redux-persist";
-import rootReducer from "./Reducers/RootReducer";
+import { combineReducers, createStore, StoreEnhancer } from "redux";
+import { PersistConfig, persistReducer, persistStore } from "redux-persist";
+// tslint:disable-next-line:no-submodule-imports
+// import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
+import AuthReducer, {
+  AuthPersistBlacklist,
+  IAuthState
+} from "./Reducers/Auth/Reducer";
+import NotesReducer, { INotesState } from "./Reducers/Notes/Reducer";
+import SecretsReducer, { ISecretsState } from "./Reducers/Secrets/Reducer";
+import ThemeReducer, { IThemeState } from "./Reducers/Theme/Reducer";
+
+export interface IRootState {
+  auth: IAuthState;
+  notes: INotesState;
+  secrets: ISecretsState;
+  theme: IThemeState;
+}
 
 const storage = localforage.createInstance({ name: "UdiaPersistance" });
 
-const rootPersistConfig: PersistConfig = {
-  key: "root",
+const authPersistConfig: PersistConfig = {
+  key: "auth",
   storage,
-  blacklist: ["auth"],
-  whitelist: ["notes", "secrets", "theme"]
+  blacklist: AuthPersistBlacklist
+};
+
+const notesPersistConfig: PersistConfig = {
+  key: "notes",
+  // stateReconciler: autoMergeLevel2,
+  debug: true,
+  storage
+};
+
+const secretsPersistConfig: PersistConfig = {
+  key: "secrets",
+  storage
+};
+
+const themePersistConfig: PersistConfig = {
+  key: "theme",
+  storage
 };
 
 interface IDevToolsWindow extends Window {
@@ -22,12 +49,15 @@ interface IDevToolsWindow extends Window {
 declare var window: IDevToolsWindow;
 
 export default function configureReduxStore() {
-  const persistedReducer = persistCombineReducers(
-    rootPersistConfig,
-    rootReducer
-  );
+  const rootReducer = combineReducers({
+    auth: persistReducer(authPersistConfig, AuthReducer),
+    notes: persistReducer(notesPersistConfig, NotesReducer),
+    secrets: persistReducer(secretsPersistConfig, SecretsReducer),
+    theme: persistReducer(themePersistConfig, ThemeReducer)
+  });
+
   const store = createStore(
-    persistedReducer,
+    rootReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   );
   const persistor = persistStore(store);

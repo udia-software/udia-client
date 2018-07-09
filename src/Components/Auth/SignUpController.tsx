@@ -11,6 +11,7 @@ import React, {
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
@@ -18,7 +19,6 @@ import {
   setFormPassword,
   setFormUsername
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { setBase64AK, setBase64MK } from "../../Modules/Reducers/Secrets/Actions";
 import { FullUser, isMountable } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";

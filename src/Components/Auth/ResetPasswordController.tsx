@@ -7,13 +7,13 @@ import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
   setFormPassword,
   setFormPasswordResetToken
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import {
   setBase64AK,
   setBase64MK

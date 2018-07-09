@@ -1,4 +1,4 @@
-import { IRootState } from "../RootReducer";
+import { IRootState } from "../../ConfigureReduxStore";
 
 /**
  * Return boolean indicating if user is authenticated

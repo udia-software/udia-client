@@ -10,12 +10,12 @@ import React, {
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthUser,
   setFormPassword
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import UpdatePasswordView from "./UpdatePasswordView";

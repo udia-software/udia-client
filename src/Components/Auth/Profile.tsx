@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { FullUser } from "../../Types";
 import {
   FormContainer,

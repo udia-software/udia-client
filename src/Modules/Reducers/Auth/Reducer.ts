@@ -36,6 +36,16 @@ const DefaultAuthState: IAuthState = {
   passwordResetToken: ""
 };
 
+export const AuthPersistBlacklist = [
+  "username",
+  "email",
+  "password",
+  "confirmSignOut",
+  "authUser",
+  "emailVerificationToken",
+  "passwordResetToken"
+];
+
 /**
  * Auth reducer state is blacklisted from being persisted in IndexDB.
  * However, JWT is stored in localstorage.

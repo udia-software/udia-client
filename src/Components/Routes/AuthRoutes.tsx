@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { Dispatch } from "redux";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
 import Profile from "../Auth/Profile";
