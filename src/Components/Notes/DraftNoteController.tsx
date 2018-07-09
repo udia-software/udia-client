@@ -10,11 +10,15 @@ import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   discardDraft,
   setDraftNoteContent,
-  setDraftNoteTitle
+  setDraftNoteTitle,
+  setDraftNoteType
 } from "../../Modules/Reducers/Notes/Actions";
 import {
   IDraftNote,
-  NEW_DRAFT_NOTE
+  NEW_DRAFT_NOTE,
+  NOTE_TYPE_MARKDOWN,
+  NOTE_TYPE_TEXT,
+  NoteType
 } from "../../Modules/Reducers/Notes/Reducer";
 import { FullUser, User } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
@@ -81,6 +85,7 @@ class CreateNoteController extends Component<IProps, IState> {
         draftNote={draftNote}
         handleDiscardDraftNote={this.handleDiscardDraftNote}
         handleTogglePreview={this.handleTogglePreview}
+        handleToggleNoteType={this.handleToggleNoteType}
         handleChangeNoteTitle={this.handleChangeNoteTitle}
         handleChangeNoteContent={this.handleChangeNoteContent}
         handleSubmit={this.handleSubmitNewNote}
@@ -88,7 +93,7 @@ class CreateNoteController extends Component<IProps, IState> {
     );
   }
 
-  protected handleChangeNoteTitle: ChangeEventHandler<HTMLInputElement> = e => {
+  protected handleChangeNoteTitle: ChangeEventHandler<HTMLTextAreaElement> = e => {
     this.props.dispatch(
       setDraftNoteTitle(NEW_DRAFT_NOTE, e.currentTarget.value)
     );
@@ -111,9 +116,25 @@ class CreateNoteController extends Component<IProps, IState> {
   };
 
   protected handleTogglePreview: MouseEventHandler<HTMLButtonElement> = e => {
-    this.setState({
-      preview: !this.state.preview
-    });
+    const preview = !this.state.preview;
+    this.setState({ preview });
+  };
+
+  protected handleToggleNoteType: ChangeEventHandler<HTMLInputElement> = e => {
+    let noteType: NoteType = NOTE_TYPE_TEXT;
+    const rawNoteType = e.currentTarget.value;
+    switch (rawNoteType) {
+      case "text":
+        noteType = NOTE_TYPE_TEXT;
+        break;
+      case "markdown":
+        noteType = NOTE_TYPE_MARKDOWN;
+        break;
+      default:
+        noteType = NOTE_TYPE_MARKDOWN;
+        break;
+    }
+    this.props.dispatch(setDraftNoteType(NEW_DRAFT_NOTE, noteType));
   };
 
   protected handleSubmitNewNote: MouseEventHandler<

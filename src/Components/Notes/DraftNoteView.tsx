@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, MouseEventHandler } from "react";
+import React, { ChangeEventHandler, Fragment, MouseEventHandler } from "react";
 import ReactMarkdown from "react-markdown";
 import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
 import styled from "../AppStyles";
@@ -8,27 +8,34 @@ import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverla
 
 const NoteViewContainer = styled.div`
   display: grid;
-  grid-template-areas: "note-draft-view";
   margin: 1em;
   max-width: 100%;
   height: 100%;
+  grid-template-areas: "note-draft-view";
 `;
 
 const NoteViewContent = styled.div`
   grid-area: note-draft-view;
   display: grid;
   grid-template-rows: auto auto 1fr;
-  grid-template-areas:
-    "state-holder"
-    "note-title"
-    "note-content";
+  grid-flow-auto: row;
   margin: 1em;
   max-width: 100%;
-`;
-
-const StaticNoteTitle = styled.h1`
-  padding: 0;
-  margin: 0.2em 0;
+  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
+      lgScrnBrkPx - 1}px) {
+    grid-template-areas:
+      "state-holder"
+      "note-title"
+      "note-content";
+  }
+  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
+    grid-template-areas:
+      "state-holder state-holder"
+      "note-editor-title note-preview-title"
+      "note-editor-content note-preview-content";
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 1em;
+  }
 `;
 
 const NoteStateHolder = styled.div`
@@ -36,6 +43,7 @@ const NoteStateHolder = styled.div`
   display: grid;
   grid-template-areas:
     "note-actions"
+    "toggle-note-type"
     "note-response";
 `;
 
@@ -46,6 +54,17 @@ const NoteStateActions = styled.div`
   grid-auto-columns: 1fr;
 `;
 
+const ToggleNoteTypeContainer = styled.div`
+  grid-area: toggle-note-type;
+  display: grid;
+  grid-auto-flow: column;
+`;
+
+const ToggleNoteTypeLabel = styled.label`
+  border: 1px solid ${props => props.theme.primaryColor};
+  border-radius: 3px;
+`;
+
 const NoteStateResponse = styled.div`
   display: grid;
   grid-area: note-response;
@@ -53,8 +72,15 @@ const NoteStateResponse = styled.div`
   grid-auto-rows: auto;
 `;
 
-const DraftNoteTitle = styled.input`
-  grid-area: note-title;
+const EditNoteTitle = styled.textarea.attrs<{ preview?: boolean }>({})`
+  @media only screen and (max-width: ${props =>
+      props.theme.lgScrnBrkPx - 1}px) {
+    grid-area: note-title;
+    ${({ preview }) => preview && "display: none;"};
+  }
+  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
+    grid-area: note-editor-title;
+  }
   background: transparent;
   border: none;
   color: ${props => props.theme.primaryColor};
@@ -65,8 +91,25 @@ const DraftNoteTitle = styled.input`
   width: 100%;
 `;
 
-const DraftNoteContent = styled.textarea`
-  grid-area: note-content;
+const ViewNoteTitle = styled.h1.attrs<{ preview?: boolean }>({})`
+  ${({ preview, theme: { lgScrnBrkPx } }) =>
+    preview !== undefined
+      ? `@media only screen and (max-width: ${lgScrnBrkPx - 1}px) {
+        display: ${preview ? "inline-block" : "none"};
+      }`
+      : ""} padding: 0;
+  margin: 0.2em 0;
+`;
+
+const DraftNoteContent = styled.textarea.attrs<{ preview?: boolean }>({})`
+  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
+      lgScrnBrkPx - 1}px) {
+    ${({ preview }) => preview && "display: none;"};
+    grid-area: note-content;
+  }
+  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
+    grid-area: note-editor-content;
+  }
   background: transparent;
   border: none;
   color: ${props => props.theme.primaryColor};
@@ -74,9 +117,50 @@ const DraftNoteContent = styled.textarea`
   width: 100%;
 `;
 
+const HideOnLargeScreenButton = Button.extend`
+  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
+      lgScrnBrkPx - 1}px) {
+    display: inline-block;
+  }
+  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
+    display: none;
+  }
+`;
+
+const ShowOnLargeScreenButton = Button.extend`
+  @media only screen and (max-width: ${({ theme: { lgScrnBrkPx } }) =>
+      lgScrnBrkPx - 1}px) {
+    display: none;
+  }
+  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
+    display: inline-block;
+  }
+`;
+
+const NoteMarkdownContent = styled(ReactMarkdown).attrs<{ preview?: boolean }>(
+  {}
+)`
+  @media only screen and (max-width: ${props =>
+      props.theme.lgScrnBrkPx - 1}px) {
+    ${({ preview }) => !preview && "display: none;"};
+  }
+`;
+
+const NoteTextContent = styled.div.attrs<{ preview?: boolean }>({})`
+  @media only screen and (max-width: ${props =>
+    props.theme.lgScrnBrkPx - 1}px) {
+    ${({ preview }) => !preview && "display: none;"};
+  }
+  white-space pre-line;
+`;
+
 const NoValue = styled.span`
   font-style: italic;
   color: ${props => props.theme.inputErrorColor};
+`;
+
+const HorizontalLine = styled.hr`
+  width: 100%;
 `;
 
 interface IProps {
@@ -87,7 +171,8 @@ interface IProps {
   draftNote: IDraftNote;
   handleDiscardDraftNote: MouseEventHandler<HTMLButtonElement>;
   handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
-  handleChangeNoteTitle: ChangeEventHandler<HTMLInputElement>;
+  handleToggleNoteType: ChangeEventHandler<HTMLInputElement>;
+  handleChangeNoteTitle: ChangeEventHandler<HTMLTextAreaElement>;
   handleChangeNoteContent: ChangeEventHandler<HTMLTextAreaElement>;
   handleSubmit: MouseEventHandler<HTMLButtonElement>;
 }
@@ -100,6 +185,7 @@ const DraftNoteView = ({
   draftNote,
   handleDiscardDraftNote,
   handleTogglePreview,
+  handleToggleNoteType,
   handleChangeNoteTitle,
   handleChangeNoteContent,
   handleSubmit
@@ -113,51 +199,97 @@ const DraftNoteView = ({
       />
       <NoteViewContent>
         <NoteStateHolder>
-          {preview ? (
-            <NoteStateActions>
-              <StaticNoteTitle>View Note</StaticNoteTitle>
-              <Button onClick={handleTogglePreview}>Edit</Button>
-              <Button onClick={handleSubmit}>Submit</Button>
-            </NoteStateActions>
-          ) : (
-            <NoteStateActions>
-              <StaticNoteTitle>Draft Note</StaticNoteTitle>
-              {(draftNote.content || draftNote.title) && (
-                <Button onClick={handleDiscardDraftNote}>Discard Note</Button>
-              )}
-              <Button onClick={handleTogglePreview}>Preview</Button>
-            </NoteStateActions>
-          )}
+          <NoteStateActions>
+            <ViewNoteTitle>
+              {preview ? "View Note" : "Draft Note"}
+            </ViewNoteTitle>
+            {!preview && (
+              <Fragment>
+                {(draftNote.content || draftNote.title) && (
+                  <HideOnLargeScreenButton onClick={handleDiscardDraftNote}>
+                    Discard Note
+                  </HideOnLargeScreenButton>
+                )}
+                <HideOnLargeScreenButton onClick={handleTogglePreview}>
+                  Preview
+                </HideOnLargeScreenButton>
+              </Fragment>
+            )}
+            {preview && (
+              <Fragment>
+                <HideOnLargeScreenButton onClick={handleTogglePreview}>
+                  Edit
+                </HideOnLargeScreenButton>
+                <HideOnLargeScreenButton onClick={handleSubmit}>
+                  Submit
+                </HideOnLargeScreenButton>
+              </Fragment>
+            )}
+            {(draftNote.content || draftNote.title) && (
+              <ShowOnLargeScreenButton onClick={handleDiscardDraftNote}>
+                Discard Note
+              </ShowOnLargeScreenButton>
+            )}
+            <ShowOnLargeScreenButton onClick={handleSubmit}>
+              Submit
+            </ShowOnLargeScreenButton>
+          </NoteStateActions>
+          <ToggleNoteTypeContainer>
+            <ToggleNoteTypeLabel>
+              <input
+                type="radio"
+                name="noteType"
+                value="text"
+                checked={draftNote.noteType === "text"}
+                onChange={handleToggleNoteType}
+              />
+              Text
+            </ToggleNoteTypeLabel>
+            <ToggleNoteTypeLabel>
+              <input
+                type="radio"
+                name="noteType"
+                value="markdown"
+                checked={draftNote.noteType === "markdown"}
+                onChange={handleToggleNoteType}
+              />
+              Markdown
+            </ToggleNoteTypeLabel>
+          </ToggleNoteTypeContainer>
           <NoteStateResponse>
             <FormFieldErrors errors={errors} />
           </NoteStateResponse>
+          <HorizontalLine />
         </NoteStateHolder>
-        {preview ? (
-          <StaticNoteTitle>
-            {draftNote.title || (
-              <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-            )}
-          </StaticNoteTitle>
-        ) : (
-          <DraftNoteTitle
-            placeholder="Note Title"
-            onChange={handleChangeNoteTitle}
-            value={draftNote.title}
-          />
-        )}
-        {preview ? (
-          draftNote.content ? (
-            <ReactMarkdown source={draftNote.content} />
-          ) : (
+        <EditNoteTitle
+          preview={preview}
+          placeholder="Note Title"
+          onChange={handleChangeNoteTitle}
+          value={draftNote.title}
+        />
+        <ViewNoteTitle preview={preview}>
+          {draftNote.title || (
             <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+          )}
+        </ViewNoteTitle>
+
+        {draftNote.content ? (
+          draftNote.noteType === "markdown" ? (
+            <NoteMarkdownContent source={draftNote.content} />
+          ) : (
+            <NoteTextContent preview={preview}>
+              {draftNote.content}
+            </NoteTextContent>
           )
         ) : (
-          <DraftNoteContent
-            placeholder="Note Content"
-            onChange={handleChangeNoteContent}
-            value={draftNote.content}
-          />
+          <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
         )}
+        <DraftNoteContent
+          preview={preview}
+          placeholder="Note Content"
+          onChange={handleChangeNoteContent}
+          value={draftNote.content}
+        />
       </NoteViewContent>
     </NoteViewContainer>
   );

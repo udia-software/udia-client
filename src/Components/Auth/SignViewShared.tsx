@@ -176,7 +176,7 @@ export const Button: StyledComponentClass<
   border-width: 1.8px;
   display: inline-block;
   min-height: 1em;
-  padding: 0.3em 1.5em;
+  padding: 0.3em 0em;
   margin: 0.5em 0;
   font-weight: 100;
   transition-property: all;
