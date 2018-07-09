@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
-import { IRootState } from "../Modules/Reducers/RootReducer";
+import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   IToggleDarkThemeAction,
   toggleDarkTheme

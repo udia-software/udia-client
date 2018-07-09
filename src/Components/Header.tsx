@@ -2,12 +2,12 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { withTheme } from "styled-components";
+import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
   maybeAuthenticated as selectMaybeAuth,
   selectSelfUsername
 } from "../Modules/Reducers/Auth/Selectors";
-import { IRootState } from "../Modules/Reducers/RootReducer";
 import styled from "./AppStyles";
 
 const HeaderContainer = styled.div`

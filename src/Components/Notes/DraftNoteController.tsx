@@ -5,13 +5,13 @@ import React, { ChangeEventHandler, Component, MouseEventHandler } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setDraftNoteContent,
   setDraftNoteTitle
 } from "../../Modules/Reducers/Notes/Actions";
 import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { FullUser, User } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";

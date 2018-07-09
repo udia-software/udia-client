@@ -1,4 +1,4 @@
-import { IRootState } from "../RootReducer";
+import { IRootState } from "../../ConfigureReduxStore";
 
 export const isUsingDarkTheme = (state: IRootState) => {
   return state.theme.usingDarkTheme;

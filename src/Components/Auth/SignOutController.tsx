@@ -2,12 +2,12 @@ import React, { Component, FormEventHandler } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import {
   clearAuthData,
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import {
   Button,
   FormContainer,

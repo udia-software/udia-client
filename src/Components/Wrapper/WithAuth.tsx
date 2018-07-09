@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
   maybeAuthenticated as selectMaybeAuth
 } from "../../Modules/Reducers/Auth/Selectors";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 
 interface IProps {
