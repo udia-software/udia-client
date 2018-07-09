@@ -21,55 +21,36 @@ const NoteViewContainer = styled.div`
 
 const NoteViewContent = styled.div`
   grid-area: note-draft-view;
-  display: grid;
-  grid-auto-rows: auto auto 1fr;
-  grid-auto-columns: auto;
-  grid-auto-flow: row;
-  margin: 1em;
+  display: flex;
+  margin: 0.5em;
   max-width: 100%;
-  @media only screen and (min-width: ${props => props.theme.lgScrnBrkPx}px) {
-    grid-template-areas:
-      "state-holder state-holder"
-      "note-editor-title note-preview-title"
-      "note-editor-content note-preview-content";
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 1em;
-  }
-  @media only screen and (max-width: ${props =>
-      props.theme.lgScrnBrkPx - 1}px) {
-    grid-template-areas:
-      "state-holder"
-      "note-title"
-      "note-content";
-    grid-template-columns: auto;
-  }
+  align-items: stretch;
+  flex-direction: column;
 `;
 
 const NoteStateHolder = styled.div`
-  grid-area: state-holder;
-  display: grid;
-  grid-template-areas:
-    "note-actions"
-    "toggle-note-type"
-    "note-response";
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 12em;
 `;
 
 const NoteStateActions = styled.div`
   display: grid;
-  grid-area: note-actions;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
 `;
 
 const ToggleNoteTypeContainer = styled.div`
-  grid-area: toggle-note-type;
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
 `;
 
 const ToggleNoteTypeLabel = styled.label`
   border: 1px solid ${props => props.theme.primaryColor};
   border-radius: 3px;
+  width: 100%;
 `;
 
 const NoteStateResponse = styled.div`
@@ -77,6 +58,18 @@ const NoteStateResponse = styled.div`
   grid-area: note-response;
   grid-auto-flow: row;
   grid-auto-rows: auto;
+`;
+
+const NoteDynamicHolder = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const NoteDynamicSubHolder = styled.div`
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const EditNoteTitle = styled.textarea`
@@ -88,6 +81,7 @@ const EditNoteTitle = styled.textarea`
   font-size: 2em;
   max-height: 100%;
   width: 100%;
+  height: auto;
 `;
 
 const ViewNoteTitle = styled.h1`
@@ -101,6 +95,7 @@ const EditNoteContent = styled.textarea`
   color: ${props => props.theme.primaryColor};
   padding: 0;
   width: 100%;
+  height: 100%;
 `;
 
 const NoteMarkdownContent = styled(ReactMarkdown)``;
@@ -235,39 +230,42 @@ class DraftNoteView extends Component<IProps, IState> {
             </NoteStateResponse>
             <HorizontalLine />
           </NoteStateHolder>
-          {(isLargeScreen || !preview) && (
-            <EditNoteTitle
-              placeholder="Note Title"
-              onChange={handleChangeNoteTitle}
-              value={draftNote.title}
-            />
-          )}
-          {(isLargeScreen || preview) && (
-            <ViewNoteTitle>
-              {!!draftNote.title ? (
-                draftNote.title
-              ) : (
-                <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-              )}
-            </ViewNoteTitle>
-          )}
-          {(isLargeScreen || !preview) && (
-            <EditNoteContent
-              placeholder="Note Content"
-              onChange={handleChangeNoteContent}
-              value={draftNote.content}
-            />
-          )}
-          {(isLargeScreen || preview) &&
-            (draftNote.content ? (
-              draftNote.noteType === "markdown" ? (
-                <NoteMarkdownContent source={draftNote.content} />
-              ) : (
-                <NoteTextContent>{draftNote.content}</NoteTextContent>
-              )
-            ) : (
-              <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-            ))}
+          <NoteDynamicHolder>
+            {(isLargeScreen || !preview) && (
+              <NoteDynamicSubHolder>
+                <EditNoteTitle
+                  placeholder="Note Title"
+                  onChange={handleChangeNoteTitle}
+                  value={draftNote.title}
+                />
+                <EditNoteContent
+                  placeholder="Note Content"
+                  onChange={handleChangeNoteContent}
+                  value={draftNote.content}
+                />
+              </NoteDynamicSubHolder>
+            )}
+            {(isLargeScreen || preview) && (
+              <NoteDynamicSubHolder>
+                <ViewNoteTitle>
+                  {!!draftNote.title ? (
+                    draftNote.title
+                  ) : (
+                    <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                  )}
+                </ViewNoteTitle>
+                {draftNote.content ? (
+                  draftNote.noteType === "markdown" ? (
+                    <NoteMarkdownContent source={draftNote.content} />
+                  ) : (
+                    <NoteTextContent>{draftNote.content}</NoteTextContent>
+                  )
+                ) : (
+                  <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                )}
+              </NoteDynamicSubHolder>
+            )}
+          </NoteDynamicHolder>
         </NoteViewContent>
       </NoteViewContainer>
     );
