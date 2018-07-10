@@ -93,7 +93,7 @@ const NoteHolderRightSide = styled.div`
   display: inline-block;
   vertical-align: top;
   width: calc(50% - 0.4em);
-  border-left: 0.4em solid ${props => props.theme.backgroundColor};
+  margin-left: 0.4em;
 `;
 
 const NoteHolderFullWidth = styled.div`
@@ -151,6 +151,7 @@ const EditNoteContent = styled.textarea`
 const NoteMarkdownContent = styled(ReactMarkdown)``;
 
 const NoteTextContent = styled.div`
+  margin-top: 1em;
   white-space pre-line;
 `;
 

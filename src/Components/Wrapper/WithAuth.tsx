@@ -42,7 +42,7 @@ export default function WithAuth(
       const oldMaybeAuthenticated = this.props.maybeAuthenticated;
       const nextMaybeAuthenticated = nextProps.maybeAuthenticated;
       return (
-        oldIsAuthenticated !== nextIsAuthenticated ||
+        oldIsAuthenticated !== nextIsAuthenticated &&
         oldMaybeAuthenticated !== nextMaybeAuthenticated
       );
     }

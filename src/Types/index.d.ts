@@ -6,34 +6,6 @@ declare module "*.svg";
 declare module "*.png";
 declare module "*.jpg";
 
-declare interface UserEmail {
-  email: string;
-  primary: boolean;
-  verified: boolean;
-  createdAt: number;
-  updatedAt: number;
-  verificationExpiry: number;
-}
-
-// GraphQL FullUser
-declare interface FullUser {
-  uuid: string;
-  username: string;
-  emails: UserEmail[];
-  encSecretKey: string;
-  pubVerifyKey: string;
-  encPrivateSignKey: string;
-  pubEncryptKey: string;
-  encPrivateDecryptKey: string;
-  pwFunc: string;
-  pwDigest: string;
-  pwCost: number;
-  pwKeySize: number;
-  pwNonce: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
 // Not the full user, but the 'publicly visible' user
 declare interface User {
   uuid: string;

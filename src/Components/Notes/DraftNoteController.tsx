@@ -8,6 +8,7 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
+  addRawNote,
   discardDraft,
   setDraftNoteContent,
   setDraftNoteTitle,
@@ -20,7 +21,6 @@ import {
   NOTE_TYPE_TEXT,
   NoteType
 } from "../../Modules/Reducers/Notes/Reducer";
-import { FullUser, User } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
 
@@ -64,7 +64,7 @@ class CreateNoteController extends Component<IProps, IState> {
     this.state = {
       loading: false,
       preview: false,
-      // this is an anti-pattern, but required for side by side performance
+      // necessary anti-pattern for side by side render performance (input debouncing)
       debounceContent: props.draftNote.content,
       debounceTitle: props.draftNote.title,
       errors,
@@ -148,6 +148,14 @@ class CreateNoteController extends Component<IProps, IState> {
     HTMLButtonElement
   > = e => {
     this.props.dispatch(discardDraft(NEW_DRAFT_NOTE));
+    window.clearTimeout(this.state.debounceContentTimeout);
+    window.clearTimeout(this.state.debounceTitleTimeout);
+    this.setState({
+      debounceContent: "",
+      debounceTitle: "",
+      debounceContentTimeout: undefined,
+      debounceTitleTimeout: undefined
+    });
   };
 
   protected handleTogglePreview: MouseEventHandler<HTMLButtonElement> = e => {
@@ -266,6 +274,9 @@ class CreateNoteController extends Component<IProps, IState> {
           }
         }
       );
+      const {
+        createItem
+      } = mutationResponse.data as ICreateItemMutationResponse;
 
       // tslint:disable-next-line:no-console
       console.log(mutationResponse);
@@ -276,6 +287,7 @@ class CreateNoteController extends Component<IProps, IState> {
         titleErrors: [],
         contentErrors: []
       });
+      this.props.dispatch(addRawNote(createItem));
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to create note!");
       this.setState({ loading: false, loadingText: undefined, errors });
@@ -296,6 +308,15 @@ const CREATE_ITEM_MUTATION = gql`
         pubVerifyKey
       }
       deleted
+      parent {
+        uuid
+      }
+      children {
+        count
+        items {
+          uuid
+        }
+      }
       createdAt
       updatedAt
     }
@@ -310,16 +331,7 @@ const CREATE_ITEM_MUTATION = gql`
 // }
 
 interface ICreateItemMutationResponse {
-  createItem: {
-    uuid: string;
-    content: string;
-    contentType: "text" | "markdown";
-    encItemKey: string;
-    user: User;
-    deleted: boolean;
-    createdAt: number;
-    updatedAt: number;
-  };
+  createItem: NoteItem;
 }
 
 const mapStateToProps = (state: IRootState) => ({

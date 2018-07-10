@@ -1,5 +1,4 @@
 import { AUTH_TOKEN } from "../../../Constants";
-import { FullUser } from "../../../Types";
 import {
   CLEAR_AUTH_DATA,
   CONFIRM_SIGN_OUT,

@@ -5,7 +5,6 @@ import React, {
   Fragment,
   MouseEventHandler
 } from "react";
-import { FullUser } from "../../Types";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";

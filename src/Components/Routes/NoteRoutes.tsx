@@ -7,6 +7,7 @@ import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
 import CreateNoteController from "../Notes/DraftNoteController";
+import ListNotesController from "../Notes/ListNotesController";
 import NotFound from "../NotFound";
 import WithAuth from "../Wrapper/WithAuth";
 import {
@@ -65,7 +66,7 @@ class NoteRoutes extends Component<IProps> {
             <Route
               exact={true}
               path="/note/list"
-              component={WithAuth(Todo, true, "/", "/note/list")}
+              component={WithAuth(ListNotesController, true, "/", "/note/list")}
             />
             <Route
               exact={true}

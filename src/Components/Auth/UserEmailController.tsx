@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { setAuthUser, setFormEmail } from "../../Modules/Reducers/Auth/Actions";
-import { FullUser } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 
 import UserEmailView from "./UserEmailView";

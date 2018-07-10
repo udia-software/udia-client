@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
-import { FullUser } from "../../Types";
 import {
   FormContainer,
   FormContent,

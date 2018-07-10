@@ -16,7 +16,6 @@ import {
   setAuthUser,
   setFormPassword
 } from "../../Modules/Reducers/Auth/Actions";
-import { FullUser } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import UpdatePasswordView from "./UpdatePasswordView";
 
