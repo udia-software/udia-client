@@ -13,7 +13,6 @@ import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverla
 
 const NoteViewContainer = styled.div`
   display: grid;
-  margin: 1em;
   max-width: 100%;
   height: 100%;
   grid-template-areas: "note-draft-view";
@@ -24,6 +23,7 @@ const NoteViewContent = styled.div`
   display: flex;
   margin: 0.5em;
   max-width: 100%;
+  height: 100%;
   align-items: stretch;
   flex-direction: column;
 `;
@@ -32,43 +32,80 @@ const NoteStateHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  height: 12em;
 `;
 
 const NoteStateActions = styled.div`
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+  align-items: stretch;
+  margin-bottom: 1em;
+`;
+
+const NoteStateTitle = styled.h1`
+  flex: 1 1 0;
+  padding: 0;
+  margin: 0;
+`;
+
+const NoteStateButton = styled(Button)`
+  flex: 1 1 0;
+  min-height: 2em;
 `;
 
 const ToggleNoteTypeContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: stretch;
+  @media only screen and (max-width: ${props =>
+      props.theme.smScrnBrkPx - 1}px) {
+    margin-top: 1em;
+  }
 `;
 
 const ToggleNoteTypeLabel = styled.label`
   border: 1px solid ${props => props.theme.primaryColor};
   border-radius: 3px;
   width: 100%;
+  font-size: 1.1em;
+  padding-bottom: 0.5em;
+  text-align: center;
 `;
 
 const NoteStateResponse = styled.div`
-  display: grid;
-  grid-area: note-response;
-  grid-auto-flow: row;
-  grid-auto-rows: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
-const NoteDynamicHolder = styled.div`
-  display: flex;
+const NoteHolderContainer = styled.div`
+  padding: 0;
+  margin: 0;
+  width: 100%;
   height: 100%;
 `;
 
-const NoteDynamicSubHolder = styled.div`
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
+const NoteHolderSideBySide = styled.div`
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+`;
+
+const NoteHolderFullWidth = styled.div`
+  width: 100%;
+`;
+
+const NoteHolderTitleCell = styled.div`
+  display: block;
+  padding: 0;
+  margin: 0 0.3em;
+  width: 100%;
+`;
+
+const NoteHolderContentCell = styled.div`
+  display: block;
+  padding: 0;
+  margin: 0 0.3em;
+  width: 100%;
   height: 100%;
 `;
 
@@ -77,16 +114,16 @@ const EditNoteTitle = styled.textarea`
   border: none;
   color: ${props => props.theme.primaryColor};
   font-family: monospace;
-  padding: 0 0 0.5em 0;
+  padding: 0;
+  margin: 0;
   font-size: 2em;
-  max-height: 100%;
+  height: 100%;
   width: 100%;
-  height: auto;
 `;
 
 const ViewNoteTitle = styled.h1`
   padding: 0;
-  margin: 0.2em 0;
+  margin: 0;
 `;
 
 const EditNoteContent = styled.textarea`
@@ -112,6 +149,86 @@ const NoValue = styled.span`
 const HorizontalLine = styled.hr`
   width: 100%;
 `;
+
+interface INoteStateHolderProps {
+  preview: boolean;
+  isLargeScreen: boolean;
+  noteType: string;
+  errors: string[];
+  handleDiscardDraftNote: MouseEventHandler<HTMLButtonElement>;
+  handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
+  handleToggleNoteType: ChangeEventHandler<HTMLInputElement>;
+  handleSubmit: MouseEventHandler<HTMLButtonElement>;
+}
+
+const NoteStateHolderComponent = ({
+  preview,
+  isLargeScreen,
+  noteType,
+  errors,
+  handleDiscardDraftNote,
+  handleTogglePreview,
+  handleToggleNoteType,
+  handleSubmit
+}: INoteStateHolderProps) => (
+  <NoteStateHolder>
+    <NoteStateActions>
+      <NoteStateTitle>{preview ? "View Note" : "Draft Note"}</NoteStateTitle>
+      {isLargeScreen && (
+        <Fragment>
+          <NoteStateButton onClick={handleDiscardDraftNote}>
+            Discard Note
+          </NoteStateButton>
+          <NoteStateButton onClick={handleSubmit}>Submit</NoteStateButton>
+        </Fragment>
+      )}
+      {!isLargeScreen &&
+        (preview ? (
+          <Fragment>
+            <NoteStateButton onClick={handleTogglePreview}>
+              Edit
+            </NoteStateButton>
+            <NoteStateButton onClick={handleSubmit}>Submit</NoteStateButton>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <NoteStateButton onClick={handleDiscardDraftNote}>
+              Discard Note
+            </NoteStateButton>
+            <NoteStateButton onClick={handleTogglePreview}>
+              Preview
+            </NoteStateButton>
+          </Fragment>
+        ))}
+    </NoteStateActions>
+    <ToggleNoteTypeContainer>
+      <ToggleNoteTypeLabel>
+        <input
+          type="radio"
+          name="noteType"
+          value="text"
+          checked={noteType === "text"}
+          onChange={handleToggleNoteType}
+        />
+        Text
+      </ToggleNoteTypeLabel>
+      <ToggleNoteTypeLabel>
+        <input
+          type="radio"
+          name="noteType"
+          value="markdown"
+          checked={noteType === "markdown"}
+          onChange={handleToggleNoteType}
+        />
+        Markdown
+      </ToggleNoteTypeLabel>
+    </ToggleNoteTypeContainer>
+    <NoteStateResponse>
+      <FormFieldErrors errors={errors} />
+    </NoteStateResponse>
+    <HorizontalLine />
+  </NoteStateHolder>
+);
 
 interface IProps {
   loading: boolean;
@@ -171,101 +288,108 @@ class DraftNoteView extends Component<IProps, IState> {
           loadingText={loadingText}
         />
         <NoteViewContent>
-          <NoteStateHolder>
-            <NoteStateActions>
-              <ViewNoteTitle>
-                {preview ? "View Note" : "Draft Note"}
-              </ViewNoteTitle>
-              {isLargeScreen && (
-                <Fragment>
-                  {(draftNote.content || draftNote.title) && (
-                    <Button onClick={handleDiscardDraftNote}>
-                      Discard Note
-                    </Button>
-                  )}
-                  <Button onClick={handleSubmit}>Submit</Button>
-                </Fragment>
-              )}
-              {!isLargeScreen &&
-                (preview ? (
-                  <Fragment>
-                    <Button onClick={handleTogglePreview}>Edit</Button>
-                    <Button onClick={handleSubmit}>Submit</Button>
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    {(draftNote.content || draftNote.title) && (
-                      <Button onClick={handleDiscardDraftNote}>
-                        Discard Note
-                      </Button>
+          <NoteStateHolderComponent
+            preview={preview}
+            isLargeScreen={isLargeScreen}
+            noteType={draftNote.noteType}
+            errors={errors}
+            handleDiscardDraftNote={handleDiscardDraftNote}
+            handleTogglePreview={handleTogglePreview}
+            handleToggleNoteType={handleToggleNoteType}
+            handleSubmit={handleSubmit}
+          />
+          {isLargeScreen && (
+            <NoteHolderContainer>
+              <NoteHolderSideBySide>
+                <NoteHolderTitleCell>
+                  <EditNoteTitle
+                    placeholder="Note Title"
+                    onChange={handleChangeNoteTitle}
+                    value={draftNote.title}
+                  />
+                </NoteHolderTitleCell>
+                <NoteHolderContentCell>
+                  <EditNoteContent
+                    rows={Math.max(draftNote.content.split("\n").length, 2) + 2}
+                    placeholder="Note Content"
+                    onChange={handleChangeNoteContent}
+                    value={draftNote.content}
+                  />
+                </NoteHolderContentCell>
+              </NoteHolderSideBySide>
+              <NoteHolderSideBySide>
+                <NoteHolderTitleCell>
+                  <ViewNoteTitle>
+                    {!!draftNote.title ? (
+                      draftNote.title
+                    ) : (
+                      <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
                     )}
-                    <Button onClick={handleTogglePreview}>Preview</Button>
-                  </Fragment>
-                ))}
-            </NoteStateActions>
-            <ToggleNoteTypeContainer>
-              <ToggleNoteTypeLabel>
-                <input
-                  type="radio"
-                  name="noteType"
-                  value="text"
-                  checked={draftNote.noteType === "text"}
-                  onChange={handleToggleNoteType}
-                />
-                Text
-              </ToggleNoteTypeLabel>
-              <ToggleNoteTypeLabel>
-                <input
-                  type="radio"
-                  name="noteType"
-                  value="markdown"
-                  checked={draftNote.noteType === "markdown"}
-                  onChange={handleToggleNoteType}
-                />
-                Markdown
-              </ToggleNoteTypeLabel>
-            </ToggleNoteTypeContainer>
-            <NoteStateResponse>
-              <FormFieldErrors errors={errors} />
-            </NoteStateResponse>
-            <HorizontalLine />
-          </NoteStateHolder>
-          <NoteDynamicHolder>
-            {(isLargeScreen || !preview) && (
-              <NoteDynamicSubHolder>
-                <EditNoteTitle
-                  placeholder="Note Title"
-                  onChange={handleChangeNoteTitle}
-                  value={draftNote.title}
-                />
-                <EditNoteContent
-                  placeholder="Note Content"
-                  onChange={handleChangeNoteContent}
-                  value={draftNote.content}
-                />
-              </NoteDynamicSubHolder>
-            )}
-            {(isLargeScreen || preview) && (
-              <NoteDynamicSubHolder>
-                <ViewNoteTitle>
-                  {!!draftNote.title ? (
-                    draftNote.title
+                  </ViewNoteTitle>
+                </NoteHolderTitleCell>
+                <NoteHolderContentCell>
+                  {draftNote.content ? (
+                    draftNote.noteType === "markdown" ? (
+                      <NoteMarkdownContent source={draftNote.content} />
+                    ) : (
+                      <NoteTextContent>{draftNote.content}</NoteTextContent>
+                    )
                   ) : (
                     <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
                   )}
-                </ViewNoteTitle>
-                {draftNote.content ? (
-                  draftNote.noteType === "markdown" ? (
-                    <NoteMarkdownContent source={draftNote.content} />
-                  ) : (
-                    <NoteTextContent>{draftNote.content}</NoteTextContent>
-                  )
-                ) : (
-                  <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-                )}
-              </NoteDynamicSubHolder>
-            )}
-          </NoteDynamicHolder>
+                </NoteHolderContentCell>
+              </NoteHolderSideBySide>
+            </NoteHolderContainer>
+          )}
+          {!isLargeScreen && (
+            <NoteHolderContainer>
+              {!preview && (
+                <NoteHolderFullWidth>
+                  <NoteHolderTitleCell>
+                    <EditNoteTitle
+                      placeholder="Note Title"
+                      onChange={handleChangeNoteTitle}
+                      value={draftNote.title}
+                    />
+                  </NoteHolderTitleCell>
+                  <NoteHolderContentCell>
+                    <EditNoteContent
+                      rows={
+                        Math.max(draftNote.content.split("\n").length, 2) + 2
+                      }
+                      placeholder="Note Content"
+                      onChange={handleChangeNoteContent}
+                      value={draftNote.content}
+                    />
+                  </NoteHolderContentCell>
+                </NoteHolderFullWidth>
+              )}
+              {preview && (
+                <NoteHolderFullWidth>
+                  <NoteHolderTitleCell>
+                    <ViewNoteTitle>
+                      {!!draftNote.title ? (
+                        draftNote.title
+                      ) : (
+                        <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                      )}
+                    </ViewNoteTitle>
+                  </NoteHolderTitleCell>
+                  <NoteHolderContentCell>
+                    {draftNote.content ? (
+                      draftNote.noteType === "markdown" ? (
+                        <NoteMarkdownContent source={draftNote.content} />
+                      ) : (
+                        <NoteTextContent>{draftNote.content}</NoteTextContent>
+                      )
+                    ) : (
+                      <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                    )}
+                  </NoteHolderContentCell>
+                </NoteHolderFullWidth>
+              )}
+            </NoteHolderContainer>
+          )}
         </NoteViewContent>
       </NoteViewContainer>
     );
