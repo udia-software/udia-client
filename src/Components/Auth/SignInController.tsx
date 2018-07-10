@@ -21,7 +21,7 @@ import {
   setBase64AK,
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
-import { FullUser, isMountable } from "../../Types";
+import { isMountable } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import SignInView from "./SignInView";
 

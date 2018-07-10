@@ -181,6 +181,7 @@ export const Button: StyledComponentClass<
   font-weight: 100;
   transition-property: all;
   transition-duration: 0.2s;
+  width: 100%;
   ${props =>
     !!props.disabled
       ? "opacity: 0.40;"

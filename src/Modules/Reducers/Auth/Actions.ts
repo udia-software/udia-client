@@ -1,5 +1,3 @@
-import { FullUser } from "../../../Types";
-
 // Action serializable and unique type strings
 export const SET_FORM_USERNAME = "auth/SET_FORM_USERNAME";
 export const SET_FORM_PASSWORD = "auth/SET_FORM_PASSWORD";

@@ -15,7 +15,6 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
-import { FullUser } from "../../Types";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 
 interface IState {
