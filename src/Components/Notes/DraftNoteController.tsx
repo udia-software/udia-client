@@ -37,6 +37,10 @@ interface IState {
   loading: boolean;
   loadingText?: string;
   preview: boolean;
+  debounceTitleTimeout?: number;
+  debounceTitle: string;
+  debounceContentTimeout?: number;
+  debounceContent: string;
   errors: string[];
   titleErrors: string[];
   contentErrors: string[];
@@ -44,6 +48,7 @@ interface IState {
 }
 
 const itemContentType = "note";
+const debounceTimeoutMS = 200;
 
 class CreateNoteController extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -59,6 +64,9 @@ class CreateNoteController extends Component<IProps, IState> {
     this.state = {
       loading: false,
       preview: false,
+      // this is an anti-pattern, but required for side by side performance
+      debounceContent: props.draftNote.content,
+      debounceTitle: props.draftNote.title,
       errors,
       titleErrors: [],
       contentErrors: [],
@@ -74,7 +82,11 @@ class CreateNoteController extends Component<IProps, IState> {
       errors,
       titleErrors,
       contentErrors,
-      preview
+      preview,
+      debounceTitleTimeout,
+      debounceTitle,
+      debounceContentTimeout,
+      debounceContent
     } = this.state;
     return (
       <DraftNoteView
@@ -83,6 +95,10 @@ class CreateNoteController extends Component<IProps, IState> {
         errors={[...errors, ...titleErrors, ...contentErrors]}
         preview={preview}
         draftNote={draftNote}
+        debouncingTitle={!!debounceTitleTimeout}
+        debouncedTitle={debounceTitle}
+        debouncingContent={!!debounceContentTimeout}
+        debouncedContent={debounceContent}
         handleDiscardDraftNote={this.handleDiscardDraftNote}
         handleTogglePreview={this.handleTogglePreview}
         handleToggleNoteType={this.handleToggleNoteType}
@@ -93,20 +109,39 @@ class CreateNoteController extends Component<IProps, IState> {
     );
   }
 
-  protected handleChangeNoteTitle: ChangeEventHandler<HTMLTextAreaElement> = e => {
-    this.props.dispatch(
-      setDraftNoteTitle(NEW_DRAFT_NOTE, e.currentTarget.value)
-    );
-    this.setState({ titleErrors: [] });
+  protected handleChangeNoteTitle: ChangeEventHandler<
+    HTMLTextAreaElement
+  > = e => {
+    const newTitle = e.currentTarget.value;
+    this.props.dispatch(setDraftNoteTitle(NEW_DRAFT_NOTE, newTitle));
+    window.clearTimeout(this.state.debounceTitleTimeout);
+    this.setState({
+      titleErrors: [],
+      debounceTitleTimeout: window.setTimeout(() => {
+        this.setState({
+          debounceTitle: newTitle,
+          debounceTitleTimeout: undefined
+        });
+      }, debounceTimeoutMS)
+    });
   };
 
   protected handleChangeNoteContent: ChangeEventHandler<
     HTMLTextAreaElement
   > = e => {
-    this.props.dispatch(
-      setDraftNoteContent(NEW_DRAFT_NOTE, e.currentTarget.value)
-    );
-    this.setState({ contentErrors: [] });
+    const newContent = e.currentTarget.value;
+    this.props.dispatch(setDraftNoteContent(NEW_DRAFT_NOTE, newContent));
+    // for side by side editing, delay content update
+    window.clearTimeout(this.state.debounceContentTimeout);
+    this.setState({
+      contentErrors: [],
+      debounceContentTimeout: window.setTimeout(() => {
+        this.setState({
+          debounceContent: newContent,
+          debounceContentTimeout: undefined
+        });
+      }, debounceTimeoutMS)
+    });
   };
 
   protected handleDiscardDraftNote: MouseEventHandler<

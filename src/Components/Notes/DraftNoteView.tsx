@@ -84,29 +84,42 @@ const NoteHolderContainer = styled.div`
   height: 100%;
 `;
 
-const NoteHolderSideBySide = styled.div`
+const NoteHolderLeftSide = styled.div`
   display: inline-block;
   vertical-align: top;
   width: 50%;
+`;
+const NoteHolderRightSide = styled.div`
+  display: inline-block;
+  vertical-align: top;
+  width: calc(50% - 0.4em);
+  border-left: 0.4em solid ${props => props.theme.backgroundColor};
 `;
 
 const NoteHolderFullWidth = styled.div`
   width: 100%;
 `;
 
-const NoteHolderTitleCell = styled.div`
+const NoteHolderTitleCell = styled.div.attrs<{ debouncing?: boolean }>({})`
   display: block;
   padding: 0;
-  margin: 0 0.3em;
   width: 100%;
+  ${props =>
+    props.debouncing
+      ? `border: 1px dashed ${props.theme.purple}`
+      : `border: 1px solid ${props.theme.backgroundColor}`};
 `;
 
-const NoteHolderContentCell = styled.div`
+const NoteHolderContentCell = styled.div.attrs<{ debouncing?: boolean }>({})`
   display: block;
   padding: 0;
-  margin: 0 0.3em;
+  margin: 0;
   width: 100%;
   height: 100%;
+  ${props =>
+    props.debouncing
+      ? `border: 1px dashed ${props.theme.purple}`
+      : `border: 1px solid ${props.theme.backgroundColor}`};
 `;
 
 const EditNoteTitle = styled.textarea`
@@ -150,92 +163,16 @@ const HorizontalLine = styled.hr`
   width: 100%;
 `;
 
-interface INoteStateHolderProps {
-  preview: boolean;
-  isLargeScreen: boolean;
-  noteType: string;
-  errors: string[];
-  handleDiscardDraftNote: MouseEventHandler<HTMLButtonElement>;
-  handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
-  handleToggleNoteType: ChangeEventHandler<HTMLInputElement>;
-  handleSubmit: MouseEventHandler<HTMLButtonElement>;
-}
-
-const NoteStateHolderComponent = ({
-  preview,
-  isLargeScreen,
-  noteType,
-  errors,
-  handleDiscardDraftNote,
-  handleTogglePreview,
-  handleToggleNoteType,
-  handleSubmit
-}: INoteStateHolderProps) => (
-  <NoteStateHolder>
-    <NoteStateActions>
-      <NoteStateTitle>{preview ? "View Note" : "Draft Note"}</NoteStateTitle>
-      {isLargeScreen && (
-        <Fragment>
-          <NoteStateButton onClick={handleDiscardDraftNote}>
-            Discard Note
-          </NoteStateButton>
-          <NoteStateButton onClick={handleSubmit}>Submit</NoteStateButton>
-        </Fragment>
-      )}
-      {!isLargeScreen &&
-        (preview ? (
-          <Fragment>
-            <NoteStateButton onClick={handleTogglePreview}>
-              Edit
-            </NoteStateButton>
-            <NoteStateButton onClick={handleSubmit}>Submit</NoteStateButton>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <NoteStateButton onClick={handleDiscardDraftNote}>
-              Discard Note
-            </NoteStateButton>
-            <NoteStateButton onClick={handleTogglePreview}>
-              Preview
-            </NoteStateButton>
-          </Fragment>
-        ))}
-    </NoteStateActions>
-    <ToggleNoteTypeContainer>
-      <ToggleNoteTypeLabel>
-        <input
-          type="radio"
-          name="noteType"
-          value="text"
-          checked={noteType === "text"}
-          onChange={handleToggleNoteType}
-        />
-        Text
-      </ToggleNoteTypeLabel>
-      <ToggleNoteTypeLabel>
-        <input
-          type="radio"
-          name="noteType"
-          value="markdown"
-          checked={noteType === "markdown"}
-          onChange={handleToggleNoteType}
-        />
-        Markdown
-      </ToggleNoteTypeLabel>
-    </ToggleNoteTypeContainer>
-    <NoteStateResponse>
-      <FormFieldErrors errors={errors} />
-    </NoteStateResponse>
-    <HorizontalLine />
-  </NoteStateHolder>
-);
-
 interface IProps {
   loading: boolean;
   loadingText?: string;
   errors: string[];
   preview: boolean;
   draftNote: IDraftNote;
+  debouncingTitle: boolean;
+  debouncedTitle: string;
+  debouncingContent: boolean;
+  debouncedContent: string;
   handleDiscardDraftNote: MouseEventHandler<HTMLButtonElement>;
   handleTogglePreview: MouseEventHandler<HTMLButtonElement>;
   handleToggleNoteType: ChangeEventHandler<HTMLInputElement>;
@@ -266,6 +203,10 @@ class DraftNoteView extends Component<IProps, IState> {
       errors,
       preview,
       draftNote,
+      debouncingTitle,
+      debouncedTitle,
+      debouncingContent,
+      debouncedContent,
       handleDiscardDraftNote,
       handleTogglePreview,
       handleToggleNoteType,
@@ -278,7 +219,7 @@ class DraftNoteView extends Component<IProps, IState> {
     const isLargeScreen = width >= lgScrnBrkPx;
 
     // tslint:disable-next-line:no-console
-    console.log(`isLargeScreen? ${isLargeScreen}`, width, lgScrnBrkPx);
+    // console.log(`isLargeScreen? ${isLargeScreen}`, width, lgScrnBrkPx);
 
     return (
       <NoteViewContainer>
@@ -288,19 +229,78 @@ class DraftNoteView extends Component<IProps, IState> {
           loadingText={loadingText}
         />
         <NoteViewContent>
-          <NoteStateHolderComponent
-            preview={preview}
-            isLargeScreen={isLargeScreen}
-            noteType={draftNote.noteType}
-            errors={errors}
-            handleDiscardDraftNote={handleDiscardDraftNote}
-            handleTogglePreview={handleTogglePreview}
-            handleToggleNoteType={handleToggleNoteType}
-            handleSubmit={handleSubmit}
-          />
+          <NoteStateHolder>
+            <NoteStateActions>
+              <NoteStateTitle>
+                {preview ? "View Note" : "Draft Note"}
+              </NoteStateTitle>
+              {isLargeScreen && (
+                <Fragment>
+                  {(draftNote.title || draftNote.content) && (
+                    <NoteStateButton onClick={handleDiscardDraftNote}>
+                      Discard Note
+                    </NoteStateButton>
+                  )}
+                  <NoteStateButton onClick={handleSubmit}>
+                    Submit
+                  </NoteStateButton>
+                </Fragment>
+              )}
+              {!isLargeScreen &&
+                (preview ? (
+                  <Fragment>
+                    <NoteStateButton onClick={handleTogglePreview}>
+                      Edit
+                    </NoteStateButton>
+                    <NoteStateButton onClick={handleSubmit}>
+                      Submit
+                    </NoteStateButton>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {(draftNote.title || draftNote.content) && (
+                      <NoteStateButton onClick={handleDiscardDraftNote}>
+                        Discard Note
+                      </NoteStateButton>
+                    )}
+                    <NoteStateButton onClick={handleTogglePreview}>
+                      Preview
+                    </NoteStateButton>
+                  </Fragment>
+                ))}
+            </NoteStateActions>
+            {(isLargeScreen || preview) && (
+              <ToggleNoteTypeContainer>
+                <ToggleNoteTypeLabel>
+                  <input
+                    type="radio"
+                    name="noteType"
+                    value="text"
+                    checked={draftNote.noteType === "text"}
+                    onChange={handleToggleNoteType}
+                  />
+                  Text
+                </ToggleNoteTypeLabel>
+                <ToggleNoteTypeLabel>
+                  <input
+                    type="radio"
+                    name="noteType"
+                    value="markdown"
+                    checked={draftNote.noteType === "markdown"}
+                    onChange={handleToggleNoteType}
+                  />
+                  Markdown
+                </ToggleNoteTypeLabel>
+              </ToggleNoteTypeContainer>
+            )}
+            <NoteStateResponse>
+              <FormFieldErrors errors={errors} />
+            </NoteStateResponse>
+            <HorizontalLine />
+          </NoteStateHolder>
           {isLargeScreen && (
             <NoteHolderContainer>
-              <NoteHolderSideBySide>
+              <NoteHolderLeftSide>
                 <NoteHolderTitleCell>
                   <EditNoteTitle
                     placeholder="Note Title"
@@ -316,29 +316,29 @@ class DraftNoteView extends Component<IProps, IState> {
                     value={draftNote.content}
                   />
                 </NoteHolderContentCell>
-              </NoteHolderSideBySide>
-              <NoteHolderSideBySide>
-                <NoteHolderTitleCell>
+              </NoteHolderLeftSide>
+              <NoteHolderRightSide>
+                <NoteHolderTitleCell debouncing={debouncingTitle}>
                   <ViewNoteTitle>
-                    {!!draftNote.title ? (
-                      draftNote.title
+                    {!!debouncedTitle ? (
+                      debouncedTitle
                     ) : (
                       <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
                     )}
                   </ViewNoteTitle>
                 </NoteHolderTitleCell>
-                <NoteHolderContentCell>
+                <NoteHolderContentCell debouncing={debouncingContent}>
                   {draftNote.content ? (
                     draftNote.noteType === "markdown" ? (
-                      <NoteMarkdownContent source={draftNote.content} />
+                      <NoteMarkdownContent source={debouncedContent} />
                     ) : (
-                      <NoteTextContent>{draftNote.content}</NoteTextContent>
+                      <NoteTextContent>{debouncedContent}</NoteTextContent>
                     )
                   ) : (
                     <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
                   )}
                 </NoteHolderContentCell>
-              </NoteHolderSideBySide>
+              </NoteHolderRightSide>
             </NoteHolderContainer>
           )}
           {!isLargeScreen && (
