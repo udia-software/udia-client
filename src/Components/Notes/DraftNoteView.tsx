@@ -5,7 +5,6 @@ import React, {
   MouseEventHandler
 } from "react";
 import ReactMarkdown from "react-markdown";
-import { IDraftNote } from "../../Modules/Reducers/Notes/Reducer";
 import styled, { BaseTheme } from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
@@ -169,7 +168,7 @@ interface IProps {
   loadingText?: string;
   errors: string[];
   preview: boolean;
-  draftNote: IDraftNote;
+  draftNote: DecryptedNote;
   debouncingTitle: boolean;
   debouncedTitle: string;
   debouncingContent: boolean;

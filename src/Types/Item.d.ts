@@ -1,5 +1,5 @@
 // GraphQL get items response structure for note functionality
-declare interface NoteItem {
+declare interface Item {
   uuid: string;
   content: string;
   contentType: string;
