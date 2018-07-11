@@ -113,16 +113,18 @@ export interface ISetDecryptedNoteAction {
   payload: {
     uuid: string;
     decryptedAt: number;
-    decryptedNote: DecryptedNote;
+    decryptedNote: DecryptedNote | null;
+    errors?: string[];
   };
 }
 export const setDecryptedNote = (
   uuid: string,
   decryptedAt: number,
-  decryptedNote: DecryptedNote
+  decryptedNote: DecryptedNote | null,
+  errors?: string[]
 ) => ({
   type: SET_DECRYPTED_NOTE,
-  payload: { uuid, decryptedAt, decryptedNote }
+  payload: { uuid, decryptedAt, decryptedNote, errors }
 });
 
 /**

@@ -26,7 +26,8 @@ export interface INotesState {
   decryptedNotes: {
     [index: string]: {
       decryptedAt: number; // millisecond time
-      decryptedNote: DecryptedNote;
+      decryptedNote: DecryptedNote | null;
+      errors?: string[];
     };
   };
   // array of UUIDs for determining order
@@ -158,12 +159,13 @@ export default (
       };
     }
     case SET_DECRYPTED_NOTE: {
-      const { uuid, decryptedAt, decryptedNote } = action.payload;
+      const { uuid, decryptedAt, decryptedNote, errors } = action.payload;
       const decryptedNotes = {
         ...state.decryptedNotes,
         [uuid]: {
           decryptedAt,
-          decryptedNote
+          decryptedNote,
+          errors
         }
       };
       return {

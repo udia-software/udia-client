@@ -131,14 +131,18 @@ class AuthRoutes extends Component<IProps> {
     );
   }
 
-  protected renderProfileComponent = () => <AuthRoutes.ProfileComponent />;
-  protected renderUserEmailsComponent = () => (
-    <AuthRoutes.UserEmailsComponent />
+  protected renderProfileComponent = (props: any) => (
+    <AuthRoutes.ProfileComponent {...props} />
   );
-  protected renderUpdatePasswordComponent = () => (
-    <AuthRoutes.UpdatePasswordComponent />
+  protected renderUserEmailsComponent = (props: any) => (
+    <AuthRoutes.UserEmailsComponent {...props} />
   );
-  protected renderSignOutComponent = () => (<AuthRoutes.SignOutComponent />)
+  protected renderUpdatePasswordComponent = (props: any) => (
+    <AuthRoutes.UpdatePasswordComponent {...props} />
+  );
+  protected renderSignOutComponent = (props: any) => (
+    <AuthRoutes.SignOutComponent {...props} />
+  );
   protected handleToggleAuthSidebar = () => {
     this.props.dispatch(toggleAuthSidebar());
   };
