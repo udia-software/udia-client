@@ -1,5 +1,4 @@
 // Action serializable and unique type strings
-export const SET_DRAFT_ID = "notes/SET_DRAFT_ID";
 export const SET_DRAFT_TITLE = "notes/SET_DRAFT_TITLE";
 export const SET_DRAFT_CONTENT = "notes/SET_DRAFT_CONTENT";
 export const SET_DRAFT_TYPE = "notes/SET_DRAFT_TYPE";
@@ -12,24 +11,6 @@ export const CLEAR_NOTES_DATA = "notes/CLEAR_NOTES_DATA";
 /**
  * DRAFTING NOTE ACTIONS
  */
-export interface ISetDraftNoteIDAction {
-  type: typeof SET_DRAFT_ID;
-  payload: {
-    parentId: string;
-    id: string;
-  };
-}
-export const setDraftNoteID = (
-  parentId: string,
-  id: string
-): ISetDraftNoteIDAction => ({
-  type: SET_DRAFT_ID,
-  payload: {
-    parentId,
-    id
-  }
-});
-
 export interface ISetDraftNoteTitleAction {
   type: typeof SET_DRAFT_TITLE;
   payload: {
@@ -98,18 +79,18 @@ export const discardDraft = (parentId: string): IDiscardDraftNoteAction => ({
  */
 export interface IAddRawNotesAction {
   type: typeof ADD_RAW_NOTES;
-  payload: NoteItem[];
+  payload: Item[];
 }
-export const addRawNotes = (noteItems: NoteItem[]) => ({
+export const addRawNotes = (noteItems: Item[]) => ({
   type: ADD_RAW_NOTES,
   payload: noteItems
 });
 
 export interface IAddRawNoteAction {
   type: typeof ADD_RAW_NOTE;
-  payload: NoteItem;
+  payload: Item;
 }
-export const addRawNote = (noteItem: NoteItem) => ({
+export const addRawNote = (noteItem: Item) => ({
   type: ADD_RAW_NOTE,
   payload: noteItem
 });
@@ -135,7 +116,6 @@ export const clearNotesData = (): IClearNotesDataAction => ({
 });
 
 export type INotesAction =
-  | ISetDraftNoteIDAction
   | ISetDraftNoteTitleAction
   | ISetDraftNoteContentAction
   | ISetDraftNoteTypeAction

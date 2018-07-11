@@ -16,7 +16,14 @@ interface IProps {
   akB64?: string;
   mkB64?: string;
   noteIDs: string[];
-  rawNotes: { [index: string]: NoteItem };
+  rawNotes: { [index: string]: Item };
+  decryptedNotes: {
+    [index: string]: {
+      decryptedAt: number;
+      decryptedNote: DecryptedNote;
+      errors?: string[];
+    };
+  };
 }
 
 interface IState {
@@ -123,7 +130,7 @@ const GET_ITEMS_QUERY = gql`
 interface IGetItemsResponseData {
   getItems: {
     count: number;
-    items: NoteItem[];
+    items: Item[];
   };
 }
 

@@ -125,7 +125,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
           />
         </div>
         <button
-          className="sc-VigVT geCmAL"
+          className="sc-VigVT kYRzuA"
         >
           Sign In
         </button>

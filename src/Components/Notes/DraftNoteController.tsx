@@ -14,13 +14,7 @@ import {
   setDraftNoteTitle,
   setDraftNoteType
 } from "../../Modules/Reducers/Notes/Actions";
-import {
-  IDraftNote,
-  NEW_DRAFT_NOTE,
-  NOTE_TYPE_MARKDOWN,
-  NOTE_TYPE_TEXT,
-  NoteType
-} from "../../Modules/Reducers/Notes/Reducer";
+import { NEW_DRAFT_NOTE } from "../../Modules/Reducers/Notes/Reducer";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
 
@@ -28,7 +22,7 @@ interface IProps {
   dispatch: Dispatch;
   client: ApolloClient<NormalizedCacheObject>;
   user: FullUser;
-  draftNote: IDraftNote;
+  draftNote: DecryptedNote;
   akB64?: string;
   mkB64?: string;
 }
@@ -164,17 +158,17 @@ class CreateNoteController extends Component<IProps, IState> {
   };
 
   protected handleToggleNoteType: ChangeEventHandler<HTMLInputElement> = e => {
-    let noteType: NoteType = NOTE_TYPE_TEXT;
+    let noteType: "text" | "markdown" = "markdown";
     const rawNoteType = e.currentTarget.value;
     switch (rawNoteType) {
       case "text":
-        noteType = NOTE_TYPE_TEXT;
+        noteType = "text";
         break;
       case "markdown":
-        noteType = NOTE_TYPE_MARKDOWN;
+        noteType = "markdown";
         break;
       default:
-        noteType = NOTE_TYPE_MARKDOWN;
+        noteType = "markdown";
         break;
     }
     this.props.dispatch(setDraftNoteType(NEW_DRAFT_NOTE, noteType));
@@ -331,7 +325,7 @@ const CREATE_ITEM_MUTATION = gql`
 // }
 
 interface ICreateItemMutationResponse {
-  createItem: NoteItem;
+  createItem: Item;
 }
 
 const mapStateToProps = (state: IRootState) => ({

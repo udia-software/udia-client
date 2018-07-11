@@ -6,31 +6,21 @@ import {
   DISCARD_DRAFT,
   INotesAction,
   SET_DRAFT_CONTENT,
-  SET_DRAFT_ID,
   SET_DRAFT_TITLE,
   SET_DRAFT_TYPE
 } from "./Actions";
 
+const NOTE_TYPE_MARKDOWN = "markdown";
 export const NEW_DRAFT_NOTE = "n";
-export const NOTE_TYPE_TEXT = "text";
-export const NOTE_TYPE_MARKDOWN = "markdown";
-export type NoteType = typeof NOTE_TYPE_TEXT | typeof NOTE_TYPE_MARKDOWN;
-
-export interface IDraftNote {
-  itemId?: string; // undefined if this is a new note
-  title: string;
-  content: string;
-  noteType: NoteType;
-}
 
 export interface INotesState {
   // dictionary of draft notes
   drafts: {
-    [index: string]: IDraftNote; // `n` new (root), `e:${id}` editing, `p:${id}` new (nested);
+    [index: string]: DecryptedNote; // `n` new (root), `e:${id}` editing, `p:${id}` new (nested);
   };
   // dictionary of raw notes
   rawNotes: {
-    [index: string]: NoteItem; // reference by item uuid
+    [index: string]: Item; // reference by item uuid
   };
   // array of UUIDs for determining order
   noteIDs: string[];
@@ -47,23 +37,6 @@ export default (
   action: INotesAction
 ) => {
   switch (action.type) {
-    case SET_DRAFT_ID: {
-      const { parentId, id } = action.payload;
-      const drafts = {
-        ...state.drafts,
-        [parentId]: {
-          title: "",
-          content: "",
-          type: NOTE_TYPE_MARKDOWN,
-          ...state.drafts[parentId],
-          itemId: id
-        }
-      };
-      return {
-        ...state,
-        drafts
-      };
-    }
     case SET_DRAFT_TITLE: {
       const { parentId, title } = action.payload;
       const drafts = {

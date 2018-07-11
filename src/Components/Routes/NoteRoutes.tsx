@@ -56,12 +56,7 @@ class NoteRoutes extends Component<IProps> {
             <Route
               exact={true}
               path="/note/draft"
-              component={WithAuth(
-                CreateNoteController,
-                true,
-                "/",
-                "/note/draft"
-              )}
+              component={WithAuth(CreateNoteController, true, "/", "/note/draft")}
             />
             <Route
               exact={true}
