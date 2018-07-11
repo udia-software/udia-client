@@ -4,12 +4,14 @@ import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component, MouseEventHandler } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   addRawNote,
   discardDraft,
+  setDecryptedNote,
   setDraftNoteContent,
   setDraftNoteTitle,
   setDraftNoteType
@@ -39,6 +41,7 @@ interface IState {
   titleErrors: string[];
   contentErrors: string[];
   cryptoManager: CryptoManager | null;
+  redirectToNote?: string;
 }
 
 const itemContentType = "note";
@@ -80,8 +83,12 @@ class CreateNoteController extends Component<IProps, IState> {
       debounceTitleTimeout,
       debounceTitle,
       debounceContentTimeout,
-      debounceContent
+      debounceContent,
+      redirectToNote
     } = this.state;
+    if (redirectToNote) {
+      return <Redirect to={`/note/view/${redirectToNote}`} />;
+    }
     return (
       <DraftNoteView
         loading={loading}
@@ -179,7 +186,7 @@ class CreateNoteController extends Component<IProps, IState> {
   > = async e => {
     try {
       e.preventDefault();
-      const { client, draftNote, user, akB64, mkB64 } = this.props;
+      const { dispatch, client, draftNote, user, akB64, mkB64 } = this.props;
       const { cryptoManager } = this.state;
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
@@ -247,7 +254,7 @@ class CreateNoteController extends Component<IProps, IState> {
 
       // Encrypt the item key user's secret key
       this.setState({ loadingText: "Encrypting the item encryption key..." });
-      const itemJWK = await cryptoManager.exportJsonWebKey(itemKey)
+      const itemJWK = await cryptoManager.exportJsonWebKey(itemKey);
       const stringifiedItemKey = JSON.stringify(itemJWK);
       const itemKeyArrBuf = Buffer.from(stringifiedItemKey, "utf8").buffer;
       const encItemKey = await cryptoManager.encryptWithSecretKey(
@@ -282,7 +289,12 @@ class CreateNoteController extends Component<IProps, IState> {
         titleErrors: [],
         contentErrors: []
       });
-      this.props.dispatch(addRawNote(createItem));
+      dispatch(addRawNote(createItem));
+      dispatch(
+        setDecryptedNote(createItem.uuid, new Date().getTime(), draftNote)
+      );
+      dispatch(discardDraft(NEW_DRAFT_NOTE));
+      this.setState({ redirectToNote: createItem.uuid });
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to create note!");
       this.setState({ loading: false, loadingText: undefined, errors });

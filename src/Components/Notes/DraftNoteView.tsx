@@ -4,11 +4,11 @@ import React, {
   Fragment,
   MouseEventHandler
 } from "react";
-import ReactMarkdown from "react-markdown";
 import styled, { BaseTheme } from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { NoteMarkdownContent, NoteTextContent, ViewNoteTitle } from "./NoteViewShared";
 
 const NoteViewContainer = styled.div`
   display: grid;
@@ -133,11 +133,6 @@ const EditNoteTitle = styled.textarea`
   width: 100%;
 `;
 
-const ViewNoteTitle = styled.h1`
-  padding: 0;
-  margin: 0;
-`;
-
 const EditNoteContent = styled.textarea`
   background: transparent;
   border: none;
@@ -145,13 +140,6 @@ const EditNoteContent = styled.textarea`
   padding: 0;
   width: 100%;
   height: 100%;
-`;
-
-const NoteMarkdownContent = styled(ReactMarkdown)``;
-
-const NoteTextContent = styled.div`
-  margin-top: 1em;
-  white-space pre-line;
 `;
 
 const NoValue = styled.span`

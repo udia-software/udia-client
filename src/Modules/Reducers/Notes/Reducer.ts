@@ -45,6 +45,14 @@ export default (
   state: INotesState = { ...DefaultNotesState },
   action: INotesAction
 ) => {
+  // custom compare function for ensuring order by createdAt
+  const noteIDCompareFunc = (a: string, b: string) => {
+    const noteA = state.rawNotes[a] || { createdAt: 0 };
+    const noteB = state.rawNotes[b] || { createdAt: 0 };
+    // return noteA.createdAt - noteB.createdAt; // old items at beginning, new items at end
+    return noteB.createdAt - noteA.createdAt; // new items at beginning, old items at end
+  };
+
   switch (action.type) {
     case SET_DRAFT_TITLE: {
       const { parentId, title } = action.payload;
@@ -109,19 +117,13 @@ export default (
           return map;
         }, {})
       };
-      const noteIDs = [
-        ...state.noteIDs,
-        ...action.payload.map(noteItem => noteItem.uuid)
-      ].reduce(
-        // removes potential duplicates and preserves order of array
-        (accum: typeof state.noteIDs, current) => {
-          if (accum.indexOf(current) < 0) {
-            accum.push(current);
-          }
-          return accum;
-        },
-        []
+      const noteIDs = Array.from(
+        new Set([
+          ...state.noteIDs,
+          ...action.payload.map(noteItem => noteItem.uuid)
+        ])
       );
+      noteIDs.sort(noteIDCompareFunc);
       return {
         ...state,
         rawNotes,
@@ -134,10 +136,8 @@ export default (
         ...state.rawNotes,
         [newUUID]: action.payload
       };
-      let noteIDs = [...state.noteIDs];
-      if (noteIDs.indexOf(newUUID) < 0) {
-        noteIDs = [newUUID, ...state.noteIDs];
-      }
+      const noteIDs = Array.from(new Set([...state.noteIDs, newUUID]));
+      noteIDs.sort(noteIDCompareFunc);
       return {
         ...state,
         rawNotes,
