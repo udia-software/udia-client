@@ -62,7 +62,7 @@ const WithAuth = (
           loadingText: "Fetching user data..."
         });
       } else {
-        return <WrappedComponent />;
+        return <WrappedComponent {...this.props} />;
       }
     }
   }

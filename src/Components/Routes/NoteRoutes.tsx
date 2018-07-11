@@ -101,10 +101,18 @@ class NoteRoutes extends Component<IProps> {
     );
   }
 
-  protected renderDraftNoteComponent = () => <NoteRoutes.DraftNoteComponent />;
-  protected renderListNotesComponent = () => <NoteRoutes.ListNotesComponent />;
-  protected renderViewNoteComponent = () => <NoteRoutes.ViewNoteComponent />;
-  protected renderEditNoteComponent = () => <NoteRoutes.EditNoteComponent />;
+  protected renderDraftNoteComponent = (props: any) => (
+    <NoteRoutes.DraftNoteComponent {...props} />
+  );
+  protected renderListNotesComponent = (props: any) => (
+    <NoteRoutes.ListNotesComponent {...props} />
+  );
+  protected renderViewNoteComponent = (props: any) => (
+    <NoteRoutes.ViewNoteComponent {...props} />
+  );
+  protected renderEditNoteComponent = (props: any) => (
+    <NoteRoutes.EditNoteComponent {...props} />
+  );
 
   protected handleToggleAuthSidebar = () => {
     this.props.dispatch(toggleAuthSidebar());

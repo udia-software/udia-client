@@ -7,7 +7,10 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
-import { addRawNotes } from "../../Modules/Reducers/Notes/Actions";
+import {
+  addRawNotes,
+  setDecryptedNote
+} from "../../Modules/Reducers/Notes/Actions";
 import FormFieldErrors from "../PureHelpers/FormFieldErrors";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 
@@ -23,12 +26,12 @@ interface IProps {
     [index: string]: {
       decryptedAt: number;
       decryptedNote: DecryptedNote;
+      errors?: string[];
     };
   };
 }
 
 interface IState {
-  count: number;
   errors: string[];
   cryptoManager: CryptoManager | null;
 }
@@ -45,71 +48,88 @@ class ListNotesController extends Component<IProps, IState> {
       errors.push(err.message);
     }
     this.state = {
-      count: -1,
       errors,
       cryptoManager
     };
   }
 
   public async componentDidMount() {
-    return this.fetchAndProcessItems();
+    let nextPageMS = await this.fetchAndProcessItemPage();
+    do {
+      nextPageMS = await this.fetchAndProcessItemPage(nextPageMS);
+    } while (nextPageMS);
   }
 
   public render() {
-    const { rawNotes, noteIDs } = this.props;
-    const { count, errors } = this.state;
+    const { rawNotes, decryptedNotes, noteIDs } = this.props;
+    const { errors } = this.state;
     return (
       <div>
-        <h1>List Notes {count === -1 ? "(Loading)" : count}</h1>
         <FormFieldErrors errors={errors} />
-        {noteIDs.map(noteUUID => {
-          return (
-            <div key={noteUUID}>
-              {noteUUID}
-              <br />
-              {new Date(rawNotes[noteUUID].createdAt).toString()}
-            </div>
-          );
-        })}
+        <ul>
+          {noteIDs.map(uuid => {
+            const { decryptedNote, errors: noteErrors = [] } = decryptedNotes[
+              uuid
+            ] || { decryptedNote: undefined, errors: [] };
+            const noteTitle = decryptedNote
+              ? decryptedNote.title
+              : noteErrors
+                ? "ERROR!"
+                : "Decrypting...";
+            return (
+              <li key={uuid}>
+                <strong>{noteTitle}</strong>
+                <br />
+                <span><strong>Created At:</strong> {new Date(rawNotes[uuid].createdAt).toString()}</span>
+                <FormFieldErrors errors={noteErrors} />
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   }
 
-  protected fetchAndProcessItems = async () => {
+  protected fetchAndProcessItemPage = async (
+    fromMilliSecondPageDateTime?: number
+  ) => {
+    const limitPageSize = 28; // Get items 28 at a time, because why not?
+    // last item createdAt number holder. (If null, we don't need to get more pages.)
+    let nextPageMillisecondDateTime: number | undefined;
     try {
       const { client, user } = this.props;
-      // Get items 28 at a time, because why not?
       const response = await client.query<IGetItemsResponseData>({
         query: GET_ITEMS_QUERY,
         variables: {
           params: {
             username: user.username,
-            limit: 28,
-            // datetime: new Date().getTime(),
-            // datetime: 0,
-            datetime: new Date(), // above all work! just pass in the last createdAt time returned in the array
+            limit: limitPageSize,
+            datetime: fromMilliSecondPageDateTime,
             sort: "createdAt",
             order: "DESC"
           }
         }
       });
       const { getItems } = response.data;
-      this.setState({
-        count: getItems.count
-      });
       this.props.dispatch(addRawNotes(getItems.items));
       // iterate through each returned item and decrypt the item if it isn't already decrypted
       for (const item of getItems.items) {
         await this.decryptNoteItem(item);
+        nextPageMillisecondDateTime = item.createdAt;
+      }
+      // We have not filled our limit page, we don't need to fetch more items
+      if (getItems.items.length < limitPageSize) {
+        nextPageMillisecondDateTime = undefined;
       }
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to get items!");
       this.setState({ errors });
     }
+    return nextPageMillisecondDateTime;
   };
 
   protected decryptNoteItem = async (item: Item, force?: boolean) => {
-    const { user, decryptedNotes, akB64, mkB64 } = this.props;
+    const { dispatch, user, decryptedNotes, akB64, mkB64 } = this.props;
     const { cryptoManager } = this.state;
     try {
       // Check if the item has already been decrypted
@@ -157,18 +177,17 @@ class ListNotesController extends Component<IProps, IState> {
         item.content,
         itemKey
       );
-      const noteContent = JSON.parse(Buffer.from(rawNoteContent).toString());
-      // tslint:disable-next-line:no-console
-      console.log(noteContent);
+      const noteContent: DecryptedNote = JSON.parse(
+        Buffer.from(rawNoteContent).toString()
+      );
+      dispatch(setDecryptedNote(item.uuid, new Date().getTime(), noteContent));
     } catch (err) {
       // tslint:disable-next-line:no-console
       console.error(err);
       const newErrMsg = err.msg || `Could not decrypt note ${item.uuid}!`;
-      const errors = this.state.errors;
-      if (errors.indexOf(newErrMsg) < 0) {
-        errors.push(newErrMsg);
-      }
-      this.setState({ errors });
+      dispatch(
+        setDecryptedNote(item.uuid, new Date().getTime(), null, [newErrMsg])
+      );
     }
   };
 }
@@ -216,9 +235,9 @@ interface IGetItemsResponseData {
 
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser!, // WithAuth wrapper ensures user is defined
-  rawNotes: state.notes.rawNotes,
   akB64: state.secrets.akB64,
   mkB64: state.secrets.mkB64,
+  rawNotes: state.notes.rawNotes,
   noteIDs: state.notes.noteIDs,
   decryptedNotes: state.notes.decryptedNotes
 });
