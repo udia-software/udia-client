@@ -26,9 +26,6 @@ const WithAuth = (
   redirectToPath: string,
   redirectReferrer: string
 ) => {
-  // tslint:disable-next-line:no-console
-  console.log(`withAuth ${redirectReferrer}`);
-
   const RedirectToComponent = (
     <Redirect
       push={true}
@@ -45,7 +42,7 @@ const WithAuth = (
       const oldMaybeAuthenticated = this.props.maybeAuthenticated;
       const nextMaybeAuthenticated = nextProps.maybeAuthenticated;
       return (
-        oldIsAuthenticated !== nextIsAuthenticated &&
+        oldIsAuthenticated !== nextIsAuthenticated ||
         oldMaybeAuthenticated !== nextMaybeAuthenticated
       );
     }
@@ -65,7 +62,7 @@ const WithAuth = (
           loadingText: "Fetching user data..."
         });
       } else {
-        return <WrappedComponent {...this.props} />;
+        return <WrappedComponent />;
       }
     }
   }
@@ -76,6 +73,6 @@ const WithAuth = (
   });
 
   return connect(mapStateToProps)(AuthenticationWrapper);
-}
+};
 
 export default WithAuth;
