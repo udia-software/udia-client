@@ -27,6 +27,21 @@ interface IProps {
 const Todo = () => <h1>todo</h1>;
 
 class NoteRoutes extends Component<IProps> {
+  public static DraftNoteComponent = WithAuth(
+    CreateNoteController,
+    true,
+    "/",
+    "/note/draft"
+  );
+  public static ListNotesComponent = WithAuth(
+    ListNotesController,
+    true,
+    "/",
+    "/note/list"
+  );
+  public static ViewNoteComponent = WithAuth(Todo, true, "/", "/note/view");
+  public static EditNoteComponent = WithAuth(Todo, true, "/", "/note/edit");
+
   public render() {
     const { showSidebar: showSidebarProp } = this.props;
     const showSidebar = showSidebarProp ? "true" : undefined;
@@ -56,22 +71,22 @@ class NoteRoutes extends Component<IProps> {
             <Route
               exact={true}
               path="/note/draft"
-              component={WithAuth(CreateNoteController, true, "/", "/note/draft")}
+              render={this.renderDraftNoteComponent}
             />
             <Route
               exact={true}
               path="/note/list"
-              component={WithAuth(ListNotesController, true, "/", "/note/list")}
+              render={this.renderListNotesComponent}
             />
             <Route
               exact={true}
               path="/note/view"
-              component={WithAuth(Todo, true, "/", "/note/view")}
+              render={this.renderViewNoteComponent}
             />
             <Route
               exact={true}
               path="/note/edit"
-              component={WithAuth(Todo, true, "/", "/note/edit")}
+              render={this.renderEditNoteComponent}
             />
             <Route component={NotFound} />
           </Switch>
@@ -85,6 +100,11 @@ class NoteRoutes extends Component<IProps> {
       </WithSidebarContainer>
     );
   }
+
+  protected renderDraftNoteComponent = () => <NoteRoutes.DraftNoteComponent />;
+  protected renderListNotesComponent = () => <NoteRoutes.ListNotesComponent />;
+  protected renderViewNoteComponent = () => <NoteRoutes.ViewNoteComponent />;
+  protected renderEditNoteComponent = () => <NoteRoutes.EditNoteComponent />;
 
   protected handleToggleAuthSidebar = () => {
     this.props.dispatch(toggleAuthSidebar());

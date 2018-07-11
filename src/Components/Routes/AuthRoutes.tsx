@@ -27,6 +27,31 @@ interface IProps {
 }
 
 class AuthRoutes extends Component<IProps> {
+  public static ProfileComponent = WithAuth(
+    Profile,
+    true,
+    "/",
+    "/auth/profile"
+  );
+  public static UserEmailsComponent = WithAuth(
+    UserEmailController,
+    true,
+    "/",
+    "/auth/emails"
+  );
+  public static UpdatePasswordComponent = WithAuth(
+    UpdatePasswordController,
+    true,
+    "/",
+    "/auth/password"
+  );
+  public static SignOutComponent = WithAuth(
+    SignOutController,
+    true,
+    "/",
+    "/auth/sign-out"
+  );
+
   public render() {
     const { showSidebar: showSidebarProp } = this.props;
     const showSidebar = showSidebarProp ? "true" : undefined;
@@ -76,37 +101,22 @@ class AuthRoutes extends Component<IProps> {
             <Route
               exact={true}
               path="/auth/profile"
-              component={WithAuth(Profile, true, "/", "/auth/profile")}
+              render={this.renderProfileComponent}
             />
             <Route
               exact={true}
               path="/auth/emails"
-              component={WithAuth(
-                UserEmailController,
-                true,
-                "/",
-                "/auth/emails"
-              )}
+              render={this.renderUserEmailsComponent}
             />
             <Route
               exact={true}
               path="/auth/password"
-              component={WithAuth(
-                UpdatePasswordController,
-                true,
-                "/",
-                "/auth/password"
-              )}
+              render={this.renderUpdatePasswordComponent}
             />
             <Route
               exact={true}
               path="/auth/sign-out"
-              component={WithAuth(
-                SignOutController,
-                true,
-                "/",
-                "/auth/sign-out"
-              )}
+              render={this.renderSignOutComponent}
             />
             <Route component={NotFound} />
           </Switch>
@@ -121,6 +131,14 @@ class AuthRoutes extends Component<IProps> {
     );
   }
 
+  protected renderProfileComponent = () => <AuthRoutes.ProfileComponent />;
+  protected renderUserEmailsComponent = () => (
+    <AuthRoutes.UserEmailsComponent />
+  );
+  protected renderUpdatePasswordComponent = () => (
+    <AuthRoutes.UpdatePasswordComponent />
+  );
+  protected renderSignOutComponent = () => (<AuthRoutes.SignOutComponent />)
   protected handleToggleAuthSidebar = () => {
     this.props.dispatch(toggleAuthSidebar());
   };
