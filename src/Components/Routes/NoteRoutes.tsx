@@ -4,8 +4,10 @@ import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
+import { isDraftingNewNote } from "../../Modules/Reducers/Notes/Selectors";
 import { toggleAuthSidebar } from "../../Modules/Reducers/Theme/Actions";
 import { isShowingAuthSidebar } from "../../Modules/Reducers/Theme/Selectors";
+import DisplayNoteController from "../Notes/DisplayNoteController";
 import CreateNoteController from "../Notes/DraftNoteController";
 import ListNotesController from "../Notes/ListNotesController";
 import NotFound from "../NotFound";
@@ -22,6 +24,7 @@ import {
 interface IProps {
   dispatch: Dispatch;
   showSidebar: boolean;
+  draftingNote: boolean;
 }
 
 const Todo = () => <h1>todo</h1>;
@@ -39,11 +42,16 @@ class NoteRoutes extends Component<IProps> {
     "/",
     "/note/list"
   );
-  public static ViewNoteComponent = WithAuth(Todo, true, "/", "/note/view");
+  public static ViewNoteComponent = WithAuth(
+    DisplayNoteController,
+    true,
+    "/",
+    "/note/list"
+  );
   public static EditNoteComponent = WithAuth(Todo, true, "/", "/note/edit");
 
   public render() {
-    const { showSidebar: showSidebarProp } = this.props;
+    const { showSidebar: showSidebarProp, draftingNote } = this.props;
     const showSidebar = showSidebarProp ? "true" : undefined;
     return (
       <WithSidebarContainer>
@@ -54,7 +62,7 @@ class NoteRoutes extends Component<IProps> {
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
           >
-            Draft Note
+            {draftingNote ? "*" : ""}Draft Note
           </StyledSidebarLink>
           <StyledSidebarLink
             showsidebar={showSidebar}
@@ -80,7 +88,7 @@ class NoteRoutes extends Component<IProps> {
             />
             <Route
               exact={true}
-              path="/note/view"
+              path="/note/view/:uuid"
               render={this.renderViewNoteComponent}
             />
             <Route
@@ -128,7 +136,8 @@ class NoteRoutes extends Component<IProps> {
 
 const mapStateToProps = (state: IRootState) => {
   return {
-    showSidebar: isShowingAuthSidebar(state)
+    showSidebar: isShowingAuthSidebar(state),
+    draftingNote: isDraftingNewNote(state)
   };
 };
 

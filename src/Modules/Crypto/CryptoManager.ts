@@ -470,7 +470,9 @@ export default class CryptoManager {
       throw new Error(`Unsupported encryption version ${version}`);
     }
     const tagLength = parseInt(atob(tagLenBase64), 10);
-    const add = !!addBase64 ? Buffer.from(addBase64, "base64").buffer : undefined;
+    const add = !!addBase64
+      ? Buffer.from(addBase64, "base64").buffer
+      : undefined;
     const iv = Buffer.from(ivBase64, "base64");
     const encData = Buffer.from(encBase64, "base64");
 
@@ -516,6 +518,47 @@ export default class CryptoManager {
       privateKey,
       data
     );
+  }
+
+  /**
+   * Helper utility function for decrypting items returned from the API.
+   */
+  public async decryptNoteFromItem(
+    item: Item,
+    encSecretKey: string,
+    akB64: string,
+    mkB64: string
+  ) {
+    if (!item.encItemKey) {
+      throw new Error(
+        `Item ${item.uuid} missing mandatory field 'encItemKey'!`
+      );
+    }
+    const akBuf = Buffer.from(akB64, "base64");
+    const mkBuf = Buffer.from(mkB64, "base64");
+    const rawSecretKey = await this.decryptWithSecret(
+      encSecretKey,
+      Buffer.concat([mkBuf, akBuf]).buffer
+    );
+    const secretKey = await this.importSecretJsonWebKey(
+      JSON.parse(Buffer.from(rawSecretKey).toString())
+    );
+    const rawItemKey = await this.decryptWithSecretKey(
+      item.encItemKey,
+      secretKey
+    );
+    const itemKey = await this.importSecretJsonWebKey(
+      JSON.parse(Buffer.from(rawItemKey).toString())
+    );
+    // Decrypt the note using the item encryption key
+    const rawNoteContent = await this.decryptWithSecretKey(
+      item.content,
+      itemKey
+    );
+    const noteContent: DecryptedNote = JSON.parse(
+      Buffer.from(rawNoteContent).toString()
+    );
+    return noteContent;
   }
 
   /**

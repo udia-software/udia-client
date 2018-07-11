@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -25,7 +26,7 @@ interface IProps {
   decryptedNotes: {
     [index: string]: {
       decryptedAt: number;
-      decryptedNote: DecryptedNote;
+      decryptedNote: DecryptedNote | null;
       errors?: string[];
     };
   };
@@ -54,9 +55,9 @@ class ListNotesController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
-    let nextPageMS = await this.fetchAndProcessItemPage();
+    let nextPageMS = await this.fetchAndProcessNoteItemsPage();
     do {
-      nextPageMS = await this.fetchAndProcessItemPage(nextPageMS);
+      nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS);
     } while (nextPageMS);
   }
 
@@ -78,19 +79,25 @@ class ListNotesController extends Component<IProps, IState> {
                 : "Decrypting...";
             return (
               <li key={uuid}>
-                <strong>{noteTitle}</strong>
-                <br />
-                <span><strong>Created At:</strong> {new Date(rawNotes[uuid].createdAt).toString()}</span>
-                <FormFieldErrors errors={noteErrors} />
+                <Link to={`/note/view/${uuid}`}>
+                  <strong>{noteTitle}</strong>
+                  <br />
+                  <span>
+                    <strong>Created At:</strong>{" "}
+                    {new Date(rawNotes[uuid].createdAt).toString()}
+                  </span>
+                  <FormFieldErrors errors={noteErrors} />
+                </Link>
               </li>
             );
           })}
+          {noteIDs.length === 0 && <li>No Items</li>}
         </ul>
       </div>
     );
   }
 
-  protected fetchAndProcessItemPage = async (
+  protected fetchAndProcessNoteItemsPage = async (
     fromMilliSecondPageDateTime?: number
   ) => {
     const limitPageSize = 28; // Get items 28 at a time, because why not?
@@ -114,7 +121,7 @@ class ListNotesController extends Component<IProps, IState> {
       this.props.dispatch(addRawNotes(getItems.items));
       // iterate through each returned item and decrypt the item if it isn't already decrypted
       for (const item of getItems.items) {
-        await this.decryptNoteItem(item);
+        await this.processNoteItem(item);
         nextPageMillisecondDateTime = item.createdAt;
       }
       // We have not filled our limit page, we don't need to fetch more items
@@ -128,63 +135,35 @@ class ListNotesController extends Component<IProps, IState> {
     return nextPageMillisecondDateTime;
   };
 
-  protected decryptNoteItem = async (item: Item, force?: boolean) => {
+  protected processNoteItem = async (item: Item) => {
     const { dispatch, user, decryptedNotes, akB64, mkB64 } = this.props;
     const { cryptoManager } = this.state;
     try {
       // Check if the item has already been decrypted
-      // If the item has not changed since we last decrypted it, do nothing unless forced
+      // If the item has not changed since we last decrypted it, do nothing
       if (
         item.uuid in decryptedNotes &&
-        !force &&
         decryptedNotes[item.uuid].decryptedAt >= item.updatedAt
       ) {
         return;
       }
-
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
       }
       if (!akB64 || !mkB64) {
         throw new Error("Encryption secrets not set! Please re-authenticate.");
       }
-      if (!item.encItemKey) {
-        throw new Error(
-          `Note ${item.uuid} missing mandatory field 'encItemKey'!`
-        );
-      }
-
-      const akBuf = Buffer.from(akB64, "base64");
-      const mkBuf = Buffer.from(mkB64, "base64");
-      const rawSecretKey = await cryptoManager.decryptWithSecret(
+      const noteContent: DecryptedNote = await cryptoManager.decryptNoteFromItem(
+        item,
         user.encSecretKey,
-        Buffer.concat([mkBuf, akBuf]).buffer
-      );
-      const secretKey = await cryptoManager.importSecretJsonWebKey(
-        JSON.parse(Buffer.from(rawSecretKey).toString())
-      );
-
-      const rawItemKey = await cryptoManager.decryptWithSecretKey(
-        item.encItemKey,
-        secretKey
-      );
-      const itemKey = await cryptoManager.importSecretJsonWebKey(
-        JSON.parse(Buffer.from(rawItemKey).toString())
-      );
-
-      // Decrypt the note using the item encryption key
-      const rawNoteContent = await cryptoManager.decryptWithSecretKey(
-        item.content,
-        itemKey
-      );
-      const noteContent: DecryptedNote = JSON.parse(
-        Buffer.from(rawNoteContent).toString()
+        akB64,
+        mkB64
       );
       dispatch(setDecryptedNote(item.uuid, new Date().getTime(), noteContent));
     } catch (err) {
       // tslint:disable-next-line:no-console
       console.error(err);
-      const newErrMsg = err.msg || `Could not decrypt note ${item.uuid}!`;
+      const newErrMsg = err.message || `Failed to decrypt note ${item.uuid}!`;
       dispatch(
         setDecryptedNote(item.uuid, new Date().getTime(), null, [newErrMsg])
       );
