@@ -26,8 +26,13 @@ const authPersistConfig: PersistConfig = {
 
 const notesPersistConfig: PersistConfig = {
   key: "notes",
-  stateReconciler: (inboundState: any) => inboundState, // hardSet
-  debug: true,
+  // custom state reconciler to handle nested structure
+  stateReconciler: (
+    inboundState: any,
+    originialState: any,
+    reducedState: any
+  ) => ({ ...reducedState, ...inboundState }),
+  // debug: true,
   storage
 };
 

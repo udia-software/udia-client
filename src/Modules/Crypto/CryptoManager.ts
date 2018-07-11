@@ -470,7 +470,7 @@ export default class CryptoManager {
       throw new Error(`Unsupported encryption version ${version}`);
     }
     const tagLength = parseInt(atob(tagLenBase64), 10);
-    const add = !!addBase64 ? Buffer.from(addBase64, "base64") : undefined;
+    const add = !!addBase64 ? Buffer.from(addBase64, "base64").buffer : undefined;
     const iv = Buffer.from(ivBase64, "base64");
     const encData = Buffer.from(encBase64, "base64");
 

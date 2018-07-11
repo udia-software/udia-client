@@ -246,8 +246,9 @@ class CreateNoteController extends Component<IProps, IState> {
       );
 
       // Encrypt the item key user's secret key
-      this.setState({ loadingText: "Encrypted the item encryption key..." });
-      const stringifiedItemKey = JSON.stringify(itemKey);
+      this.setState({ loadingText: "Encrypting the item encryption key..." });
+      const itemJWK = await cryptoManager.exportJsonWebKey(itemKey)
+      const stringifiedItemKey = JSON.stringify(itemJWK);
       const itemKeyArrBuf = Buffer.from(stringifiedItemKey, "utf8").buffer;
       const encItemKey = await cryptoManager.encryptWithSecretKey(
         itemKeyArrBuf,

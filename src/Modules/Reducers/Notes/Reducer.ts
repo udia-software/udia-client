@@ -5,6 +5,7 @@ import {
   DELETE_RAW_NOTE,
   DISCARD_DRAFT,
   INotesAction,
+  SET_DECRYPTED_NOTE,
   SET_DRAFT_CONTENT,
   SET_DRAFT_TITLE,
   SET_DRAFT_TYPE
@@ -22,6 +23,12 @@ export interface INotesState {
   rawNotes: {
     [index: string]: Item; // reference by item uuid
   };
+  decryptedNotes: {
+    [index: string]: {
+      decryptedAt: number; // millisecond time
+      decryptedNote: DecryptedNote;
+    };
+  };
   // array of UUIDs for determining order
   noteIDs: string[];
 }
@@ -29,7 +36,8 @@ export interface INotesState {
 const DefaultNotesState: INotesState = {
   drafts: {},
   rawNotes: {},
-  noteIDs: []
+  noteIDs: [],
+  decryptedNotes: {}
 };
 
 export default (
@@ -147,6 +155,20 @@ export default (
         ...state,
         rawNotes,
         noteIDs
+      };
+    }
+    case SET_DECRYPTED_NOTE: {
+      const { uuid, decryptedAt, decryptedNote } = action.payload;
+      const decryptedNotes = {
+        ...state.decryptedNotes,
+        [uuid]: {
+          decryptedAt,
+          decryptedNote
+        }
+      };
+      return {
+        ...state,
+        decryptedNotes
       };
     }
     case CLEAR_NOTES_DATA: {
