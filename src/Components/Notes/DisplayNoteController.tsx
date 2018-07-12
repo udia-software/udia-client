@@ -1,6 +1,5 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
@@ -14,6 +13,7 @@ import {
 } from "../../Modules/Reducers/Notes/Actions";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DisplayNoteView from "./DisplayNoteView";
+import { fetchAndProcessNote } from "./NotesShared";
 
 interface IProps {
   match: match<{ uuid: string }>;
@@ -30,6 +30,7 @@ interface IProps {
       errors?: string[];
     };
   };
+  drafts: { [index: string]: DecryptedNote };
 }
 
 interface IState {
@@ -83,42 +84,17 @@ class DisplayNoteController extends Component<IProps, IState> {
     }
     try {
       this.setState({ loading: true });
-      // check for CryptoManager
-      if (!cryptoManager) {
-        throw new Error("Browser does not support WebCrypto!");
-      }
-
-      let rawNote: Item;
-      // item does not exist in the redux rawNotes object. Fetch it.
-      if (!(uuid in rawNotes)) {
-        this.setState({ loadingText: "Fetching note from the server..." });
-        const response = await client.query<IGetItemResponseData>({
-          query: GET_ITEM_QUERY,
-          variables: { id: uuid }
-        });
-        const { getItem } = response.data;
-        if (!getItem) {
-          throw new Error("Item does not exist!");
-        }
-        if (getItem.user.uuid !== user.uuid) {
-          throw new Error("Cannot decrypt or view unowned secret notes!");
-        }
-        dispatch(addRawNote(getItem));
-        rawNote = getItem;
-      } else {
-        rawNote = rawNotes[uuid];
-      }
-
-      this.setState({ loadingText: "Decrypting note..." });
-      if (!akB64 || !mkB64) {
-        throw new Error("Encryption secrets not set! Please re-authenticate.");
-      }
-      const decryptedNote = await cryptoManager.decryptNoteFromItem(
-        rawNote,
-        user.encSecretKey,
+      const { rawNote, decryptedNote } = await fetchAndProcessNote(
+        cryptoManager,
+        client,
+        rawNotes,
+        uuid,
+        user,
         akB64,
-        mkB64
+        mkB64,
+        (loadingText: string) => this.setState({ loadingText })
       );
+      dispatch(addRawNote(rawNote));
       dispatch(
         setDecryptedNote(rawNote.uuid, new Date().getTime(), decryptedNote)
       );
@@ -148,43 +124,13 @@ class DisplayNoteController extends Component<IProps, IState> {
   }
 }
 
-const GET_ITEM_QUERY = gql`
-  query GetItemQuery($id: ID!, $childrenParams: ItemPaginationInput) {
-    getItem(id: $id) {
-      uuid
-      content
-      contentType
-      encItemKey
-      user {
-        uuid
-        username
-        pubVerifyKey
-      }
-      deleted
-      parent {
-        uuid
-      }
-      children(params: $childrenParams) {
-        count
-        items {
-          uuid
-        }
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-interface IGetItemResponseData {
-  getItem: Item;
-}
-
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser!, // User is defined due to WithAuth wrapper
   akB64: state.secrets.akB64,
   mkB64: state.secrets.mkB64,
   rawNotes: state.notes.rawNotes,
-  decryptedNotes: state.notes.decryptedNotes
+  decryptedNotes: state.notes.decryptedNotes,
+  drafts: state.notes.drafts
 });
 
 export default connect(mapStateToProps)(withApollo(DisplayNoteController));

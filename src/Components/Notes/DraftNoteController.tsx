@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component, MouseEventHandler } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
-import { Redirect } from "react-router";
+import { match, Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -12,21 +12,37 @@ import {
   addRawNote,
   discardDraft,
   setDecryptedNote,
+  setDraft,
   setDraftNoteContent,
   setDraftNoteTitle,
   setDraftNoteType
 } from "../../Modules/Reducers/Notes/Actions";
-import { NEW_DRAFT_NOTE } from "../../Modules/Reducers/Notes/Reducer";
+import {
+  EDIT_DRAFT_NOTE,
+  NEW_DRAFT_NOTE
+} from "../../Modules/Reducers/Notes/Reducer";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
+import { fetchAndProcessNote } from "./NotesShared";
 
 interface IProps {
+  decryptedNotes: {
+    [index: string]: {
+      decryptedAt: number;
+      decryptedNote: DecryptedNote | null;
+      errors?: string[];
+    };
+  };
   dispatch: Dispatch;
+  match: match<{ uuid?: string }>;
   client: ApolloClient<NormalizedCacheObject>;
   user: FullUser;
-  draftNote: DecryptedNote;
+  drafts: {
+    [index: string]: DecryptedNote;
+  };
   akB64?: string;
   mkB64?: string;
+  rawNotes: { [index: string]: Item };
 }
 
 interface IState {
@@ -46,11 +62,17 @@ interface IState {
 
 const itemContentType = "note";
 const debounceTimeoutMS = 200;
+const defaultDraftNote = {
+  content: "",
+  title: "",
+  noteType: "markdown"
+};
 
-class CreateNoteController extends Component<IProps, IState> {
+class DraftNoteController extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    document.title = "Draft Note - UDIA";
+    const { uuid } = this.props.match.params;
+    document.title = `${!!uuid ? "Editing" : "Drafting"} Note - UDIA`;
     const errors: string[] = [];
     let cryptoManager: CryptoManager | null = null;
     try {
@@ -58,12 +80,14 @@ class CreateNoteController extends Component<IProps, IState> {
     } catch (err) {
       errors.push(err.message);
     }
+
+    const draftNote = this.getWorkingDraftNote();
     this.state = {
-      loading: false,
+      loading: !!uuid,
       preview: false,
       // necessary anti-pattern for side by side render performance (input debouncing)
-      debounceContent: props.draftNote.content,
-      debounceTitle: props.draftNote.title,
+      debounceContent: draftNote.content,
+      debounceTitle: draftNote.title,
       errors,
       titleErrors: [],
       contentErrors: [],
@@ -71,8 +95,85 @@ class CreateNoteController extends Component<IProps, IState> {
     };
   }
 
+  /**
+   * Logic to handle editing notes goes here
+   */
+  public async componentDidMount() {
+    try {
+      const {
+        client,
+        rawNotes,
+        dispatch,
+        decryptedNotes,
+        drafts,
+        user,
+        akB64,
+        mkB64,
+        match: {
+          params: { uuid }
+        }
+      } = this.props;
+      const { cryptoManager } = this.state;
+      if (!uuid) {
+        // we're not editing a note, therefore we don't need to do anything else
+        return;
+      }
+
+      const draftKey = this.getDraftKey();
+      if (draftKey in drafts) {
+        // edited note is already in the drafts
+        return;
+      }
+
+      // has the note already been fetched and decrypted?
+      const decryptedNotePayload = decryptedNotes[uuid];
+      if (decryptedNotePayload) {
+        const { decryptedNote, errors } = decryptedNotePayload;
+        if (decryptedNote) {
+          dispatch(setDraft(draftKey, decryptedNote));
+          this.setState({
+            debounceContent: decryptedNote.content,
+            debounceTitle: decryptedNote.title
+          });
+          return;
+        } else {
+          this.setState({
+            errors: errors ? errors : ["Failed to fetch note!"]
+          });
+          return;
+        }
+      } else {
+        // guess we need to fetch the note from the API
+        const { rawNote, decryptedNote } = await fetchAndProcessNote(
+          cryptoManager,
+          client,
+          rawNotes,
+          uuid,
+          user,
+          akB64,
+          mkB64,
+          (loadingText: string) => this.setState({ loadingText })
+        );
+        dispatch(addRawNote(rawNote));
+        dispatch(
+          setDecryptedNote(rawNote.uuid, new Date().getTime(), decryptedNote)
+        );
+        dispatch(setDraft(draftKey, decryptedNote));
+        this.setState({
+          debounceContent: decryptedNote.content,
+          debounceTitle: decryptedNote.title
+        });
+      }
+    } catch (err) {
+      const { errors } = parseGraphQLError(err, "Failed to initialize draft!");
+      this.setState({ errors });
+    } finally {
+      this.setState({ loading: false, loadingText: undefined });
+    }
+  }
+
   public render() {
-    const { draftNote } = this.props;
+    const draftNote = this.getWorkingDraftNote();
     const {
       loading,
       loadingText,
@@ -105,7 +206,7 @@ class CreateNoteController extends Component<IProps, IState> {
         handleToggleNoteType={this.handleToggleNoteType}
         handleChangeNoteTitle={this.handleChangeNoteTitle}
         handleChangeNoteContent={this.handleChangeNoteContent}
-        handleSubmit={this.handleSubmitNewNote}
+        handleSubmit={this.handleSubmitNote}
       />
     );
   }
@@ -114,7 +215,7 @@ class CreateNoteController extends Component<IProps, IState> {
     HTMLTextAreaElement
   > = e => {
     const newTitle = e.currentTarget.value;
-    this.props.dispatch(setDraftNoteTitle(NEW_DRAFT_NOTE, newTitle));
+    this.props.dispatch(setDraftNoteTitle(this.getDraftKey(), newTitle));
     window.clearTimeout(this.state.debounceTitleTimeout);
     this.setState({
       titleErrors: [],
@@ -131,7 +232,7 @@ class CreateNoteController extends Component<IProps, IState> {
     HTMLTextAreaElement
   > = e => {
     const newContent = e.currentTarget.value;
-    this.props.dispatch(setDraftNoteContent(NEW_DRAFT_NOTE, newContent));
+    this.props.dispatch(setDraftNoteContent(this.getDraftKey(), newContent));
     // for side by side editing, delay content update
     window.clearTimeout(this.state.debounceContentTimeout);
     this.setState({
@@ -148,14 +249,21 @@ class CreateNoteController extends Component<IProps, IState> {
   protected handleDiscardDraftNote: MouseEventHandler<
     HTMLButtonElement
   > = e => {
-    this.props.dispatch(discardDraft(NEW_DRAFT_NOTE));
+    const {
+      match: {
+        params: { uuid }
+      }
+    } = this.props;
+    this.props.dispatch(discardDraft(this.getDraftKey()));
     window.clearTimeout(this.state.debounceContentTimeout);
     window.clearTimeout(this.state.debounceTitleTimeout);
+
     this.setState({
       debounceContent: "",
       debounceTitle: "",
       debounceContentTimeout: undefined,
-      debounceTitleTimeout: undefined
+      debounceTitleTimeout: undefined,
+      redirectToNote: uuid
     });
   };
 
@@ -178,16 +286,27 @@ class CreateNoteController extends Component<IProps, IState> {
         noteType = "markdown";
         break;
     }
-    this.props.dispatch(setDraftNoteType(NEW_DRAFT_NOTE, noteType));
+    this.props.dispatch(setDraftNoteType(this.getDraftKey(), noteType));
   };
 
-  protected handleSubmitNewNote: MouseEventHandler<
+  protected handleSubmitNote: MouseEventHandler<
     HTMLButtonElement
   > = async e => {
     try {
       e.preventDefault();
-      const { dispatch, client, draftNote, user, akB64, mkB64 } = this.props;
+      const {
+        dispatch,
+        client,
+        user,
+        akB64,
+        mkB64,
+        match: {
+          params: { uuid }
+        }
+      } = this.props;
+      const draftNote = this.getWorkingDraftNote();
       const { cryptoManager } = this.state;
+
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
       }
@@ -199,85 +318,49 @@ class CreateNoteController extends Component<IProps, IState> {
         throw new Error("Encryption secrets not set! Please re-authenticate.");
       }
 
-      // Decrypt the user's private signing key
-      this.setState({
-        loading: true,
-        loadingText: "Decrypting signing key...",
-        errors: []
-      });
-      const akBuf = Buffer.from(akB64, "base64");
-      const rawSignKey = await cryptoManager.decryptWithSecret(
+      this.setState({ loading: true, errors: [] });
+      const {
+        encNoteContent,
+        encItemKey
+      } = await cryptoManager.encryptNoteToItem(
+        draftNote,
         user.encPrivateSignKey,
-        akBuf.buffer
-      );
-      const signKey = await cryptoManager.importPrivateSignJsonWebKey(
-        JSON.parse(Buffer.from(rawSignKey).toString())
-      );
-
-      // Decrypt the user's private secret key
-      this.setState({
-        loadingText: "Decrypting secret key..."
-      });
-      const mkBuf = Buffer.from(mkB64, "base64");
-      const rawSecretKey = await cryptoManager.decryptWithSecret(
         user.encSecretKey,
-        Buffer.concat([mkBuf, akBuf]).buffer
-      );
-      const secretKey = await cryptoManager.importSecretJsonWebKey(
-        JSON.parse(Buffer.from(rawSecretKey).toString())
-      );
-
-      // Sign the note with the user's signing key
-      this.setState({ loadingText: "Signing the raw note..." });
-      const noteData = JSON.stringify(draftNote);
-      const noteArrBuf = Buffer.from(noteData, "utf8").buffer;
-      const sigArrBuf = await cryptoManager.signWithPrivateKey(
-        signKey,
-        noteArrBuf
-      );
-
-      // Generate new AES-GCM key for this secret note
-      this.setState({ loadingText: "Generating item AES-GCM key..." });
-      const itemKey = await cryptoManager.generateSymmetricEncryptionKey();
-
-      // Encrypt the note with newly generated symmetric encryption key
-      this.setState({ loadingText: "Encrypting the signed note..." });
-      const encNoteContent = await cryptoManager.encryptWithSecretKey(
-        noteArrBuf,
-        itemKey,
-        sigArrBuf
-      );
-
-      // Encrypt the item key user's secret key
-      this.setState({ loadingText: "Encrypting the item encryption key..." });
-      const itemJWK = await cryptoManager.exportJsonWebKey(itemKey);
-      const stringifiedItemKey = JSON.stringify(itemJWK);
-      const itemKeyArrBuf = Buffer.from(stringifiedItemKey, "utf8").buffer;
-      const encItemKey = await cryptoManager.encryptWithSecretKey(
-        itemKeyArrBuf,
-        secretKey
+        akB64,
+        mkB64,
+        (loadingText: string) => this.setState({ loadingText })
       );
 
       // send the data to the server
       this.setState({ loadingText: "Communicating with server..." });
-      const mutationResponse = await client.mutate<ICreateItemMutationResponse>(
-        {
-          mutation: CREATE_ITEM_MUTATION,
-          variables: {
-            params: {
-              content: encNoteContent,
-              contentType: itemContentType,
-              encItemKey
-            }
-          }
+      const mutation = !!uuid ? UPDATE_ITEM_MUTATION : CREATE_ITEM_MUTATION;
+      const variables: any = {
+        id: uuid,
+        params: {
+          content: encNoteContent,
+          contentType: itemContentType,
+          encItemKey
         }
-      );
-      const {
-        createItem
-      } = mutationResponse.data as ICreateItemMutationResponse;
+      };
+      const mutationResponse = await client.mutate<
+        ICreateItemMutationResponse | IUpdateItemMutationResponse
+      >({
+        mutation,
+        variables
+      });
+      let item: Item;
+      if (!!uuid) {
+        const {
+          updateItem
+        } = mutationResponse.data as IUpdateItemMutationResponse;
+        item = updateItem;
+      } else {
+        const {
+          createItem
+        } = mutationResponse.data as ICreateItemMutationResponse;
+        item = createItem;
+      }
 
-      // tslint:disable-next-line:no-console
-      console.log(mutationResponse);
       this.setState({
         loading: false,
         loadingText: undefined,
@@ -285,19 +368,34 @@ class CreateNoteController extends Component<IProps, IState> {
         titleErrors: [],
         contentErrors: []
       });
-      dispatch(addRawNote(createItem));
-      dispatch(
-        setDecryptedNote(createItem.uuid, new Date().getTime(), draftNote)
-      );
-      dispatch(discardDraft(NEW_DRAFT_NOTE));
-      this.setState({ redirectToNote: createItem.uuid });
+      dispatch(addRawNote(item));
+      dispatch(setDecryptedNote(item.uuid, new Date().getTime(), draftNote));
+      const draftKey = this.getDraftKey();
+      dispatch(discardDraft(draftKey));
+      this.setState({ redirectToNote: item.uuid });
     } catch (err) {
-      const { errors } = parseGraphQLError(err, "Failed to create note!");
+      const { errors } = parseGraphQLError(err, "Failed to draft note!");
       this.setState({ loading: false, loadingText: undefined, errors });
     }
   };
+
+  private getDraftKey() {
+    const { uuid } = this.props.match.params;
+    return uuid ? EDIT_DRAFT_NOTE(uuid) : NEW_DRAFT_NOTE;
+  }
+
+  private getWorkingDraftNote() {
+    const draftKey = this.getDraftKey();
+    return this.props.drafts[draftKey] || defaultDraftNote;
+  }
 }
 
+// interface ICreateItemInput {
+//   content: string;
+//   contentType: string;
+//   encItemKey?: string;
+//   parentId?: string;
+// }
 const CREATE_ITEM_MUTATION = gql`
   mutation CreateItemMutation($params: CreateItemInput!) {
     createItem(params: $params) {
@@ -325,27 +423,54 @@ const CREATE_ITEM_MUTATION = gql`
     }
   }
 `;
+interface ICreateItemMutationResponse {
+  createItem: Item;
+}
 
-// interface ICreateItemParam {
-//   content: string;
-//   contentType: string;
+// interface IUpdateItemInput {
+//   content?: string;
+//   contentType?: string;
 //   encItemKey?: string;
 //   parentId?: string;
 // }
-
-interface ICreateItemMutationResponse {
-  createItem: Item;
+const UPDATE_ITEM_MUTATION = gql`
+  mutation UpdateItemMutation($id: ID!, $params: UpdateItemInput!) {
+    updateItem(id: $id, params: $params) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+interface IUpdateItemMutationResponse {
+  updateItem: Item;
 }
 
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser!, // WithAuth wrapper ensures user is defined
   akB64: state.secrets.akB64,
   mkB64: state.secrets.mkB64,
-  draftNote: state.notes.drafts[NEW_DRAFT_NOTE] || {
-    content: "",
-    title: "",
-    noteType: "markdown"
-  }
+  drafts: state.notes.drafts,
+  rawNotes: state.notes.rawNotes,
+  decryptedNotes: state.notes.decryptedNotes
 });
 
-export default connect(mapStateToProps)(withApollo(CreateNoteController));
+export default connect(mapStateToProps)(withApollo(DraftNoteController));

@@ -23,14 +23,12 @@ interface IProps {
 const WithAuth = (
   WrappedComponent: any, // should be a react component like thing
   requireAuthentication: boolean,
-  redirectToPath: string,
-  redirectReferrer: string
+  redirectToPath: string
 ) => {
   const RedirectToComponent = (
     <Redirect
       push={true}
       to={{ pathname: redirectToPath }}
-      from={redirectReferrer}
     />
   );
 

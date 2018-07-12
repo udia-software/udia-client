@@ -6,6 +6,7 @@ import {
   DISCARD_DRAFT,
   INotesAction,
   SET_DECRYPTED_NOTE,
+  SET_DRAFT,
   SET_DRAFT_CONTENT,
   SET_DRAFT_TITLE,
   SET_DRAFT_TYPE
@@ -13,6 +14,7 @@ import {
 
 const NOTE_TYPE_MARKDOWN = "markdown";
 export const NEW_DRAFT_NOTE = "n";
+export const EDIT_DRAFT_NOTE = (uuid: string) => `e:${uuid}`;
 
 export interface INotesState {
   // dictionary of draft notes
@@ -54,14 +56,25 @@ export default (
   };
 
   switch (action.type) {
-    case SET_DRAFT_TITLE: {
-      const { parentId, title } = action.payload;
+    case SET_DRAFT: {
+      const { draftId, note } = action.payload;
       const drafts = {
         ...state.drafts,
-        [parentId]: {
+        [draftId]: note
+      };
+      return {
+        ...state,
+        drafts
+      };
+    }
+    case SET_DRAFT_TITLE: {
+      const { draftId, title } = action.payload;
+      const drafts = {
+        ...state.drafts,
+        [draftId]: {
           content: "",
           noteType: NOTE_TYPE_MARKDOWN,
-          ...state.drafts[parentId],
+          ...state.drafts[draftId],
           title
         }
       };
@@ -71,13 +84,13 @@ export default (
       };
     }
     case SET_DRAFT_CONTENT: {
-      const { parentId, content } = action.payload;
+      const { draftId, content } = action.payload;
       const drafts = {
         ...state.drafts,
-        [parentId]: {
+        [draftId]: {
           title: "",
           noteType: NOTE_TYPE_MARKDOWN,
-          ...state.drafts[parentId],
+          ...state.drafts[draftId],
           content
         }
       };
@@ -87,15 +100,15 @@ export default (
       };
     }
     case SET_DRAFT_TYPE: {
-      const { parentId, type } = action.payload;
+      const { draftId, type } = action.payload;
       return {
         ...state,
         drafts: {
           ...state.drafts,
-          [parentId]: {
+          [draftId]: {
             title: "",
             content: "",
-            ...state.drafts[parentId],
+            ...state.drafts[draftId],
             noteType: type
           }
         }

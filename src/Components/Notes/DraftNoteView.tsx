@@ -12,7 +12,7 @@ import {
   NoteMarkdownContent,
   NoteTextContent,
   ViewNoteTitle
-} from "./NoteViewShared";
+} from "./NotesShared";
 
 const NoteViewContainer = styled.div`
   display: grid;
@@ -259,7 +259,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                     </NoteStateButton>
                   )}
                   <NoteStateButton onClick={handleSubmit}>
-                    Submit
+                    Publish
                   </NoteStateButton>
                 </Fragment>
               )}
@@ -270,7 +270,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                       Edit
                     </NoteStateButton>
                     <NoteStateButton onClick={handleSubmit}>
-                      Submit
+                      Publish
                     </NoteStateButton>
                   </Fragment>
                 ) : (
@@ -328,9 +328,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                   </NoteHolderTitleCell>
                   <NoteHolderContentCell>
                     <EditNoteContent
-                      rows={
-                        Math.max(draftNote.content.split("\n").length, 2) + 2
-                      }
+                      // rows={Math.max(draftNote.content.split("\n").length, 2) + 2}
                       placeholder="Note Content"
                       onChange={handleChangeNoteContent}
                       value={draftNote.content}

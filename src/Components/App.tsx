@@ -49,6 +49,7 @@ const AppContainer = styled.div`
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
+    background-color: ${props => props.theme.panelBackgroundColor};
   }
 `;
 

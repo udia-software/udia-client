@@ -1,5 +1,5 @@
 import { ThemedStyledProps } from "styled-components";
-import { IThemeInterface } from "src/Components/AppStyles";
+import { IThemeInterface } from "../Components/AppStyles";
 
 // images and static files
 declare module "*.svg";
