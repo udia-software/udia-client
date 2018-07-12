@@ -27,28 +27,10 @@ interface IProps {
   draftingNote: boolean;
 }
 
-const Todo = () => <h1>todo</h1>;
-
 class NoteRoutes extends Component<IProps> {
-  public static DraftNoteComponent = WithAuth(
-    CreateNoteController,
-    true,
-    "/",
-    "/note/draft"
-  );
-  public static ListNotesComponent = WithAuth(
-    ListNotesController,
-    true,
-    "/",
-    "/note/list"
-  );
-  public static ViewNoteComponent = WithAuth(
-    DisplayNoteController,
-    true,
-    "/",
-    "/note/list"
-  );
-  public static EditNoteComponent = WithAuth(Todo, true, "/", "/note/edit");
+  public static DraftNoteComponent = WithAuth(CreateNoteController, true, "/");
+  public static ListNotesComponent = WithAuth(ListNotesController, true, "/");
+  public static ViewNoteComponent = WithAuth(DisplayNoteController, true, "/");
 
   public render() {
     const { showSidebar: showSidebarProp, draftingNote } = this.props;
@@ -93,8 +75,8 @@ class NoteRoutes extends Component<IProps> {
             />
             <Route
               exact={true}
-              path="/note/edit"
-              render={this.renderEditNoteComponent}
+              path="/note/draft/:uuid"
+              render={this.renderDraftNoteComponent}
             />
             <Route component={NotFound} />
           </Switch>
@@ -117,9 +99,6 @@ class NoteRoutes extends Component<IProps> {
   );
   protected renderViewNoteComponent = (props: any) => (
     <NoteRoutes.ViewNoteComponent {...props} />
-  );
-  protected renderEditNoteComponent = (props: any) => (
-    <NoteRoutes.EditNoteComponent {...props} />
   );
 
   protected handleToggleAuthSidebar = () => {

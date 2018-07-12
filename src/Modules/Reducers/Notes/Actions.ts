@@ -1,4 +1,5 @@
 // Action serializable and unique type strings
+export const SET_DRAFT = "notes/SET_DRAFT";
 export const SET_DRAFT_TITLE = "notes/SET_DRAFT_TITLE";
 export const SET_DRAFT_CONTENT = "notes/SET_DRAFT_CONTENT";
 export const SET_DRAFT_TYPE = "notes/SET_DRAFT_TYPE";
@@ -12,20 +13,29 @@ export const CLEAR_NOTES_DATA = "notes/CLEAR_NOTES_DATA";
 /**
  * DRAFTING NOTE ACTIONS
  */
+export interface ISetDraftAction {
+  type: typeof SET_DRAFT;
+  payload: { draftId: string; note: DecryptedNote };
+}
+export const setDraft = (draftId: string, note: DecryptedNote) => ({
+  type: SET_DRAFT,
+  payload: { draftId, note }
+});
+
 export interface ISetDraftNoteTitleAction {
   type: typeof SET_DRAFT_TITLE;
   payload: {
-    parentId: string;
+    draftId: string;
     title: string;
   };
 }
 export const setDraftNoteTitle = (
-  parentId: string,
+  draftId: string,
   title: string
 ): ISetDraftNoteTitleAction => ({
   type: SET_DRAFT_TITLE,
   payload: {
-    parentId,
+    draftId,
     title
   }
 });
@@ -33,17 +43,17 @@ export const setDraftNoteTitle = (
 export interface ISetDraftNoteContentAction {
   type: typeof SET_DRAFT_CONTENT;
   payload: {
-    parentId: string;
+    draftId: string;
     content: string;
   };
 }
 export const setDraftNoteContent = (
-  parentId: string,
+  draftId: string,
   content: string
 ): ISetDraftNoteContentAction => ({
   type: SET_DRAFT_CONTENT,
   payload: {
-    parentId,
+    draftId,
     content
   }
 });
@@ -51,17 +61,17 @@ export const setDraftNoteContent = (
 export interface ISetDraftNoteTypeAction {
   type: typeof SET_DRAFT_TYPE;
   payload: {
-    parentId: string;
+    draftId: string;
     type: "text" | "markdown";
   };
 }
 export const setDraftNoteType = (
-  parentId: string,
+  draftId: string,
   type: "text" | "markdown"
 ): ISetDraftNoteTypeAction => ({
   type: SET_DRAFT_TYPE,
   payload: {
-    parentId,
+    draftId,
     type
   }
 });
@@ -70,9 +80,9 @@ export interface IDiscardDraftNoteAction {
   type: typeof DISCARD_DRAFT;
   payload: string;
 }
-export const discardDraft = (parentId: string): IDiscardDraftNoteAction => ({
+export const discardDraft = (draftId: string): IDiscardDraftNoteAction => ({
   type: DISCARD_DRAFT,
-  payload: parentId
+  payload: draftId
 });
 
 /**
@@ -138,6 +148,7 @@ export const clearNotesData = (): IClearNotesDataAction => ({
 });
 
 export type INotesAction =
+  | ISetDraftAction
   | ISetDraftNoteTitleAction
   | ISetDraftNoteContentAction
   | ISetDraftNoteTypeAction

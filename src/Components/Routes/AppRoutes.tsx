@@ -21,22 +21,17 @@ export default () => (
     <Route
       exact={true}
       path="/sign-in"
-      component={WithAuth(SignInController, false, "/", "/sign-in")}
+      component={WithAuth(SignInController, false, "/")}
     />
     <Route
       exact={true}
       path="/sign-up"
-      component={WithAuth(SignUpController, false, "/", "/sign-up")}
+      component={WithAuth(SignUpController, false, "/")}
     />
     <Route
       exact={true}
       path="/forgot-password"
-      component={WithAuth(
-        ForgotPasswordController,
-        false,
-        "/",
-        "/forgot-password"
-      )}
+      component={WithAuth(ForgotPasswordController, false, "/")}
     />
     <Route
       exact={true}
@@ -51,25 +46,15 @@ export default () => (
     <Route
       exact={true}
       path="/reset-password/:verificationToken"
-      component={WithAuth(
-        ResetPasswordController,
-        false,
-        "/",
-        "/reset-password"
-      )}
+      component={WithAuth(ResetPasswordController, false, "/")}
     />
     <Route
       exact={true}
       path="/reset-password"
-      component={WithAuth(
-        ResetPasswordController,
-        false,
-        "/",
-        "/reset-password"
-      )}
+      component={WithAuth(ResetPasswordController, false, "/")}
     />
-
-    <Route path="/auth" component={WithAuth(AuthRoutes, true, "/", "/auth")} />
+    {/* These routes have the sidebar, whereas the above ones don't */}
+    <Route path="/auth" component={WithAuth(AuthRoutes, true, "/")} />
     <Route path="/note" component={NoteRoutes} />
     <Route component={NotFound} />
   </Switch>
