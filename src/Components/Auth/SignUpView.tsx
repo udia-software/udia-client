@@ -6,7 +6,7 @@ import React, {
   MouseEventHandler
 } from "react";
 import { Link } from "react-router-dom";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   Button,
@@ -82,7 +82,7 @@ const SignUpView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>Hello there, User.</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField
             error={usernameErrors.length > 0}
@@ -101,7 +101,7 @@ const SignUpView = ({
                 value={username}
               />
             </label>
-            <FormFieldErrors errors={usernameErrors} />
+            <FieldErrors errors={usernameErrors} />
           </FormField>
           <FormField
             error={emailErrors.length > 0}
@@ -120,7 +120,7 @@ const SignUpView = ({
                 value={email}
               />
             </label>
-            <FormFieldErrors errors={emailErrors} />
+            <FieldErrors errors={emailErrors} />
           </FormField>
           <FormField
             error={passwordErrors.length > 0}
@@ -143,7 +143,7 @@ const SignUpView = ({
                 value={password}
               />
             </label>
-            <FormFieldErrors errors={passwordErrors} />
+            <FieldErrors errors={passwordErrors} />
           </FormField>
           <Button>Sign Up</Button>
         </FormContent>

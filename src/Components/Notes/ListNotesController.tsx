@@ -12,7 +12,7 @@ import {
   addRawNotes,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 
 interface IProps {
@@ -66,7 +66,7 @@ class ListNotesController extends Component<IProps, IState> {
     const { errors } = this.state;
     return (
       <div>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <ul>
           {noteIDs.map(uuid => {
             const { decryptedNote, errors: noteErrors = [] } = decryptedNotes[
@@ -86,7 +86,7 @@ class ListNotesController extends Component<IProps, IState> {
                     <strong>Created At:</strong>{" "}
                     {new Date(rawNotes[uuid].createdAt).toString()}
                   </span>
-                  <FormFieldErrors errors={noteErrors} />
+                  <FieldErrors errors={noteErrors} />
                 </Link>
               </li>
             );
