@@ -11,6 +11,7 @@ export const NoteMarkdownContent = styled(ReactMarkdown)`
 `;
 
 export const NoteTextContent = styled.div`
+  flex: 10 1 100%;
   margin-top: 1em;
-  white-space pre-line;
+  white-space pre-wrap;
 `;

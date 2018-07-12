@@ -4,8 +4,8 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   Button,
@@ -67,7 +67,7 @@ const UpdatePasswordView = ({
       <FormContainer onSubmit={handleSubmit}>
         <fieldset>
           <legend>Changing your password, User?</legend>
-          <FormFieldErrors errors={errors} />
+          <FieldErrors errors={errors} />
           <FormContent>
             <FormField error={currentPasswordErrors.length > 0}>
               <label htmlFor="currentPassword">
@@ -89,7 +89,7 @@ const UpdatePasswordView = ({
                   value={currentPassword}
                 />
               </label>
-              <FormFieldErrors errors={currentPasswordErrors} />
+              <FieldErrors errors={currentPasswordErrors} />
             </FormField>
             <FormField
               error={newPasswordErrors.length > 0}
@@ -114,8 +114,8 @@ const UpdatePasswordView = ({
                   value={newPassword}
                 />
               </label>
-              <FormFieldErrors errors={newPasswordErrors} />
-              <FormFieldSuccesses
+              <FieldErrors errors={newPasswordErrors} />
+              <FieldSuccesses
                 successes={success ? ["Successfully updated password!"] : []}
               />
             </FormField>

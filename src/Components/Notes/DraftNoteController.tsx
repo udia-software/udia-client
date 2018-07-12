@@ -191,10 +191,6 @@ class CreateNoteController extends Component<IProps, IState> {
       if (!cryptoManager) {
         throw new Error("Browser does not support WebCrypto!");
       }
-      if (!draftNote.title) {
-        this.setState({ titleErrors: ["Title cannot be empty!"] });
-        return;
-      }
       if (!draftNote.content) {
         this.setState({ contentErrors: ["Content cannot be empty!"] });
         return;

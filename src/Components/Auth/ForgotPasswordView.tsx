@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler, FormEventHandler } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   Button,
@@ -43,7 +43,7 @@ const ForgotPasswordView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>Resetting your password, User?</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField error={emailErrors.length > 0} success={requestSent}>
             <label htmlFor="email">
@@ -57,10 +57,10 @@ const ForgotPasswordView = ({
                 value={email}
               />
             </label>
-            <FormFieldSuccesses
+            <FieldSuccesses
               successes={requestSent ? ["Password reset email sent!"] : []}
             />
-            <FormFieldErrors errors={emailErrors} />
+            <FieldErrors errors={emailErrors} />
           </FormField>
           <Button>Request Password Reset</Button>
         </FormContent>

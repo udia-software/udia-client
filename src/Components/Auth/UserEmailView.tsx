@@ -5,8 +5,8 @@ import React, {
   Fragment,
   MouseEventHandler
 } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   Button,
@@ -69,7 +69,7 @@ const UserEmailView = ({
       <FormContainer onSubmit={handleAddEmail}>
         <fieldset>
           <legend>Adding a new email, {user.username}?</legend>
-          <FormFieldErrors errors={errors} />
+          <FieldErrors errors={errors} />
           <FormContent>
             <FormField
               error={formEmailErrors.length > 0}
@@ -86,8 +86,8 @@ const UserEmailView = ({
                   value={formEmail}
                 />
               </label>
-              <FormFieldErrors errors={formEmailErrors} />
-              <FormFieldSuccesses
+              <FieldErrors errors={formEmailErrors} />
+              <FieldSuccesses
                 successes={
                   typeof emailSuccess === "string" ? [emailSuccess] : []
                 }
@@ -96,7 +96,7 @@ const UserEmailView = ({
             <Button>Add Email</Button>
           </FormContent>
           <h3 style={{ marginBottom: 0, textAlign: "center" }}>User Emails</h3>
-          <FormFieldErrors errors={userEmailErrors} />
+          <FieldErrors errors={userEmailErrors} />
           <dl>
             {user.emails.map(
               ({ email, primary, verified, verificationExpiry }, index) => (

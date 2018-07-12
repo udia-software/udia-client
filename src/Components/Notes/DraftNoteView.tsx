@@ -6,9 +6,13 @@ import React, {
 } from "react";
 import styled, { BaseTheme } from "../AppStyles";
 import { Button } from "../Auth/SignViewShared";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
-import { NoteMarkdownContent, NoteTextContent, ViewNoteTitle } from "./NoteViewShared";
+import {
+  NoteMarkdownContent,
+  NoteTextContent,
+  ViewNoteTitle
+} from "./NoteViewShared";
 
 const NoteViewContainer = styled.div`
   display: grid;
@@ -49,7 +53,8 @@ const NoteStateTitle = styled.h1`
 
 const NoteStateButton = styled(Button)`
   flex: 1 1 0;
-  min-height: 2em;
+  font-size: 1.1em;
+  height: 2em;
 `;
 
 const ToggleNoteTypeContainer = styled.div`
@@ -67,8 +72,10 @@ const ToggleNoteTypeLabel = styled.label`
   border-radius: 3px;
   width: 100%;
   font-size: 1.1em;
-  padding-bottom: 0.5em;
-  text-align: center;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const NoteStateResponse = styled.div`
@@ -77,21 +84,30 @@ const NoteStateResponse = styled.div`
 `;
 
 const NoteHolderContainer = styled.div`
+  display: flex;
   padding: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   width: 100%;
   height: 100%;
 `;
 
-const NoteHolderLeftSide = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  width: 50%;
+const NoteHolderLargeScreenLayout = styled.div`
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas: "note-holder-left note-holder-right";
 `;
+
+const NoteHolderLeftSide = styled.div`
+  grid-area: note-holder-left;
+  display: grid;
+  grid-template-rows: auto 1fr;
+`;
+
 const NoteHolderRightSide = styled.div`
+  grid-area: note-holder-right;
   display: inline-block;
   vertical-align: top;
-  width: calc(50% - 0.4em);
   margin-left: 0.4em;
 `;
 
@@ -138,13 +154,14 @@ const EditNoteContent = styled.textarea`
   border: none;
   color: ${props => props.theme.primaryColor};
   padding: 0;
+  margin: 0;
   width: 100%;
   height: 100%;
 `;
 
 const NoValue = styled.span`
   font-style: italic;
-  color: ${props => props.theme.inputErrorColor};
+  color: ${props => props.theme.intermediateColor};
 `;
 
 const HorizontalLine = styled.hr`
@@ -174,7 +191,12 @@ interface IState {
   width: number;
 }
 
-class DraftNoteView extends Component<IProps, IState> {
+interface IWithContentRef {
+  contentRef?: HTMLTextAreaElement;
+}
+
+class DraftNoteView extends Component<IProps, IState> implements IWithContentRef {
+  public contentRef?: HTMLTextAreaElement;
   constructor(props: IProps) {
     super(props);
     this.state = { width: window.innerWidth };
@@ -182,6 +204,13 @@ class DraftNoteView extends Component<IProps, IState> {
 
   public componentDidMount() {
     window.addEventListener("resize", this.handleResizeEvent);
+    if (this.contentRef) {
+      this.contentRef.focus();
+    }
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResizeEvent);
   }
 
   public render() {
@@ -282,51 +311,56 @@ class DraftNoteView extends Component<IProps, IState> {
               </ToggleNoteTypeContainer>
             )}
             <NoteStateResponse>
-              <FormFieldErrors errors={errors} />
+              <FieldErrors errors={errors} />
             </NoteStateResponse>
             <HorizontalLine />
           </NoteStateHolder>
           {isLargeScreen && (
             <NoteHolderContainer>
-              <NoteHolderLeftSide>
-                <NoteHolderTitleCell>
-                  <EditNoteTitle
-                    placeholder="Note Title"
-                    onChange={handleChangeNoteTitle}
-                    value={draftNote.title}
-                  />
-                </NoteHolderTitleCell>
-                <NoteHolderContentCell>
-                  <EditNoteContent
-                    rows={Math.max(draftNote.content.split("\n").length, 2) + 2}
-                    placeholder="Note Content"
-                    onChange={handleChangeNoteContent}
-                    value={draftNote.content}
-                  />
-                </NoteHolderContentCell>
-              </NoteHolderLeftSide>
-              <NoteHolderRightSide>
-                <NoteHolderTitleCell debouncing={debouncingTitle}>
-                  <ViewNoteTitle>
-                    {!!debouncedTitle ? (
-                      debouncedTitle
+              <NoteHolderLargeScreenLayout>
+                <NoteHolderLeftSide>
+                  <NoteHolderTitleCell>
+                    <EditNoteTitle
+                      placeholder="Note Title"
+                      onChange={handleChangeNoteTitle}
+                      value={draftNote.title}
+                    />
+                  </NoteHolderTitleCell>
+                  <NoteHolderContentCell>
+                    <EditNoteContent
+                      rows={
+                        Math.max(draftNote.content.split("\n").length, 2) + 2
+                      }
+                      placeholder="Note Content"
+                      onChange={handleChangeNoteContent}
+                      value={draftNote.content}
+                      innerRef={this.setupContentRef}
+                    />
+                  </NoteHolderContentCell>
+                </NoteHolderLeftSide>
+                <NoteHolderRightSide>
+                  <NoteHolderTitleCell debouncing={debouncingTitle}>
+                    <ViewNoteTitle>
+                      {!!debouncedTitle ? (
+                        debouncedTitle
+                      ) : (
+                        <NoValue>Untitled</NoValue>
+                      )}
+                    </ViewNoteTitle>
+                  </NoteHolderTitleCell>
+                  <NoteHolderContentCell debouncing={debouncingContent}>
+                    {draftNote.content ? (
+                      draftNote.noteType === "markdown" ? (
+                        <NoteMarkdownContent source={debouncedContent} />
+                      ) : (
+                        <NoteTextContent>{debouncedContent}</NoteTextContent>
+                      )
                     ) : (
-                      <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                      <NoValue>null</NoValue>
                     )}
-                  </ViewNoteTitle>
-                </NoteHolderTitleCell>
-                <NoteHolderContentCell debouncing={debouncingContent}>
-                  {draftNote.content ? (
-                    draftNote.noteType === "markdown" ? (
-                      <NoteMarkdownContent source={debouncedContent} />
-                    ) : (
-                      <NoteTextContent>{debouncedContent}</NoteTextContent>
-                    )
-                  ) : (
-                    <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
-                  )}
-                </NoteHolderContentCell>
-              </NoteHolderRightSide>
+                  </NoteHolderContentCell>
+                </NoteHolderRightSide>
+              </NoteHolderLargeScreenLayout>
             </NoteHolderContainer>
           )}
           {!isLargeScreen && (
@@ -348,6 +382,7 @@ class DraftNoteView extends Component<IProps, IState> {
                       placeholder="Note Content"
                       onChange={handleChangeNoteContent}
                       value={draftNote.content}
+                      innerRef={this.setupContentRef}
                     />
                   </NoteHolderContentCell>
                 </NoteHolderFullWidth>
@@ -359,7 +394,7 @@ class DraftNoteView extends Component<IProps, IState> {
                       {!!draftNote.title ? (
                         draftNote.title
                       ) : (
-                        <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                        <NoValue>Untitled</NoValue>
                       )}
                     </ViewNoteTitle>
                   </NoteHolderTitleCell>
@@ -371,7 +406,7 @@ class DraftNoteView extends Component<IProps, IState> {
                         <NoteTextContent>{draftNote.content}</NoteTextContent>
                       )
                     ) : (
-                      <NoValue style={{ fontStyle: "italic" }}>null</NoValue>
+                      <NoValue>null</NoValue>
                     )}
                   </NoteHolderContentCell>
                 </NoteHolderFullWidth>
@@ -383,13 +418,11 @@ class DraftNoteView extends Component<IProps, IState> {
     );
   }
 
-  public componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResizeEvent);
-  }
-
   protected handleResizeEvent = () => {
     this.setState({ width: window.innerWidth });
   };
+
+  protected setupContentRef = (elem: HTMLTextAreaElement) => (this.contentRef = elem);
 }
 
 export default DraftNoteView;

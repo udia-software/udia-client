@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import styled from "../AppStyles";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
   NoteMarkdownContent,
@@ -32,6 +32,16 @@ const DisplayNoteContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin: 0.3em;
+  height: 100%;
+  max-width: 100%;
+`;
+
+const NoteViewActions = styled.div`
+  flex: 0 1 auto;
+  margin-top: auto;
+  margin-bottom: 0.5em;
+  align-self: flex-end;
 `;
 
 const DisplayNoteView = ({
@@ -43,6 +53,8 @@ const DisplayNoteView = ({
 }: IProps) => {
   const decryptedNote =
     decryptedNotePayload && decryptedNotePayload.decryptedNote;
+  const noteErrors =
+    (decryptedNotePayload && decryptedNotePayload.errors) || [];
   return (
     <DisplayNoteContainer>
       <GridTemplateLoadingOverlay
@@ -51,7 +63,7 @@ const DisplayNoteView = ({
         loadingText={loadingText}
       />
       <DisplayNoteContent>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={[...errors, ...noteErrors]} />
         {decryptedNote && (
           <Fragment>
             <ViewNoteTitle>{decryptedNote.title}</ViewNoteTitle>
@@ -62,7 +74,13 @@ const DisplayNoteView = ({
             )}
           </Fragment>
         )}
-        {rawNote && <code>{rawNote.content}</code>}
+        {rawNote && (
+          <NoteViewActions>
+            <hr/>
+            <span>Your secrets are always encrypted.</span><br/>
+            <code>{rawNote.content}</code>
+          </NoteViewActions>
+        )}
       </DisplayNoteContent>
     </DisplayNoteContainer>
   );

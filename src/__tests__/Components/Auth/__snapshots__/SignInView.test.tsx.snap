@@ -50,7 +50,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
         Welcome back, User.
       </legend>
       <ul
-        className="sc-bdVaJa geqhDw"
+        className="sc-bdVaJa jbQusm"
       />
       <div
         className="sc-gzVnrw jylIW"
@@ -72,7 +72,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
             />
           </label>
           <ul
-            className="sc-bdVaJa geqhDw"
+            className="sc-bdVaJa jbQusm"
           />
         </div>
         <div
@@ -121,7 +121,7 @@ exports[`renders ForgotPasswordView correctly 1`] = `
             />
           </label>
           <ul
-            className="sc-bdVaJa geqhDw"
+            className="sc-bdVaJa jbQusm"
           />
         </div>
         <button

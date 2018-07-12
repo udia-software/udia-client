@@ -45,6 +45,11 @@ const AppContainer = styled.div`
       color: ${props => props.theme.primaryColor};
     }  
   }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 `;
 
 const BodyContainer = styled.div`
