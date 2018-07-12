@@ -111,6 +111,29 @@
   <meta name="msapplication-TileColor" content="#603cba">
   <meta name="theme-color" content="#000000">
   <title>UDIA</title>
+  <script>
+    window.onerror = function (message, url, lineNo, columnNo, error) {
+      // if an error occurs before the root loading element dissapears, show the error.
+      var rootLoading = document.getElementById("root-loading");
+      if (rootLoading) {
+        var preScriptError = document.getElementById("pre-script-error");
+        rootLoading.style.display = "none";
+        preScriptError.style.display = "block";
+        // apparently webpack and IE do not like template literals
+        var preErrorHTML = "<p>Application failed to load. (Potential unsupported browser?)<br/>";
+        preErrorHTML += "Try clearing cache and refreshing the page?</p><dl>";
+        preErrorHTML += "<dt>message</dt><dd>" + (message || "Unknown Error") + "</dd>";
+        preErrorHTML += "<dt>source</dt><dd>" + (url || "/") + "</dd>";
+        preErrorHTML += "<dt>line no</dt><dd>" + (lineNo || -1) + "</dd>";
+        preErrorHTML += "<dt>column on</dt><dd>" + (columnNo || -1) + "</dd>";
+        preErrorHTML += "<dt>error</dt><dd><code>" + (error || new Error("Unknown Error")) + "</code></dd>";
+        preErrorHTML += "</dl><hr/>";
+        var noScriptContent = document.getElementById("no-script-content");
+        preErrorHTML += noScriptContent.innerHTML;
+        preScriptError.innerHTML = preErrorHTML;
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -157,29 +180,6 @@
     </svg>
     <br /> Loading...
   </div>
-  <script>
-    window.onerror = function (message, url, lineNo, columnNo, error) {
-      // if an error occurs before the root loading element dissapears, show the error.
-      var rootLoading = document.getElementById("root-loading");
-      if (rootLoading) {
-        var preScriptError = document.getElementById("pre-script-error");
-        rootLoading.style.display = "none";
-        preScriptError.style.display = "block";
-        // apparently webpack doesn't like template literals
-        var preErrorHTML = `<p>Application failed to load. (Potential unsupported browser?)<br/>`;
-        preErrorHTML += `Try clearing cache and refreshing the page?</p><dl>`;
-        preErrorHTML += `<dt>message</dt><dd>` + (message || "Unknown Error") + `</dd>`;
-        preErrorHTML += `<dt>source</dt><dd>` + (url || "/") + `</dd>`;
-        preErrorHTML += `<dt>line no</dt><dd>` + (lineNo || -1) + `</dd>`;
-        preErrorHTML += `<dt>column on</dt><dd>` + (columnNo || -1) + `</dd>`;
-        preErrorHTML += `<dt>error</dt><dd><code>` + (error || new Error("Unknown Error")) + `</code></dd>`;
-        preErrorHTML += `</dl><hr/>`;
-        var noScriptContent = document.getElementById("no-script-content");
-        preErrorHTML += noScriptContent.innerHTML;
-        preScriptError.innerHTML = preErrorHTML;
-      }
-    }
-  </script>
 </body>
 
 </html>
