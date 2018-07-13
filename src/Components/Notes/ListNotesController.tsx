@@ -55,9 +55,10 @@ class ListNotesController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
-    let nextPageMS = await this.fetchAndProcessNoteItemsPage();
+    let nextPageMS;
     do {
       nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS);
+      // tslint:disable-next-line:no-console
     } while (nextPageMS);
   }
 

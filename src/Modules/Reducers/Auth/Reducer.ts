@@ -40,7 +40,6 @@ export const AuthPersistBlacklist = [
   "email",
   "password",
   "confirmSignOut",
-  "authUser",
   "emailVerificationToken",
   "passwordResetToken"
 ];

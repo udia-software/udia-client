@@ -128,6 +128,9 @@ class AuthRoutes extends Component<IProps> {
     <AuthRoutes.SignOutComponent {...props} />
   );
   protected handleToggleAuthSidebar = () => {
+    if (!this.props.showSidebar) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
     this.props.dispatch(toggleAuthSidebar());
   };
 

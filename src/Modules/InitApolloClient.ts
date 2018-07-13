@@ -57,6 +57,19 @@ export default function initApolloClient(token: string | null) {
 
   return new ApolloClient({
     link,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: "cache-and-network",
+        errorPolicy: "all"
+      },
+      query: {
+        fetchPolicy: "network-only",
+        errorPolicy: "all"
+      },
+      mutate: {
+        errorPolicy: "all"
+      }
+    }
   });
 }

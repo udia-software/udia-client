@@ -102,6 +102,9 @@ class NoteRoutes extends Component<IProps> {
   );
 
   protected handleToggleAuthSidebar = () => {
+    if (!this.props.showSidebar) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
     this.props.dispatch(toggleAuthSidebar());
   };
 

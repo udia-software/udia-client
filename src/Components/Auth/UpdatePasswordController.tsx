@@ -16,6 +16,10 @@ import {
   setAuthUser,
   setFormPassword
 } from "../../Modules/Reducers/Auth/Actions";
+import {
+  setBase64AK,
+  setBase64MK
+} from "../../Modules/Reducers/Secrets/Actions";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import UpdatePasswordView from "./UpdatePasswordView";
 
@@ -285,6 +289,8 @@ class UpdatePasswordController extends Component<IProps, IState> {
       const {
         updatePassword: updatedUser
       } = mutationResponse.data as IUpdatePasswordResponse;
+      dispatch(setBase64MK(Buffer.from(newMk).toString("base64")));
+      dispatch(setBase64AK(Buffer.from(newAk).toString("base64")));
       dispatch(setAuthUser(updatedUser));
       this.setState({ success: true, currentPassword: "" });
       dispatch(setFormPassword(""));
