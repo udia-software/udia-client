@@ -6,6 +6,7 @@ import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { match, Redirect } from "react-router";
 import { Dispatch } from "redux";
+import { DEBOUNCE_TIMEOUT_MS } from "../../Constants";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
@@ -62,7 +63,6 @@ interface IState {
 }
 
 const itemContentType = "note";
-const debounceTimeoutMS = 300;
 const defaultDraftNote = {
   content: "",
   title: "",
@@ -229,7 +229,7 @@ class DraftNoteController extends Component<IProps, IState> {
           debounceTitle: newTitle,
           debounceTitleTimeout: undefined
         });
-      }, debounceTimeoutMS)
+      }, DEBOUNCE_TIMEOUT_MS)
     });
   };
 
@@ -247,7 +247,7 @@ class DraftNoteController extends Component<IProps, IState> {
           debounceContent: newContent,
           debounceContentTimeout: undefined
         });
-      }, debounceTimeoutMS)
+      }, DEBOUNCE_TIMEOUT_MS)
     });
   };
 

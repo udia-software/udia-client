@@ -1,9 +1,10 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import React, { Component } from "react";
+import React, { ChangeEventHandler, Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -11,9 +12,8 @@ import {
   addRawNotes,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
-import FieldErrors from "../PureHelpers/FieldErrors";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
-import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
+import ListNotesView from "./ListNotesView";
 
 interface IProps {
   dispatch: Dispatch;
@@ -35,6 +35,9 @@ interface IProps {
 interface IState {
   errors: string[];
   cryptoManager: CryptoManager | null;
+  searchString: string;
+  searchResultIDs: string[];
+  clickedNoteID?: string;
 }
 
 class ListNotesController extends Component<IProps, IState> {
@@ -50,7 +53,9 @@ class ListNotesController extends Component<IProps, IState> {
     }
     this.state = {
       errors,
-      cryptoManager
+      cryptoManager,
+      searchString: "",
+      searchResultIDs: []
     };
   }
 
@@ -64,39 +69,52 @@ class ListNotesController extends Component<IProps, IState> {
 
   public render() {
     const { rawNotes, decryptedNotes, noteIDs } = this.props;
-    const { errors } = this.state;
+    const { errors, searchString, searchResultIDs, clickedNoteID } = this.state;
+    const displayNotes = searchString ? searchResultIDs : noteIDs;
+
+    if (clickedNoteID) {
+      return <Redirect to={`/note/view/${clickedNoteID}`} push={true} />
+    }
     return (
-      <div>
-        <FieldErrors errors={errors} />
-        <ul>
-          {noteIDs.map(uuid => {
-            const { decryptedNote, errors: noteErrors = [] } = decryptedNotes[
-              uuid
-            ] || { decryptedNote: undefined, errors: [] };
-            const noteTitle = decryptedNote
-              ? decryptedNote.title
-              : noteErrors
-                ? "ERROR!"
-                : "Decrypting...";
-            return (
-              <li key={uuid}>
-                <ThemedLink to={`/note/view/${uuid}`}>
-                  <strong>{noteTitle}</strong>
-                  <br />
-                  <span>
-                    <strong>Created At:</strong>{" "}
-                    {new Date(rawNotes[uuid].createdAt).toString()}
-                  </span>
-                  <FieldErrors errors={noteErrors} />
-                </ThemedLink>
-              </li>
-            );
-          })}
-          {noteIDs.length === 0 && <li>No Items</li>}
-        </ul>
-      </div>
+      <ListNotesView
+        displayNotes={displayNotes}
+        rawNotes={rawNotes}
+        decryptedNotes={decryptedNotes}
+        searchString={searchString}
+        errors={errors}
+        handleChangeSearchString={this.handleChangeSearchString}
+        handleListNoteItemClicked={this.handleListNoteItemClicked}
+      />
     );
   }
+
+  protected handleChangeSearchString: ChangeEventHandler<
+    HTMLInputElement
+  > = e => {
+    const searchString = e.currentTarget.value;
+    const { decryptedNotes, noteIDs } = this.props;
+    const searchResultIDs = Object.keys(decryptedNotes).reduce(
+      (accumulator: typeof noteIDs, uuid) => {
+        const decNotePayload = decryptedNotes[uuid];
+        if (decNotePayload.decryptedNote) {
+          const { title, content } = decNotePayload.decryptedNote;
+          if (
+            title.indexOf(searchString) >= 0 ||
+            content.indexOf(searchString) >= 0
+          ) {
+            accumulator.push(uuid);
+          }
+        }
+        return accumulator;
+      },
+      []
+    );
+    this.setState({ searchString, searchResultIDs });
+  };
+
+  protected handleListNoteItemClicked = (uuid: string) => () => {
+    this.setState({ clickedNoteID: uuid });
+  };
 
   protected fetchAndProcessNoteItemsPage = async (
     fromMilliSecondPageDateTime?: number

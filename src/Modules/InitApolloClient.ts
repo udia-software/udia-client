@@ -67,7 +67,7 @@ export default function initApolloClient(token: string | null) {
         errorPolicy
       },
       query: {
-        fetchPolicy: "network-only",
+        fetchPolicy: "cache-first",
         errorPolicy
       },
       mutate: {

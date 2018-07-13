@@ -17,12 +17,26 @@ export const NoteMarkdownContent = styled(ReactMarkdown)`
     word-wrap: break-word;
     background-color: ${props => props.theme.panelBackgroundColor};
   }
+  a {
+    cursor: pointer;
+    transition: color 0.1s ease;
+    text-decoration: none;
+    color: ${props => props.theme.intermediateColor};
+    &:hover {
+      color: ${props => props.theme.primaryColor};
+    }
+  }
 `;
 
 export const NoteTextContent = styled.div`
   flex: 10 1 100%;
   margin-top: 1em;
   white-space: pre-wrap;
+`;
+
+export const NoValue = styled.span`
+  font-style: italic;
+  color: ${props => props.theme.intermediateColor};
 `;
 
 /**
