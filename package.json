@@ -1,6 +1,6 @@
 {
   "name": "@udia/udia-client",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Javascript Client for Udia",
   "scripts": {
     "start": "react-scripts-ts start",
