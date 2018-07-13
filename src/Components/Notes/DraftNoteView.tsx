@@ -11,6 +11,7 @@ import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverla
 import {
   NoteMarkdownContent,
   NoteTextContent,
+  NoValue,
   ViewNoteTitle
 } from "./NotesShared";
 
@@ -158,11 +159,6 @@ const EditNoteContent = styled.textarea`
   margin: 0;
   width: 100%;
   height: 100%;
-`;
-
-const NoValue = styled.span`
-  font-style: italic;
-  color: ${props => props.theme.intermediateColor};
 `;
 
 const HorizontalLine = styled.hr`

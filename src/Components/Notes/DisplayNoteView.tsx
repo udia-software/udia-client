@@ -8,6 +8,7 @@ import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
   NoteMarkdownContent,
   NoteTextContent,
+  NoValue,
   ViewNoteTitle
 } from "./NotesShared";
 
@@ -94,7 +95,7 @@ const DisplayNoteView = ({
     const noteProccessTime = DateTime.fromMillis(
       payload.decryptedAt
     ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
-    const noteProccessType = payload.decryptedNote ? "decrypted" : "failed";
+    const noteProccessType = payload.decryptedNote ? "processed" : "failed";
     decryptProccessString = ` • ${noteProccessType} on: ${noteProccessTime}`;
   }
 
@@ -109,7 +110,11 @@ const DisplayNoteView = ({
         <FieldErrors errors={[...errors, ...noteErrors]} />
         {decryptedNote && (
           <Fragment>
-            <ViewNoteTitle>{decryptedNote.title}</ViewNoteTitle>
+            {decryptedNote.title ? (
+              <ViewNoteTitle>{decryptedNote.title}</ViewNoteTitle>
+            ) : (
+              <NoValue>Untitled</NoValue>
+            )}
             {decryptedNote.noteType === "markdown" ? (
               <NoteMarkdownContent source={decryptedNote.content} />
             ) : (
@@ -138,7 +143,7 @@ const DisplayNoteView = ({
             <code>
               ENC PROTO VER: {protocolVersion} {" • "}
               <ThemedAnchor onClick={downloadRaw(rawNote, "ENC")}>
-                ENC_RAW
+                DL ENC_RAW
               </ThemedAnchor>
               {decryptedNote && (
                 <Fragment>
@@ -146,7 +151,7 @@ const DisplayNoteView = ({
                   <HiddenPointerAnchor
                     onClick={downloadRaw(decryptedNote, "DEC")}
                   >
-                    DEC_RAW
+                    DL DEC_RAW
                   </HiddenPointerAnchor>
                 </Fragment>
               )}
