@@ -116,7 +116,14 @@ const UpdatePasswordView = ({
               </label>
               <FieldErrors errors={newPasswordErrors} />
               <FieldSuccesses
-                successes={success ? ["Successfully updated password!"] : []}
+                successes={
+                  success
+                    ? [
+                        "Successfully updated password!",
+                        "It is reccomended that you re-authenticate on all other logged in clients."
+                      ]
+                    : []
+                }
               />
             </FormField>
             <Button>Update Password</Button>

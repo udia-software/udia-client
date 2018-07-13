@@ -200,7 +200,7 @@ class Health extends Component<IProps, IState> implements isMountable {
       testExportImportSecKey,
       testExportImportSignKeyPair
     } = this.state;
-    let version = "ERR! SERVER DOWN";
+    let version = "ERR! CONNECTION_DOWN";
     let serverNow = new Date(0);
     if (!loading && health) {
       version = health.version;

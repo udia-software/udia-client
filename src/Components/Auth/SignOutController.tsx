@@ -7,6 +7,7 @@ import {
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
+import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
 import { Button } from "../PureHelpers/Button";
 import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
@@ -64,8 +65,9 @@ class SignOutController extends Component<IProps> {
     dispatch: Dispatch;
   }) => {
     if (confirmSignOutVal) {
-      dispatch(clearAuthData());
+      dispatch(clearSecretsData());
       dispatch(clearNotesData());
+      dispatch(clearAuthData());
     }
   };
 }
