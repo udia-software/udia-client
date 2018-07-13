@@ -145,6 +145,10 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
       }
     }
 
+    public shouldComponentUpdate(nextProps: IProps, nextState: IState) {
+      return nextProps.token !== this.props.token || nextState.loading !== this.state.loading;
+    }
+
     public componentWillUnmount() {
       window.removeEventListener("storage", this.handleLocalStorageUpdated);
       if (!!userObserver) {
@@ -154,6 +158,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
 
     public render() {
       const { loading } = this.state;
+      console.log(`Rerendering. Loading: ${loading}`);
       if (loading) {
         return WrapperLoadingComponent({});
       }

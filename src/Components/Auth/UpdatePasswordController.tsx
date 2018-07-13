@@ -292,21 +292,23 @@ class UpdatePasswordController extends Component<IProps, IState> {
       dispatch(setBase64MK(Buffer.from(newMk).toString("base64")));
       dispatch(setBase64AK(Buffer.from(newAk).toString("base64")));
       dispatch(setAuthUser(updatedUser));
-      this.setState({ success: true, currentPassword: "" });
       dispatch(setFormPassword(""));
+      this.setState({
+        loading: false,
+        loadingText: undefined,
+        success: true,
+        currentPassword: ""
+      });
     } catch (err) {
       const { errors, passwordErrors } = parseGraphQLError(
         err,
         "Failed to update password! (Current password is invalid?)"
       );
       this.setState({
+        loading: false,
+        loadingText: undefined,
         errors,
         currentPasswordErrors: passwordErrors
-      });
-    } finally {
-      this.setState({
-        loading: false,
-        loadingText: undefined
       });
     }
   };
