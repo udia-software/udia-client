@@ -4,7 +4,6 @@ import gql from "graphql-tag";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -14,6 +13,7 @@ import {
 } from "../../Modules/Reducers/Notes/Actions";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 
 interface IProps {
   dispatch: Dispatch;
@@ -79,7 +79,7 @@ class ListNotesController extends Component<IProps, IState> {
                 : "Decrypting...";
             return (
               <li key={uuid}>
-                <Link to={`/note/view/${uuid}`}>
+                <ThemedLink to={`/note/view/${uuid}`}>
                   <strong>{noteTitle}</strong>
                   <br />
                   <span>
@@ -87,7 +87,7 @@ class ListNotesController extends Component<IProps, IState> {
                     {new Date(rawNotes[uuid].createdAt).toString()}
                   </span>
                   <FieldErrors errors={noteErrors} />
-                </Link>
+                </ThemedLink>
               </li>
             );
           })}

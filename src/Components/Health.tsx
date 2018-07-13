@@ -11,6 +11,7 @@ import CryptoManager, {
 } from "../Modules/Crypto/CryptoManager";
 import { isMountable } from "../Types";
 import styled, { IThemeInterface } from "./AppStyles";
+import { ThemedAnchor } from "./PureHelpers/ThemedLinkAnchor";
 
 const HealthContainer = styled.div`
   width: 100%;
@@ -218,24 +219,24 @@ class Health extends Component<IProps, IState> implements isMountable {
           <SuccessableListDescription>
             <code>
               Client: {APP_VERSION + " "}
-              <a
+              <ThemedAnchor
                 href="https://github.com/udia-software/udia-client"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 src
-              </a>
+              </ThemedAnchor>
             </code>
             <br />
             <code>
               Server: {(!loading ? version : "Loading...") + " "}
-              <a
+              <ThemedAnchor
                 href="https://github.com/udia-software/udia"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 src
-              </a>
+              </ThemedAnchor>
             </code>
           </SuccessableListDescription>
           <ErrorableListTitle

@@ -5,7 +5,7 @@ import React, {
   MouseEventHandler
 } from "react";
 import styled, { BaseTheme } from "../AppStyles";
-import { Button } from "../Auth/SignViewShared";
+import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
@@ -67,7 +67,7 @@ const ToggleNoteTypeContainer = styled.div`
   }
 `;
 
-const ToggleNoteTypeLabel = styled.label`
+const ToggleNoteTypeLabel = styled.label.attrs<{ disabled?: boolean }>({})`
   border: 1px solid ${props => props.theme.primaryColor};
   border-radius: 3px;
   width: 100%;
@@ -76,6 +76,7 @@ const ToggleNoteTypeLabel = styled.label`
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${props => (props.disabled ? "0.4" : "1")};
 `;
 
 const NoteStateResponse = styled.div`
@@ -171,6 +172,7 @@ const HorizontalLine = styled.hr`
 interface IProps {
   loading: boolean;
   loadingText?: string;
+  disableDrafting: boolean;
   errors: string[];
   preview: boolean;
   draftNote: DecryptedNote;
@@ -195,7 +197,8 @@ interface IWithContentRef {
   contentRef?: HTMLTextAreaElement;
 }
 
-class DraftNoteView extends Component<IProps, IState> implements IWithContentRef {
+class DraftNoteView extends Component<IProps, IState>
+  implements IWithContentRef {
   public contentRef?: HTMLTextAreaElement;
   constructor(props: IProps) {
     super(props);
@@ -217,6 +220,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
     const {
       loading,
       loadingText,
+      disableDrafting,
       errors,
       preview,
       draftNote,
@@ -254,11 +258,17 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
               {isLargeScreen && (
                 <Fragment>
                   {(draftNote.title || draftNote.content) && (
-                    <NoteStateButton onClick={handleDiscardDraftNote}>
+                    <NoteStateButton
+                      onClick={handleDiscardDraftNote}
+                      disabled={disableDrafting}
+                    >
                       Discard Note
                     </NoteStateButton>
                   )}
-                  <NoteStateButton onClick={handleSubmit}>
+                  <NoteStateButton
+                    onClick={handleSubmit}
+                    disabled={disableDrafting}
+                  >
                     Publish
                   </NoteStateButton>
                 </Fragment>
@@ -266,21 +276,33 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
               {!isLargeScreen &&
                 (preview ? (
                   <Fragment>
-                    <NoteStateButton onClick={handleTogglePreview}>
+                    <NoteStateButton
+                      onClick={handleTogglePreview}
+                      disabled={disableDrafting}
+                    >
                       Edit
                     </NoteStateButton>
-                    <NoteStateButton onClick={handleSubmit}>
+                    <NoteStateButton
+                      onClick={handleSubmit}
+                      disabled={disableDrafting}
+                    >
                       Publish
                     </NoteStateButton>
                   </Fragment>
                 ) : (
                   <Fragment>
                     {(draftNote.title || draftNote.content) && (
-                      <NoteStateButton onClick={handleDiscardDraftNote}>
+                      <NoteStateButton
+                        onClick={handleDiscardDraftNote}
+                        disabled={disableDrafting}
+                      >
                         Discard Note
                       </NoteStateButton>
                     )}
-                    <NoteStateButton onClick={handleTogglePreview}>
+                    <NoteStateButton
+                      onClick={handleTogglePreview}
+                      disabled={disableDrafting}
+                    >
                       Preview
                     </NoteStateButton>
                   </Fragment>
@@ -288,23 +310,25 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
             </NoteStateActions>
             {(isLargeScreen || preview) && (
               <ToggleNoteTypeContainer>
-                <ToggleNoteTypeLabel>
+                <ToggleNoteTypeLabel disabled={disableDrafting}>
                   <input
                     type="radio"
                     name="noteType"
                     value="text"
                     checked={draftNote.noteType === "text"}
                     onChange={handleToggleNoteType}
+                    disabled={disableDrafting}
                   />
                   Text
                 </ToggleNoteTypeLabel>
-                <ToggleNoteTypeLabel>
+                <ToggleNoteTypeLabel disabled={disableDrafting}>
                   <input
                     type="radio"
                     name="noteType"
                     value="markdown"
                     checked={draftNote.noteType === "markdown"}
                     onChange={handleToggleNoteType}
+                    disabled={disableDrafting}
                   />
                   Markdown
                 </ToggleNoteTypeLabel>
@@ -324,6 +348,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                       placeholder="Note Title"
                       onChange={handleChangeNoteTitle}
                       value={draftNote.title}
+                      disabled={disableDrafting}
                     />
                   </NoteHolderTitleCell>
                   <NoteHolderContentCell>
@@ -333,6 +358,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                       onChange={handleChangeNoteContent}
                       value={draftNote.content}
                       innerRef={this.setupContentRef}
+                      disabled={disableDrafting}
                     />
                   </NoteHolderContentCell>
                 </NoteHolderLeftSide>
@@ -370,6 +396,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                       placeholder="Note Title"
                       onChange={handleChangeNoteTitle}
                       value={draftNote.title}
+                      disabled={disableDrafting}
                     />
                   </NoteHolderTitleCell>
                   <NoteHolderContentCell>
@@ -381,6 +408,7 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
                       onChange={handleChangeNoteContent}
                       value={draftNote.content}
                       innerRef={this.setupContentRef}
+                      disabled={disableDrafting}
                     />
                   </NoteHolderContentCell>
                 </NoteHolderFullWidth>
@@ -420,7 +448,8 @@ class DraftNoteView extends Component<IProps, IState> implements IWithContentRef
     this.setState({ width: window.innerWidth });
   };
 
-  protected setupContentRef = (elem: HTMLTextAreaElement) => (this.contentRef = elem);
+  protected setupContentRef = (elem: HTMLTextAreaElement) =>
+    (this.contentRef = elem);
 }
 
 export default DraftNoteView;

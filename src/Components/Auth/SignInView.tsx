@@ -4,17 +4,16 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import { Link } from "react-router-dom";
+import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PointerAnchor,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -78,10 +77,10 @@ const SignInView = ({
             <label htmlFor="pw">
               <PasswordLabelFlex>
                 <span>Password:</span>
-                <PointerAnchor onClick={handleTogglePassword}>
+                <ThemedAnchor onClick={handleTogglePassword}>
                   <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
                   {showPassword ? "Hide Password" : "Show Password"}
-                </PointerAnchor>
+                </ThemedAnchor>
               </PasswordLabelFlex>
               <FormInput
                 type={showPassword ? "text" : "password"}
@@ -98,8 +97,8 @@ const SignInView = ({
       </fieldset>
     </FormContainer>
     <SignViewLinks>
-      <Link to="/sign-up">I don&apos;t have an account →</Link>
-      <Link to="/forgot-password">I forgot my password.</Link>
+      <ThemedLink to="/sign-up">I don&apos;t have an account →</ThemedLink>
+      <ThemedLink to="/forgot-password">I forgot my password.</ThemedLink>
     </SignViewLinks>
   </SignViewContainer>
 );

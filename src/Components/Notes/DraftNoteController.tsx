@@ -48,6 +48,7 @@ interface IProps {
 interface IState {
   loading: boolean;
   loadingText?: string;
+  disableDrafting: boolean;
   preview: boolean;
   debounceTitleTimeout?: number;
   debounceTitle: string;
@@ -61,7 +62,7 @@ interface IState {
 }
 
 const itemContentType = "note";
-const debounceTimeoutMS = 200;
+const debounceTimeoutMS = 300;
 const defaultDraftNote = {
   content: "",
   title: "",
@@ -85,6 +86,7 @@ class DraftNoteController extends Component<IProps, IState> {
     this.state = {
       loading: !!uuid,
       preview: false,
+      disableDrafting: false,
       // necessary anti-pattern for side by side render performance (input debouncing)
       debounceContent: draftNote.content,
       debounceTitle: draftNote.title,
@@ -138,7 +140,8 @@ class DraftNoteController extends Component<IProps, IState> {
           return;
         } else {
           this.setState({
-            errors: errors ? errors : ["Failed to fetch note!"]
+            errors: errors ? errors : ["Failed to fetch note!"],
+            disableDrafting: true
           });
           return;
         }
@@ -166,7 +169,7 @@ class DraftNoteController extends Component<IProps, IState> {
       }
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to initialize draft!");
-      this.setState({ errors });
+      this.setState({ errors, disableDrafting: true });
     } finally {
       this.setState({ loading: false, loadingText: undefined });
     }
@@ -177,6 +180,7 @@ class DraftNoteController extends Component<IProps, IState> {
     const {
       loading,
       loadingText,
+      disableDrafting,
       errors,
       titleErrors,
       contentErrors,
@@ -194,6 +198,7 @@ class DraftNoteController extends Component<IProps, IState> {
       <DraftNoteView
         loading={loading}
         loadingText={loadingText}
+        disableDrafting={disableDrafting}
         errors={[...errors, ...titleErrors, ...contentErrors]}
         preview={preview}
         draftNote={draftNote}

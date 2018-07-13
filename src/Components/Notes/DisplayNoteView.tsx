@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
 import styled from "../AppStyles";
-import { PointerAnchor } from "../Auth/SignViewShared";
+import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
   NoteMarkdownContent,
   NoteTextContent,
@@ -51,6 +51,16 @@ const NoteViewMeta = styled.div`
 const NoteViewActions = styled.div`
   width: 100%;
   text-align: right;
+`;
+
+const ViewActionButton = styled(Button)`
+  width: auto;
+  font-size: 1em;
+  padding: 0.3em;
+`;
+
+const HiddenPointerAnchor = styled(ThemedAnchor)`
+  color: ${props => props.theme.backgroundColor};
 `;
 
 const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
@@ -110,7 +120,13 @@ const DisplayNoteView = ({
         {rawNote && (
           <NoteViewMeta>
             <NoteViewActions>
-              <Link to={`/note/draft/${rawNote.uuid}`}>Edit Note</Link>
+              {decryptedNote ? (
+                <ThemedLink to={`/note/draft/${rawNote.uuid}`}>
+                  <ViewActionButton>Edit Note</ViewActionButton>
+                </ThemedLink>
+              ) : (
+                <ViewActionButton disabled={true}>ENCRYPTED</ViewActionButton>
+              )}
             </NoteViewActions>
             <hr />
             last updated:{" "}
@@ -121,15 +137,17 @@ const DisplayNoteView = ({
             <br />
             <code>
               ENC PROTO VER: {protocolVersion} {" • "}
-              <PointerAnchor onClick={downloadRaw(rawNote, "ENC")}>
+              <ThemedAnchor onClick={downloadRaw(rawNote, "ENC")}>
                 ENC_RAW
-              </PointerAnchor>
+              </ThemedAnchor>
               {decryptedNote && (
                 <Fragment>
                   {" • "}
-                  <PointerAnchor onClick={downloadRaw(decryptedNote, "DEC")}>
+                  <HiddenPointerAnchor
+                    onClick={downloadRaw(decryptedNote, "DEC")}
+                  >
                     DEC_RAW
-                  </PointerAnchor>
+                  </HiddenPointerAnchor>
                 </Fragment>
               )}
             </code>

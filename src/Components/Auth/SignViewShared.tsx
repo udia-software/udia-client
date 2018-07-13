@@ -1,5 +1,4 @@
 import {
-  AnchorHTMLAttributes,
   DetailedHTMLProps,
   FormHTMLAttributes,
   HTMLAttributes,
@@ -100,13 +99,6 @@ export const FormTextArea: StyledComponentClass<
   word-break: break-all;
 `;
 
-export const PointerAnchor: StyledComponentClass<
-  DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>,
-  IThemeInterface
-> = styled.a`
-  cursor: pointer;
-`;
-
 export const PasswordLabelFlex = styled.span`
   display: flex;
   justify-content: space-between;
@@ -160,43 +152,4 @@ export const FormField: StyledComponentClass<
               : "auto"};
     }
   }
-`;
-
-export const Button: StyledComponentClass<
-  DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >,
-  IThemeInterface
-> = styled.button`
-  color: ${props => props.theme.primaryColor};
-  border-color: ${props => `${props.theme.primaryColor}`};
-  background-color: ${props => props.theme.inverseColor};
-  border-radius: 0.4rem;
-  border-width: 1.8px;
-  display: inline-block;
-  min-height: 1em;
-  padding: 0.3em 0em;
-  margin: 0.5em 0;
-  font-weight: 100;
-  transition-property: all;
-  transition-duration: 0.2s;
-  width: 100%;
-  ${props =>
-    !!props.disabled
-      ? "opacity: 0.40;"
-      : `
-    cursor: pointer;
-    &:hover {
-      color: ${props.theme.inverseColor};
-      border-color: ${props.theme.inverseColor};
-      background-color: ${props.theme.primaryColor};
-    }
-    &:focus {
-      outline: none;
-      border-color: ${props.theme.purple};
-    }
-    &:active {
-      background-color: ${props.theme.purple};
-    }`};
 `;
