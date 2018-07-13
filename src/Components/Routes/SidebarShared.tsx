@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { StyledComponentClass } from "styled-components";
 import styled, { IThemeInterface } from "../AppStyles";
-import { Button } from "../Auth/SignViewShared";
+import { Button } from "../PureHelpers/Button";
 
 export const WithSidebarContainer: StyledComponentClass<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
@@ -64,6 +64,10 @@ export const StyledSidebarLink = styled(NavLink).attrs<{
   showsidebar?: string;
   activeClassName: string;
 }>({ activeClassName })`
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: ${props => props.theme.intermediateColor};
   margin-top: 1em;
   font-size: large;
   display: grid;
@@ -75,8 +79,8 @@ export const StyledSidebarLink = styled(NavLink).attrs<{
   text-align: center;
   border-top: 1px solid ${({ theme }) => theme.inverseColor};
   border-bottom: 1px solid ${({ theme }) => theme.inverseColor};
-  transition-property: all 0.2s;
   &:hover {
+    color: ${props => props.theme.primaryColor};
     border-top: 1px solid ${({ theme }) => theme.primaryColor};
     border-bottom: 1px solid ${({ theme }) => theme.primaryColor};
   }

@@ -5,16 +5,16 @@ import React, {
   Fragment,
   MouseEventHandler
 } from "react";
+import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
-  PointerAnchor,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -108,19 +108,19 @@ const UserEmailView = ({
                     {verified ? " • verified" : " • not verified"}
                   </dt>
                   <dd style={{ marginLeft: "1em", paddingTop: "0.2em" }}>
-                    <PointerAnchor onClick={handleRemoveEmail(email)}>
+                    <ThemedAnchor onClick={handleRemoveEmail(email)}>
                       Remove Email
-                    </PointerAnchor>
+                    </ThemedAnchor>
                     {verified ? (
                       undefined
                     ) : (
                       <Fragment>
                         {" | "}
-                        <PointerAnchor
+                        <ThemedAnchor
                           onClick={handleSendEmailVerification(email)}
                         >
                           Resend Verification
-                        </PointerAnchor>
+                        </ThemedAnchor>
                       </Fragment>
                     )}
                     {primary ? (
@@ -128,9 +128,9 @@ const UserEmailView = ({
                     ) : (
                       <Fragment>
                         {" | "}
-                        <PointerAnchor onClick={handleSetPrimaryEmail(email)}>
+                        <ThemedAnchor onClick={handleSetPrimaryEmail(email)}>
                           Set Primary
-                        </PointerAnchor>
+                        </ThemedAnchor>
                       </Fragment>
                     )}
                   </dd>

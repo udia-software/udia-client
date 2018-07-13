@@ -4,17 +4,17 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
+import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PointerAnchor,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -73,12 +73,12 @@ const UpdatePasswordView = ({
               <label htmlFor="currentPassword">
                 <PasswordLabelFlex>
                   <span>Current Password:</span>
-                  <PointerAnchor onClick={handleToggleCurrentPassword}>
+                  <ThemedAnchor onClick={handleToggleCurrentPassword}>
                     <FontAwesomeIcon
                       icon={showCurrentPassword ? "eye-slash" : "eye"}
                     />{" "}
                     {showCurrentPassword ? "Hide Password" : "Show Password"}
-                  </PointerAnchor>
+                  </ThemedAnchor>
                 </PasswordLabelFlex>
                 <FormInput
                   type={showCurrentPassword ? "text" : "password"}
@@ -98,12 +98,12 @@ const UpdatePasswordView = ({
               <label htmlFor="pw">
                 <PasswordLabelFlex>
                   <span>New Password:{newPasswordValidated && " \u2714"}</span>
-                  <PointerAnchor onClick={handleToggleNewPassword}>
+                  <ThemedAnchor onClick={handleToggleNewPassword}>
                     <FontAwesomeIcon
                       icon={showNewPassword ? "eye-slash" : "eye"}
                     />{" "}
                     {showNewPassword ? "Hide Password" : "Show Password"}
-                  </PointerAnchor>
+                  </ThemedAnchor>
                 </PasswordLabelFlex>
                 <FormInput
                   type={showNewPassword ? "text" : "password"}

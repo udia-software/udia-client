@@ -24,6 +24,10 @@ const activeClassName = "header-nav-active";
 const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
   activeClassName
 })`
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: ${props => props.theme.intermediateColor};
   justify-self: start;
   align-self: center;
   padding: 0.4em;
@@ -31,9 +35,8 @@ const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
   font-size: x-large;
   border-left: 1px solid ${props => props.theme.inverseColor};
   border-right: 1px solid ${props => props.theme.inverseColor};
-  transition-property: border-left, border-right;
-  transition-duration: 0.2s;
   &:hover {
+    color: ${props => props.theme.primaryColor};
     border-right: 1px solid ${props => props.theme.primaryColor};
     border-left: 1px solid ${props => props.theme.primaryColor};
   }

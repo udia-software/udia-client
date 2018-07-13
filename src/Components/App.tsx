@@ -36,21 +36,6 @@ const AppContainer = styled.div`
     "content"
     "footer";
   color: ${props => props.theme.primaryColor};
-
-  a {
-    transition: color 0.1s ease;
-    text-decoration: none;
-    color: ${props => props.theme.intermediateColor};
-    &:hover {
-      color: ${props => props.theme.primaryColor};
-    }  
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    background-color: ${props => props.theme.panelBackgroundColor};
-  }
 `;
 
 const BodyContainer = styled.div`

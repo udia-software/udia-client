@@ -12,12 +12,17 @@ export const ViewNoteTitle = styled.h1`
 
 export const NoteMarkdownContent = styled(ReactMarkdown)`
   flex: 10 1 100%;
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: ${props => props.theme.panelBackgroundColor};
+  }
 `;
 
 export const NoteTextContent = styled.div`
   flex: 10 1 100%;
   margin-top: 1em;
-  white-space pre-wrap;
+  white-space: pre-wrap;
 `;
 
 /**

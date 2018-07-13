@@ -129,7 +129,7 @@
         preErrorHTML += "<dt>error</dt><dd><code>" + (error || new Error("Unknown Error")) + "</code></dd>";
         preErrorHTML += "</dl><hr/>";
         var noScriptContent = document.getElementById("no-script-content");
-        preErrorHTML += noScriptContent.innerHTML;
+        preErrorHTML += noScriptContent.textContent;
         preScriptError.innerHTML = preErrorHTML;
       }
     }
