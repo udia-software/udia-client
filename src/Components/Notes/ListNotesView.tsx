@@ -41,8 +41,8 @@ const ListNoteItem = styled.li`
 const ListNoteTitle = styled.span`
   font-weight: bold;
   color: ${props => props.theme.primaryColor};
-  ${ListNoteItem}:hover & {
-    text-decoration: underline;
+  ${ListNoteItem}:hover & ${
+    "{text-decoration: underline;}"
   }
 `;
 
