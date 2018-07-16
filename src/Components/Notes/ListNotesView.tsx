@@ -204,8 +204,12 @@ class ListNotesView extends Component<IProps> {
                         {decryptedNote &&
                           decryptedNote.content.substring(
                             searchString &&
-                            decryptedNote.content.indexOf(searchString) > -1
-                              ? decryptedNote.content.indexOf(searchString)
+                            decryptedNote.content
+                              .toLowerCase()
+                              .indexOf(searchString.toLowerCase()) > -1
+                              ? decryptedNote.content
+                                  .toLowerCase()
+                                  .indexOf(searchString.toLowerCase())
                               : 0,
                             PREVIEW_CHAR_LEN
                           )}
