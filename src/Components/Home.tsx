@@ -9,6 +9,7 @@ import {
 } from "../Modules/Reducers/Auth/Selectors";
 import { handleAppJustLoaded } from "../Modules/Reducers/Transient/Actions";
 import styled from "./AppStyles";
+import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
 
 const HomeContainer = styled.div`
   display: grid;
@@ -57,6 +58,23 @@ class Home extends Component<IProps, IState> {
       <HomeContainer>
         <h1>UDIA</h1>
         {user && <p>Welcome, {user.username}.</p>}
+        <h3 style={{ paddingBottom: 0, marginBottom: 0 }}>
+          This iteration of UDIA is:
+        </h3>
+        <ul>
+          <li>
+            an <strong>end to end encrypted</strong> editor supporting<ul>
+              <li>plain text</li>
+              <li>markdown</li>
+            </ul>
+          </li>
+          <li>and a materialization of the universal API.</li>
+        </ul>
+        <p>
+          <ThemedLink to="/health">
+            Ensure your browser supports the cryptographic functions.
+          </ThemedLink>
+        </p>
       </HomeContainer>
     );
   }
