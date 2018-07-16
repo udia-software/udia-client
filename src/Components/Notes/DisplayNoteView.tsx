@@ -99,7 +99,6 @@ const DisplayNoteView = ({
   handleClickDeleteNote
 }: IProps) => {
   const decryptedNote = payload && payload.decryptedNote;
-  const noteErrors = (payload && payload.errors) || [];
   const protocolVersion =
     rawNote &&
     (rawNote.deleted
@@ -125,7 +124,7 @@ const DisplayNoteView = ({
         loadingText={loadingText}
       />
       <DisplayNoteContent>
-        <FieldErrors errors={[...errors, ...noteErrors]} />
+        <FieldErrors errors={payload && payload.errors || errors} />
         {decryptedNote && (
           <Fragment>
             <ViewNoteLinkTitle

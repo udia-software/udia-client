@@ -2,6 +2,7 @@ import {
   ADD_RAW_NOTE,
   ADD_RAW_NOTES,
   CLEAR_NOTES_DATA,
+  CLEAR_RAW_AND_CACHED_NOTES,
   DELETE_DECRYPTED_NOTE,
   DISCARD_DRAFT,
   INotesAction,
@@ -196,6 +197,12 @@ export default (
       return {
         ...DefaultNotesState
       };
+    }
+    case CLEAR_RAW_AND_CACHED_NOTES: {
+      return {
+        ...DefaultNotesState,
+        drafts: state.drafts
+      }
     }
     default: {
       return {
