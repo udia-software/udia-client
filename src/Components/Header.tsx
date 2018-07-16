@@ -2,12 +2,12 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { withTheme } from "styled-components";
+import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
   maybeAuthenticated as selectMaybeAuth,
   selectSelfUsername
 } from "../Modules/Reducers/Auth/Selectors";
-import { IRootState } from "../Modules/Reducers/RootReducer";
 import styled from "./AppStyles";
 
 const HeaderContainer = styled.div`
@@ -24,6 +24,10 @@ const activeClassName = "header-nav-active";
 const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
   activeClassName
 })`
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: ${props => props.theme.intermediateColor};
   justify-self: start;
   align-self: center;
   padding: 0.4em;
@@ -31,9 +35,8 @@ const StyledTitleLink = styled(NavLink).attrs<{ activeClassName: string }>({
   font-size: x-large;
   border-left: 1px solid ${props => props.theme.inverseColor};
   border-right: 1px solid ${props => props.theme.inverseColor};
-  transition-property: border-left, border-right;
-  transition-duration: 0.2s;
   &:hover {
+    color: ${props => props.theme.primaryColor};
     border-right: 1px solid ${props => props.theme.primaryColor};
     border-left: 1px solid ${props => props.theme.primaryColor};
   }
@@ -92,12 +95,20 @@ class Header extends Component<IProps> {
             )}
           {maybeAuthenticated &&
             isAuthenticated && (
-              <StyledSubTitleLink
-                to="/auth"
-                activeClassName={activeClassName}
-              >
-                {selfUsername ? `Hello, ${selfUsername}` : "ERR"}
-              </StyledSubTitleLink>
+              <Fragment>
+                <StyledSubTitleLink
+                  to="/note"
+                  activeClassName={activeClassName}
+                >
+                  Secret Notes
+                </StyledSubTitleLink>
+                <StyledSubTitleLink
+                  to="/auth"
+                  activeClassName={activeClassName}
+                >
+                  {selfUsername ? selfUsername : "ERR"}
+                </StyledSubTitleLink>
+              </Fragment>
             )}
           {maybeAuthenticated &&
             !isAuthenticated && <span>Loading User..</span>}
@@ -116,4 +127,11 @@ function mapStateToProps(state: IRootState) {
 }
 
 // Pure: false here is necessary to get the NavLinks active styles working
-export default withTheme(connect(mapStateToProps, null, null, { pure: false })(Header));
+export default withTheme(
+  connect(
+    mapStateToProps,
+    null,
+    null,
+    { pure: false }
+  )(Header)
+);

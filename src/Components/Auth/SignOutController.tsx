@@ -1,14 +1,16 @@
 import React, { Component, FormEventHandler } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import {
   clearAuthData,
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
+import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
+import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
+import { Button } from "../PureHelpers/Button";
+import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   SignViewContainer,
   SignViewLinks,
@@ -25,19 +27,15 @@ class SignOutController extends Component<IProps> {
     super(props);
     document.title = "Sign Out - UDIA";
     const { confirmSignOutVal, dispatch } = props;
-    if (confirmSignOutVal) {
-      dispatch(clearAuthData());
-    }
+    this.handleSignOut({ confirmSignOutVal, dispatch });
   }
 
   public componentWillReceiveProps(nextProps: IProps) {
     const { confirmSignOutVal, dispatch } = nextProps;
-    if (confirmSignOutVal) {
-      dispatch(clearAuthData());
-    }
+    this.handleSignOut({ confirmSignOutVal, dispatch });
   }
 
-  public handleSignOut: FormEventHandler<HTMLFormElement> = e => {
+  public handleSubmit: FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault();
     this.props.dispatch(confirmSignOut());
   };
@@ -46,18 +44,32 @@ class SignOutController extends Component<IProps> {
     return (
       <SignViewContainer>
         <SignViewTitle>Sign Out</SignViewTitle>
-        <FormContainer onSubmit={this.handleSignOut}>
+        <FormContainer onSubmit={this.handleSubmit}>
           <fieldset>
             <legend>Are you leaving?</legend>
             <Button>Yes, farewell.</Button>
           </fieldset>
         </FormContainer>
         <SignViewLinks>
-          <Link to="/">← No, I changed my mind.</Link>
+          <ThemedLink to="/">← No, I changed my mind.</ThemedLink>
         </SignViewLinks>
       </SignViewContainer>
     );
   }
+
+  private handleSignOut = ({
+    confirmSignOutVal,
+    dispatch
+  }: {
+    confirmSignOutVal: boolean;
+    dispatch: Dispatch;
+  }) => {
+    if (confirmSignOutVal) {
+      dispatch(clearSecretsData());
+      dispatch(clearNotesData());
+      dispatch(clearAuthData());
+    }
+  };
 }
 
 const mapStateToProps = (state: IRootState) => ({

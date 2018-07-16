@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { connect } from "react-redux";
 import { ThemeProvider } from "styled-components";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { isUsingDarkTheme } from "../../Modules/Reducers/Theme/Selectors";
 import { DarkTheme, LightTheme } from "../AppStyles";
 

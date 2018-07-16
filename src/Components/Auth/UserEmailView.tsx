@@ -5,17 +5,16 @@ import React, {
   Fragment,
   MouseEventHandler
 } from "react";
-import { FullUser } from "../../Types";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
-  PointerAnchor,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -70,7 +69,7 @@ const UserEmailView = ({
       <FormContainer onSubmit={handleAddEmail}>
         <fieldset>
           <legend>Adding a new email, {user.username}?</legend>
-          <FormFieldErrors errors={errors} />
+          <FieldErrors errors={errors} />
           <FormContent>
             <FormField
               error={formEmailErrors.length > 0}
@@ -87,8 +86,8 @@ const UserEmailView = ({
                   value={formEmail}
                 />
               </label>
-              <FormFieldErrors errors={formEmailErrors} />
-              <FormFieldSuccesses
+              <FieldErrors errors={formEmailErrors} />
+              <FieldSuccesses
                 successes={
                   typeof emailSuccess === "string" ? [emailSuccess] : []
                 }
@@ -97,7 +96,7 @@ const UserEmailView = ({
             <Button>Add Email</Button>
           </FormContent>
           <h3 style={{ marginBottom: 0, textAlign: "center" }}>User Emails</h3>
-          <FormFieldErrors errors={userEmailErrors} />
+          <FieldErrors errors={userEmailErrors} />
           <dl>
             {user.emails.map(
               ({ email, primary, verified, verificationExpiry }, index) => (
@@ -109,19 +108,19 @@ const UserEmailView = ({
                     {verified ? " • verified" : " • not verified"}
                   </dt>
                   <dd style={{ marginLeft: "1em", paddingTop: "0.2em" }}>
-                    <PointerAnchor onClick={handleRemoveEmail(email)}>
+                    <ThemedAnchor onClick={handleRemoveEmail(email)}>
                       Remove Email
-                    </PointerAnchor>
+                    </ThemedAnchor>
                     {verified ? (
                       undefined
                     ) : (
                       <Fragment>
                         {" | "}
-                        <PointerAnchor
+                        <ThemedAnchor
                           onClick={handleSendEmailVerification(email)}
                         >
                           Resend Verification
-                        </PointerAnchor>
+                        </ThemedAnchor>
                       </Fragment>
                     )}
                     {primary ? (
@@ -129,9 +128,9 @@ const UserEmailView = ({
                     ) : (
                       <Fragment>
                         {" | "}
-                        <PointerAnchor onClick={handleSetPrimaryEmail(email)}>
+                        <ThemedAnchor onClick={handleSetPrimaryEmail(email)}>
                           Set Primary
-                        </PointerAnchor>
+                        </ThemedAnchor>
                       </Fragment>
                     )}
                   </dd>

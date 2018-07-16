@@ -2,7 +2,7 @@
  * This is a kludgy class to quickly make sure all the web crypto API calls I make do what I expect, more or less
  */
 import gql from "graphql-tag";
-import React, { Component } from "react";
+import React, { Component, MouseEventHandler } from "react";
 import { DataValue, graphql, OperationVariables } from "react-apollo";
 import { ThemedStyledProps } from "styled-components";
 import { APP_VERSION } from "../Constants";
@@ -11,12 +11,15 @@ import CryptoManager, {
 } from "../Modules/Crypto/CryptoManager";
 import { isMountable } from "../Types";
 import styled, { IThemeInterface } from "./AppStyles";
+import { Button } from "./PureHelpers/Button";
+import { ThemedAnchor } from "./PureHelpers/ThemedLinkAnchor";
 
 const HealthContainer = styled.div`
   width: 100%;
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
   dl > dt {
     padding-top: 0.5em;
     padding-left: 0.5em;
@@ -60,6 +63,8 @@ interface IProps {
 interface IState {
   intervalId: any;
   timerHeartbeat: Date;
+  forceReloadInterval?: number;
+  forceReloadBypassCache?: number;
   cryptoManager?: CryptoManager | false;
   randomValues?: Uint8Array | false;
   testSymEncKeyGen?: string | false;
@@ -89,6 +94,7 @@ class Health extends Component<IProps, IState> implements isMountable {
    * once component mounts, perform a basic browser/server sanity check
    */
   public async componentDidMount() {
+    window.scrollTo(0, 0);
     this.isMountableMounted = true;
     this.props.subscribeToNewHealthMetrics();
     const cryptoManager = this.initCryptoManager();
@@ -147,6 +153,7 @@ class Health extends Component<IProps, IState> implements isMountable {
   public componentWillUnmount() {
     this.isMountableMounted = false;
     clearInterval(this.state.intervalId);
+    clearInterval(this.state.forceReloadInterval);
   }
 
   public shouldComponentUpdate(nextProps: IProps, nextState: IState) {
@@ -184,6 +191,7 @@ class Health extends Component<IProps, IState> implements isMountable {
 
     const {
       timerHeartbeat,
+      forceReloadBypassCache,
       cryptoManager,
       randomValues,
       testSymEncKeyGen,
@@ -194,7 +202,7 @@ class Health extends Component<IProps, IState> implements isMountable {
       testExportImportSecKey,
       testExportImportSignKeyPair
     } = this.state;
-    let version = "ERR! SERVER DOWN";
+    let version = "ERR! CONNECTION_DOWN";
     let serverNow = new Date(0);
     if (!loading && health) {
       version = health.version;
@@ -218,24 +226,24 @@ class Health extends Component<IProps, IState> implements isMountable {
           <SuccessableListDescription>
             <code>
               Client: {APP_VERSION + " "}
-              <a
+              <ThemedAnchor
                 href="https://github.com/udia-software/udia-client"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 src
-              </a>
+              </ThemedAnchor>
             </code>
             <br />
             <code>
               Server: {(!loading ? version : "Loading...") + " "}
-              <a
+              <ThemedAnchor
                 href="https://github.com/udia-software/udia"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 src
-              </a>
+              </ThemedAnchor>
             </code>
           </SuccessableListDescription>
           <ErrorableListTitle
@@ -265,6 +273,16 @@ class Health extends Component<IProps, IState> implements isMountable {
             </code>
           </SuccessableListDescription>
         </dl>
+        <Button
+          disabled={(forceReloadBypassCache || -1) > 0}
+          onClick={this.handleForceReload}
+        >
+          {forceReloadBypassCache === undefined
+            ? "Force Reload Bypass Cache"
+            : forceReloadBypassCache > 0
+              ? `CONFIRM? (WAIT ${forceReloadBypassCache}s)`
+              : "CONFIRM FORCE RELOAD NO CACHE"}
+        </Button>
         <h3>Crypto Sanity Check</h3>
         <dl>
           <ErrorableListTitle
@@ -426,6 +444,26 @@ class Health extends Component<IProps, IState> implements isMountable {
       </HealthContainer>
     );
   }
+
+  protected handleForceReload: MouseEventHandler<HTMLButtonElement> = () => {
+    const { forceReloadBypassCache } = this.state;
+    if (forceReloadBypassCache === undefined) {
+      this.setState({
+        forceReloadBypassCache: 6,
+        forceReloadInterval: window.setInterval(() => {
+          const countdown = (this.state.forceReloadBypassCache || 6) - 1;
+          this.setState({
+            forceReloadBypassCache: countdown
+          });
+          if (countdown <= 0) {
+            clearInterval(this.state.forceReloadInterval);
+          }
+        }, 1000)
+      });
+    } else if (forceReloadBypassCache <= 0) {
+      window.location.reload(true);
+    }
+  };
 
   private intervalCallback = () => {
     if (this.isMountableMounted) {

@@ -4,8 +4,8 @@ import { graphql, MutateProps } from "react-apollo";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { setFormEmailVerificationToken } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import VerifyEmailView from "./VerifyEmailView";
 

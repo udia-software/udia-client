@@ -1,5 +1,4 @@
 import { AUTH_TOKEN } from "../../../Constants";
-import { FullUser } from "../../../Types";
 import {
   CLEAR_AUTH_DATA,
   CONFIRM_SIGN_OUT,
@@ -35,6 +34,15 @@ const DefaultAuthState: IAuthState = {
   emailVerificationToken: "",
   passwordResetToken: ""
 };
+
+export const AuthPersistBlacklist = [
+  "username",
+  "email",
+  "password",
+  "confirmSignOut",
+  "emailVerificationToken",
+  "passwordResetToken"
+];
 
 /**
  * Auth reducer state is blacklisted from being persisted in IndexDB.

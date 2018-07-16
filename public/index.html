@@ -51,7 +51,7 @@
       height: 100%;
     }
 
-    #no-script-content {
+    .pre-script-content {
       background-color: #000000;
       border-color: #ffffff;
       border-radius: 3px;
@@ -60,13 +60,13 @@
       padding: 1em;
     }
 
-    #no-script-content a {
+    .pre-script-content a {
       transition: color 0.1s ease;
       text-decoration: none;
       color: hsla(0, 0%, 100%, 0.4);
     }
 
-    #no-script-content a:hover {
+    .pre-script-content a:hover {
       color: #ffffff;
     }
 
@@ -111,10 +111,33 @@
   <meta name="msapplication-TileColor" content="#603cba">
   <meta name="theme-color" content="#000000">
   <title>UDIA</title>
+  <script>
+    window.onerror = function (message, url, lineNo, columnNo, error) {
+      // if an error occurs before the root loading element dissapears, show the error.
+      var rootLoading = document.getElementById("root-loading");
+      if (rootLoading) {
+        var preScriptError = document.getElementById("pre-script-error");
+        rootLoading.style.display = "none";
+        preScriptError.style.display = "block";
+        // apparently webpack and IE do not like template literals
+        var preErrorHTML = "<p>Application failed to load. (Potential unsupported browser?)<br/>";
+        preErrorHTML += "Try clearing cache and refreshing the page?</p><dl>";
+        preErrorHTML += "<dt>message</dt><dd>" + (message || "Unknown Error") + "</dd>";
+        preErrorHTML += "<dt>source</dt><dd>" + (url || "/") + "</dd>";
+        preErrorHTML += "<dt>line no</dt><dd>" + (lineNo || -1) + "</dd>";
+        preErrorHTML += "<dt>column on</dt><dd>" + (columnNo || -1) + "</dd>";
+        preErrorHTML += "<dt>error</dt><dd><code>" + (error || new Error("Unknown Error")) + "</code></dd>";
+        preErrorHTML += "</dl><hr/>";
+        var noScriptContent = document.getElementById("no-script-content");
+        preErrorHTML += noScriptContent.textContent;
+        preScriptError.innerHTML = preErrorHTML;
+      }
+    }
+  </script>
 </head>
 
 <body>
-  <noscript id="no-script-content">
+  <noscript id="no-script-content" class="pre-script-content">
     <p>
       UDIA is a web application that requires JavaScript to run, namely for:
     </p>
@@ -144,6 +167,7 @@
     </dl>
   </noscript>
   <div id="root">
+    <div id="pre-script-error" class="pre-script-content" style="display: none;"></div>
     <svg id="root-loading" class="loading-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 90 90"
       enableBackground="new 0 0 90 90">
       <polygon class="loader-bracket" points="38.182,57.753 20.18,47.91 20.18,42.455 38.182,32.652 38.182,39.074 25.625,45.113 38.182,51.379"

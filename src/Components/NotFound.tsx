@@ -1,11 +1,13 @@
 import React from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import styled from "./AppStyles";
+import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
 
 const NotFoundContainer = styled.div`
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
 `;
 
 const StyledNotFoundText = styled.span`
@@ -21,7 +23,7 @@ const NotFound = ({ location }: RouteComponentProps<any>) => {
         No match exists for{" "}
         <StyledNotFoundText>{location.pathname}</StyledNotFoundText>.
       </p>
-      <Link to="/">Return to the home page →</Link>
+      <ThemedLink to="/">Return to the home page →</ThemedLink>
     </NotFoundContainer>
   );
 };

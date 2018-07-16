@@ -23,10 +23,10 @@ interface IProps {
   successes: string[];
 }
 
-const FormFieldSuccesses = (props: IProps) => (
+const FieldSuccesses = (props: IProps) => (
   <StyledUnorderedList {...props} successes={props.successes}>
     {props.successes.map((okmsg, idx) => <li key={idx}>{okmsg}</li>)}
   </StyledUnorderedList>
 );
 
-export default FormFieldSuccesses;
+export default FieldSuccesses;
