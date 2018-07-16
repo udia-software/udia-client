@@ -274,7 +274,8 @@ class ListNotesController extends Component<IProps, IState> {
           params: {
             username: user.username,
             limit: limitPageSize,
-            datetime: fromMilliSecondPageDateTime,
+            showDeleted: true,
+            datetime: fromMilliSecondPageDateTime || new Date().getTime(), // this invalidates cache anyways...
             sort: "createdAt",
             order: "DESC"
           }
