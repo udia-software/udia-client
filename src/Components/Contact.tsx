@@ -5,7 +5,8 @@ import { ThemedAnchor } from "./PureHelpers/ThemedLinkAnchor";
 const ContactContainer = styled.div`
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
 `;
 
 const Contact = () => {

@@ -18,7 +18,8 @@ const HealthContainer = styled.div`
   width: 100%;
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
   dl > dt {
     padding-top: 0.5em;
     padding-left: 0.5em;

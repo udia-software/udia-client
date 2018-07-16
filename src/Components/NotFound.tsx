@@ -6,7 +6,8 @@ import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
 const NotFoundContainer = styled.div`
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
 `;
 
 const StyledNotFoundText = styled.span`
