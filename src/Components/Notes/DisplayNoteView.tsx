@@ -96,7 +96,7 @@ const DisplayNoteView = ({
       payload.decryptedAt
     ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
     const noteProccessType = payload.decryptedNote ? "processed" : "failed";
-    decryptProccessString = ` • ${noteProccessType} on: ${noteProccessTime}`;
+    decryptProccessString = ` • client ${noteProccessType} on: ${noteProccessTime}`;
   }
 
   return (
@@ -134,7 +134,7 @@ const DisplayNoteView = ({
               )}
             </NoteViewActions>
             <hr />
-            last updated:{" "}
+            note last updated:{" "}
             {DateTime.fromMillis(rawNote.updatedAt).toLocaleString(
               DateTime.DATETIME_MED_WITH_SECONDS
             )}

@@ -8,12 +8,14 @@ import AuthReducer, {
 import NotesReducer, { INotesState } from "./Reducers/Notes/Reducer";
 import SecretsReducer, { ISecretsState } from "./Reducers/Secrets/Reducer";
 import ThemeReducer, { IThemeState } from "./Reducers/Theme/Reducer";
+import TransientReducer, { ITransientState } from "./Reducers/Transient/Reducer";
 
 export interface IRootState {
   auth: IAuthState;
   notes: INotesState;
   secrets: ISecretsState;
   theme: IThemeState;
+  transient: ITransientState
 }
 
 const storage = localforage.createInstance({ name: "UdiaPersistance" });
@@ -56,7 +58,8 @@ export default function configureReduxStore() {
     auth: persistReducer(authPersistConfig, AuthReducer),
     notes: persistReducer(notesPersistConfig, NotesReducer),
     secrets: persistReducer(secretsPersistConfig, SecretsReducer),
-    theme: persistReducer(themePersistConfig, ThemeReducer)
+    theme: persistReducer(themePersistConfig, ThemeReducer),
+    transient: TransientReducer // not persisted
   });
 
   const store = createStore(

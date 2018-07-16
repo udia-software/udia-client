@@ -1,23 +1,28 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
+import { Dispatch } from "redux";
 import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
   maybeAuthenticated as selectMaybeAuth
 } from "../Modules/Reducers/Auth/Selectors";
+import { handleAppJustLoaded } from "../Modules/Reducers/Transient/Actions";
 import styled from "./AppStyles";
 
 const HomeContainer = styled.div`
   display: grid;
   place-content: center;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
 `;
 
 interface IProps {
+  dispatch: Dispatch;
   user: FullUser | null;
   maybeAuthenticated: boolean;
   isAuthenticated: boolean;
+  appJustLoaded: boolean;
 }
 
 interface IState {
@@ -33,9 +38,19 @@ class Home extends Component<IProps, IState> {
     };
   }
 
+  public componentDidMount() {
+    const { dispatch, appJustLoaded, isAuthenticated } = this.props;
+    if (appJustLoaded) {
+      if (isAuthenticated) {
+        this.setState({ redirectToNotes: true });
+      }
+      dispatch(handleAppJustLoaded());
+    }
+  }
+
   public render() {
     if (this.state.redirectToNotes) {
-      return <Redirect to="/notes/list" />;
+      return <Redirect to="/note/list" />;
     }
     const { user } = this.props;
     return (
@@ -50,7 +65,8 @@ class Home extends Component<IProps, IState> {
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser,
   maybeAuthenticated: selectMaybeAuth(state),
-  isAuthenticated: selectIsAuth(state)
+  isAuthenticated: selectIsAuth(state),
+  appJustLoaded: state.transient.appJustLoaded
 });
 
 export default connect(mapStateToProps)(Home);

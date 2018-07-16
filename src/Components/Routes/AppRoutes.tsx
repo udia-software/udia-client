@@ -21,17 +21,17 @@ export default () => (
     <Route
       exact={true}
       path="/sign-in"
-      component={WithAuth(SignInController, false, "/")}
+      component={WithAuth(SignInController, false, "/note/list")}
     />
     <Route
       exact={true}
       path="/sign-up"
-      component={WithAuth(SignUpController, false, "/")}
+      component={WithAuth(SignUpController, false, "/note/list")}
     />
     <Route
       exact={true}
       path="/forgot-password"
-      component={WithAuth(ForgotPasswordController, false, "/")}
+      component={WithAuth(ForgotPasswordController, false, "/note/list")}
     />
     <Route
       exact={true}

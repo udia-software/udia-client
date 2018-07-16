@@ -4,7 +4,6 @@ import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
-import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -12,6 +11,7 @@ import {
   addRawNotes,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
+import { BaseTheme } from "../AppStyles";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import ListNotesView from "./ListNotesView";
 
@@ -33,11 +33,13 @@ interface IProps {
 }
 
 interface IState {
+  loading: boolean;
+  width: number;
   errors: string[];
   cryptoManager: CryptoManager | null;
   searchString: string;
   searchResultIDs: string[];
-  clickedNoteID?: string;
+  clickedNoteId?: string;
 }
 
 class ListNotesController extends Component<IProps, IState> {
@@ -52,6 +54,8 @@ class ListNotesController extends Component<IProps, IState> {
       errors.push(err.message);
     }
     this.state = {
+      loading: true,
+      width: window.innerWidth,
       errors,
       cryptoManager,
       searchString: "",
@@ -60,27 +64,47 @@ class ListNotesController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
-    let nextPageMS;
+    window.addEventListener("resize", this.handleResizeEvent);
+    let nextPageMS: number | undefined;
     do {
       nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS);
       // tslint:disable-next-line:no-console
     } while (nextPageMS);
+    const { lgScrnBrkPx } = BaseTheme;
+    const isLargeScreen = this.state.width >= lgScrnBrkPx;
+    this.setState({
+      loading: false,
+      clickedNoteId: isLargeScreen ? this.props.noteIDs[0] : undefined
+    });
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResizeEvent);
   }
 
   public render() {
     const { rawNotes, decryptedNotes, noteIDs } = this.props;
-    const { errors, searchString, searchResultIDs, clickedNoteID } = this.state;
+    const {
+      loading,
+      width,
+      errors,
+      searchString,
+      searchResultIDs,
+      clickedNoteId
+    } = this.state;
     const displayNotes = searchString ? searchResultIDs : noteIDs;
+    const { lgScrnBrkPx } = BaseTheme;
+    const isLargeScreen = width >= lgScrnBrkPx;
 
-    if (clickedNoteID) {
-      return <Redirect to={`/note/view/${clickedNoteID}`} push={true} />
-    }
     return (
       <ListNotesView
+        isLargeScreen={isLargeScreen}
+        loading={loading}
         displayNotes={displayNotes}
         rawNotes={rawNotes}
         decryptedNotes={decryptedNotes}
         searchString={searchString}
+        clickedNoteId={clickedNoteId}
         errors={errors}
         handleChangeSearchString={this.handleChangeSearchString}
         handleListNoteItemClicked={this.handleListNoteItemClicked}
@@ -113,7 +137,7 @@ class ListNotesController extends Component<IProps, IState> {
   };
 
   protected handleListNoteItemClicked = (uuid: string) => () => {
-    this.setState({ clickedNoteID: uuid });
+    this.setState({ clickedNoteId: uuid });
   };
 
   protected fetchAndProcessNoteItemsPage = async (
@@ -187,6 +211,15 @@ class ListNotesController extends Component<IProps, IState> {
         setDecryptedNote(item.uuid, new Date().getTime(), null, [newErrMsg])
       );
     }
+  };
+
+  protected handleResizeEvent = () => {
+    const { lgScrnBrkPx } = BaseTheme;
+    const isLargeScreen = window.innerWidth >= lgScrnBrkPx;
+    this.setState({
+      width: window.innerWidth,
+      clickedNoteId: isLargeScreen ? this.props.noteIDs[0] : undefined
+    });
   };
 }
 
