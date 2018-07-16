@@ -37,6 +37,15 @@ const Contact = () => {
           </ThemedAnchor>
         </dd>
       </dl>
+      <span>
+        <ThemedAnchor href="https://api.udia.ca/static/legal/Terms%20of%20Service.txt">
+          Terms of Service
+        </ThemedAnchor>
+        {" • "}
+        <ThemedAnchor href="https://api.udia.ca/static/legal/Privacy%20Policy.txt">
+          Privacy Policy
+        </ThemedAnchor>
+      </span>
     </ContactContainer>
   );
 };

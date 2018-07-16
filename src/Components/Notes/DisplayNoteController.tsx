@@ -3,7 +3,7 @@ import { ApolloClient } from "apollo-client";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
-import { match } from "react-router";
+import { match, Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -39,6 +39,7 @@ interface IState {
   loadingText?: string;
   deleteNoteConfirmation?: number;
   deleteNoteInterval?: number;
+  redirectToList: boolean;
   errors: string[];
   cryptoManager: CryptoManager | null;
 }
@@ -64,6 +65,7 @@ class DisplayNoteController extends Component<IProps, IState> {
       "Display Note"} - UDIA`;
     this.state = {
       loading: !decNotePayload,
+      redirectToList: false,
       errors,
       cryptoManager
     };
@@ -112,10 +114,19 @@ class DisplayNoteController extends Component<IProps, IState> {
 
   public render() {
     const { rawNotes, decryptedNotes } = this.props;
-    const { loading, loadingText, deleteNoteConfirmation, errors } = this.state;
+    const {
+      loading,
+      loadingText,
+      deleteNoteConfirmation,
+      errors,
+      redirectToList
+    } = this.state;
     const { uuid } = this.props.match.params;
     const decryptedNotePayload = decryptedNotes[uuid];
     const rawNote = rawNotes[uuid];
+    if (redirectToList) {
+      return <Redirect to="/note/list" push={true} />
+    }
     return (
       <DisplayNoteView
         loading={loading}
@@ -155,16 +166,23 @@ class DisplayNoteController extends Component<IProps, IState> {
         this.setState({ loading: true });
         const { dispatch, client } = this.props;
         const { uuid } = this.props.match.params;
-        const deletedItem = await deleteNote(client, uuid, (loadingText: string) => {
-          this.setState({ loadingText });
-        });
+        const deletedItem = await deleteNote(
+          client,
+          uuid,
+          (loadingText: string) => {
+            this.setState({ loadingText });
+          }
+        );
         dispatch(addRawNote(deletedItem));
         dispatch(deleteDecryptedNote(deletedItem.uuid));
+        this.setState({
+          loading: false,
+          loadingText: undefined,
+          redirectToList: true
+        });
       } catch (err) {
         const { errors } = parseGraphQLError(err, "Failed to delete note!");
-        this.setState({ errors });
-      } finally {
-        this.setState({ loading: false, loadingText: undefined });
+        this.setState({ errors, loading: false, loadingText: undefined });
       }
     }
   };
