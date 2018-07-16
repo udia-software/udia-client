@@ -67,6 +67,7 @@ class DisplayNoteController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
+    window.scrollTo(0, 0)
     const { uuid } = this.props.match.params;
     const {
       client,

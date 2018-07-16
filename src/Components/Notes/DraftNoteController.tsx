@@ -101,6 +101,7 @@ class DraftNoteController extends Component<IProps, IState> {
    * Logic to handle editing notes goes here
    */
   public async componentDidMount() {
+    window.scrollTo(0, 0);
     try {
       const {
         client,
@@ -191,7 +192,9 @@ class DraftNoteController extends Component<IProps, IState> {
       debounceContent,
       redirectToNote
     } = this.state;
-    if (redirectToNote) {
+    if (redirectToNote === "list") {
+      return <Redirect to="/note/list" push={true} />;
+    } else if (redirectToNote) {
       return <Redirect to={`/note/view/${redirectToNote}`} />;
     }
     return (
@@ -268,7 +271,7 @@ class DraftNoteController extends Component<IProps, IState> {
       debounceTitle: "",
       debounceContentTimeout: undefined,
       debounceTitleTimeout: undefined,
-      redirectToNote: uuid
+      redirectToNote: uuid || "list"
     });
   };
 
