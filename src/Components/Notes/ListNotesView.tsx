@@ -84,7 +84,9 @@ const ListActionButton = styled(Button)`
 const ListNoteTitle = styled.span`
   font-weight: bold;
   color: ${props => props.theme.primaryColor};
-  ${ListNoteItem}: hover & ${"{text-decoration: underline;}"};
+  ${ListNoteItem}: hover & {
+    text-decoration: underline;
+  }
 `;
 
 const ListNoteUntitled = styled.span`
@@ -117,10 +119,13 @@ interface IProps {
   bypassedCacheDateMS?: number;
   searchString: string;
   clickedNoteId?: string;
+  deleteNoteId?: string;
+  deleteNoteConfirmation?: number;
   errors: string[];
   handleChangeSearchString: ChangeEventHandler<HTMLInputElement>;
   handleListNoteItemClicked: (uuid: string) => MouseEventHandler<HTMLElement>;
   handleReloadNotesBypassCache: MouseEventHandler<HTMLButtonElement>;
+  handleClickDeleteNote: (uuid: string) => MouseEventHandler<HTMLButtonElement>;
 }
 
 const PREVIEW_CHAR_LEN = 120;
@@ -137,10 +142,13 @@ class ListNotesView extends Component<IProps> {
       bypassedCacheDateMS,
       searchString,
       clickedNoteId,
+      deleteNoteConfirmation,
+      deleteNoteId,
       errors,
       handleChangeSearchString,
       handleListNoteItemClicked,
-      handleReloadNotesBypassCache
+      handleReloadNotesBypassCache,
+      handleClickDeleteNote
     } = this.props;
 
     const listErrors =
@@ -251,6 +259,12 @@ class ListNotesView extends Component<IProps> {
                   }
                   decryptedNotePayload={decryptedNotes[clickedNoteId]}
                   rawNote={rawNotes[clickedNoteId]}
+                  deleteNoteConfirmation={
+                    deleteNoteId === clickedNoteId
+                      ? deleteNoteConfirmation
+                      : undefined
+                  }
+                  handleClickDeleteNote={handleClickDeleteNote(clickedNoteId)}
                 />
               </LargeScreenContentContatiner>
             ) : (

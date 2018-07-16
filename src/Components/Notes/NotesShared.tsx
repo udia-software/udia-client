@@ -93,6 +93,20 @@ export const fetchAndProcessNote = async (
   return { rawNote, decryptedNote };
 };
 
+export const deleteNote = async (
+  client: ApolloClient<NormalizedCacheObject>,
+  uuid: string,
+  setLoadingText: (loadingText: string) => void = () => undefined
+) => {
+  setLoadingText("Deleting note from the server...");
+  const response = await client.mutate({
+    mutation: DELETE_ITEM_MUTATION,
+    variables: { id: uuid }
+  });
+  const { deleteItem } = response.data as IDeleteItemResponseData;
+  return deleteItem;
+};
+
 const GET_ITEM_QUERY = gql`
   query GetItemQuery($id: ID!, $childrenParams: ItemPaginationInput) {
     getItem(id: $id) {
@@ -122,4 +136,35 @@ const GET_ITEM_QUERY = gql`
 `;
 interface IGetItemResponseData {
   getItem: Item;
+}
+
+const DELETE_ITEM_MUTATION = gql`
+  mutation DeleteItemMutation($id: ID!, $childrenParams: ItemPaginationInput) {
+    deleteItem(id: $id) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children(params: $childrenParams) {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+interface IDeleteItemResponseData {
+  deleteItem: Item;
 }

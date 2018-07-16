@@ -9,11 +9,12 @@ import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   addRawNote,
+  deleteDecryptedNote,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import DisplayNoteView from "./DisplayNoteView";
-import { fetchAndProcessNote } from "./NotesShared";
+import { deleteNote, fetchAndProcessNote } from "./NotesShared";
 
 interface IProps {
   match: match<{ uuid: string }>;
@@ -36,6 +37,8 @@ interface IProps {
 interface IState {
   loading: boolean;
   loadingText?: string;
+  deleteNoteConfirmation?: number;
+  deleteNoteInterval?: number;
   errors: string[];
   cryptoManager: CryptoManager | null;
 }
@@ -67,7 +70,7 @@ class DisplayNoteController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
     const { uuid } = this.props.match.params;
     const {
       client,
@@ -109,7 +112,7 @@ class DisplayNoteController extends Component<IProps, IState> {
 
   public render() {
     const { rawNotes, decryptedNotes } = this.props;
-    const { loading, loadingText, errors } = this.state;
+    const { loading, loadingText, deleteNoteConfirmation, errors } = this.state;
     const { uuid } = this.props.match.params;
     const decryptedNotePayload = decryptedNotes[uuid];
     const rawNote = rawNotes[uuid];
@@ -120,9 +123,51 @@ class DisplayNoteController extends Component<IProps, IState> {
         errors={errors}
         decryptedNotePayload={decryptedNotePayload}
         rawNote={rawNote}
+        deleteNoteConfirmation={deleteNoteConfirmation}
+        handleClickDeleteNote={this.handleClickDeleteNote}
       />
     );
   }
+
+  protected handleClickDeleteNote = async () => {
+    const { deleteNoteConfirmation } = this.state;
+    if (deleteNoteConfirmation === undefined) {
+      this.setState({
+        deleteNoteConfirmation: 3,
+        deleteNoteInterval: window.setInterval(() => {
+          const countdown = (this.state.deleteNoteConfirmation || 3) - 1;
+          this.setState({
+            deleteNoteConfirmation: countdown
+          });
+          if (countdown <= 0) {
+            clearInterval(this.state.deleteNoteInterval);
+          }
+        }, 1000)
+      });
+    } else if (deleteNoteConfirmation <= 0) {
+      await this.handleDeleteNote();
+    }
+  };
+
+  protected handleDeleteNote = async () => {
+    if (!this.state.loading) {
+      try {
+        this.setState({ loading: true });
+        const { dispatch, client } = this.props;
+        const { uuid } = this.props.match.params;
+        const deletedItem = await deleteNote(client, uuid, (loadingText: string) => {
+          this.setState({ loadingText });
+        });
+        dispatch(addRawNote(deletedItem));
+        dispatch(deleteDecryptedNote(deletedItem.uuid));
+      } catch (err) {
+        const { errors } = parseGraphQLError(err, "Failed to delete note!");
+        this.setState({ errors });
+      } finally {
+        this.setState({ loading: false, loadingText: undefined });
+      }
+    }
+  };
 }
 
 const mapStateToProps = (state: IRootState) => ({

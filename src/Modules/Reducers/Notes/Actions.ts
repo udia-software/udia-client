@@ -6,8 +6,8 @@ export const SET_DRAFT_TYPE = "notes/SET_DRAFT_TYPE";
 export const DISCARD_DRAFT = "notes/DISCARD_DRAFT";
 export const ADD_RAW_NOTES = "notes/ADD_RAW_NOTES";
 export const ADD_RAW_NOTE = "notes/ADD_RAW_NOTE";
-export const DELETE_RAW_NOTE = "notes/DELETE_RAW_NOTE";
 export const SET_DECRYPTED_NOTE = "notes/ADD_DECRYPTED_NOTE";
+export const DELETE_DECRYPTED_NOTE = "notes/DELETE_DECRYPTED_NOTE";
 export const CLEAR_NOTES_DATA = "notes/CLEAR_NOTES_DATA";
 
 /**
@@ -106,15 +106,6 @@ export const addRawNote = (noteItem: Item) => ({
   payload: noteItem
 });
 
-export interface IDeleteRawNoteAction {
-  type: typeof DELETE_RAW_NOTE;
-  payload: string;
-}
-export const deleteRawNote = (uuid: string) => ({
-  type: DELETE_RAW_NOTE,
-  payload: uuid
-});
-
 /**
  * PERSIST DECRYPTED NOTE-ITEM ACTIONS
  */
@@ -137,6 +128,15 @@ export const setDecryptedNote = (
   payload: { uuid, decryptedAt, decryptedNote, errors }
 });
 
+export interface IDeleteDecryptedNoteAction {
+  type: typeof DELETE_DECRYPTED_NOTE;
+  payload: string;
+}
+export const deleteDecryptedNote = (uuid: string) => ({
+  type: DELETE_DECRYPTED_NOTE,
+  payload: uuid
+});
+
 /**
  * CLEAR STATE ACTION
  */
@@ -155,6 +155,6 @@ export type INotesAction =
   | IDiscardDraftNoteAction
   | IAddRawNotesAction
   | IAddRawNoteAction
-  | IDeleteRawNoteAction
   | ISetDecryptedNoteAction
+  | IDeleteDecryptedNoteAction
   | IClearNotesDataAction;

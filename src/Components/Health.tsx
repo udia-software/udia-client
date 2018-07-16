@@ -94,6 +94,7 @@ class Health extends Component<IProps, IState> implements isMountable {
    * once component mounts, perform a basic browser/server sanity check
    */
   public async componentDidMount() {
+    window.scrollTo(0, 0);
     this.isMountableMounted = true;
     this.props.subscribeToNewHealthMetrics();
     const cryptoManager = this.initCryptoManager();

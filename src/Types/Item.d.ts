@@ -1,9 +1,9 @@
 // GraphQL get items response structure for note functionality
 declare interface Item {
   uuid: string;
-  content: string;
-  contentType: string;
-  encItemKey?: string;
+  content: string | null;
+  contentType: string | null;
+  encItemKey?: string | null;
   user: {
     uuid: string;
     username: string;
@@ -11,7 +11,7 @@ declare interface Item {
   };
   parent: {
     uuid: string;
-  };
+  } | null;
   children: {
     count: number;
     items: [{ uuid: string }];
