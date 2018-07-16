@@ -9,6 +9,7 @@ export const ADD_RAW_NOTE = "notes/ADD_RAW_NOTE";
 export const SET_DECRYPTED_NOTE = "notes/ADD_DECRYPTED_NOTE";
 export const DELETE_DECRYPTED_NOTE = "notes/DELETE_DECRYPTED_NOTE";
 export const CLEAR_NOTES_DATA = "notes/CLEAR_NOTES_DATA";
+export const CLEAR_RAW_AND_CACHED_NOTES = "notes/CLEAR_RAW_AND_CACHED_NOTES";
 
 /**
  * DRAFTING NOTE ACTIONS
@@ -147,6 +148,13 @@ export const clearNotesData = (): IClearNotesDataAction => ({
   type: CLEAR_NOTES_DATA
 });
 
+export interface IClearRawAndCachedNotesAction {
+  type: typeof CLEAR_RAW_AND_CACHED_NOTES;
+}
+export const clearRawAndCachedNotes = (): IClearRawAndCachedNotesAction => ({
+  type: CLEAR_RAW_AND_CACHED_NOTES
+});
+
 export type INotesAction =
   | ISetDraftAction
   | ISetDraftNoteTitleAction
@@ -157,4 +165,5 @@ export type INotesAction =
   | IAddRawNoteAction
   | ISetDecryptedNoteAction
   | IDeleteDecryptedNoteAction
-  | IClearNotesDataAction;
+  | IClearNotesDataAction
+  | IClearRawAndCachedNotesAction;

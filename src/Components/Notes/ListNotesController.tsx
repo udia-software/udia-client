@@ -10,6 +10,7 @@ import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   addRawNote,
   addRawNotes,
+  clearRawAndCachedNotes,
   deleteDecryptedNote,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
@@ -140,17 +141,21 @@ class ListNotesController extends Component<IProps, IState> {
   }
 
   protected handleReloadNotesBypassCache = async () => {
-    if (!this.state.loading) {
+    const { loading } = this.state;
+    if (!loading) {
       this.setState({
         loading: true,
         bypassedCacheDateMS: new Date().getTime()
       });
+      this.props.dispatch(clearRawAndCachedNotes());
       let nextPageMS: number | undefined = new Date().getTime();
       do {
         nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS, true);
         // tslint:disable-next-line:no-console
       } while (nextPageMS);
-      this.setState({ loading: false });
+      this.setState({
+        loading: false
+      });
     }
   };
 
@@ -242,17 +247,11 @@ class ListNotesController extends Component<IProps, IState> {
         const decryptedNotePayload = decryptedNotes[uuid];
         let processedAt = new Date().getTime();
         let decryptedNote = null;
-        let noteErrors = errors;
         if (decryptedNotePayload) {
           processedAt = decryptedNotePayload.decryptedAt;
           decryptedNote = decryptedNotePayload.decryptedNote;
-          if (decryptedNotePayload.errors) {
-            noteErrors = [...noteErrors, ...decryptedNotePayload.errors];
-          }
         }
-        dispatch(
-          setDecryptedNote(uuid, processedAt, decryptedNote, noteErrors)
-        );
+        dispatch(setDecryptedNote(uuid, processedAt, decryptedNote, errors));
       } finally {
         this.setState({ loading: false });
       }
@@ -337,9 +336,12 @@ class ListNotesController extends Component<IProps, IState> {
 
   protected handleResizeEvent = () => {
     const isLargeScreen = window.innerWidth >= lgScrnBrkPx;
+    const { noteIDs, rawNotes } = this.props;
     this.setState({
       width: window.innerWidth,
-      clickedNoteId: isLargeScreen ? this.props.noteIDs[0] : undefined
+      clickedNoteId: isLargeScreen
+        ? noteIDs.filter(id => rawNotes[id] && !rawNotes[id].deleted)[0]
+        : undefined
     });
   };
 }

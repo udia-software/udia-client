@@ -187,11 +187,12 @@ class ListNotesView extends Component<IProps> {
                   selected={uuid === clickedNoteId}
                 >
                   <FieldErrors errors={noteErrors} />
-                  {decryptedNote && decryptedNote.title ? (
-                    <ListNoteTitle>{decryptedNote.title}</ListNoteTitle>
-                  ) : (
-                    <ListNoteUntitled>Untitled</ListNoteUntitled>
-                  )}
+                  {decryptedNote &&
+                    (decryptedNote.title ? (
+                      <ListNoteTitle>{decryptedNote.title}</ListNoteTitle>
+                    ) : (
+                      <ListNoteUntitled>Untitled</ListNoteUntitled>
+                    ))}
                   {!isLargeScreen ? (
                     <ListPreviewContentContainer>
                       {decryptedNote &&
@@ -228,8 +229,11 @@ class ListNotesView extends Component<IProps> {
             })}
             {displayNotes.length === 0 && <li>No Items</li>}
             <ListActionsItem>
-              <ListActionButton onClick={handleReloadNotesBypassCache}>
-                Reload Notes Bypass Cache
+              <ListActionButton
+                disabled={loading}
+                onClick={handleReloadNotesBypassCache}
+              >
+                Clear Cache &amp; Reload Notes
               </ListActionButton>
               {bypassedCacheDateMS && (
                 <MutedSpan>
@@ -248,8 +252,12 @@ class ListNotesView extends Component<IProps> {
                 <DisplayNoteView
                   loading={
                     !(
-                      decryptedNotes[clickedNoteId] &&
-                      decryptedNotes[clickedNoteId].decryptedNote
+                      (decryptedNotes[clickedNoteId] &&
+                        decryptedNotes[clickedNoteId].decryptedNote) ||
+                      (decryptedNotes[clickedNoteId] &&
+                        decryptedNotes[clickedNoteId].errors) ||
+                      (rawNotes[clickedNoteId] &&
+                        rawNotes[clickedNoteId].deleted)
                     )
                   }
                   errors={
