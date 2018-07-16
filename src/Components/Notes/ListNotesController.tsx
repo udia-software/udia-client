@@ -8,7 +8,9 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
+  addRawNote,
   addRawNotes,
+  deleteDecryptedNote,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
 import { isDraftingNewNote } from "../../Modules/Reducers/Notes/Selectors";
@@ -16,6 +18,7 @@ import { setClickedNoteId } from "../../Modules/Reducers/Transient/Actions";
 import { BaseTheme } from "../AppStyles";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import ListNotesView from "./ListNotesView";
+import { deleteNote } from "./NotesShared";
 
 const { lgScrnBrkPx } = BaseTheme;
 
@@ -47,6 +50,9 @@ interface IState {
   bypassedCacheDateMS?: number;
   searchResultIDs: string[];
   clickedNoteId?: string;
+  deleteNoteId?: string;
+  deleteNoteConfirmation?: number;
+  deleteNoteInterval?: number;
 }
 
 class ListNotesController extends Component<IProps, IState> {
@@ -78,13 +84,13 @@ class ListNotesController extends Component<IProps, IState> {
       // tslint:disable-next-line:no-console
     } while (nextPageMS);
     const isLargeScreen = this.state.width >= lgScrnBrkPx;
-    const { noteIDs, clickedNoteId } = this.props;
+    const { noteIDs, clickedNoteId, rawNotes } = this.props;
     this.setState({
       loading: false,
       clickedNoteId: isLargeScreen
         ? clickedNoteId
           ? clickedNoteId
-          : noteIDs[0]
+          : noteIDs.filter(id => rawNotes[id] && !rawNotes[id].deleted)[0]
         : undefined
     });
   }
@@ -102,9 +108,13 @@ class ListNotesController extends Component<IProps, IState> {
       searchString,
       bypassedCacheDateMS,
       searchResultIDs,
-      clickedNoteId
+      clickedNoteId,
+      deleteNoteId,
+      deleteNoteConfirmation
     } = this.state;
-    const displayNotes = searchString ? searchResultIDs : noteIDs;
+    const displayNotes = [...(searchString ? searchResultIDs : noteIDs)].filter(
+      uuid => rawNotes[uuid] && !rawNotes[uuid].deleted
+    );
     const isLargeScreen = width >= lgScrnBrkPx;
 
     return (
@@ -118,10 +128,13 @@ class ListNotesController extends Component<IProps, IState> {
         bypassedCacheDateMS={bypassedCacheDateMS}
         searchString={searchString}
         clickedNoteId={clickedNoteId}
+        deleteNoteId={deleteNoteId}
+        deleteNoteConfirmation={deleteNoteConfirmation}
         errors={errors}
         handleChangeSearchString={this.handleChangeSearchString}
         handleListNoteItemClicked={this.handleListNoteItemClicked}
         handleReloadNotesBypassCache={this.handleReloadNotesBypassCache}
+        handleClickDeleteNote={this.handleClickDeleteNote}
       />
     );
   }
@@ -177,6 +190,73 @@ class ListNotesController extends Component<IProps, IState> {
   protected handleListNoteItemClicked = (uuid: string) => () => {
     this.setState({ clickedNoteId: uuid });
     this.props.dispatch(setClickedNoteId(uuid));
+  };
+
+  protected handleClickDeleteNote = (uuid: string) => async () => {
+    const {
+      deleteNoteId,
+      deleteNoteConfirmation,
+      deleteNoteInterval
+    } = this.state;
+    if (deleteNoteId !== uuid) {
+      window.clearInterval(deleteNoteInterval);
+      this.setState({
+        deleteNoteId: uuid,
+        deleteNoteConfirmation: 3,
+        deleteNoteInterval: window.setInterval(() => {
+          const countdown = (this.state.deleteNoteConfirmation || 3) - 1;
+          this.setState({
+            deleteNoteConfirmation: countdown
+          });
+          if (countdown <= 0) {
+            clearInterval(this.state.deleteNoteInterval);
+          }
+        }, 1000)
+      });
+    } else if (
+      deleteNoteId === uuid &&
+      deleteNoteConfirmation !== undefined &&
+      deleteNoteConfirmation <= 0
+    ) {
+      await this.handleDeleteNote(uuid);
+    }
+  };
+
+  protected handleDeleteNote = async (uuid: string) => {
+    const { loading } = this.state;
+    if (!loading) {
+      this.setState({ loading: true });
+      try {
+        const { dispatch, client, noteIDs, rawNotes } = this.props;
+        const deletedItem = await deleteNote(client, uuid);
+        dispatch(addRawNote(deletedItem));
+        dispatch(deleteDecryptedNote(deletedItem.uuid));
+        this.setState({
+          clickedNoteId: noteIDs.filter(
+            id => rawNotes[id] && !rawNotes[id].deleted && id !== uuid
+          )[0]
+        });
+      } catch (err) {
+        const { dispatch, decryptedNotes } = this.props;
+        const { errors } = parseGraphQLError(err, "Failed to delete note!");
+        const decryptedNotePayload = decryptedNotes[uuid];
+        let processedAt = new Date().getTime();
+        let decryptedNote = null;
+        let noteErrors = errors;
+        if (decryptedNotePayload) {
+          processedAt = decryptedNotePayload.decryptedAt;
+          decryptedNote = decryptedNotePayload.decryptedNote;
+          if (decryptedNotePayload.errors) {
+            noteErrors = [...noteErrors, ...decryptedNotePayload.errors];
+          }
+        }
+        dispatch(
+          setDecryptedNote(uuid, processedAt, decryptedNote, noteErrors)
+        );
+      } finally {
+        this.setState({ loading: false });
+      }
+    }
   };
 
   protected fetchAndProcessNoteItemsPage = async (

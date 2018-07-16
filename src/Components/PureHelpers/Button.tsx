@@ -29,7 +29,9 @@ export const Button: StyledComponentClass<
       color: ${props.theme.inputErrorColor};
       border-color: ${props.theme.inputErrorBorderColor};
       background-color: ${props.theme.inputErrorBackgroundColor};
-      cursor: not-allowed;`
+      cursor: not-allowed;
+      font-weight: bold;
+      `
       : `
       cursor: pointer;
       &:hover {

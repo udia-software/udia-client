@@ -604,6 +604,12 @@ export default class CryptoManager {
         `Item ${item.uuid} missing mandatory field 'encItemKey'!`
       );
     }
+    if (!item.content) {
+      throw new Error(
+        `Item ${item.uuid} missing mandatory field 'content'!`
+      );
+    }
+
     const akBuf = Buffer.from(akB64, "base64");
     const mkBuf = Buffer.from(mkB64, "base64");
     setLoadingText("Decrypting secret key...");

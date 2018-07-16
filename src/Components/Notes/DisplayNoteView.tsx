@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { Fragment } from "react";
+import React, { Fragment, MouseEventHandler } from "react";
 import styled from "../AppStyles";
 import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
@@ -22,6 +22,8 @@ interface IProps {
     decryptedNote: DecryptedNote | null;
     errors?: string[];
   };
+  deleteNoteConfirmation?: number;
+  handleClickDeleteNote: MouseEventHandler<HTMLButtonElement>;
 }
 
 const DisplayNoteContainer = styled.div`
@@ -92,11 +94,19 @@ const DisplayNoteView = ({
   loadingText,
   errors,
   rawNote,
-  decryptedNotePayload: payload
+  decryptedNotePayload: payload,
+  deleteNoteConfirmation,
+  handleClickDeleteNote
 }: IProps) => {
   const decryptedNote = payload && payload.decryptedNote;
   const noteErrors = (payload && payload.errors) || [];
-  const protocolVersion = (rawNote && rawNote.content.split(":")[0]) || "ERR";
+  const protocolVersion =
+    rawNote &&
+    (rawNote.deleted
+      ? "DELETED"
+      : rawNote.content
+        ? rawNote.content.split(":")[0] || "ERR"
+        : "ERR");
   let decryptProccessString = "";
   let noteProccessTime = "";
   if (payload) {
@@ -139,13 +149,26 @@ const DisplayNoteView = ({
         {rawNote && (
           <NoteViewMeta>
             <NoteViewActions>
-              {decryptedNote ? (
-                <ThemedLink to={`/note/draft/${rawNote.uuid}`}>
-                  <ViewActionButton>Edit Note</ViewActionButton>
-                </ThemedLink>
-              ) : (
-                <ViewActionButton disabled={true}>ENCRYPTED</ViewActionButton>
-              )}
+              <ViewActionButton
+                disabled={rawNote.deleted || (deleteNoteConfirmation || -1) > 0}
+                onClick={handleClickDeleteNote}
+              >
+                {rawNote.deleted
+                  ? "DELETED"
+                  : deleteNoteConfirmation === undefined
+                    ? "Delete Note"
+                    : deleteNoteConfirmation > 0
+                      ? `CONFIRM? (WAIT ${deleteNoteConfirmation}s)`
+                      : "CONFIRM DELETE"}
+              </ViewActionButton>{" "}
+              {!rawNote.deleted &&
+                (decryptedNote ? (
+                  <ThemedLink to={`/note/draft/${rawNote.uuid}`}>
+                    <ViewActionButton>Edit Note</ViewActionButton>
+                  </ThemedLink>
+                ) : (
+                  <ViewActionButton disabled={true}>ENCRYPTED</ViewActionButton>
+                ))}
             </NoteViewActions>
             <hr />
             {decryptProccessString && (

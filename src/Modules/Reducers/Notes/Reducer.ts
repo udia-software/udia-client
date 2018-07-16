@@ -2,7 +2,7 @@ import {
   ADD_RAW_NOTE,
   ADD_RAW_NOTES,
   CLEAR_NOTES_DATA,
-  DELETE_RAW_NOTE,
+  DELETE_DECRYPTED_NOTE,
   DISCARD_DRAFT,
   INotesAction,
   SET_DECRYPTED_NOTE,
@@ -123,7 +123,7 @@ export default (
       };
     }
     case ADD_RAW_NOTES: {
-      const rawNotes = {
+      const rawNotes: { [index: string]: Item } = {
         ...state.rawNotes,
         ...action.payload.reduce((map: typeof state.rawNotes, rawNoteItem) => {
           map[rawNoteItem.uuid] = rawNoteItem;
@@ -136,7 +136,12 @@ export default (
           ...action.payload.map(noteItem => noteItem.uuid)
         ])
       );
-      noteIDs.sort(noteIDCompareFunc);
+      noteIDs
+        .filter(id => {
+          const item = rawNotes[id];
+          return item && !item.deleted;
+        })
+        .sort(noteIDCompareFunc);
       return {
         ...state,
         rawNotes,
@@ -150,21 +155,12 @@ export default (
         [newUUID]: action.payload
       };
       const noteIDs = Array.from(new Set([...state.noteIDs, newUUID]));
-      noteIDs.sort(noteIDCompareFunc);
-      return {
-        ...state,
-        rawNotes,
-        noteIDs
-      };
-    }
-    case DELETE_RAW_NOTE: {
-      const noteIDs = [...state.noteIDs];
-      const rawNotes = { ...state.rawNotes };
-      delete rawNotes[action.payload];
-      const idx = noteIDs.indexOf(action.payload);
-      if (idx > -1) {
-        noteIDs.splice(idx, 1);
-      }
+      noteIDs
+        .filter(id => {
+          const item = rawNotes[id];
+          return item && !item.deleted;
+        })
+        .sort(noteIDCompareFunc);
       return {
         ...state,
         rawNotes,
@@ -181,6 +177,16 @@ export default (
           errors
         }
       };
+      return {
+        ...state,
+        decryptedNotes
+      };
+    }
+    case DELETE_DECRYPTED_NOTE: {
+      const decryptedNotes = {
+        ...state.decryptedNotes
+      };
+      delete decryptedNotes[action.payload];
       return {
         ...state,
         decryptedNotes
