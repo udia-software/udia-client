@@ -4,17 +4,16 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import { Link } from "react-router-dom";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PointerAnchor,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -59,7 +58,7 @@ const SignInView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>Welcome back, User.</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField error={emailErrors.length > 0}>
             <label htmlFor="email">
@@ -72,16 +71,16 @@ const SignInView = ({
                 value={email}
               />
             </label>
-            <FormFieldErrors errors={emailErrors} />
+            <FieldErrors errors={emailErrors} />
           </FormField>
           <FormField error={passwordErrors.length > 0}>
             <label htmlFor="pw">
               <PasswordLabelFlex>
                 <span>Password:</span>
-                <PointerAnchor onClick={handleTogglePassword}>
+                <ThemedAnchor onClick={handleTogglePassword}>
                   <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
                   {showPassword ? "Hide Password" : "Show Password"}
-                </PointerAnchor>
+                </ThemedAnchor>
               </PasswordLabelFlex>
               <FormInput
                 type={showPassword ? "text" : "password"}
@@ -91,15 +90,15 @@ const SignInView = ({
                 value={password}
               />
             </label>
-            <FormFieldErrors errors={passwordErrors} />
+            <FieldErrors errors={passwordErrors} />
           </FormField>
           <Button>Sign In</Button>
         </FormContent>
       </fieldset>
     </FormContainer>
     <SignViewLinks>
-      <Link to="/sign-up">I don&apos;t have an account →</Link>
-      <Link to="/forgot-password">I forgot my password.</Link>
+      <ThemedLink to="/sign-up">I don&apos;t have an account →</ThemedLink>
+      <ThemedLink to="/forgot-password">I forgot my password.</ThemedLink>
     </SignViewLinks>
   </SignViewContainer>
 );

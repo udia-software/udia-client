@@ -1,14 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
-import { IRootState } from "../Modules/Reducers/RootReducer";
+import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   IToggleDarkThemeAction,
   toggleDarkTheme
 } from "../Modules/Reducers/Theme/Actions";
 import { isUsingDarkTheme } from "../Modules/Reducers/Theme/Selectors";
 import styled from "./AppStyles";
+import { ThemedAnchor, ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
 import Logo from "./Static/Logo";
 
 const FooterContainer = styled.div`
@@ -34,7 +34,7 @@ const StyledFooterLogoContainer = styled.div`
   place-self: center;
 `;
 
-const StyledMapLink = styled.a`
+const StyledMapLink = styled(ThemedAnchor)`
   padding-top: 0.8em;
 `;
 
@@ -47,10 +47,6 @@ const StyledFooterLinksContainer = styled.div`
     display: grid;
     justify-items: end;
   }
-`;
-
-const ToggleThemeLink = styled.a`
-  cursor: pointer;
 `;
 
 interface IFooterProps {
@@ -78,12 +74,12 @@ class Footer extends React.Component<IFooterProps> {
         <StyledFooterLinksContainer>
           <h3>Links</h3>
           <div>
-            <Link to="/">Home</Link>
-            <Link to="/health">Health</Link>
-            <Link to="/contact">Contact</Link>
-            <ToggleThemeLink onClick={toggleTheme}>
+            <ThemedLink to="/">Home</ThemedLink>
+            <ThemedLink to="/health">Health</ThemedLink>
+            <ThemedLink to="/contact">Contact</ThemedLink>
+            <ThemedAnchor onClick={toggleTheme}>
               Toggle {isDarkTheme ? "Light" : "Dark"} Theme
-            </ToggleThemeLink>
+            </ThemedAnchor>
           </div>
         </StyledFooterLinksContainer>
       </FooterContainer>

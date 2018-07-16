@@ -3,10 +3,10 @@ import React, {
   FocusEventHandler,
   FormEventHandler
 } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
@@ -66,7 +66,7 @@ const ResetPasswordView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>User, be careful. Ciphers are potent.</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField
             error={tokenErrors.length > 0}
@@ -87,7 +87,7 @@ const ResetPasswordView = ({
                 value={token}
               />
             </label>
-            <FormFieldErrors errors={tokenErrors} />
+            <FieldErrors errors={tokenErrors} />
           </FormField>
           <FormField
             error={passwordErrors.length > 0}
@@ -104,7 +104,7 @@ const ResetPasswordView = ({
                 value={password}
               />
             </label>
-            <FormFieldErrors errors={passwordErrors} />
+            <FieldErrors errors={passwordErrors} />
           </FormField>
           <FormField>
             <label

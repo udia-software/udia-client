@@ -55,8 +55,24 @@ export default function initApolloClient(token: string | null) {
     httpLinkWithAuth
   );
 
+  // enforce "none" style error policy.
+  // GraphQL errors should throw an exception and be parsed, just like a network err.
+  const errorPolicy = "none";
   return new ApolloClient({
     link,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: "cache-and-network",
+        errorPolicy
+      },
+      query: {
+        fetchPolicy: "cache-first",
+        errorPolicy
+      },
+      mutate: {
+        errorPolicy
+      }
+    }
   });
 }

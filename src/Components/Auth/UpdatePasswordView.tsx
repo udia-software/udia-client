@@ -4,17 +4,17 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PointerAnchor,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -67,18 +67,18 @@ const UpdatePasswordView = ({
       <FormContainer onSubmit={handleSubmit}>
         <fieldset>
           <legend>Changing your password, User?</legend>
-          <FormFieldErrors errors={errors} />
+          <FieldErrors errors={errors} />
           <FormContent>
             <FormField error={currentPasswordErrors.length > 0}>
               <label htmlFor="currentPassword">
                 <PasswordLabelFlex>
                   <span>Current Password:</span>
-                  <PointerAnchor onClick={handleToggleCurrentPassword}>
+                  <ThemedAnchor onClick={handleToggleCurrentPassword}>
                     <FontAwesomeIcon
                       icon={showCurrentPassword ? "eye-slash" : "eye"}
                     />{" "}
                     {showCurrentPassword ? "Hide Password" : "Show Password"}
-                  </PointerAnchor>
+                  </ThemedAnchor>
                 </PasswordLabelFlex>
                 <FormInput
                   type={showCurrentPassword ? "text" : "password"}
@@ -89,7 +89,7 @@ const UpdatePasswordView = ({
                   value={currentPassword}
                 />
               </label>
-              <FormFieldErrors errors={currentPasswordErrors} />
+              <FieldErrors errors={currentPasswordErrors} />
             </FormField>
             <FormField
               error={newPasswordErrors.length > 0}
@@ -98,12 +98,12 @@ const UpdatePasswordView = ({
               <label htmlFor="pw">
                 <PasswordLabelFlex>
                   <span>New Password:{newPasswordValidated && " \u2714"}</span>
-                  <PointerAnchor onClick={handleToggleNewPassword}>
+                  <ThemedAnchor onClick={handleToggleNewPassword}>
                     <FontAwesomeIcon
                       icon={showNewPassword ? "eye-slash" : "eye"}
                     />{" "}
                     {showNewPassword ? "Hide Password" : "Show Password"}
-                  </PointerAnchor>
+                  </ThemedAnchor>
                 </PasswordLabelFlex>
                 <FormInput
                   type={showNewPassword ? "text" : "password"}
@@ -114,9 +114,16 @@ const UpdatePasswordView = ({
                   value={newPassword}
                 />
               </label>
-              <FormFieldErrors errors={newPasswordErrors} />
-              <FormFieldSuccesses
-                successes={success ? ["Successfully updated password!"] : []}
+              <FieldErrors errors={newPasswordErrors} />
+              <FieldSuccesses
+                successes={
+                  success
+                    ? [
+                        "Successfully updated password!",
+                        "It is reccomended that you re-authenticate on all other logged in clients."
+                      ]
+                    : []
+                }
               />
             </FormField>
             <Button>Update Password</Button>

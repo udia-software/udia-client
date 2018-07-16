@@ -1,21 +1,16 @@
-import { FullUser } from "../../../Types";
-
 // Action serializable and unique type strings
-export const SET_FORM_USERNAME: "auth/SET_FORM_USERNAME" =
-  "auth/SET_FORM_USERNAME";
-export const SET_FORM_PASSWORD: "auth/SET_FORM_PASSWORD" =
-  "auth/SET_FORM_PASSWORD";
-export const SET_FORM_EMAIL: "auth/SET_FORM_EMAIL" = "auth/SET_FORM_EMAIL";
-export const SET_AUTH_USER: "auth/SET_AUTH_USER" = "auth/SET_AUTH_USER";
-export const SET_AUTH_JWT: "auth/SET_AUTH_JWT" = "auth/SET_AUTH_JWT";
-export const SET_AUTH_DATA: "auth/SET_AUTH_DATA" = "auth/SET_AUTH_DATA";
-export const SET_FORM_EMAIL_VERIFICATION_TOKEN: "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN" =
+export const SET_FORM_USERNAME = "auth/SET_FORM_USERNAME";
+export const SET_FORM_PASSWORD = "auth/SET_FORM_PASSWORD";
+export const SET_FORM_EMAIL = "auth/SET_FORM_EMAIL";
+export const SET_AUTH_USER = "auth/SET_AUTH_USER";
+export const SET_AUTH_JWT = "auth/SET_AUTH_JWT";
+export const SET_AUTH_DATA = "auth/SET_AUTH_DATA";
+export const SET_FORM_EMAIL_VERIFICATION_TOKEN =
   "auth/SET_FORM_EMAIL_VERIFICATION_TOKEN";
-export const SET_FORM_PASSWORD_RESET_TOKEN: "auth/SET_FORM_PASSWORD_RESET_TOKEN" =
+export const SET_FORM_PASSWORD_RESET_TOKEN =
   "auth/SET_FORM_PASSWORD_RESET_TOKEN";
-export const CONFIRM_SIGN_OUT: "auth/CONFIRM_SIGN_OUT" =
-  "auth/CONFIRM_SIGN_OUT";
-export const CLEAR_AUTH_DATA: "auth/CLEAR_AUTH_DATA" = "auth/CLEAR_AUTH_DATA";
+export const CONFIRM_SIGN_OUT = "auth/CONFIRM_SIGN_OUT";
+export const CLEAR_AUTH_DATA = "auth/CLEAR_AUTH_DATA";
 
 // Action interfaces
 export interface ISetFormUsernameAuthAction {

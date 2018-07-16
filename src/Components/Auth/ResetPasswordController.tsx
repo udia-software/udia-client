@@ -7,14 +7,18 @@ import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
   setFormPassword,
   setFormPasswordResetToken
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
-import { FullUser, isMountable } from "../../Types";
+import {
+  setBase64AK,
+  setBase64MK
+} from "../../Modules/Reducers/Secrets/Actions";
+import { isMountable } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import ResetPasswordView from "./ResetPasswordView";
 
@@ -354,6 +358,8 @@ class ResetPasswordController extends Component<IProps, IState>
 
       // Setup the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
+      this.props.dispatch(setBase64MK(Buffer.from(mk).toString("base64")));
+      this.props.dispatch(setBase64AK(Buffer.from(ak).toString("base64")));
       this.props.dispatch(setAuthData({ user, jwt }));
     } catch (error) {
       const {

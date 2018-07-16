@@ -5,17 +5,16 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import { Link } from "react-router-dom";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
   FormInput,
   PasswordLabelFlex,
-  PointerAnchor,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -82,7 +81,7 @@ const SignUpView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>Hello there, User.</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField
             error={usernameErrors.length > 0}
@@ -101,7 +100,7 @@ const SignUpView = ({
                 value={username}
               />
             </label>
-            <FormFieldErrors errors={usernameErrors} />
+            <FieldErrors errors={usernameErrors} />
           </FormField>
           <FormField
             error={emailErrors.length > 0}
@@ -120,7 +119,7 @@ const SignUpView = ({
                 value={email}
               />
             </label>
-            <FormFieldErrors errors={emailErrors} />
+            <FieldErrors errors={emailErrors} />
           </FormField>
           <FormField
             error={passwordErrors.length > 0}
@@ -129,10 +128,10 @@ const SignUpView = ({
             <label htmlFor="pw">
               <PasswordLabelFlex>
                 <span>Password:{passwordValidated && " \u2714"}</span>
-                <PointerAnchor onClick={handleTogglePassword}>
+                <ThemedAnchor onClick={handleTogglePassword}>
                   <FontAwesomeIcon icon={showPassword ? "eye-slash" : "eye"} />{" "}
                   {showPassword ? "Hide Password" : "Show Password"}
-                </PointerAnchor>
+                </ThemedAnchor>
               </PasswordLabelFlex>
               <FormInput
                 type={showPassword ? "text" : "password"}
@@ -143,15 +142,15 @@ const SignUpView = ({
                 value={password}
               />
             </label>
-            <FormFieldErrors errors={passwordErrors} />
+            <FieldErrors errors={passwordErrors} />
           </FormField>
           <Button>Sign Up</Button>
         </FormContent>
       </fieldset>
     </FormContainer>
     <SignViewLinks>
-      <Link to="/sign-in">← I already have an account</Link>
-      <Link to="/">Go back home.</Link>
+      <ThemedLink to="/sign-in">← I already have an account</ThemedLink>
+      <ThemedLink to="/">Go back home.</ThemedLink>
     </SignViewLinks>
   </SignViewContainer>
 );

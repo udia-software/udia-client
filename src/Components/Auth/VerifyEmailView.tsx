@@ -1,9 +1,9 @@
 import React, { ChangeEventHandler, FormEventHandler } from "react";
-import FormFieldErrors from "../PureHelpers/FormFieldErrors";
-import FormFieldSuccesses from "../PureHelpers/FormFieldSuccesses";
+import { Button } from "../PureHelpers/Button";
+import FieldErrors from "../PureHelpers/FieldErrors";
+import FieldSuccesses from "../PureHelpers/FieldSuccesses";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
-  Button,
   FormContainer,
   FormContent,
   FormField,
@@ -43,7 +43,7 @@ const VerifyEmailView = ({
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
         <legend>Confirm your email, User.</legend>
-        <FormFieldErrors errors={errors} />
+        <FieldErrors errors={errors} />
         <FormContent>
           <FormField error={tokenErrors.length > 0} success={tokenVerified}>
             <label htmlFor="emailToken">
@@ -57,10 +57,10 @@ const VerifyEmailView = ({
                 value={token}
               />
             </label>
-            <FormFieldSuccesses
+            <FieldSuccesses
               successes={tokenVerified ? ["Token successfully verified!"] : []}
             />
-            <FormFieldErrors errors={tokenErrors} />
+            <FieldErrors errors={tokenErrors} />
           </FormField>
           <Button>Verify Email Token</Button>
         </FormContent>

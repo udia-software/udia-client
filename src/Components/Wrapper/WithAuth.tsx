@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
   maybeAuthenticated as selectMaybeAuth
 } from "../../Modules/Reducers/Auth/Selectors";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 
 interface IProps {
@@ -20,17 +20,15 @@ interface IProps {
  * @param {string} redirectToPath Where to redirect to if requireAuthentication not satisfied?
  * @param {string} redirectReferrer Who is this being referred from?
  */
-export default function WithAuth(
+const WithAuth = (
   WrappedComponent: any, // should be a react component like thing
   requireAuthentication: boolean,
-  redirectToPath: string,
-  redirectReferrer: string
-) {
+  redirectToPath: string
+) => {
   const RedirectToComponent = (
     <Redirect
       push={true}
       to={{ pathname: redirectToPath }}
-      from={redirectReferrer}
     />
   );
 
@@ -73,4 +71,6 @@ export default function WithAuth(
   });
 
   return connect(mapStateToProps)(AuthenticationWrapper);
-}
+};
+
+export default WithAuth;

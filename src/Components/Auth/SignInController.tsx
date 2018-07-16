@@ -10,14 +10,18 @@ import React, {
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import {
   setAuthData,
   setFormEmail,
   setFormPassword
 } from "../../Modules/Reducers/Auth/Actions";
-import { IRootState } from "../../Modules/Reducers/RootReducer";
-import { FullUser, isMountable } from "../../Types";
+import {
+  setBase64AK,
+  setBase64MK
+} from "../../Modules/Reducers/Secrets/Actions";
+import { isMountable } from "../../Types";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import SignInView from "./SignInView";
 
@@ -177,6 +181,8 @@ class SignInController extends Component<IProps, IState>
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
+      dispatch(setBase64MK(Buffer.from(derivedBufferOutput.mk).toString("base64")));
+      dispatch(setBase64AK(Buffer.from(derivedBufferOutput.ak).toString("base64")));
       dispatch(setAuthData({ user, jwt }));
     } catch (err) {
       const { errors, emailErrors, passwordErrors } = parseGraphQLError(
