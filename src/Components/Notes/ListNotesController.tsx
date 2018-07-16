@@ -11,9 +11,13 @@ import {
   addRawNotes,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
+import { isDraftingNewNote } from "../../Modules/Reducers/Notes/Selectors";
+import { setClickedNoteId } from "../../Modules/Reducers/Transient/Actions";
 import { BaseTheme } from "../AppStyles";
 import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
 import ListNotesView from "./ListNotesView";
+
+const { lgScrnBrkPx } = BaseTheme;
 
 interface IProps {
   dispatch: Dispatch;
@@ -30,6 +34,8 @@ interface IProps {
       errors?: string[];
     };
   };
+  draftingNote: boolean;
+  clickedNoteId?: string;
 }
 
 interface IState {
@@ -38,6 +44,7 @@ interface IState {
   errors: string[];
   cryptoManager: CryptoManager | null;
   searchString: string;
+  bypassedCacheDateMS?: number;
   searchResultIDs: string[];
   clickedNoteId?: string;
 }
@@ -70,11 +77,15 @@ class ListNotesController extends Component<IProps, IState> {
       nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS);
       // tslint:disable-next-line:no-console
     } while (nextPageMS);
-    const { lgScrnBrkPx } = BaseTheme;
     const isLargeScreen = this.state.width >= lgScrnBrkPx;
+    const { noteIDs, clickedNoteId } = this.props;
     this.setState({
       loading: false,
-      clickedNoteId: isLargeScreen ? this.props.noteIDs[0] : undefined
+      clickedNoteId: isLargeScreen
+        ? clickedNoteId
+          ? clickedNoteId
+          : noteIDs[0]
+        : undefined
     });
   }
 
@@ -83,48 +94,66 @@ class ListNotesController extends Component<IProps, IState> {
   }
 
   public render() {
-    const { rawNotes, decryptedNotes, noteIDs } = this.props;
+    const { rawNotes, decryptedNotes, noteIDs, draftingNote } = this.props;
     const {
       loading,
       width,
       errors,
       searchString,
+      bypassedCacheDateMS,
       searchResultIDs,
       clickedNoteId
     } = this.state;
     const displayNotes = searchString ? searchResultIDs : noteIDs;
-    const { lgScrnBrkPx } = BaseTheme;
     const isLargeScreen = width >= lgScrnBrkPx;
 
     return (
       <ListNotesView
         isLargeScreen={isLargeScreen}
         loading={loading}
+        draftingNote={draftingNote}
         displayNotes={displayNotes}
         rawNotes={rawNotes}
         decryptedNotes={decryptedNotes}
+        bypassedCacheDateMS={bypassedCacheDateMS}
         searchString={searchString}
         clickedNoteId={clickedNoteId}
         errors={errors}
         handleChangeSearchString={this.handleChangeSearchString}
         handleListNoteItemClicked={this.handleListNoteItemClicked}
+        handleReloadNotesBypassCache={this.handleReloadNotesBypassCache}
       />
     );
   }
+
+  protected handleReloadNotesBypassCache = async () => {
+    if (!this.state.loading) {
+      this.setState({
+        loading: true,
+        bypassedCacheDateMS: new Date().getTime()
+      });
+      let nextPageMS: number | undefined = new Date().getTime();
+      do {
+        nextPageMS = await this.fetchAndProcessNoteItemsPage(nextPageMS, true);
+        // tslint:disable-next-line:no-console
+      } while (nextPageMS);
+      this.setState({ loading: false });
+    }
+  };
 
   protected handleChangeSearchString: ChangeEventHandler<
     HTMLInputElement
   > = e => {
     const searchString = e.currentTarget.value;
     const { decryptedNotes, noteIDs } = this.props;
-    const searchResultIDs = Object.keys(decryptedNotes).reduce(
+    const searchResultIDs = Object.keys(decryptedNotes).reduceRight(
       (accumulator: typeof noteIDs, uuid) => {
         const decNotePayload = decryptedNotes[uuid];
         if (decNotePayload.decryptedNote) {
           const { title, content } = decNotePayload.decryptedNote;
           if (
-            title.indexOf(searchString) >= 0 ||
-            content.indexOf(searchString) >= 0
+            title.toLowerCase().indexOf(searchString.toLowerCase()) >= 0 ||
+            content.toLowerCase().indexOf(searchString.toLowerCase()) >= 0
           ) {
             accumulator.push(uuid);
           }
@@ -133,15 +162,26 @@ class ListNotesController extends Component<IProps, IState> {
       },
       []
     );
-    this.setState({ searchString, searchResultIDs });
+    const isLargeScreen = this.state.width >= lgScrnBrkPx;
+    this.setState({
+      searchString,
+      searchResultIDs,
+      clickedNoteId: isLargeScreen
+        ? searchResultIDs.length
+          ? searchResultIDs[0]
+          : undefined
+        : undefined
+    });
   };
 
   protected handleListNoteItemClicked = (uuid: string) => () => {
     this.setState({ clickedNoteId: uuid });
+    this.props.dispatch(setClickedNoteId(uuid));
   };
 
   protected fetchAndProcessNoteItemsPage = async (
-    fromMilliSecondPageDateTime?: number
+    fromMilliSecondPageDateTime?: number,
+    bypassCache?: boolean
   ) => {
     const limitPageSize = 28; // Get items 28 at a time, because why not?
     // last item createdAt number holder. (If null, we don't need to get more pages.)
@@ -158,7 +198,8 @@ class ListNotesController extends Component<IProps, IState> {
             sort: "createdAt",
             order: "DESC"
           }
-        }
+        },
+        fetchPolicy: bypassCache ? "network-only" : "cache-first"
       });
       const { getItems } = response.data;
       this.props.dispatch(addRawNotes(getItems.items));
@@ -214,7 +255,6 @@ class ListNotesController extends Component<IProps, IState> {
   };
 
   protected handleResizeEvent = () => {
-    const { lgScrnBrkPx } = BaseTheme;
     const isLargeScreen = window.innerWidth >= lgScrnBrkPx;
     this.setState({
       width: window.innerWidth,
@@ -270,7 +310,9 @@ const mapStateToProps = (state: IRootState) => ({
   mkB64: state.secrets.mkB64,
   rawNotes: state.notes.rawNotes,
   noteIDs: state.notes.noteIDs,
-  decryptedNotes: state.notes.decryptedNotes
+  decryptedNotes: state.notes.decryptedNotes,
+  draftingNote: isDraftingNewNote(state),
+  clickedNoteId: state.transient.clickedNoteId
 });
 
 export default connect(mapStateToProps)(withApollo(ListNotesController));

@@ -1,21 +1,26 @@
 import { DateTime } from "luxon";
 import React, { ChangeEventHandler, Component, MouseEventHandler } from "react";
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
 import styled from "../AppStyles";
 import { FormInput } from "../Auth/SignViewShared";
 import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import SimpleLoader from "../PureHelpers/SimpleLoader";
 import DisplayNoteView from "./DisplayNoteView";
+import { MutedSpan } from "./NotesShared";
 
 const SearchFormInput = styled(FormInput)`
   align-self: center;
   width: 95%;
 `;
 
-const DraftNoteButton = styled(Button)`
+const DraftNoteLink = styled(Link)`
   align-self: center;
   width: 97%;
+`;
+
+const DraftNoteButton = styled(Button)`
   @media only screen and (max-width: ${({ theme }) =>
       theme.smScrnBrkPx - 1}px) {
     overflow: visible;
@@ -54,7 +59,8 @@ const ListNoteItem = styled.li.attrs<{ selected?: boolean }>({})`
   border-radius: 3px;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
-  padding: 0.5em;
+  padding: 0.5em 0 0.5em 0.5em;
+  margin-right: 0.5em;
   width: 100%;
   &:hover {
     color: ${props => props.theme.primaryColor};
@@ -64,6 +70,15 @@ const ListNoteItem = styled.li.attrs<{ selected?: boolean }>({})`
     border-bottom-color: ${props => props.theme.primaryColor};
   }
   ${props => props.selected && `border-left-color: ${props.theme.purple}`};
+`;
+
+const ListActionsItem = styled.li`
+  width: 100%;
+`;
+
+const ListActionButton = styled(Button)`
+  width: auto;
+  padding: 0.4em;
 `;
 
 const ListNoteTitle = styled.span`
@@ -89,6 +104,7 @@ const LargeScreenContentContatiner = styled.div`
 interface IProps {
   isLargeScreen: boolean;
   loading: boolean;
+  draftingNote: boolean;
   displayNotes: string[];
   rawNotes: { [index: string]: Item };
   decryptedNotes: {
@@ -98,11 +114,13 @@ interface IProps {
       errors?: string[] | undefined;
     };
   };
+  bypassedCacheDateMS?: number;
   searchString: string;
   clickedNoteId?: string;
   errors: string[];
   handleChangeSearchString: ChangeEventHandler<HTMLInputElement>;
   handleListNoteItemClicked: (uuid: string) => MouseEventHandler<HTMLElement>;
+  handleReloadNotesBypassCache: MouseEventHandler<HTMLButtonElement>;
 }
 
 const PREVIEW_CHAR_LEN = 120;
@@ -112,14 +130,17 @@ class ListNotesView extends Component<IProps> {
     const {
       isLargeScreen,
       loading,
+      draftingNote,
       displayNotes,
       rawNotes,
       decryptedNotes,
+      bypassedCacheDateMS,
       searchString,
       clickedNoteId,
       errors,
       handleChangeSearchString,
-      handleListNoteItemClicked
+      handleListNoteItemClicked,
+      handleReloadNotesBypassCache
     } = this.props;
 
     const listErrors =
@@ -136,12 +157,16 @@ class ListNotesView extends Component<IProps> {
           onChange={handleChangeSearchString}
           value={searchString}
         />
-        <DraftNoteButton>Draft New Note</DraftNoteButton>
+        <DraftNoteLink to="/note/draft">
+          <DraftNoteButton disabled={loading}>
+            {draftingNote ? "Continue Drafting Note" : "Draft New Note"}
+          </DraftNoteButton>
+        </DraftNoteLink>
         <ListNotesContentContainer>
           <ListNoteUnorderedList>
             <li>
               <FieldErrors errors={listErrors} />
-              <SimpleLoader loading={loading} />
+              <SimpleLoader loading={loading} /> {loading && " Syncing..."}
             </li>
             {displayNotes.map(uuid => {
               const { decryptedNote, errors: noteErrors = [] } = decryptedNotes[
@@ -161,9 +186,20 @@ class ListNotesView extends Component<IProps> {
                   )}
                   {!isLargeScreen ? (
                     <ListPreviewContentContainer>
+                      {decryptedNote &&
+                      searchString &&
+                      decryptedNote.content.indexOf(searchString) > 0
+                        ? "\u2026"
+                        : ""}
                       <code>
                         {decryptedNote &&
-                          decryptedNote.content.substring(0, PREVIEW_CHAR_LEN)}
+                          decryptedNote.content.substring(
+                            searchString &&
+                            decryptedNote.content.indexOf(searchString) > -1
+                              ? decryptedNote.content.indexOf(searchString)
+                              : 0,
+                            PREVIEW_CHAR_LEN
+                          )}
                       </code>
                       {decryptedNote &&
                       decryptedNote.content.length > PREVIEW_CHAR_LEN
@@ -183,6 +219,20 @@ class ListNotesView extends Component<IProps> {
               );
             })}
             {displayNotes.length === 0 && <li>No Items</li>}
+            <ListActionsItem>
+              <ListActionButton onClick={handleReloadNotesBypassCache}>
+                Reload Notes Bypass Cache
+              </ListActionButton>
+              {bypassedCacheDateMS && (
+                <MutedSpan>
+                  <br />
+                  Reloaded{" "}
+                  {DateTime.fromMillis(bypassedCacheDateMS).toLocaleString(
+                    DateTime.DATETIME_MED_WITH_SECONDS
+                  )}
+                </MutedSpan>
+              )}
+            </ListActionsItem>
           </ListNoteUnorderedList>
           {clickedNoteId &&
             (isLargeScreen ? (

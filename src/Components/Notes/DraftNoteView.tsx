@@ -9,9 +9,10 @@ import { Button } from "../PureHelpers/Button";
 import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import {
+  HorizontalLine,
+  MutedSpan,
   NoteMarkdownContent,
   NoteTextContent,
-  NoValue,
   ViewNoteTitle
 } from "./NotesShared";
 
@@ -159,10 +160,6 @@ const EditNoteContent = styled.textarea`
   margin: 0;
   width: 100%;
   height: 100%;
-`;
-
-const HorizontalLine = styled.hr`
-  width: 100%;
 `;
 
 interface IProps {
@@ -364,7 +361,7 @@ class DraftNoteView extends Component<IProps, IState>
                       {!!debouncedTitle ? (
                         debouncedTitle
                       ) : (
-                        <NoValue>Untitled</NoValue>
+                        <MutedSpan>Untitled</MutedSpan>
                       )}
                     </ViewNoteTitle>
                   </NoteHolderTitleCell>
@@ -376,7 +373,7 @@ class DraftNoteView extends Component<IProps, IState>
                         <NoteTextContent>{debouncedContent}</NoteTextContent>
                       )
                     ) : (
-                      <NoValue>null</NoValue>
+                      <MutedSpan>null</MutedSpan>
                     )}
                   </NoteHolderContentCell>
                 </NoteHolderRightSide>
@@ -416,7 +413,7 @@ class DraftNoteView extends Component<IProps, IState>
                       {!!draftNote.title ? (
                         draftNote.title
                       ) : (
-                        <NoValue>Untitled</NoValue>
+                        <MutedSpan>Untitled</MutedSpan>
                       )}
                     </ViewNoteTitle>
                   </NoteHolderTitleCell>
@@ -428,7 +425,7 @@ class DraftNoteView extends Component<IProps, IState>
                         <NoteTextContent>{draftNote.content}</NoteTextContent>
                       )
                     ) : (
-                      <NoValue>null</NoValue>
+                      <MutedSpan>null</MutedSpan>
                     )}
                   </NoteHolderContentCell>
                 </NoteHolderFullWidth>

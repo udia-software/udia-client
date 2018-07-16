@@ -44,7 +44,7 @@ class NoteRoutes extends Component<IProps> {
             activeClassName={activeClassName}
             onClick={this.handleCloseAuthSidebar}
           >
-            {draftingNote ? "*" : ""}Draft Note
+            {draftingNote ? "*" : ""}New Draft Note
           </StyledSidebarLink>
           <StyledSidebarLink
             showsidebar={showSidebar}

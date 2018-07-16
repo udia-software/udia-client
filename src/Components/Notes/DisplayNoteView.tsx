@@ -6,9 +6,9 @@ import FieldErrors from "../PureHelpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
 import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
+  MutedSpan,
   NoteMarkdownContent,
   NoteTextContent,
-  NoValue,
   ViewNoteTitle
 } from "./NotesShared";
 
@@ -80,6 +80,13 @@ const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
   elem.click();
 };
 
+const ViewNoteLinkTitle = styled(ThemedLink)`
+  color: ${props => props.theme.primaryColor};
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const DisplayNoteView = ({
   loading,
   loadingText,
@@ -91,12 +98,13 @@ const DisplayNoteView = ({
   const noteErrors = (payload && payload.errors) || [];
   const protocolVersion = (rawNote && rawNote.content.split(":")[0]) || "ERR";
   let decryptProccessString = "";
+  let noteProccessTime = "";
   if (payload) {
-    const noteProccessTime = DateTime.fromMillis(
-      payload.decryptedAt
-    ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+    noteProccessTime = DateTime.fromMillis(payload.decryptedAt).toLocaleString(
+      DateTime.DATETIME_MED_WITH_SECONDS
+    );
     const noteProccessType = payload.decryptedNote ? "processed" : "failed";
-    decryptProccessString = ` • client ${noteProccessType} on: ${noteProccessTime}`;
+    decryptProccessString = `client ${noteProccessType} on: `;
   }
 
   return (
@@ -110,11 +118,17 @@ const DisplayNoteView = ({
         <FieldErrors errors={[...errors, ...noteErrors]} />
         {decryptedNote && (
           <Fragment>
-            {decryptedNote.title ? (
-              <ViewNoteTitle>{decryptedNote.title}</ViewNoteTitle>
-            ) : (
-              <NoValue>Untitled</NoValue>
-            )}
+            <ViewNoteLinkTitle
+              to={rawNote ? `/note/view/${rawNote.uuid}` : `/note/list`}
+            >
+              <ViewNoteTitle>
+                {decryptedNote.title ? (
+                  <span>{decryptedNote.title}</span>
+                ) : (
+                  <MutedSpan>Untitled</MutedSpan>
+                )}
+              </ViewNoteTitle>
+            </ViewNoteLinkTitle>
             {decryptedNote.noteType === "markdown" ? (
               <NoteMarkdownContent source={decryptedNote.content} />
             ) : (
@@ -134,11 +148,19 @@ const DisplayNoteView = ({
               )}
             </NoteViewActions>
             <hr />
-            note last updated:{" "}
-            {DateTime.fromMillis(rawNote.updatedAt).toLocaleString(
-              DateTime.DATETIME_MED_WITH_SECONDS
+            {decryptProccessString && (
+              <span>
+                {decryptProccessString}{" "}
+                <MutedSpan>{noteProccessTime}</MutedSpan>
+                {" • "}
+              </span>
             )}
-            {decryptProccessString}
+            note last updated:{" "}
+            <MutedSpan>
+              {DateTime.fromMillis(rawNote.updatedAt).toLocaleString(
+                DateTime.DATETIME_MED_WITH_SECONDS
+              )}
+            </MutedSpan>
             <br />
             <code>
               ENC PROTO VER: {protocolVersion} {" • "}

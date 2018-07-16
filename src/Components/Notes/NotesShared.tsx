@@ -34,9 +34,13 @@ export const NoteTextContent = styled.div`
   white-space: pre-wrap;
 `;
 
-export const NoValue = styled.span`
+export const MutedSpan = styled.span`
   font-style: italic;
   color: ${props => props.theme.intermediateColor};
+`;
+
+export const HorizontalLine = styled.hr`
+  width: 100%;
 `;
 
 /**
