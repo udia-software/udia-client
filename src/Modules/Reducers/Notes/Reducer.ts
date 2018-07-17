@@ -136,8 +136,7 @@ export default (
           ...state.noteIDs,
           ...action.payload.map(noteItem => noteItem.uuid)
         ])
-      );
-      noteIDs
+      )
         .filter(id => {
           const item = rawNotes[id];
           return item && !item.deleted;
@@ -155,8 +154,7 @@ export default (
         ...state.rawNotes,
         [newUUID]: action.payload
       };
-      const noteIDs = Array.from(new Set([...state.noteIDs, newUUID]));
-      noteIDs
+      const noteIDs = Array.from(new Set([newUUID, ...state.noteIDs]))
         .filter(id => {
           const item = rawNotes[id];
           return item && !item.deleted;
@@ -202,7 +200,7 @@ export default (
       return {
         ...DefaultNotesState,
         drafts: state.drafts
-      }
+      };
     }
     default: {
       return {
