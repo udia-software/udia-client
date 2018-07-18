@@ -82,7 +82,6 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
       );
 
       if (tokenExpiresAt.diffNow().as("days") < TOKEN_RETIRE_DAYS) {
-        console.log(tokenExpiresAt.diffNow().as("days"));
         console.info("Token is getting old... attempt to refresh.");
         try {
           this.setState({ loading: true });
@@ -146,7 +145,10 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
     }
 
     public shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-      return nextProps.token !== this.props.token || nextState.loading !== this.state.loading;
+      return (
+        nextProps.token !== this.props.token ||
+        nextState.loading !== this.state.loading
+      );
     }
 
     public componentWillUnmount() {
@@ -158,7 +160,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
 
     public render() {
       const { loading } = this.state;
-      console.log(`Rerendering. Loading: ${loading}`);
+      console.info(`Rerendering. Loading: ${loading}`);
       if (loading) {
         return WrapperLoadingComponent({});
       }
@@ -190,7 +192,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
           userObserver.unsubscribe();
         }
         // Perform gql query to get the user
-        const meQueryResponse = await client.query<IMeResponseData | null>({
+        let meQueryResponse = await client.query<IMeResponseData | null>({
           fetchPolicy: "network-only",
           query: GET_ME_QUERY
         });
@@ -204,16 +206,34 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
 
         // Setup a websocket subscription for listening to user changes
         const newUserObserver = clientInstance
-          .subscribe<{ data?: IMeResponseData }>({
-            query: ME_SUBSCRIPTION
+          .subscribe<{ data?: IUserSubscriptionPayload }>({
+            query: USER_SUBSCRIPTION
           })
           .subscribe(
-            ({ data }) => {
-              if (!data || !data.me) {
+            async ({ data }) => {
+              if (!data || !data.userSubscription) {
                 // We successfully made a connection and the server verified the JWT is invalid or not set.
                 this.clearLocalUser();
               } else {
-                dispatch(setAuthUser(data.me));
+                const { uuid, type, timestamp, meta } = data.userSubscription;
+                console.info(
+                  `${DateTime.fromMillis(timestamp).toLocaleString(
+                    DateTime.TIME_WITH_SHORT_OFFSET
+                  )} ${uuid} ${type} ${meta}`
+                );
+                meQueryResponse = await clientInstance.query<IMeResponseData | null>(
+                  {
+                    query: GET_ME_QUERY,
+                    fetchPolicy: "network-only"
+                  }
+                );
+                if (!meQueryResponse.data || !meQueryResponse.data.me) {
+                  // We successfully made a connection and the server verified the JWT is invalid or not set.
+                  this.clearLocalUser();
+                } else {
+                  // If the user just logged in or signed up, this should be unnecessary but harmless
+                  dispatch(setAuthUser(meQueryResponse.data.me));
+                }
               }
             },
             err => {
@@ -271,6 +291,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
      * The server stated clearly that the user's token is invalid. Clear all sensitive data.
      */
     private clearLocalUser = () => {
+      console.warn("Confirmed not authenticated. Clearing local user...");
       const { dispatch } = this.props;
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
@@ -315,37 +336,39 @@ const GET_ME_QUERY = gql`
   }
 `;
 
-const ME_SUBSCRIPTION = gql`
-  subscription MeSubscription {
-    me {
+interface IMeResponseData {
+  me: FullUser;
+}
+
+const USER_SUBSCRIPTION = gql`
+  subscription UserSubscription {
+    userSubscription {
       uuid
-      username
-      emails {
-        email
-        primary
-        verified
-        createdAt
-        updatedAt
-        verificationExpiry
-      }
-      encSecretKey
-      pubVerifyKey
-      encPrivateSignKey
-      pubEncryptKey
-      encPrivateDecryptKey
-      pwFunc
-      pwDigest
-      pwCost
-      pwKeySize
-      pwNonce
-      createdAt
-      updatedAt
+      type
+      timestamp
+      meta
     }
   }
 `;
 
-interface IMeResponseData {
-  me: FullUser;
+type UserSubAction =
+  | "EMAIL_ADDED"
+  | "EMAIL_VERIFICATION_SENT"
+  | "EMAIL_VERIFIED"
+  | "EMAIL_SET_AS_PRIMARY"
+  | "EMAIL_REMOVED"
+  | "PASSWORD_UPDATED"
+  | "HARD_RESET_REQUESTED"
+  | "USER_HARD_RESET"
+  | "USER_DELETED";
+
+interface IUserSubscriptionPayload {
+  userSubscription: {
+    uuid: string;
+    type: UserSubAction;
+    timestamp: number;
+    meta?: string;
+  };
 }
 
 const REFRESH_JWT_MUTATION = gql`

@@ -61,7 +61,7 @@ class Home extends Component<IProps, IState> {
         <h3 style={{ paddingBottom: 0, marginBottom: 0 }}>
           This iteration of UDIA is:
         </h3>
-        <ul>
+        <ul style={{ maxWidth: "19em", textAlign: "justify" }}>
           <li>
             an <strong>end to end encrypted</strong> editor supporting<ul>
               <li>plain text</li>
@@ -70,9 +70,9 @@ class Home extends Component<IProps, IState> {
           </li>
           <li>and a materialization of the universal API.</li>
         </ul>
-        <p>
+        <p style={{ textAlign: "center", maxWidth: "18em" }}>
           <ThemedLink to="/health">
-            Ensure your browser supports the cryptographic functions.
+            Ensure your browser supports the cryptographic algorithms.
           </ThemedLink>
         </p>
       </HomeContainer>

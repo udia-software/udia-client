@@ -10,6 +10,7 @@ import {
   faUserSlash
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
+import Alerter from "./Alert/Alerter";
 import styled from "./AppStyles";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -56,6 +57,7 @@ export default () => (
     <BodyContainer>
       <AppRoutes />
     </BodyContainer>
+    <Alerter />
     <Footer />
   </AppContainer>
 );
