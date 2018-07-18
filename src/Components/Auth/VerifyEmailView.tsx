@@ -8,6 +8,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -42,7 +43,7 @@ const VerifyEmailView = ({
     <SignViewTitle>Verify Email</SignViewTitle>
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
-        <legend>Confirm your email, User.</legend>
+        <FormLegend>Confirm your email, User.</FormLegend>
         <FieldErrors errors={errors} />
         <FormContent>
           <FormField error={tokenErrors.length > 0} success={tokenVerified}>

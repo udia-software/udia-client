@@ -14,6 +14,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   PasswordLabelFlex,
   SignViewContainer,
   SignViewTitle
@@ -66,7 +67,7 @@ const UpdatePasswordView = ({
       <SignViewTitle>Update Password</SignViewTitle>
       <FormContainer onSubmit={handleSubmit}>
         <fieldset>
-          <legend>Changing your password, User?</legend>
+          <FormLegend>Changing your password, User?</FormLegend>
           <FieldErrors errors={errors} />
           <FormContent>
             <FormField error={currentPasswordErrors.length > 0}>

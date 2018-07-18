@@ -40,6 +40,10 @@ export const FormContainer: StyledComponentClass<
   grid-area: form;
 `;
 
+export const FormLegend = styled.legend`
+  background-color: ${props => props.theme.backgroundColor};
+`;
+
 export const SignViewLinks: StyledComponentClass<
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
   IThemeInterface

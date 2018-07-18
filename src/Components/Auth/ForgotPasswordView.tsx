@@ -8,6 +8,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -42,7 +43,7 @@ const ForgotPasswordView = ({
     <SignViewTitle>Forgot Password</SignViewTitle>
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
-        <legend>Resetting your password, User?</legend>
+        <FormLegend>Resetting your password, User?</FormLegend>
         <FieldErrors errors={errors} />
         <FormContent>
           <FormField error={emailErrors.length > 0} success={requestSent}>
