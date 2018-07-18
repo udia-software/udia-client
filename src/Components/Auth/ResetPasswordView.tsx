@@ -11,6 +11,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -65,7 +66,7 @@ const ResetPasswordView = ({
     <SignViewTitle>Reset Password</SignViewTitle>
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
-        <legend>User, be careful. Ciphers are potent.</legend>
+        <FormLegend>User, be careful. Ciphers are potent.</FormLegend>
         <FieldErrors errors={errors} />
         <FormContent>
           <FormField

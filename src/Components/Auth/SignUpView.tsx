@@ -14,6 +14,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   PasswordLabelFlex,
   SignViewContainer,
   SignViewLinks,
@@ -80,7 +81,7 @@ const SignUpView = ({
     <SignViewTitle>Sign Up</SignViewTitle>
     <FormContainer onSubmit={handleSubmit}>
       <fieldset>
-        <legend>Hello there, User.</legend>
+        <FormLegend>Hello there, User.</FormLegend>
         <FieldErrors errors={errors} />
         <FormContent>
           <FormField

@@ -12,6 +12,7 @@ import { Button } from "../PureHelpers/Button";
 import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
 import {
   FormContainer,
+  FormLegend,
   SignViewContainer,
   SignViewLinks,
   SignViewTitle
@@ -46,7 +47,7 @@ class SignOutController extends Component<IProps> {
         <SignViewTitle>Sign Out</SignViewTitle>
         <FormContainer onSubmit={this.handleSubmit}>
           <fieldset>
-            <legend>Are you leaving?</legend>
+            <FormLegend>Are you leaving?</FormLegend>
             <Button>Yes, farewell.</Button>
           </fieldset>
         </FormContainer>

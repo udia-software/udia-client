@@ -8,6 +8,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   FormTextArea,
   SignViewContainer,
   SignViewTitle
@@ -32,7 +33,7 @@ class ProfileController extends Component<IProps> {
         <SignViewTitle>My Profile</SignViewTitle>
         <FormContainer>
           <fieldset>
-            <legend>Your profile, {user.username}.</legend>
+            <FormLegend>Your profile, {user.username}.</FormLegend>
             <FormContent>
               <FormField>
                 <label htmlFor="username">

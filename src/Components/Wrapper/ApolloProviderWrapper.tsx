@@ -17,6 +17,7 @@ import {
 import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
+import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { base64Decode } from "../PureHelpers/Base64Util";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 
@@ -221,6 +222,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
                     DateTime.TIME_WITH_SHORT_OFFSET
                   )} ${uuid} ${type} ${meta}`
                 );
+                this.processUserSubscriptionAlert(data.userSubscription);
                 meQueryResponse = await clientInstance.query<IMeResponseData | null>(
                   {
                     query: GET_ME_QUERY,
@@ -235,15 +237,13 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
                   dispatch(setAuthUser(meQueryResponse.data.me));
                 }
               }
-            },
-            err => {
-              console.error("ERR User Subscription", err);
             }
           );
 
         // set the observer in state, so we can unsubscribe later
         userObserver = newUserObserver;
       } catch (err) {
+        console.error(err)
         // If the server is down, just clear the observer?
         if (userObserver) {
           userObserver.unsubscribe();
@@ -296,6 +296,98 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
       dispatch(clearNotesData());
+    };
+
+    private processUserSubscriptionAlert = ({
+      uuid,
+      type,
+      timestamp,
+      meta
+    }: IUserSubscription) => {
+      const { dispatch } = this.props;
+      switch (type) {
+        case "EMAIL_ADDED":
+          dispatch(
+            addAlert({
+              type: "success",
+              content: `Added email ${meta}.`,
+              timestamp
+            })
+          );
+          break;
+        case "EMAIL_VERIFICATION_SENT":
+          dispatch(
+            addAlert({
+              type: "success",
+              content: `Sent verification to ${meta}.`,
+              timestamp
+            })
+          );
+          break;
+        case "EMAIL_VERIFIED":
+          dispatch(
+            addAlert({
+              type: "success",
+              content: `Verified ${meta}.`,
+              timestamp
+            })
+          );
+          break;
+        case "EMAIL_SET_AS_PRIMARY":
+          dispatch(
+            addAlert({
+              type: "success",
+              content: `Primary email set to ${meta}.`,
+              timestamp
+            })
+          );
+          break;
+        case "EMAIL_REMOVED":
+          dispatch(
+            addAlert({
+              type: "success",
+              content: `Removed email ${meta}.`,
+              timestamp
+            })
+          );
+          break;
+        case "PASSWORD_UPDATED":
+          dispatch(
+            addAlert({
+              type: "info",
+              content: `Updated password.`,
+              timestamp
+            })
+          );
+          break;
+        case "HARD_RESET_REQUESTED":
+          dispatch(
+            addAlert({
+              type: "error",
+              content: `Master password hard reset requested.`,
+              timestamp
+            })
+          );
+          break;
+        case "USER_HARD_RESET":
+          dispatch(
+            addAlert({
+              type: "error",
+              content: `Master password hard reset.`,
+              timestamp
+            })
+          );
+          break;
+        case "USER_DELETED":
+          dispatch(
+            addAlert({
+              type: "error",
+              content: `User ${uuid} deleted.`,
+              timestamp
+            })
+          );
+          break;
+      }
     };
   }
 
@@ -362,13 +454,15 @@ type UserSubAction =
   | "USER_HARD_RESET"
   | "USER_DELETED";
 
+interface IUserSubscription {
+  uuid: string;
+  type: UserSubAction;
+  timestamp: number;
+  meta?: string;
+}
+
 interface IUserSubscriptionPayload {
-  userSubscription: {
-    uuid: string;
-    type: UserSubAction;
-    timestamp: number;
-    meta?: string;
-  };
+  userSubscription: IUserSubscription;
 }
 
 const REFRESH_JWT_MUTATION = gql`

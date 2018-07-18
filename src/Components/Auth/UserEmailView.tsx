@@ -15,6 +15,7 @@ import {
   FormContent,
   FormField,
   FormInput,
+  FormLegend,
   SignViewContainer,
   SignViewTitle
 } from "./SignViewShared";
@@ -68,7 +69,7 @@ const UserEmailView = ({
       <SignViewTitle>Emails</SignViewTitle>
       <FormContainer onSubmit={handleAddEmail}>
         <fieldset>
-          <legend>Adding a new email, {user.username}?</legend>
+          <FormLegend>Adding a new email, {user.username}?</FormLegend>
           <FieldErrors errors={errors} />
           <FormContent>
             <FormField
