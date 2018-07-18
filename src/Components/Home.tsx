@@ -3,10 +3,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../Modules/ConfigureReduxStore";
-import {
-  isAuthenticated as selectIsAuth,
-  maybeAuthenticated as selectMaybeAuth
-} from "../Modules/Reducers/Auth/Selectors";
+import { isAuthenticated as selectIsAuth } from "../Modules/Reducers/Auth/Selectors";
 import { handleAppJustLoaded } from "../Modules/Reducers/Transient/Actions";
 import styled from "./AppStyles";
 import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
@@ -21,7 +18,6 @@ const HomeContainer = styled.div`
 interface IProps {
   dispatch: Dispatch;
   user: FullUser | null;
-  maybeAuthenticated: boolean;
   isAuthenticated: boolean;
   appJustLoaded: boolean;
 }
@@ -58,18 +54,15 @@ class Home extends Component<IProps, IState> {
       <HomeContainer>
         <h1>UDIA</h1>
         {user && <p>Welcome, {user.username}.</p>}
-        <h3 style={{ paddingBottom: 0, marginBottom: 0 }}>
-          This iteration of UDIA is:
-        </h3>
-        <ul style={{ maxWidth: "19em", textAlign: "justify" }}>
-          <li>
-            an <strong>end to end encrypted</strong> editor supporting<ul>
-              <li>plain text</li>
-              <li>markdown</li>
-            </ul>
-          </li>
-          <li>and a materialization of the universal API.</li>
-        </ul>
+        <h3 style={{ padding: 0, margin: 0 }}>This iteration of UDIA is:</h3>
+        <div style={{ maxWidth: "18em", textAlign: "justify", marginTop: "1em" }}>
+          an <strong>end to end encrypted</strong> note editor supporting
+          <ul>
+            <li>plain text</li>
+            <li>markdown</li>
+          </ul>
+          and a materialization of the universal API.
+        </div>
         <p style={{ textAlign: "center", maxWidth: "18em" }}>
           <ThemedLink to="/health">
             Ensure your browser supports the cryptographic algorithms.
@@ -82,7 +75,6 @@ class Home extends Component<IProps, IState> {
 
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser,
-  maybeAuthenticated: selectMaybeAuth(state),
   isAuthenticated: selectIsAuth(state),
   appJustLoaded: state.transient.appJustLoaded
 });

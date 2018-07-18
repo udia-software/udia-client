@@ -26,7 +26,7 @@ const AlertContainer = styled.div.attrs<{
   bottom: auto;
   left: auto;
   border-radius: 3px;
-  min-width: 15em;
+  max-width: 18em;
   padding: 0.4em;
   margin: 0.3em;
   color: ${props => {
@@ -75,25 +75,18 @@ interface IProps {
   alerts: AlertContent[];
 }
 
-interface IState {
-  [index: string]: number;
-}
+class AlertWrapper extends Component<IProps> {
+  constructor(props: IProps) {
+    super(props);
+    const { alerts } = this.props;
+    alerts.map(cur => this.initDismimssTimeout(cur));
+  }
 
-class AlertWrapper extends Component<IProps, IState> {
   public componentDidUpdate(prevProps: IProps) {
     const newAlerts = this.props.alerts.filter(
       alertPayload => prevProps.alerts.indexOf(alertPayload) < 0
     );
-    newAlerts.forEach(newAlertPayload => {
-      const alertKey = this.alertToString(newAlertPayload);
-      this.setState({
-        ...this.state,
-        [alertKey]: window.setTimeout(() => {
-          const idx = this.props.alerts.indexOf(newAlertPayload);
-          this.props.dispatch(removeAlert(idx));
-        }, DISMISS_ALERT_MS)
-      });
-    });
+    newAlerts.map(cur => this.initDismimssTimeout(cur));
   }
 
   public render() {
@@ -101,16 +94,19 @@ class AlertWrapper extends Component<IProps, IState> {
     return (
       <AlertsContainer>
         <TransitionGroup>
-          {alerts.map(({ timestamp, type, content }, idx) => (
+          {alerts.map((payload, idx) => (
             <CSSTransition
-              key={this.alertToString({ timestamp, type, content })}
+              key={payload.timestamp} // should be fine
               timeout={TRANSITION_TIMEOUT_MS}
               classNames={TRANSITION_CLASSNAME}
             >
-              <AlertContainer onClick={this.handleDismissAlert(idx)}>
-                {content}{" "}
+              <AlertContainer
+                onClick={this.handleDismissAlertByIndex(idx)}
+                type={payload.type}
+              >
+                {payload.content}{" "}
                 <MutedSpan>
-                  {DateTime.fromMillis(timestamp).toLocaleString(
+                  {DateTime.fromMillis(payload.timestamp).toLocaleString(
                     DateTime.TIME_WITH_SHORT_OFFSET
                   )}
                 </MutedSpan>
@@ -122,13 +118,15 @@ class AlertWrapper extends Component<IProps, IState> {
     );
   }
 
-  private handleDismissAlert = (idx: number) => () => {
-    const { dispatch } = this.props;
-    dispatch(removeAlert(idx));
+  private handleDismissAlertByIndex = (idx: number) => () => {
+    this.props.dispatch(removeAlert(idx));
   };
 
-  private alertToString = ({ timestamp, type, content }: AlertContent) =>
-    `${type}-${timestamp}-${content}`;
+  private initDismimssTimeout = (cur: AlertContent) =>
+    window.setTimeout(() => {
+      const idx = this.props.alerts.indexOf(cur);
+      this.handleDismissAlertByIndex(idx)();
+    }, DISMISS_ALERT_MS);
 }
 
 const mapStateToProps = (state: IRootState) => ({
