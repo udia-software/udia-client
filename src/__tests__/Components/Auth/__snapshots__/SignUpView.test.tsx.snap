@@ -46,24 +46,26 @@ exports[`renders SignUpView correctly 1`] = `
     onSubmit={[Function]}
   >
     <fieldset>
-      <legend>
+      <legend
+        className="sc-dnqmqq bxVEtg"
+      >
         Hello there, User.
       </legend>
       <ul
         className="sc-bwzfXH dWSXT"
       />
       <div
-        className="sc-iwsKbI ipGMqB"
+        className="sc-gZMcBi gjMTpk"
       >
         <div
-          className="sc-jTzLTM fHGRYQ"
+          className="sc-fjdhpX bhReIE"
         >
           <label
             htmlFor="username"
           >
             Username:
             <input
-              className="sc-gZMcBi hUgKsh"
+              className="sc-gqjmRU fmxPXL"
               id="username"
               onBlur={[Function]}
               onChange={[Function]}
@@ -77,14 +79,14 @@ exports[`renders SignUpView correctly 1`] = `
           />
         </div>
         <div
-          className="sc-jTzLTM fHGRYQ"
+          className="sc-fjdhpX bhReIE"
         >
           <label
             htmlFor="email"
           >
             Email:
             <input
-              className="sc-gZMcBi hUgKsh"
+              className="sc-gqjmRU fmxPXL"
               id="email"
               onBlur={[Function]}
               onChange={[Function]}
@@ -98,13 +100,13 @@ exports[`renders SignUpView correctly 1`] = `
           />
         </div>
         <div
-          className="sc-jTzLTM fHGRYQ"
+          className="sc-fjdhpX bhReIE"
         >
           <label
             htmlFor="pw"
           >
             <span
-              className="sc-VigVT eMNzRy"
+              className="sc-jTzLTM gArCnl"
             >
               <span>
                 Password:
@@ -134,7 +136,7 @@ exports[`renders SignUpView correctly 1`] = `
               </a>
             </span>
             <input
-              className="sc-gZMcBi hUgKsh"
+              className="sc-gqjmRU fmxPXL"
               id="pw"
               onChange={[Function]}
               placeholder="••••••••"
@@ -155,7 +157,7 @@ exports[`renders SignUpView correctly 1`] = `
     </fieldset>
   </form>
   <div
-    className="sc-dnqmqq hmknvv"
+    className="sc-iwsKbI gnZiZr"
   >
     <a
       className="sc-ifAKCX drsjAW"
