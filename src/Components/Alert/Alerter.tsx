@@ -1,11 +1,16 @@
 import { DateTime } from "luxon";
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { removeAlert } from "../../Modules/Reducers/Transient/Actions";
 import styled from "../AppStyles";
 import { MutedSpan } from "../Notes/NotesShared";
+
+const DISMISS_ALERT_MS = 5000;
+const TRANSITION_TIMEOUT_MS = 200;
+const TRANSITION_CLASSNAME = "alert";
 
 const AlertsContainer = styled.div`
   position: fixed;
@@ -49,6 +54,20 @@ const AlertContainer = styled.div.attrs<{
     }};
   background-color: ${props => props.theme.panelBackgroundColor};
   cursor: pointer;
+  &.${TRANSITION_CLASSNAME + "-enter"} {
+    opacity: 0.01;
+  }
+  &.${TRANSITION_CLASSNAME + "-enter-active"} {
+    opacity: 1;
+    transition: opacity ${TRANSITION_TIMEOUT_MS}ms ease-in;
+  }
+  &.${TRANSITION_CLASSNAME + "-exit"} {
+    opacity: 1;
+  }
+  &.${TRANSITION_CLASSNAME + "-exit-active"} {
+    opacity: 0.01;
+    transition: opacity ${TRANSITION_TIMEOUT_MS}ms ease-in;
+  }
 `;
 
 interface IProps {
@@ -57,10 +76,8 @@ interface IProps {
 }
 
 interface IState {
-  [index: string]: number
+  [index: string]: number;
 }
-
-const DISMISS_ALERT_MS = 5000;
 
 class AlertWrapper extends Component<IProps, IState> {
   public componentDidUpdate(prevProps: IProps) {
@@ -69,30 +86,38 @@ class AlertWrapper extends Component<IProps, IState> {
     );
     newAlerts.forEach(newAlertPayload => {
       const alertKey = this.alertToString(newAlertPayload);
-      this.setState({...this.state, [alertKey]: window.setTimeout(() => {
-        const idx = this.props.alerts.indexOf(newAlertPayload);
-        this.props.dispatch(removeAlert(idx));
-      }, DISMISS_ALERT_MS)})
-    })
+      this.setState({
+        ...this.state,
+        [alertKey]: window.setTimeout(() => {
+          const idx = this.props.alerts.indexOf(newAlertPayload);
+          this.props.dispatch(removeAlert(idx));
+        }, DISMISS_ALERT_MS)
+      });
+    });
   }
 
   public render() {
     const { alerts } = this.props;
     return (
       <AlertsContainer>
-        {alerts.map(({ timestamp, type, content }, idx) => (
-          <AlertContainer
-            key={this.alertToString({ timestamp, type, content })}
-            onClick={this.handleDismissAlert(idx)}
-          >
-            {content}{" "}
-            <MutedSpan>
-              {DateTime.fromMillis(timestamp).toLocaleString(
-                DateTime.TIME_WITH_SHORT_OFFSET
-              )}
-            </MutedSpan>
-          </AlertContainer>
-        ))}
+        <TransitionGroup>
+          {alerts.map(({ timestamp, type, content }, idx) => (
+            <CSSTransition
+              key={this.alertToString({ timestamp, type, content })}
+              timeout={TRANSITION_TIMEOUT_MS}
+              classNames={TRANSITION_CLASSNAME}
+            >
+              <AlertContainer onClick={this.handleDismissAlert(idx)}>
+                {content}{" "}
+                <MutedSpan>
+                  {DateTime.fromMillis(timestamp).toLocaleString(
+                    DateTime.TIME_WITH_SHORT_OFFSET
+                  )}
+                </MutedSpan>
+              </AlertContainer>
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
       </AlertsContainer>
     );
   }
