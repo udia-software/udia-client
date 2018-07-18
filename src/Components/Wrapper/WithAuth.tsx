@@ -1,72 +1,50 @@
-import React, { Component } from "react";
+import React, { Component, ComponentClass } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
-import {
-  isAuthenticated as selectIsAuth,
-  maybeAuthenticated as selectMaybeAuth
-} from "../../Modules/Reducers/Auth/Selectors";
-import { WrapperLoadingComponent } from "./WrapperViewShared";
+import { isAuthenticated as selectIsAuth } from "../../Modules/Reducers/Auth/Selectors";
 
 interface IProps {
   isAuthenticated: boolean;
-  maybeAuthenticated: boolean;
 }
 
 /**
  * With Authentication wrapper component
- * @param {*} WrappedComponent React Component to wrap with authentication check
- * @param {bool} requireAuthentication True if needs to be auth'd, false if needs to be not auth'd
- * @param {string} redirectToPath Where to redirect to if requireAuthentication not satisfied?
- * @param {string} redirectReferrer Who is this being referred from?
+ * @param WrappedComponent React Component to wrap with authentication check
+ * @param requireAuthentication True if needs to be auth'd, false if needs to be not auth'd
+ * @param redirectToPath Where to redirect to if requireAuthentication not satisfied?
  */
 const WithAuth = (
-  WrappedComponent: any, // should be a react component like thing
+  WrappedComponent: ComponentClass<any>,
   requireAuthentication: boolean,
   redirectToPath: string
 ) => {
-  const RedirectToComponent = (
-    <Redirect
-      push={true}
-      to={{ pathname: redirectToPath }}
-    />
-  );
-
   class AuthenticationWrapper extends Component<IProps> {
     public shouldComponentUpdate(nextProps: IProps) {
       // We should only update this component if the authentication state changes.
       const oldIsAuthenticated = this.props.isAuthenticated;
       const nextIsAuthenticated = nextProps.isAuthenticated;
-      const oldMaybeAuthenticated = this.props.maybeAuthenticated;
-      const nextMaybeAuthenticated = nextProps.maybeAuthenticated;
-      return (
-        oldIsAuthenticated !== nextIsAuthenticated ||
-        oldMaybeAuthenticated !== nextMaybeAuthenticated
-      );
+      return oldIsAuthenticated !== nextIsAuthenticated;
     }
 
     public render() {
-      const { maybeAuthenticated, isAuthenticated } = this.props;
-      const redirect =
-        (requireAuthentication && !maybeAuthenticated) || // require auth but not authenticated
-        (!requireAuthentication && isAuthenticated); // require no-auth but authenticated
-      const pending =
-        (requireAuthentication && maybeAuthenticated && !isAuthenticated) || // require auth but auth tbd
-        (!requireAuthentication && maybeAuthenticated); // require no-auth but auth tbd
-      if (redirect) {
-        return RedirectToComponent;
-      } else if (pending) {
-        return WrapperLoadingComponent({
-          loadingText: "Fetching user data..."
-        });
+      if (this.shouldRedirect()) {
+        return <Redirect push={true} to={redirectToPath} />;
       } else {
         return <WrappedComponent {...this.props} />;
       }
     }
+
+    private shouldRedirect = () => {
+      const { isAuthenticated } = this.props;
+      return (
+        (requireAuthentication && !isAuthenticated) || // require auth but not authenticated
+        (!requireAuthentication && isAuthenticated) // require no-auth but authenticated
+      );
+    };
   }
 
   const mapStateToProps = (state: IRootState) => ({
-    maybeAuthenticated: selectMaybeAuth(state),
     isAuthenticated: selectIsAuth(state)
   });
 

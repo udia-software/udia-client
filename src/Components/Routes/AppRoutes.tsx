@@ -54,7 +54,7 @@ export default () => (
       component={WithAuth(ResetPasswordController, false, "/")}
     />
     {/* These routes have the sidebar, whereas the above ones don't */}
-    <Route path="/auth" component={WithAuth(AuthRoutes, true, "/")} />
+    <Route path="/auth" component={AuthRoutes} />
     <Route path="/note" component={NoteRoutes} />
     <Route component={NotFound} />
   </Switch>

@@ -5,7 +5,6 @@ import { withTheme } from "styled-components";
 import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
-  maybeAuthenticated as selectMaybeAuth,
   selectSelfUsername
 } from "../Modules/Reducers/Auth/Selectors";
 import styled from "./AppStyles";
@@ -62,13 +61,12 @@ const HeaderSubMenu = styled.div`
 
 interface IProps {
   isAuthenticated: boolean;
-  maybeAuthenticated: boolean;
   selfUsername: string | false;
 }
 
 class Header extends Component<IProps> {
   public render() {
-    const { isAuthenticated, maybeAuthenticated, selfUsername } = this.props;
+    const { isAuthenticated, selfUsername } = this.props;
 
     return (
       <HeaderContainer>
@@ -76,42 +74,32 @@ class Header extends Component<IProps> {
           UDIA
         </StyledTitleLink>
         <HeaderSubMenu>
-          {!maybeAuthenticated &&
-            !isAuthenticated && (
-              <Fragment>
-                <StyledSubTitleLink
-                  to="/sign-in"
-                  activeClassName={activeClassName}
-                >
-                  Sign In
-                </StyledSubTitleLink>
-                <StyledSubTitleLink
-                  to="/sign-up"
-                  activeClassName={activeClassName}
-                >
-                  Sign Up
-                </StyledSubTitleLink>
-              </Fragment>
-            )}
-          {maybeAuthenticated &&
-            isAuthenticated && (
-              <Fragment>
-                <StyledSubTitleLink
-                  to="/note"
-                  activeClassName={activeClassName}
-                >
-                  Secret Notes
-                </StyledSubTitleLink>
-                <StyledSubTitleLink
-                  to="/auth"
-                  activeClassName={activeClassName}
-                >
-                  {selfUsername ? selfUsername : "ERR"}
-                </StyledSubTitleLink>
-              </Fragment>
-            )}
-          {maybeAuthenticated &&
-            !isAuthenticated && <span>Loading User..</span>}
+          {!isAuthenticated && (
+            <Fragment>
+              <StyledSubTitleLink
+                to="/sign-in"
+                activeClassName={activeClassName}
+              >
+                Sign In
+              </StyledSubTitleLink>
+              <StyledSubTitleLink
+                to="/sign-up"
+                activeClassName={activeClassName}
+              >
+                Sign Up
+              </StyledSubTitleLink>
+            </Fragment>
+          )}
+          {isAuthenticated && (
+            <Fragment>
+              <StyledSubTitleLink to="/note" activeClassName={activeClassName}>
+                Secret Notes
+              </StyledSubTitleLink>
+              <StyledSubTitleLink to="/auth" activeClassName={activeClassName}>
+                {selfUsername ? selfUsername : "ERR"}
+              </StyledSubTitleLink>
+            </Fragment>
+          )}
         </HeaderSubMenu>
       </HeaderContainer>
     );
@@ -120,7 +108,6 @@ class Header extends Component<IProps> {
 
 function mapStateToProps(state: IRootState) {
   return {
-    maybeAuthenticated: selectMaybeAuth(state),
     isAuthenticated: selectIsAuth(state),
     selfUsername: selectSelfUsername(state)
   };

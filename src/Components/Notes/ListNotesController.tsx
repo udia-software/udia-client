@@ -276,7 +276,8 @@ class ListNotesController extends Component<IProps, IState> {
             showDeleted: true,
             datetime: fromMilliSecondPageDateTime || new Date().getTime(), // this invalidates cache anyways...
             sort: "createdAt",
-            order: "DESC"
+            order: "DESC",
+            contentTypeIn: ["note"]
           }
         },
         fetchPolicy: bypassCache ? "network-only" : "cache-first"

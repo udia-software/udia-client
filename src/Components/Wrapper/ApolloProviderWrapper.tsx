@@ -2,7 +2,7 @@ import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import { DateTime } from "luxon";
-import React, { Component } from "react";
+import React, { Component, ReactNode } from "react";
 import { ApolloProvider } from "react-apollo";
 import { connect, DispatchProp } from "react-redux";
 import { Dispatch } from "redux";
@@ -14,7 +14,6 @@ import {
   setAuthJWT,
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
-import { selectSelfJWT } from "../../Modules/Reducers/Auth/Selectors";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
@@ -41,7 +40,7 @@ const TOKEN_RETIRE_DAYS = 6;
  * GOTCHA: changing the client prop in the ApolloProvider does not update client in consumers
  * therefore, there's a loading state which forcibly mounts and unmounts the provider.
  */
-const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
+const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
   let client: ApolloClient<NormalizedCacheObject>;
   let userObserver: ZenObservable.Subscription | null = null;
 
@@ -161,7 +160,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
 
     public render() {
       const { loading } = this.state;
-      console.info(`Rerendering. Loading: ${loading}`);
+      console.info(`ApolloProvider HOC render (Loading: ${loading})`);
       if (loading) {
         return WrapperLoadingComponent({});
       }
@@ -291,11 +290,11 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
      * The server stated clearly that the user's token is invalid. Clear all sensitive data.
      */
     private clearLocalUser = () => {
-      console.warn("Confirmed not authenticated. Clearing local user...");
       const { dispatch } = this.props;
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
       dispatch(clearNotesData());
+      console.info("Confirmed not authenticated. Cleared local user.");
     };
 
     private processUserSubscriptionAlert = ({
@@ -392,7 +391,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: JSX.Element) => {
   }
 
   const mapStateToProps = (state: IRootState) => ({
-    token: selectSelfJWT(state),
+    token: state.auth.jwt,
     user: state.auth.authUser
   });
 
