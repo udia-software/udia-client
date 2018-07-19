@@ -27,14 +27,22 @@ interface IProps {
 }
 
 class AuthRoutes extends Component<IProps> {
-  public static ProfileComponent = WithAuth(Profile, true, "/");
-  public static UserEmailsComponent = WithAuth(UserEmailController, true, "/");
+  public static ProfileComponent = WithAuth(Profile, true, "/sign-in");
+  public static UserEmailsComponent = WithAuth(
+    UserEmailController,
+    true,
+    "/sign-in"
+  );
   public static UpdatePasswordComponent = WithAuth(
     UpdatePasswordController,
     true,
-    "/"
+    "/sign-in"
   );
-  public static SignOutComponent = WithAuth(SignOutController, true, "/");
+  public static SignOutComponent = WithAuth(
+    SignOutController,
+    true,
+    "/sign-in"
+  );
 
   public render() {
     const { showSidebar: showSidebarProp } = this.props;

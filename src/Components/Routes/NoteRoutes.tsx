@@ -28,9 +28,21 @@ interface IProps {
 }
 
 class NoteRoutes extends Component<IProps> {
-  public static DraftNoteComponent = WithAuth(CreateNoteController, true, "/");
-  public static ListNotesComponent = WithAuth(ListNotesController, true, "/");
-  public static ViewNoteComponent = WithAuth(DisplayNoteController, true, "/");
+  public static DraftNoteComponent = WithAuth(
+    CreateNoteController,
+    true,
+    "/sign-in"
+  );
+  public static ListNotesComponent = WithAuth(
+    ListNotesController,
+    true,
+    "/sign-in"
+  );
+  public static ViewNoteComponent = WithAuth(
+    DisplayNoteController,
+    true,
+    "/sign-in"
+  );
 
   public render() {
     const { showSidebar: showSidebarProp, draftingNote } = this.props;
