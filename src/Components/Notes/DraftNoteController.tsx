@@ -22,7 +22,7 @@ import {
   EDIT_DRAFT_NOTE,
   NEW_DRAFT_NOTE
 } from "../../Modules/Reducers/Notes/Reducer";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
 import { fetchAndProcessNote } from "./NotesShared";
 

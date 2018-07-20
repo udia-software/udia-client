@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import React, { Fragment, MouseEventHandler } from "react";
 import styled from "../AppStyles";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
-import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../Helpers/ThemedLinkAnchor";
 import {
   MutedSpan,
   NoteMarkdownContent,

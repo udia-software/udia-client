@@ -1,30 +1,11 @@
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faBars,
-  faEnvelope,
-  faEye,
-  faEyeSlash,
-  faKey,
-  faSpinner,
-  faUser,
-  faUserSlash
-} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
-import Alerter from "./Alert/Alerter";
 import styled from "./AppStyles";
 import Footer from "./Footer";
 import Header from "./Header";
+import loadFontAwesomeIcons from "./Helpers/FontAwesomeLoader";
+import Alerter from "./Notifier/Alerter";
+import Status from "./Notifier/Status";
 import AppRoutes from "./Routes/AppRoutes";
-
-// Font awesome icons must be loaded before use in the app
-library.add(faUser);
-library.add(faUserSlash);
-library.add(faBars);
-library.add(faEye);
-library.add(faEyeSlash);
-library.add(faEnvelope);
-library.add(faKey);
-library.add(faSpinner);
 
 const AppContainer = styled.div`
   transition: all 0.5s ease;
@@ -51,13 +32,17 @@ const BodyContainer = styled.div`
   margin-bottom: 1em;
 `;
 
-export default () => (
-  <AppContainer>
-    <Header />
-    <BodyContainer>
-      <AppRoutes />
-    </BodyContainer>
-    <Alerter />
-    <Footer />
-  </AppContainer>
-);
+export default () => {
+  loadFontAwesomeIcons();
+  return (
+    <AppContainer>
+      <Header />
+      <BodyContainer>
+        <AppRoutes />
+      </BodyContainer>
+      <Alerter />
+      <Status />
+      <Footer />
+    </AppContainer>
+  );
+};

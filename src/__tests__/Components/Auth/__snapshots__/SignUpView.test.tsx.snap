@@ -52,7 +52,7 @@ exports[`renders SignUpView correctly 1`] = `
         Hello there, User.
       </legend>
       <ul
-        className="sc-bwzfXH dWSXT"
+        className="sc-bwzfXH jccCNJ"
       />
       <div
         className="sc-gZMcBi gjMTpk"
@@ -75,7 +75,7 @@ exports[`renders SignUpView correctly 1`] = `
             />
           </label>
           <ul
-            className="sc-bwzfXH dWSXT"
+            className="sc-bwzfXH jccCNJ"
           />
         </div>
         <div
@@ -96,7 +96,7 @@ exports[`renders SignUpView correctly 1`] = `
             />
           </label>
           <ul
-            className="sc-bwzfXH dWSXT"
+            className="sc-bwzfXH jccCNJ"
           />
         </div>
         <div
@@ -145,7 +145,7 @@ exports[`renders SignUpView correctly 1`] = `
             />
           </label>
           <ul
-            className="sc-bwzfXH dWSXT"
+            className="sc-bwzfXH jccCNJ"
           />
         </div>
         <button

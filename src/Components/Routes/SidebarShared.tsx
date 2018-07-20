@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { StyledComponentClass } from "styled-components";
 import styled, { IThemeInterface } from "../AppStyles";
-import { Button } from "../PureHelpers/Button";
+import { Button } from "../Helpers/Button";
 
 export const WithSidebarContainer: StyledComponentClass<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,

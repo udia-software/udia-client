@@ -6,7 +6,7 @@ import { IRootState } from "../Modules/ConfigureReduxStore";
 import { isAuthenticated as selectIsAuth } from "../Modules/Reducers/Auth/Selectors";
 import { handleAppJustLoaded } from "../Modules/Reducers/Transient/Actions";
 import styled from "./AppStyles";
-import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
+import { ThemedLink } from "./Helpers/ThemedLinkAnchor";
 
 const HomeContainer = styled.div`
   display: grid;
@@ -54,10 +54,13 @@ class Home extends Component<IProps, IState> {
       <HomeContainer>
         <h1>UDIA</h1>
         {user && <p>Welcome, {user.username}.</p>}
-        <h3 style={{ padding: 0, margin: 0 }}>This iteration of UDIA is:</h3>
-        <div style={{ maxWidth: "18em", textAlign: "justify", marginTop: "1em" }}>
-          an <strong>end to end encrypted</strong> note editor supporting
+        <h3 style={{ padding: 0, margin: "0 0 1em 0" }}>
+          This iteration of UDIA is:
+        </h3>
+        <div style={{ maxWidth: "18em", textAlign: "justify" }}>
+          an <strong>end to end encrypted</strong> file browser supporting
           <ul>
+            <li>directories</li>
             <li>plain text</li>
             <li>markdown</li>
           </ul>
@@ -67,6 +70,8 @@ class Home extends Component<IProps, IState> {
           <ThemedLink to="/health">
             Ensure your browser supports the cryptographic algorithms.
           </ThemedLink>
+          <br />
+          We are all agents of the universal dream.
         </p>
       </HomeContainer>
     );

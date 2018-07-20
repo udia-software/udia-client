@@ -12,7 +12,7 @@ import {
   deleteDecryptedNote,
   setDecryptedNote
 } from "../../Modules/Reducers/Notes/Actions";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import DisplayNoteView from "./DisplayNoteView";
 import { deleteNote, fetchAndProcessNote } from "./NotesShared";
 

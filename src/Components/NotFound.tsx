@@ -1,7 +1,7 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "./AppStyles";
-import { ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
+import { ThemedLink } from "./Helpers/ThemedLinkAnchor";
 
 const NotFoundContainer = styled.div`
   display: grid;

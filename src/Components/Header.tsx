@@ -92,6 +92,9 @@ class Header extends Component<IProps> {
           )}
           {isAuthenticated && (
             <Fragment>
+              <StyledSubTitleLink to="/file" activeClassName={activeClassName}>
+                Files
+              </StyledSubTitleLink>
               <StyledSubTitleLink to="/note" activeClassName={activeClassName}>
                 Secret Notes
               </StyledSubTitleLink>

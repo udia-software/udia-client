@@ -4,9 +4,9 @@ import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "../AppStyles";
 import { FormInput } from "../Auth/SignViewShared";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import SimpleLoader from "../PureHelpers/SimpleLoader";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import SimpleLoader from "../Helpers/SimpleLoader";
 import DisplayNoteView from "./DisplayNoteView";
 import { MutedSpan } from "./NotesShared";
 

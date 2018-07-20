@@ -5,9 +5,9 @@ import React, {
   MouseEventHandler
 } from "react";
 import styled, { BaseTheme } from "../AppStyles";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import {
   HorizontalLine,
   MutedSpan,

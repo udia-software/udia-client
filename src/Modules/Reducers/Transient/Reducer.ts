@@ -1,15 +1,20 @@
 import {
   ADD_ALERT,
+  CLEAR_STATUS,
   CLICKED_NOTE_ID,
   HANDLE_APP_JUST_LOADED,
   ITransientAction,
-  REMOVE_ALERT
+  REMOVE_ALERT,
+  SET_STATUS
 } from "./Actions";
+
+export type StatusType = "loading" | "info" | "error" | "success";
 
 export interface ITransientState {
   appJustLoaded: boolean;
   clickedNoteId?: string;
   alerts: AlertContent[];
+  status?: { type: StatusType; content: string };
 }
 
 const TransientState: ITransientState = {
@@ -47,6 +52,16 @@ export default (
         alerts
       };
     }
+    case SET_STATUS:
+      return {
+        ...state,
+        status: action.payload
+      };
+    case CLEAR_STATUS:
+      return {
+        ...state,
+        status: undefined
+      };
     default:
       return state;
   }

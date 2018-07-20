@@ -1,8 +1,8 @@
 import React, { ChangeEventHandler, FormEventHandler } from "react";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import FieldSuccesses from "../PureHelpers/FieldSuccesses";
-import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import FieldSuccesses from "../Helpers/FieldSuccesses";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import {
   FormContainer,
   FormContent,
