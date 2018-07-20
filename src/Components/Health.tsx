@@ -11,8 +11,8 @@ import CryptoManager, {
 } from "../Modules/Crypto/CryptoManager";
 import { isMountable } from "../Types";
 import styled, { IThemeInterface } from "./AppStyles";
-import { Button } from "./PureHelpers/Button";
-import { ThemedAnchor } from "./PureHelpers/ThemedLinkAnchor";
+import { Button } from "./Helpers/Button";
+import { ThemedAnchor } from "./Helpers/ThemedLinkAnchor";
 
 const HealthContainer = styled.div`
   width: 100%;

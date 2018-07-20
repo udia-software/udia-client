@@ -21,7 +21,7 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { setBase64AK, setBase64MK } from "../../Modules/Reducers/Secrets/Actions";
 import { isMountable } from "../../Types";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignUpView from "./SignUpView";
 
 interface IProps {

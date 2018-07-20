@@ -6,59 +6,60 @@ import AuthReducer, {
   IAuthState
 } from "./Reducers/Auth/Reducer";
 import NotesReducer, { INotesState } from "./Reducers/Notes/Reducer";
+import ProcessedItemsReducer, {
+  IProcessedItemsState
+} from "./Reducers/ProcessedItems/Reducer";
+import RawItemsReducer, { IRawItemsState } from "./Reducers/RawItems/Reducer";
 import SecretsReducer, { ISecretsState } from "./Reducers/Secrets/Reducer";
 import ThemeReducer, { IThemeState } from "./Reducers/Theme/Reducer";
-import TransientReducer, { ITransientState } from "./Reducers/Transient/Reducer";
+import TransientReducer, {
+  ITransientState
+} from "./Reducers/Transient/Reducer";
 
 export interface IRootState {
   auth: IAuthState;
-  notes: INotesState;
   secrets: ISecretsState;
+  rawItems: IRawItemsState;
+  processedItems: IProcessedItemsState;
+  notes: INotesState;
   theme: IThemeState;
-  transient: ITransientState
+  transient: ITransientState;
 }
 
 const storage = localforage.createInstance({ name: "UdiaPersistance" });
+const genPersistConf = (key: string): PersistConfig => ({ key, storage });
 
 const authPersistConfig: PersistConfig = {
-  key: "auth",
-  storage,
+  ...genPersistConf("auth"),
   blacklist: AuthPersistBlacklist
 };
 
 const notesPersistConfig: PersistConfig = {
-  key: "notes",
-  // custom state reconciler to handle nested structure
+  ...genPersistConf("notes"),
+  // debug: true
   stateReconciler: (
     inboundState: any,
     originialState: any,
     reducedState: any
-  ) => ({ ...reducedState, ...inboundState }),
-  // debug: true,
-  storage
-};
-
-const secretsPersistConfig: PersistConfig = {
-  key: "secrets",
-  storage
-};
-
-const themePersistConfig: PersistConfig = {
-  key: "theme",
-  storage
+  ) => ({ ...reducedState, ...inboundState })
 };
 
 interface IDevToolsWindow extends Window {
   __REDUX_DEVTOOLS_EXTENSION__: () => StoreEnhancer | undefined;
 }
-declare var window: IDevToolsWindow;
+declare let window: IDevToolsWindow;
 
-export default function configureReduxStore() {
+const ConfigureReduxStore = () => {
   const rootReducer = combineReducers({
     auth: persistReducer(authPersistConfig, AuthReducer),
+    secrets: persistReducer(genPersistConf("secrets"), SecretsReducer),
+    rawItems: persistReducer(genPersistConf("rawItems"), RawItemsReducer),
+    processedItems: persistReducer(
+      genPersistConf("processedItems"),
+      ProcessedItemsReducer
+    ),
     notes: persistReducer(notesPersistConfig, NotesReducer),
-    secrets: persistReducer(secretsPersistConfig, SecretsReducer),
-    theme: persistReducer(themePersistConfig, ThemeReducer),
+    theme: persistReducer(genPersistConf("theme"), ThemeReducer),
     transient: TransientReducer // not persisted
   });
 
@@ -68,4 +69,6 @@ export default function configureReduxStore() {
   );
   const persistor = persistStore(store);
   return { store, persistor };
-}
+};
+
+export default ConfigureReduxStore;

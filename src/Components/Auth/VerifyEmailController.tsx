@@ -6,7 +6,7 @@ import { match } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { setFormEmailVerificationToken } from "../../Modules/Reducers/Auth/Actions";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import VerifyEmailView from "./VerifyEmailView";
 
 interface IProps

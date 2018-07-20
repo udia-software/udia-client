@@ -8,7 +8,7 @@ import {
 } from "../Modules/Reducers/Theme/Actions";
 import { isUsingDarkTheme } from "../Modules/Reducers/Theme/Selectors";
 import styled from "./AppStyles";
-import { ThemedAnchor, ThemedLink } from "./PureHelpers/ThemedLinkAnchor";
+import { ThemedAnchor, ThemedLink } from "./Helpers/ThemedLinkAnchor";
 import Logo from "./Static/Logo";
 
 const FooterContainer = styled.div`

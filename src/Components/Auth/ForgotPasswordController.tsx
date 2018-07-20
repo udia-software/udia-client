@@ -6,7 +6,7 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { setFormEmail } from "../../Modules/Reducers/Auth/Actions";
 import { isMountable } from "../../Types";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import ForgotPasswordView from "./ForgotPasswordView";
 
 interface IProps

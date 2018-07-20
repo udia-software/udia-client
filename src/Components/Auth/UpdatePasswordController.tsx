@@ -20,7 +20,7 @@ import {
   setBase64AK,
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import UpdatePasswordView from "./UpdatePasswordView";
 
 interface IProps {

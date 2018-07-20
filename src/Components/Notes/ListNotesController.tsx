@@ -1,6 +1,5 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
@@ -17,7 +16,8 @@ import {
 import { isDraftingNewNote } from "../../Modules/Reducers/Notes/Selectors";
 import { setClickedNoteId } from "../../Modules/Reducers/Transient/Actions";
 import { BaseTheme } from "../AppStyles";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import { GET_ITEMS_QUERY, IGetItemsResponseData } from "../Files/ItemFileShared";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import ListNotesView from "./ListNotesView";
 import { deleteNote } from "./NotesShared";
 
@@ -344,47 +344,6 @@ class ListNotesController extends Component<IProps, IState> {
         ? noteIDs.filter(id => rawNotes[id] && !rawNotes[id].deleted)[0]
         : undefined
     });
-  };
-}
-
-const GET_ITEMS_QUERY = gql`
-  query GetItemsQuery(
-    $params: ItemPaginationInput
-    $childrenParams: ItemPaginationInput
-  ) {
-    getItems(params: $params) {
-      count
-      items {
-        uuid
-        content
-        contentType
-        encItemKey
-        user {
-          uuid
-          username
-          pubVerifyKey
-        }
-        deleted
-        parent {
-          uuid
-        }
-        children(params: $childrenParams) {
-          count
-          items {
-            uuid
-          }
-        }
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-interface IGetItemsResponseData {
-  getItems: {
-    count: number;
-    items: Item[];
   };
 }
 

@@ -17,7 +17,7 @@ import {
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
-import { base64Decode } from "../PureHelpers/Base64Util";
+import { base64Decode } from "../Helpers/Base64Util";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
 
 interface IState {

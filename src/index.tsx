@@ -7,7 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import App from "./Components/App";
 import ApolloProviderWrapper from "./Components/Wrapper/ApolloProviderWrapper";
 import ToggleableThemeProvider from "./Components/Wrapper/ToggleableThemeProvider";
-import configureReduxStore from "./Modules/ConfigureReduxStore";
+import ConfigureReduxStore from "./Modules/ConfigureReduxStore";
 import register from "./registerServiceWorker";
 
 function render(AppComponent: () => JSX.Element, root: HTMLElement | null) {
@@ -20,7 +20,7 @@ function render(AppComponent: () => JSX.Element, root: HTMLElement | null) {
       <AppComponent />
     </BrowserRouter>
   );
-  const { persistor, store } = configureReduxStore();
+  const { persistor, store } = ConfigureReduxStore();
   ReactDOM.render(
     <ReduxProvider store={store}>
       <PersistGate persistor={persistor}>

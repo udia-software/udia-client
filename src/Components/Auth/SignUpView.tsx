@@ -5,10 +5,10 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
-import { ThemedAnchor, ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor, ThemedLink } from "../Helpers/ThemedLinkAnchor";
 import {
   FormContainer,
   FormContent,

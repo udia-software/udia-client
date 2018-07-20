@@ -2,19 +2,13 @@
 declare interface Item {
   uuid: string;
   content: string | null;
-  contentType: string | null;
-  encItemKey?: string | null;
-  user: {
-    uuid: string;
-    username: string;
-    pubVerifyKey: string;
-  };
-  parent: {
-    uuid: string;
-  } | null;
+  contentType: "note" | null;
+  encItemKey: string | null;
+  user: Partial<FullUser>;
+  parent: Partial<Item> | null;
   children: {
     count: number;
-    items: [{ uuid: string }];
+    items: Partial<Item>[];
   };
   deleted: boolean;
   createdAt: number;

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "./AppStyles";
-import { ThemedAnchor } from "./PureHelpers/ThemedLinkAnchor";
+import { ThemedAnchor } from "./Helpers/ThemedLinkAnchor";
 
 const ContactContainer = styled.div`
   display: grid;

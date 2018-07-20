@@ -22,7 +22,7 @@ import {
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
 import { isMountable } from "../../Types";
-import parseGraphQLError from "../PureHelpers/ParseGraphQLError";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignInView from "./SignInView";
 
 interface IProps {

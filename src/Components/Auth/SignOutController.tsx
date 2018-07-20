@@ -8,8 +8,8 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
-import { Button } from "../PureHelpers/Button";
-import { ThemedLink } from "../PureHelpers/ThemedLinkAnchor";
+import { Button } from "../Helpers/Button";
+import { ThemedLink } from "../Helpers/ThemedLinkAnchor";
 import {
   FormContainer,
   FormLegend,

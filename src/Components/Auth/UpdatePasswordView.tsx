@@ -4,11 +4,11 @@ import React, {
   FormEventHandler,
   MouseEventHandler
 } from "react";
-import { Button } from "../PureHelpers/Button";
-import FieldErrors from "../PureHelpers/FieldErrors";
-import FieldSuccesses from "../PureHelpers/FieldSuccesses";
-import GridTemplateLoadingOverlay from "../PureHelpers/GridTemplateLoadingOverlay";
-import { ThemedAnchor } from "../PureHelpers/ThemedLinkAnchor";
+import { Button } from "../Helpers/Button";
+import FieldErrors from "../Helpers/FieldErrors";
+import FieldSuccesses from "../Helpers/FieldSuccesses";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
+import { ThemedAnchor } from "../Helpers/ThemedLinkAnchor";
 import {
   FormContainer,
   FormContent,

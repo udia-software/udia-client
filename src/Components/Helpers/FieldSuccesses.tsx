@@ -9,8 +9,8 @@ const StyledUnorderedList = styled.ul.attrs<IProps>({})`
   list-style: none;
   > li {
     ::before {
-      content: "\u2714";
       color: ${({ theme }) => theme.green};
+      content: "\u2714";
       display: inline-block;
       width: 1em;
       margin-left: -1em;
