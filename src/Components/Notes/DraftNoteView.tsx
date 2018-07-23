@@ -9,6 +9,8 @@ import { Button } from "../Helpers/Button";
 import FieldErrors from "../Helpers/FieldErrors";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import {
+  EditNoteContent,
+  EditNoteTitle,
   HorizontalLine,
   MutedSpan,
   NoteMarkdownContent,
@@ -138,28 +140,6 @@ const NoteHolderContentCell = styled.div.attrs<{ debouncing?: boolean }>({})`
     props.debouncing
       ? `border: 1px dashed ${props.theme.purple}`
       : `border: 1px solid ${props.theme.backgroundColor}`};
-`;
-
-const EditNoteTitle = styled.textarea`
-  background: transparent;
-  border: none;
-  color: ${props => props.theme.primaryColor};
-  font-family: monospace;
-  padding: 0;
-  margin: 0;
-  font-size: 2em;
-  height: 100%;
-  width: 100%;
-`;
-
-const EditNoteContent = styled.textarea`
-  background: transparent;
-  border: none;
-  color: ${props => props.theme.primaryColor};
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  height: 100%;
 `;
 
 interface IProps {

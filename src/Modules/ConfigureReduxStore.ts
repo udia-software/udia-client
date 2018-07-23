@@ -5,12 +5,16 @@ import AuthReducer, {
   AuthPersistBlacklist,
   IAuthState
 } from "./Reducers/Auth/Reducer";
+import DraftItemsReducer, {
+  IDraftItemsState
+} from "./Reducers/DraftItems/Reducer";
 import NotesReducer, { INotesState } from "./Reducers/Notes/Reducer";
 import ProcessedItemsReducer, {
   IProcessedItemsState
 } from "./Reducers/ProcessedItems/Reducer";
 import RawItemsReducer, { IRawItemsState } from "./Reducers/RawItems/Reducer";
 import SecretsReducer, { ISecretsState } from "./Reducers/Secrets/Reducer";
+import StructureReducer, { IStructureState } from "./Reducers/Structure/Reducer";
 import ThemeReducer, { IThemeState } from "./Reducers/Theme/Reducer";
 import TransientReducer, {
   ITransientState
@@ -21,6 +25,8 @@ export interface IRootState {
   secrets: ISecretsState;
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
+  draftItems: IDraftItemsState;
+  structure: IStructureState;
   notes: INotesState;
   theme: IThemeState;
   transient: ITransientState;
@@ -58,6 +64,8 @@ const ConfigureReduxStore = () => {
       genPersistConf("processedItems"),
       ProcessedItemsReducer
     ),
+    draftItems: persistReducer(genPersistConf("draftItems"), DraftItemsReducer),
+    structure: persistReducer(genPersistConf("structure"), StructureReducer),
     notes: persistReducer(notesPersistConfig, NotesReducer),
     theme: persistReducer(genPersistConf("theme"), ThemeReducer),
     transient: TransientReducer // not persisted

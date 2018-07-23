@@ -1,7 +1,7 @@
 interface BaseProcessedItemPayload {
-  contentType: string | null,
+  contentType: string | null;
   processedAt: number;
-  processedContent: any,
+  processedContent: any;
   errors?: string[];
 }
 

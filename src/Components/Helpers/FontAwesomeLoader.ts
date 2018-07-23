@@ -6,13 +6,15 @@ import {
   faEnvelope,
   faEye,
   faEyeSlash,
+  faFile,
   faFileAlt,
   faFolder,
   faFolderOpen,
   faKey,
+  faPlus,
   faSpinner,
   faUser,
-  faUserSlash
+  faUserSlash,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Font awesome icons must be loaded before use in the app
@@ -28,8 +30,10 @@ const loadFontAwesomeIcons = () => {
   library.add(faCheck); // check mark
   library.add(faFolder); // closed folder
   library.add(faFolderOpen); // open folder
+  library.add(faFile); // file (note options)
   library.add(faFileAlt); // file with lines (notes)
   library.add(faEllipsisV); // vertical dots (file browser items)
+  library.add(faPlus); // plus sign (for stacking?)
 };
 
 export default loadFontAwesomeIcons;

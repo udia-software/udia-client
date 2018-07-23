@@ -14,10 +14,12 @@ import {
   setAuthJWT,
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
+import { clearDraftItems } from "../../Modules/Reducers/DraftItems/Actions";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearProcessedItems } from "../../Modules/Reducers/ProcessedItems/Actions";
 import { clearRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
+import { clearStructure } from "../../Modules/Reducers/Structure/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { base64Decode } from "../Helpers/Base64Util";
 import { WrapperLoadingComponent } from "./WrapperViewShared";
@@ -296,6 +298,8 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
       dispatch(clearNotesData());
       dispatch(clearProcessedItems());
       dispatch(clearRawItems());
+      dispatch(clearDraftItems());
+      dispatch(clearStructure());
       console.info("Confirmed not authenticated. Cleared local user.");
     };
 
