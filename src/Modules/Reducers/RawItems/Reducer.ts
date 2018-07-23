@@ -7,7 +7,7 @@ import {
 } from "./Actions";
 
 export interface IRawItemsState {
-  [uuid: string]: Item | undefined;
+  [uuid: string]: Item;
 }
 
 const DefaultRawItemsState = Object.create(null);
@@ -49,7 +49,8 @@ export default (
       };
     }
     case CLEAR_RAW_ITEM:
-      return { ...state, [action.payload]: undefined };
+      const { [action.payload]: _, ...updatedState } = state;
+      return updatedState;
     case CLEAR_RAW_ITEMS:
       return { ...DefaultRawItemsState };
     default:

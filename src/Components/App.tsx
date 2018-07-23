@@ -26,6 +26,7 @@ const BodyContainer = styled.div`
   grid-area: content;
   display: grid;
   width: 100%;
+  max-width: 100vw;
   height: 100%;
   min-height: 74vh;
   word-break: break-word;

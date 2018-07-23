@@ -43,6 +43,28 @@ export const HorizontalLine = styled.hr`
   width: 100%;
 `;
 
+export const EditNoteTitle = styled.textarea`
+  background: transparent;
+  border: none;
+  color: ${props => props.theme.primaryColor};
+  font-family: monospace;
+  padding: 0;
+  margin: 0;
+  font-size: 2em;
+  height: 100%;
+  width: 100%;
+`;
+
+export const EditNoteContent = styled.textarea`
+  background: transparent;
+  border: none;
+  color: ${props => props.theme.primaryColor};
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+`;
+
 /**
  * Utility function for fetching a note from the API and decrypting it.
  */

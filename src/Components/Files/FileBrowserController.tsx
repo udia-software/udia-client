@@ -11,6 +11,8 @@ import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Redu
 import { upsertRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { ISecretsState } from "../../Modules/Reducers/Secrets/Reducer";
+import { setStructure } from "../../Modules/Reducers/Structure/Actions";
+import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import {
   addAlert,
   clearStatus,
@@ -34,15 +36,13 @@ interface IProps {
   secrets: ISecretsState;
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
+  structure: IStructureState;
   clickedItemId?: string;
 }
 
 interface IState {
   isLargeScreen: boolean;
   cryptoManager: CryptoManager | null;
-  fileStructure: {
-    [uuid: string]: string[]; // object of uuid to uuid[], where the root (username, no parent) is `${username}`
-  };
 }
 
 class FileBrowserController extends Component<IProps, IState> {
@@ -52,10 +52,7 @@ class FileBrowserController extends Component<IProps, IState> {
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
       isLargeScreen: window.innerWidth >= lgScrnBrkPx,
-      cryptoManager,
-      fileStructure: {
-        [this.props.user.username]: [] // Special 'username' folder (semantically home)
-      }
+      cryptoManager
     };
   }
 
@@ -71,13 +68,12 @@ class FileBrowserController extends Component<IProps, IState> {
   }
 
   public render() {
-    const { processedItems, rawItems, clickedItemId } = this.props;
-    const { fileStructure } = this.state;
+    const { processedItems, rawItems, clickedItemId, structure } = this.props;
     return (
       <FileBrowserView
         rawItems={rawItems}
         processedItems={processedItems}
-        fileStructure={fileStructure}
+        fileStructure={structure}
         clickedItemId={clickedItemId}
         handleClickItemEvent={this.handleClickItemEvent}
       />
@@ -114,7 +110,7 @@ class FileBrowserController extends Component<IProps, IState> {
     fromMSDateTime: number = Date.now(),
     bypassCache?: boolean
   ) => {
-    const limit = 14;
+    const limit = 6;
     let nextMSDatetime: number | undefined;
     try {
       const { dispatch, client, user } = this.props;
@@ -188,38 +184,44 @@ class FileBrowserController extends Component<IProps, IState> {
   };
 
   private setFileStructureState = () => {
-    const { rawItems, processedItems, user } = this.props;
-    const userItems = Object.keys(rawItems)
+    const { dispatch, rawItems, processedItems, user, structure } = this.props;
+    const userItemIds = Object.keys(rawItems)
       .reduce((acc: string[], uuid) => {
         const rawItem = rawItems[uuid];
-        if (rawItem && !rawItem.deleted && uuid in processedItems) {
+        if (
+          rawItem &&
+          !rawItem.deleted &&
+          uuid in processedItems &&
+          acc.indexOf(uuid) < 0
+        ) {
           acc.push(uuid);
         }
         return acc;
-      }, [])
+      }, structure[user.username] || [])
       .sort(this.itemIdCompareFunction);
-    this.setState({
-      fileStructure: {
-        ...this.state.fileStructure,
-        [user.username]: userItems
-      }
-    });
+    dispatch(setStructure(user.username, userItemIds));
   };
 
   private itemIdCompareFunction = (a: string, b: string) => {
-    const itemA = this.props.rawItems[a] || { createdAt: 0 };
-    const itemB = this.props.rawItems[b] || { createdAt: 0 };
+    const itemA = this.props.rawItems[a] || { createdAt: parseInt(a, 10) };
+    const itemB = this.props.rawItems[b] || { createdAt: parseInt(b, 10) };
     // return itemA.createdAt - itemB.createdAt; // old items at beginning, new items at end
     return itemB.createdAt - itemA.createdAt; // new items at beginning, old items at end
   };
 }
 
-const mapStateToProps = (state: IRootState) => ({
-  user: state.auth.authUser!, // Ensure wrapped in WithAuth true
-  secrets: state.secrets,
-  rawItems: state.rawItems,
-  processedItems: state.processedItems,
-  clickedItemId: state.transient.clickedItemId
-});
+const mapStateToProps = (state: IRootState) => {
+  const { _persist: _0, ...structure } = state.structure;
+  const { _persist: _1, ...processedItems } = state.processedItems;
+  const { _persist: _2, ...rawItems } = state.rawItems;
+  return {
+    user: state.auth.authUser!, // Ensure wrapped in WithAuth true
+    secrets: state.secrets,
+    rawItems,
+    processedItems,
+    structure,
+    clickedItemId: state.transient.clickedItemId
+  };
+};
 
 export default connect(mapStateToProps)(withApollo(FileBrowserController));
