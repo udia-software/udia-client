@@ -6,20 +6,23 @@ export interface IUpsertProcessedItemAction {
   payload: {
     uuid: string;
     processedAt: number;
-    processedContent: DecryptedNote | null;
+    contentType: "note" | "directory" | null;
+    processedContent: DecryptedNote | DecryptedDirectory | null;
     errors?: string[];
   };
 }
 export const upsertProcessedItem = (
   uuid: string,
   processedAt: number,
-  processedContent: DecryptedNote | null,
+  contentType: "note" | "directory" | null,
+  processedContent: DecryptedNote | DecryptedDirectory | null,
   errors?: string[]
 ): IUpsertProcessedItemAction => ({
   type: UPSERT_PROCESSED_ITEM,
   payload: {
     uuid,
     processedAt,
+    contentType,
     processedContent,
     errors
   }

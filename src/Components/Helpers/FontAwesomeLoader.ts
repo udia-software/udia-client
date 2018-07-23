@@ -2,9 +2,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
   faCheck,
+  faEllipsisV,
   faEnvelope,
   faEye,
   faEyeSlash,
+  faFileAlt,
+  faFolder,
+  faFolderOpen,
   faKey,
   faSpinner,
   faUser,
@@ -21,7 +25,11 @@ const loadFontAwesomeIcons = () => {
   library.add(faEnvelope); // envelope representing email
   library.add(faKey); // key representing master password
   library.add(faSpinner); // dotted logo circle
-  library.add(faCheck);
+  library.add(faCheck); // check mark
+  library.add(faFolder); // closed folder
+  library.add(faFolderOpen); // open folder
+  library.add(faFileAlt); // file with lines (notes)
+  library.add(faEllipsisV); // vertical dots (file browser items)
 };
 
 export default loadFontAwesomeIcons;

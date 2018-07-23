@@ -14,14 +14,18 @@ import { ISecretsState } from "../../Modules/Reducers/Secrets/Reducer";
 import {
   addAlert,
   clearStatus,
+  setClickedItemId,
   setStatus
 } from "../../Modules/Reducers/Transient/Actions";
-import { DirectoryView } from "./FileBrowserViews";
+import { BaseTheme } from "../AppStyles";
+import { FileBrowserView } from "./FileBrowserViews";
 import {
   GET_ITEMS_QUERY,
   IGetItemsParams,
   IGetItemsResponseData
 } from "./ItemFileShared";
+
+const { lgScrnBrkPx } = BaseTheme;
 
 interface IProps {
   dispatch: Dispatch;
@@ -30,9 +34,11 @@ interface IProps {
   secrets: ISecretsState;
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
+  clickedItemId?: string;
 }
 
 interface IState {
+  isLargeScreen: boolean;
   cryptoManager: CryptoManager | null;
   fileStructure: {
     [uuid: string]: string[]; // object of uuid to uuid[], where the root (username, no parent) is `${username}`
@@ -45,6 +51,7 @@ class FileBrowserController extends Component<IProps, IState> {
     document.title = "File Browser - UDIA";
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
+      isLargeScreen: window.innerWidth >= lgScrnBrkPx,
       cryptoManager,
       fileStructure: {
         [this.props.user.username]: [] // Special 'username' folder (semantically home)
@@ -53,35 +60,38 @@ class FileBrowserController extends Component<IProps, IState> {
   }
 
   public async componentDidMount() {
+    window.addEventListener("resize", this.handleResizeEvent);
     await this.queryAndProcessUserItemsPage();
     this.setFileStructureState();
   }
 
   public componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResizeEvent);
     this.props.dispatch(clearStatus());
   }
 
   public render() {
-    const { processedItems } = this.props;
+    const { processedItems, rawItems, clickedItemId } = this.props;
     const { fileStructure } = this.state;
     return (
-      <div>
-        {Object.keys(fileStructure).map(root => {
-          const nestedItems = fileStructure[root].map(
-            uuid => processedItems[uuid]
-          );
-          return (
-            <DirectoryView
-              key={root}
-              dirName={root}
-              nestedItems={nestedItems}
-              open={true}
-            />
-          );
-        })}
-      </div>
+      <FileBrowserView
+        rawItems={rawItems}
+        processedItems={processedItems}
+        fileStructure={fileStructure}
+        clickedItemId={clickedItemId}
+        handleClickItemEvent={this.handleClickItemEvent}
+      />
     );
   }
+
+  protected handleResizeEvent = () =>
+    this.setState({
+      isLargeScreen: window.innerWidth >= lgScrnBrkPx
+    });
+
+  protected handleClickItemEvent = (id: string) => () => {
+    this.props.dispatch(setClickedItemId(id));
+  };
 
   private cryptoManagerCheck() {
     let cryptoManager = null;
@@ -101,7 +111,7 @@ class FileBrowserController extends Component<IProps, IState> {
   }
 
   private queryAndProcessUserItemsPage = async (
-    fromMSDateTime?: number,
+    fromMSDateTime: number = Date.now(),
     bypassCache?: boolean
   ) => {
     const limit = 14;
@@ -116,13 +126,13 @@ class FileBrowserController extends Component<IProps, IState> {
       };
       const response = await client.query<IGetItemsResponseData>({
         query: GET_ITEMS_QUERY,
-        variables: { params },
-        fetchPolicy: bypassCache ? "network-only" : "cache-first"
+        variables: { params }
       });
       const { getItems } = response.data;
       dispatch(upsertRawItems(getItems.items));
-      // not sure if this needs to be synchronous
-      getItems.items.forEach(item => this.processItem(item, bypassCache));
+      for (const item of getItems.items) {
+        await this.processItem(item, bypassCache);
+      }
       if (getItems.items.length < limit) {
         nextMSDatetime = undefined;
       } else {
@@ -165,23 +175,29 @@ class FileBrowserController extends Component<IProps, IState> {
             secrets.akB64,
             secrets.mkB64
           );
-          dispatch(upsertProcessedItem(item.uuid, Date.now(), note));
+          dispatch(
+            upsertProcessedItem(item.uuid, Date.now(), item.contentType, note)
+          );
       }
     } catch (err) {
       const errMsg = err.message || `Failed to decrypt item ${item.uuid}`;
-      dispatch(upsertProcessedItem(item.uuid, Date.now(), null, [errMsg]));
+      dispatch(
+        upsertProcessedItem(item.uuid, Date.now(), null, null, [errMsg])
+      );
     }
   };
 
   private setFileStructureState = () => {
     const { rawItems, processedItems, user } = this.props;
-    const userItems = Object.keys(rawItems).reduce((acc: string[], uuid) => {
-      const rawItem = rawItems[uuid];
-      if (rawItem && !rawItem.deleted && uuid in processedItems) {
-        acc.push(uuid);
-      }
-      return acc;
-    }, []);
+    const userItems = Object.keys(rawItems)
+      .reduce((acc: string[], uuid) => {
+        const rawItem = rawItems[uuid];
+        if (rawItem && !rawItem.deleted && uuid in processedItems) {
+          acc.push(uuid);
+        }
+        return acc;
+      }, [])
+      .sort(this.itemIdCompareFunction);
     this.setState({
       fileStructure: {
         ...this.state.fileStructure,
@@ -189,13 +205,21 @@ class FileBrowserController extends Component<IProps, IState> {
       }
     });
   };
+
+  private itemIdCompareFunction = (a: string, b: string) => {
+    const itemA = this.props.rawItems[a] || { createdAt: 0 };
+    const itemB = this.props.rawItems[b] || { createdAt: 0 };
+    // return itemA.createdAt - itemB.createdAt; // old items at beginning, new items at end
+    return itemB.createdAt - itemA.createdAt; // new items at beginning, old items at end
+  };
 }
 
 const mapStateToProps = (state: IRootState) => ({
   user: state.auth.authUser!, // Ensure wrapped in WithAuth true
   secrets: state.secrets,
   rawItems: state.rawItems,
-  processedItems: state.processedItems
+  processedItems: state.processedItems,
+  clickedItemId: state.transient.clickedItemId
 });
 
 export default connect(mapStateToProps)(withApollo(FileBrowserController));
