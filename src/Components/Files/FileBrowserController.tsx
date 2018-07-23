@@ -6,6 +6,8 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
+import { upsertDraftItem } from "../../Modules/Reducers/DraftItems/Actions";
+import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { upsertProcessedItem } from "../../Modules/Reducers/ProcessedItems/Actions";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { upsertRawItems } from "../../Modules/Reducers/RawItems/Actions";
@@ -16,7 +18,7 @@ import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import {
   addAlert,
   clearStatus,
-  setClickedItemId,
+  setSelectedItemId,
   setStatus
 } from "../../Modules/Reducers/Transient/Actions";
 import { BaseTheme } from "../AppStyles";
@@ -35,9 +37,10 @@ interface IProps {
   user: FullUser;
   secrets: ISecretsState;
   rawItems: IRawItemsState;
+  draftItems: IDraftItemsState;
   processedItems: IProcessedItemsState;
   structure: IStructureState;
-  clickedItemId?: string;
+  selectedItemId?: string;
 }
 
 interface IState {
@@ -62,20 +65,40 @@ class FileBrowserController extends Component<IProps, IState> {
     this.setFileStructureState();
   }
 
+  public async componentDidUpdate(prevProps: IProps) {
+    let triggerSetStructure = false;
+    // is there a new draft item?
+    const newDrafts = Object.keys(this.props.draftItems).filter(
+      id => !(id in prevProps.draftItems)
+    );
+    triggerSetStructure = triggerSetStructure || newDrafts.length > 0;
+    if (triggerSetStructure) {
+      this.setFileStructureState();
+    }
+  }
+
   public componentWillUnmount() {
     window.removeEventListener("resize", this.handleResizeEvent);
     this.props.dispatch(clearStatus());
   }
 
   public render() {
-    const { processedItems, rawItems, clickedItemId, structure } = this.props;
+    const {
+      processedItems,
+      rawItems,
+      selectedItemId,
+      draftItems,
+      structure
+    } = this.props;
     return (
       <FileBrowserView
         rawItems={rawItems}
         processedItems={processedItems}
+        draftItems={draftItems}
         fileStructure={structure}
-        clickedItemId={clickedItemId}
+        clickedItemId={selectedItemId}
         handleClickItemEvent={this.handleClickItemEvent}
+        handleClickNewNote={this.handleClickNewNote}
       />
     );
   }
@@ -86,7 +109,24 @@ class FileBrowserController extends Component<IProps, IState> {
     });
 
   protected handleClickItemEvent = (id: string) => () => {
-    this.props.dispatch(setClickedItemId(id));
+    this.props.dispatch(setSelectedItemId(id));
+  };
+
+  protected handleClickNewNote = (id: string) => () => {
+    const newDraftId = `${Date.now()}`;
+    this.props.dispatch(
+      upsertDraftItem(
+        newDraftId,
+        "note",
+        {
+          title: "",
+          content: "",
+          noteType: "markdown"
+        },
+        id
+      )
+    );
+    this.props.dispatch(setSelectedItemId(newDraftId));
   };
 
   private cryptoManagerCheck() {
@@ -184,27 +224,64 @@ class FileBrowserController extends Component<IProps, IState> {
   };
 
   private setFileStructureState = () => {
-    const { dispatch, rawItems, processedItems, user, structure } = this.props;
-    const userItemIds = Object.keys(rawItems)
-      .reduce((acc: string[], uuid) => {
-        const rawItem = rawItems[uuid];
+    const {
+      dispatch,
+      rawItems,
+      processedItems,
+      draftItems,
+      user,
+      structure
+    } = this.props;
+    const directory = user.username;
+    const draftItemIds = Object.keys(draftItems).reduce(
+      (acc: string[], createdAt) => {
+        const draftPayload = draftItems[createdAt];
         if (
-          rawItem &&
-          !rawItem.deleted &&
-          uuid in processedItems &&
-          acc.indexOf(uuid) < 0
+          draftPayload &&
+          draftPayload.parentId === directory &&
+          acc.indexOf(createdAt) < 0
         ) {
-          acc.push(uuid);
+          acc.push(createdAt);
         }
         return acc;
-      }, structure[user.username] || [])
-      .sort(this.itemIdCompareFunction);
-    dispatch(setStructure(user.username, userItemIds));
+      },
+      structure[directory] || []
+    );
+    const userItemIds = Object.keys(rawItems).reduce((acc: string[], uuid) => {
+      const rawItem = rawItems[uuid];
+      if (
+        rawItem &&
+        !rawItem.deleted &&
+        uuid in processedItems &&
+        acc.indexOf(uuid) < 0
+      ) {
+        acc.push(uuid);
+      }
+      return acc;
+    }, draftItemIds || []);
+    const fileStructureIds = userItemIds.sort(this.itemIdCompareFunction);
+    dispatch(setStructure(directory, fileStructureIds));
   };
 
   private itemIdCompareFunction = (a: string, b: string) => {
-    const itemA = this.props.rawItems[a] || { createdAt: parseInt(a, 10) };
-    const itemB = this.props.rawItems[b] || { createdAt: parseInt(b, 10) };
+    let itemA = this.props.rawItems[a] || { createdAt: parseInt(a, 10) };
+    if (parseInt(a, 10)) {
+      if (this.props.draftItems[a]) {
+        const dip = this.props.draftItems[a];
+        if (dip.uuid) {
+          itemA = this.props.rawItems[dip.uuid];
+        }
+      }
+    }
+    let itemB = this.props.rawItems[b] || { createdAt: parseInt(b, 10) };
+    if (parseInt(b, 10)) {
+      if (this.props.draftItems[b]) {
+        const dip = this.props.draftItems[b];
+        if (dip.uuid) {
+          itemB = this.props.rawItems[dip.uuid];
+        }
+      }
+    }
     // return itemA.createdAt - itemB.createdAt; // old items at beginning, new items at end
     return itemB.createdAt - itemA.createdAt; // new items at beginning, old items at end
   };
@@ -214,13 +291,15 @@ const mapStateToProps = (state: IRootState) => {
   const { _persist: _0, ...structure } = state.structure;
   const { _persist: _1, ...processedItems } = state.processedItems;
   const { _persist: _2, ...rawItems } = state.rawItems;
+  const { _persist: _3, ...draftItems } = state.draftItems;
   return {
     user: state.auth.authUser!, // Ensure wrapped in WithAuth true
     secrets: state.secrets,
     rawItems,
     processedItems,
+    draftItems,
     structure,
-    clickedItemId: state.transient.clickedItemId
+    selectedItemId: state.transient.selectedItemId
   };
 };
 

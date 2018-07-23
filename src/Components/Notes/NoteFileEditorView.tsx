@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from "react";
+import React, { ChangeEventHandler, RefObject } from "react";
 import styled from "../AppStyles";
 
 const NoteFileEditorContainer = styled.div`
@@ -36,12 +36,14 @@ interface IProps {
   titleValue: string;
   contentValue: string;
   handleDraftChange: ChangeEventHandler<HTMLTextAreaElement>;
+  contentEditorRef: RefObject<HTMLTextAreaElement>;
 }
 
 const NoteFileEditorView = ({
   titleValue,
   contentValue,
-  handleDraftChange
+  handleDraftChange,
+  contentEditorRef
 }: IProps) => (
   <NoteFileEditorContainer>
     <EditNoteTitle
@@ -52,6 +54,8 @@ const NoteFileEditorView = ({
     />
     <EditNoteContent
       name="content"
+      autoFocus={true}
+      innerRef={contentEditorRef}
       value={contentValue}
       placeholder={`- What is meaningful to you?\n- What do you need to remember for later?`}
       onChange={handleDraftChange}
