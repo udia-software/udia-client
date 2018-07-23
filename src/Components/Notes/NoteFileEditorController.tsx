@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, Component } from "react";
+import React, { ChangeEventHandler, Component, createRef } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
@@ -7,6 +7,7 @@ import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
+import { setSelectedItemId } from "../../Modules/Reducers/Transient/Actions";
 import NoteFileEditorView from "./NoteFileEditorView";
 
 interface IProps {
@@ -23,6 +24,19 @@ interface IProps {
  * Controller should handle new items, editing existing items.
  */
 class NoteFileEditorController extends Component<IProps> {
+  private contentEditorRef: React.RefObject<HTMLTextAreaElement>;
+
+  constructor(props: IProps) {
+    super(props);
+    this.contentEditorRef = createRef();
+  }
+
+  public componentDidMount() {
+    if (this.contentEditorRef.current) {
+      this.contentEditorRef.current.focus();
+    }
+  }
+
   public render() {
     const [draftId, draft] = this.getCurrentDraft();
     if (draft.contentType === "note") {
@@ -33,6 +47,7 @@ class NoteFileEditorController extends Component<IProps> {
           titleValue={title}
           contentValue={content}
           handleDraftChange={this.handleDraftChange}
+          contentEditorRef={this.contentEditorRef}
         />
       );
     }
@@ -48,6 +63,7 @@ class NoteFileEditorController extends Component<IProps> {
         ...draftPayload.draftContent,
         [e.currentTarget.name]: e.currentTarget.value
       };
+      dispatch(setSelectedItemId(draftId));
       dispatch(
         upsertDraftItem(
           draftId,
@@ -76,7 +92,7 @@ class NoteFileEditorController extends Component<IProps> {
       // Check if a draft already exists, if so return the draft
       for (const draftedAt of Object.keys(draftItems)) {
         const draft = draftItems[draftedAt];
-        if (draft && draft.uuid === editItemId) {
+        if (draft && (draft.uuid === editItemId || draftedAt === editItemId)) {
           return [draftedAt, draft];
         }
       }

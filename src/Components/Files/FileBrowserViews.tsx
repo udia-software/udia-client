@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { MouseEventHandler } from "react";
+import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
@@ -75,9 +76,11 @@ const FileAddButton = styled(Button)`
 interface IDirectoryViewProps {
   dirName: string;
   processedItems: IProcessedItemsState;
+  draftItems: IDraftItemsState;
   fileStructure: { [uuid: string]: string[] };
   clickedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
   open: boolean;
 }
 /**
@@ -86,9 +89,11 @@ interface IDirectoryViewProps {
 export const DirectoryView = ({
   dirName,
   processedItems,
+  draftItems,
   fileStructure,
   clickedItemId,
   handleClickItemEvent,
+  handleClickNewNote,
   open = false
 }: IDirectoryViewProps) => {
   const dupeTitleCounter: { [title: string]: number } = {};
@@ -102,11 +107,13 @@ export const DirectoryView = ({
             <IconHolder icon="folder" />
           )}
           {dirName}
-          <FileAddButton>
-            <AddDirectoryIcon />
-            New Folder
-          </FileAddButton>
-          <FileAddButton>
+          {null && (
+            <FileAddButton>
+              <AddDirectoryIcon />
+              New Folder
+            </FileAddButton>
+          )}
+          <FileAddButton onClick={handleClickNewNote(dirName)}>
             <AddNoteIcon />
             New Note
           </FileAddButton>
@@ -122,10 +129,18 @@ export const DirectoryView = ({
                       const { title, noteType } = pip.processedContent;
                       const count = dupeTitleCounter[title] || 0;
                       dupeTitleCounter[title] = count + 1;
+                      // check if selected draft for item
+                      const draftSelected =
+                        clickedItemId &&
+                        draftItems[clickedItemId] &&
+                        draftItems[clickedItemId].uuid &&
+                        draftItems[clickedItemId].uuid === id;
                       return (
                         <FilesItem key={id}>
                           <ItemName
-                            itemClicked={clickedItemId === id}
+                            itemClicked={
+                              clickedItemId === id || !!draftSelected
+                            }
                             onClick={handleClickItemEvent(id)}
                           >
                             <IconHolder icon="file-alt" />
@@ -141,6 +156,49 @@ export const DirectoryView = ({
                         </FilesItem>
                       );
                     }
+                  }
+                }
+              }
+              const dip = draftItems[id];
+              if (dip) {
+                switch (dip.contentType) {
+                  case "note": {
+                    let { title, noteType } = dip.draftContent;
+                    let count = dupeTitleCounter[title] || 0;
+                    if (dip.uuid) {
+                      const ogItem = processedItems[dip.uuid];
+                      if (ogItem && ogItem.contentType === "note") {
+                        const {
+                          title: ogTitle,
+                          noteType: ogNoteType
+                        } = ogItem.processedContent;
+                        title = ogTitle;
+                        noteType = ogNoteType;
+                        count = dupeTitleCounter[title] - 1 || 0;
+                      }
+                    } else {
+                      dupeTitleCounter[title] = count + 1;
+                    }
+                    return (
+                      <FilesItem key={id}>
+                        <ItemName
+                          itemClicked={
+                            clickedItemId === id || clickedItemId === dip.uuid
+                          }
+                          onClick={handleClickItemEvent(id)}
+                        >
+                          <IconHolder icon="file-alt" />
+                          <span>
+                            {title ? title : <MutedSpan>Untitled</MutedSpan>}
+                            <MutedSpan>
+                              {count > 0 && `-${count}`}
+                              {noteType === "text" && ".txt"}
+                              {noteType === "markdown" && ".md"}~
+                            </MutedSpan>
+                          </span>
+                        </ItemName>
+                      </FilesItem>
+                    );
                   }
                 }
               }
@@ -173,16 +231,20 @@ const FileContentContainer = styled.div`
 interface IFileBrowserViewProps {
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
+  draftItems: IDraftItemsState;
   fileStructure: IStructureState;
   clickedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
 }
 
 export const FileBrowserView = ({
   processedItems,
+  draftItems,
   fileStructure,
   clickedItemId,
-  handleClickItemEvent
+  handleClickItemEvent,
+  handleClickNewNote
 }: IFileBrowserViewProps) => (
   <FileBrowserContainer>
     <FileListContainer>
@@ -192,9 +254,11 @@ export const FileBrowserView = ({
             key={root}
             dirName={root}
             processedItems={processedItems}
+            draftItems={draftItems}
             fileStructure={fileStructure}
             clickedItemId={clickedItemId}
             handleClickItemEvent={handleClickItemEvent}
+            handleClickNewNote={handleClickNewNote}
             open={true}
           />
         );
