@@ -15,6 +15,8 @@ import {
   setAuthUser
 } from "../../Modules/Reducers/Auth/Actions";
 import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
+import { clearProcessedItems } from "../../Modules/Reducers/ProcessedItems/Actions";
+import { clearRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { base64Decode } from "../Helpers/Base64Util";
@@ -209,40 +211,38 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           .subscribe<{ data?: IUserSubscriptionPayload }>({
             query: USER_SUBSCRIPTION
           })
-          .subscribe(
-            async ({ data }) => {
-              if (!data || !data.userSubscription) {
+          .subscribe(async ({ data }) => {
+            if (!data || !data.userSubscription) {
+              // We successfully made a connection and the server verified the JWT is invalid or not set.
+              this.clearLocalUser();
+            } else {
+              const { uuid, type, timestamp, meta } = data.userSubscription;
+              console.info(
+                `${DateTime.fromMillis(timestamp).toLocaleString(
+                  DateTime.TIME_WITH_SHORT_OFFSET
+                )} ${uuid} ${type} ${meta}`
+              );
+              this.processUserSubscriptionAlert(data.userSubscription);
+              meQueryResponse = await clientInstance.query<IMeResponseData | null>(
+                {
+                  query: GET_ME_QUERY,
+                  fetchPolicy: "network-only"
+                }
+              );
+              if (!meQueryResponse.data || !meQueryResponse.data.me) {
                 // We successfully made a connection and the server verified the JWT is invalid or not set.
                 this.clearLocalUser();
               } else {
-                const { uuid, type, timestamp, meta } = data.userSubscription;
-                console.info(
-                  `${DateTime.fromMillis(timestamp).toLocaleString(
-                    DateTime.TIME_WITH_SHORT_OFFSET
-                  )} ${uuid} ${type} ${meta}`
-                );
-                this.processUserSubscriptionAlert(data.userSubscription);
-                meQueryResponse = await clientInstance.query<IMeResponseData | null>(
-                  {
-                    query: GET_ME_QUERY,
-                    fetchPolicy: "network-only"
-                  }
-                );
-                if (!meQueryResponse.data || !meQueryResponse.data.me) {
-                  // We successfully made a connection and the server verified the JWT is invalid or not set.
-                  this.clearLocalUser();
-                } else {
-                  // If the user just logged in or signed up, this should be unnecessary but harmless
-                  dispatch(setAuthUser(meQueryResponse.data.me));
-                }
+                // If the user just logged in or signed up, this should be unnecessary but harmless
+                dispatch(setAuthUser(meQueryResponse.data.me));
               }
             }
-          );
+          });
 
         // set the observer in state, so we can unsubscribe later
         userObserver = newUserObserver;
       } catch (err) {
-        console.error(err)
+        console.error(err);
         // If the server is down, just clear the observer?
         if (userObserver) {
           userObserver.unsubscribe();
@@ -294,6 +294,8 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
       dispatch(clearNotesData());
+      dispatch(clearProcessedItems());
+      dispatch(clearRawItems());
       console.info("Confirmed not authenticated. Cleared local user.");
     };
 

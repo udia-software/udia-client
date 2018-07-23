@@ -2,6 +2,7 @@ import { StatusType } from "./Reducer";
 
 export const HANDLE_APP_JUST_LOADED = "transient/HANDLE_APP_JUST_LOADED";
 export const CLICKED_NOTE_ID = "transient/CLICKED_NOTE_ID";
+export const CLICKED_ITEM_ID = "transient/CLICKED_ITEM_ID";
 export const ADD_ALERT = "transient/ADD_ALERT";
 export const REMOVE_ALERT = "transient/REMOVE_ALERT";
 export const SET_STATUS = "transient/SET_STATUS";
@@ -13,6 +14,11 @@ export interface IHandleAppJustLoadedAction {
 
 export interface IClickedNoteIdAction {
   type: typeof CLICKED_NOTE_ID;
+  payload: string;
+}
+
+export interface IClickedItemIdAction {
+  type: typeof CLICKED_ITEM_ID;
   payload: string;
 }
 
@@ -41,6 +47,7 @@ export interface IClearStatusAction {
 export type ITransientAction =
   | IHandleAppJustLoadedAction
   | IClickedNoteIdAction
+  | IClickedItemIdAction
   | IAddAlertAction
   | IRemoveAlertAction
   | ISetStatusAction
@@ -52,6 +59,11 @@ export const handleAppJustLoaded = (): IHandleAppJustLoadedAction => ({
 
 export const setClickedNoteId = (uuid: string): IClickedNoteIdAction => ({
   type: CLICKED_NOTE_ID,
+  payload: uuid
+});
+
+export const setClickedItemId = (uuid: string): IClickedItemIdAction => ({
+  type: CLICKED_ITEM_ID,
   payload: uuid
 });
 

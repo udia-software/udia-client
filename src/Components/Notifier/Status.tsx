@@ -1,4 +1,7 @@
 import React from "react";
+import { connect } from "react-redux";
+import { IRootState } from "../../Modules/ConfigureReduxStore";
+import { StatusType } from "../../Modules/Reducers/Transient/Reducer";
 import styled from "../AppStyles";
 import SimpleLoader from "../Helpers/SimpleLoader";
 
@@ -14,11 +17,19 @@ const StatusContainer = styled.div`
   border-radius: 3px;
 `;
 
-// status not yet ready
-const Status = () => (
-  null && <StatusContainer>
-    <SimpleLoader loading={true} /> Loading...
-  </StatusContainer>
-);
+interface IProps {
+  status?: { type: StatusType; content: string };
+}
 
-export default Status;
+const Status = ({ status }: IProps) =>
+  status ? (
+    <StatusContainer>
+      <SimpleLoader loading={status.type === "loading"} />{status.content}
+    </StatusContainer>
+  ) : null;
+
+const mapStateToProps = (state: IRootState) => ({
+  status: state.transient.status
+});
+
+export default connect(mapStateToProps)(Status);

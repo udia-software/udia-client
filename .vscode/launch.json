@@ -6,10 +6,10 @@
   "configurations": [
     {
       "name": "Attach UDIA Debugger to Firefox",
-      "type": "firefox",
+      "type": "chrome",
       "request": "launch",
       "reAttach": true,
-      "url": "http://localhost:8000",
+      "url": "http://127.0.0.1:8000",
       "webRoot": "${workspaceFolder}"
     }
   ]

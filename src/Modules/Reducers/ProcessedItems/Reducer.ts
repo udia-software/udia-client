@@ -16,10 +16,16 @@ export default (
 ) => {
   switch (action.type) {
     case UPSERT_PROCESSED_ITEM: {
-      const { uuid, processedAt, processedContent, errors } = action.payload;
+      const {
+        uuid,
+        processedAt,
+        contentType,
+        processedContent,
+        errors
+      } = action.payload;
       return {
         ...state,
-        [uuid]: { processedAt, processedContent, errors }
+        [uuid]: { processedAt, contentType, processedContent, errors }
       };
     }
     case CLEAR_PROCESSED_ITEMS: {

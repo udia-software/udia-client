@@ -1,6 +1,7 @@
 import {
   ADD_ALERT,
   CLEAR_STATUS,
+  CLICKED_ITEM_ID,
   CLICKED_NOTE_ID,
   HANDLE_APP_JUST_LOADED,
   ITransientAction,
@@ -13,6 +14,7 @@ export type StatusType = "loading" | "info" | "error" | "success";
 export interface ITransientState {
   appJustLoaded: boolean;
   clickedNoteId?: string;
+  clickedItemId?: string;
   alerts: AlertContent[];
   status?: { type: StatusType; content: string };
 }
@@ -31,6 +33,11 @@ export default (
       return {
         ...state,
         appJustLoaded: false
+      };
+    case CLICKED_ITEM_ID:
+      return {
+        ...state,
+        clickedItemId: action.payload
       };
     case CLICKED_NOTE_ID:
       return {
