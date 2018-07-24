@@ -1,6 +1,5 @@
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
 import React, { ChangeEventHandler, Component, MouseEventHandler } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
@@ -22,6 +21,12 @@ import {
   EDIT_DRAFT_NOTE,
   NEW_DRAFT_NOTE
 } from "../../Modules/Reducers/Notes/Reducer";
+import {
+  CREATE_ITEM_MUTATION,
+  ICreateItemMutationResponse,
+  IUpdateItemMutationResponse,
+  UPDATE_ITEM_MUTATION
+} from "../Files/ItemFileShared";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import DraftNoteView from "./DraftNoteView";
 import { fetchAndProcessNote } from "./NotesShared";
@@ -396,80 +401,6 @@ class DraftNoteController extends Component<IProps, IState> {
     const draftKey = this.getDraftKey();
     return this.props.drafts[draftKey] || defaultDraftNote;
   }
-}
-
-// interface ICreateItemInput {
-//   content: string;
-//   contentType: string;
-//   encItemKey?: string;
-//   parentId?: string;
-// }
-const CREATE_ITEM_MUTATION = gql`
-  mutation CreateItemMutation($params: CreateItemInput!) {
-    createItem(params: $params) {
-      uuid
-      content
-      contentType
-      encItemKey
-      user {
-        uuid
-        username
-        pubVerifyKey
-      }
-      deleted
-      parent {
-        uuid
-      }
-      children {
-        count
-        items {
-          uuid
-        }
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-interface ICreateItemMutationResponse {
-  createItem: Item;
-}
-
-// interface IUpdateItemInput {
-//   content?: string;
-//   contentType?: string;
-//   encItemKey?: string;
-//   parentId?: string;
-// }
-const UPDATE_ITEM_MUTATION = gql`
-  mutation UpdateItemMutation($id: ID!, $params: UpdateItemInput!) {
-    updateItem(id: $id, params: $params) {
-      uuid
-      content
-      contentType
-      encItemKey
-      user {
-        uuid
-        username
-        pubVerifyKey
-      }
-      deleted
-      parent {
-        uuid
-      }
-      children {
-        count
-        items {
-          uuid
-        }
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-interface IUpdateItemMutationResponse {
-  updateItem: Item;
 }
 
 const mapStateToProps = (state: IRootState) => ({

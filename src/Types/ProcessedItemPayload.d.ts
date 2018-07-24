@@ -15,6 +15,12 @@ declare interface ProcessedDirectoryPayload extends BaseProcessedItemPayload {
   processedContent: DecryptedDirectory;
 }
 
+declare interface ProcessedErrorPayload extends BaseProcessedItemPayload {
+  contentType: null;
+  processedContent: null;
+}
+
 declare type ProcessedItemPayload =
   | ProcessedNotePayload
-  | ProcessedDirectoryPayload;
+  | ProcessedDirectoryPayload
+  | ProcessedErrorPayload;
