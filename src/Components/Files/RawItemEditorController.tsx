@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { connect } from "react-redux";
-import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { upsertProcessedItem } from "../../Modules/Reducers/ProcessedItems/Actions";
@@ -14,15 +13,12 @@ import {
   addAlert,
   setSelectedItemId
 } from "../../Modules/Reducers/Transient/Actions";
-import { BaseTheme } from "../AppStyles";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import {
   DELETE_ITEM_MUTATION,
   IDeleteItemResponseData
 } from "./ItemFileShared";
 import RawItemEditorView from "./RawItemEditorView";
-
-const { smScrnBrkPx } = BaseTheme;
 
 interface IProps {
   dispatch: Dispatch;
@@ -33,23 +29,11 @@ interface IProps {
   user: FullUser;
 }
 
-interface IState {
-  redirectToFiles?: boolean;
-}
-
-class RawItemEditorController extends Component<
-  WithApolloClient<IProps>,
-  IState
-> {
-  public state: IState = {};
+class RawItemEditorController extends Component<WithApolloClient<IProps>> {
   public render() {
     const { itemId, rawItems, processedItems } = this.props;
     const rawItem = rawItems[itemId];
     const processedItemPayload = processedItems[itemId];
-    const { redirectToFiles } = this.state;
-    if (redirectToFiles) {
-      return <Redirect to="/file" />;
-    }
     return (
       <RawItemEditorView
         itemId={itemId}
@@ -88,9 +72,6 @@ class RawItemEditorController extends Component<
         upsertProcessedItem(deleteItem.uuid, deleteItem.updatedAt, null, null)
       );
       dispatch(setSelectedItemId(updatedStructure[0]));
-      if (window.innerWidth < smScrnBrkPx) {
-        this.setState({ redirectToFiles: true });
-      }
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed to delete item!");
       this.props.dispatch(

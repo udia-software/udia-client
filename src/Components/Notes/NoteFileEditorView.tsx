@@ -68,6 +68,7 @@ const SaveDraftButton = styled(ProcessDraftButton)`
 interface IProps {
   loading: boolean;
   loadingText?: string;
+  isRaw: boolean;
   isPreview: boolean;
   hasDraft: boolean;
   titleValue: string;
@@ -85,6 +86,7 @@ interface IProps {
 const NoteFileEditorView = ({
   loading,
   loadingText,
+  isRaw,
   isPreview,
   hasDraft,
   titleValue,
@@ -148,7 +150,7 @@ const NoteFileEditorView = ({
             <FontAwesomeIcon icon="save" /> Save Draft
           </SaveDraftButton>
         )}
-        {!hasDraft && (
+        {!hasDraft && isRaw && (
           <DiscardDraftButton onClick={handleDeleteNote}>
             <FontAwesomeIcon icon="trash" /> Delete Note
           </DiscardDraftButton>
