@@ -9,6 +9,7 @@ import {
   MutedSpan,
   NoteMarkdownContent,
   NoteTextContent,
+  ViewNoteLinkTitle,
   ViewNoteTitle
 } from "./NotesShared";
 
@@ -81,13 +82,6 @@ const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
   elem.download = `${filename}.json`;
   elem.click();
 };
-
-const ViewNoteLinkTitle = styled(ThemedLink)`
-  color: ${props => props.theme.primaryColor};
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
 const DisplayNoteView = ({
   loading,

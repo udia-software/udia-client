@@ -32,9 +32,14 @@ const ItemName = styled.span.attrs<{ itemClicked?: boolean }>({})`
   border-bottom: 2px dotted
     ${props =>
       props.itemClicked
-        ? props.theme.intermediateColor
+        ? props.theme.purple
         : props.theme.panelBackgroundColor};
   width: 100%;
+`;
+
+const ItemNameText = styled.span`
+  width: 100%;
+  word-wrap: break-word;
 `;
 
 const IconHolder = styled(FontAwesomeIcon)`
@@ -144,14 +149,14 @@ export const DirectoryView = ({
                             onClick={handleClickItemEvent(id)}
                           >
                             <IconHolder icon="file-alt" />
-                            <span>
+                            <ItemNameText>
                               {title ? title : <MutedSpan>Untitled</MutedSpan>}
                               <MutedSpan>
                                 {count > 0 && `-${count}`}
                                 {noteType === "text" && ".txt"}
                                 {noteType === "markdown" && ".md"}
                               </MutedSpan>
-                            </span>
+                            </ItemNameText>
                           </ItemName>
                         </FilesItem>
                       );
@@ -163,8 +168,9 @@ export const DirectoryView = ({
               if (dip) {
                 switch (dip.contentType) {
                   case "note": {
+                    let isNewDraft = false;
                     let { title, noteType } = dip.draftContent;
-                    let count = dupeTitleCounter[title] || 0;
+                    let count = dupeTitleCounter[`new.${title}`] || 0;
                     if (dip.uuid) {
                       const ogItem = processedItems[dip.uuid];
                       if (ogItem && ogItem.contentType === "note") {
@@ -177,7 +183,8 @@ export const DirectoryView = ({
                         count = dupeTitleCounter[title] - 1 || 0;
                       }
                     } else {
-                      dupeTitleCounter[title] = count + 1;
+                      isNewDraft = true;
+                      dupeTitleCounter[`new.${title}`] = count + 1;
                     }
                     return (
                       <FilesItem key={id}>
@@ -188,14 +195,15 @@ export const DirectoryView = ({
                           onClick={handleClickItemEvent(id)}
                         >
                           <IconHolder icon="file-alt" />
-                          <span>
+                          <ItemNameText>
+                            <MutedSpan>{isNewDraft && "[new] "}</MutedSpan>
                             {title ? title : <MutedSpan>Untitled</MutedSpan>}
                             <MutedSpan>
                               {count > 0 && `-${count}`}
                               {noteType === "text" && ".txt"}
                               {noteType === "markdown" && ".md"}~
                             </MutedSpan>
-                          </span>
+                          </ItemNameText>
                         </ItemName>
                       </FilesItem>
                     );

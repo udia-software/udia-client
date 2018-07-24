@@ -1,11 +1,20 @@
-import React, { ChangeEventHandler, Component, createRef } from "react";
+import React, {
+  ChangeEventHandler,
+  Component,
+  createRef,
+  MouseEventHandler
+} from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
-import { upsertDraftItem } from "../../Modules/Reducers/DraftItems/Actions";
+import {
+  clearDraftItem,
+  upsertDraftItem
+} from "../../Modules/Reducers/DraftItems/Actions";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
+import { setStructure } from "../../Modules/Reducers/Structure/Actions";
 import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import { setSelectedItemId } from "../../Modules/Reducers/Transient/Actions";
 import NoteFileEditorView from "./NoteFileEditorView";
@@ -20,15 +29,22 @@ interface IProps {
   structure: IStructureState;
 }
 
+interface IState {
+  isPreview: boolean;
+}
+
 /**
  * Controller should handle new items, editing existing items.
  */
-class NoteFileEditorController extends Component<IProps> {
+class NoteFileEditorController extends Component<IProps, IState> {
   private contentEditorRef: React.RefObject<HTMLTextAreaElement>;
 
   constructor(props: IProps) {
     super(props);
     this.contentEditorRef = createRef();
+    this.state = {
+      isPreview: false
+    };
   }
 
   public componentDidMount() {
@@ -39,20 +55,44 @@ class NoteFileEditorController extends Component<IProps> {
 
   public render() {
     const [draftId, draft] = this.getCurrentDraft();
+    const { draftItems } = this.props;
+    const { isPreview } = this.state;
     if (draft.contentType === "note") {
       const { title, content } = draft.draftContent;
       return (
         <NoteFileEditorView
           key={draftId}
+          hasDraft={draftId in draftItems}
+          isPreview={isPreview}
           titleValue={title}
           contentValue={content}
+          handleTogglePreview={this.handleTogglePreview}
           handleDraftChange={this.handleDraftChange}
+          handleDiscardDraft={this.handleDiscardDraft}
           contentEditorRef={this.contentEditorRef}
         />
       );
     }
     return null;
   }
+
+  protected handleTogglePreview: MouseEventHandler<HTMLElement> = e => {
+    e.preventDefault();
+    this.setState({ isPreview: !this.state.isPreview });
+  };
+
+  protected handleDiscardDraft: MouseEventHandler<HTMLElement> = e => {
+    e.preventDefault();
+    const [draftId, draftPayload] = this.getCurrentDraft();
+    const { structure } = this.props;
+    this.props.dispatch(clearDraftItem(draftId));
+    const newStructure = [...structure[draftPayload.parentId]];
+    const structureIdx = newStructure.indexOf(draftId);
+    if (structureIdx >= 0) {
+      newStructure.splice(structureIdx, 1);
+      this.props.dispatch(setStructure(draftPayload.parentId, newStructure));
+    }
+  };
 
   protected handleDraftChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
     e.preventDefault();

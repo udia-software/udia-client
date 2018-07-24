@@ -4,10 +4,18 @@ import gql from "graphql-tag";
 import ReactMarkdown from "react-markdown";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import styled from "../AppStyles";
+import { ThemedLink } from "../Helpers/ThemedLinkAnchor";
 
 export const ViewNoteTitle = styled.h1`
   padding: 0;
   margin: 0;
+`;
+
+export const ViewNoteLinkTitle = styled(ThemedLink)`
+  color: ${props => props.theme.primaryColor};
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const NoteMarkdownContent = styled(ReactMarkdown)`
