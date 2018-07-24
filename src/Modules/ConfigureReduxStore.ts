@@ -8,7 +8,6 @@ import AuthReducer, {
 import DraftItemsReducer, {
   IDraftItemsState
 } from "./Reducers/DraftItems/Reducer";
-import NotesReducer, { INotesState } from "./Reducers/Notes/Reducer";
 import ProcessedItemsReducer, {
   IProcessedItemsState
 } from "./Reducers/ProcessedItems/Reducer";
@@ -27,7 +26,6 @@ export interface IRootState {
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
   structure: IStructureState;
-  notes: INotesState;
   theme: IThemeState;
   transient: ITransientState;
 }
@@ -38,16 +36,6 @@ const genPersistConf = (key: string): PersistConfig => ({ key, storage });
 const authPersistConfig: PersistConfig = {
   ...genPersistConf("auth"),
   blacklist: AuthPersistBlacklist
-};
-
-const notesPersistConfig: PersistConfig = {
-  ...genPersistConf("notes"),
-  // debug: true
-  stateReconciler: (
-    inboundState: any,
-    originialState: any,
-    reducedState: any
-  ) => ({ ...reducedState, ...inboundState })
 };
 
 interface IDevToolsWindow extends Window {
@@ -66,7 +54,6 @@ const ConfigureReduxStore = () => {
     ),
     draftItems: persistReducer(genPersistConf("draftItems"), DraftItemsReducer),
     structure: persistReducer(genPersistConf("structure"), StructureReducer),
-    notes: persistReducer(notesPersistConfig, NotesReducer),
     theme: persistReducer(genPersistConf("theme"), ThemeReducer),
     transient: TransientReducer // not persisted
   });

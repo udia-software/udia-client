@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -26,6 +27,7 @@ import {
   addAlert,
   setSelectedItemId
 } from "../../Modules/Reducers/Transient/Actions";
+import { BaseTheme } from "../AppStyles";
 import {
   CREATE_ITEM_MUTATION,
   DELETE_ITEM_MUTATION,
@@ -36,6 +38,8 @@ import {
 } from "../Files/ItemFileShared";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import NoteFileEditorView from "./NoteFileEditorView";
+
+const { smScrnBrkPx } = BaseTheme;
 
 interface IProps {
   dispatch: Dispatch;
@@ -53,6 +57,7 @@ interface IState {
   loading: boolean;
   loadingText?: string;
   focusOn?: string;
+  redirectToId?: string | true;
 }
 
 /**
@@ -86,7 +91,14 @@ class NoteFileEditorController extends Component<
   public render() {
     const [draftId, draft] = this.getCurrentDraft();
     const { draftItems } = this.props;
-    const { loading, loadingText, isPreview } = this.state;
+    const { loading, loadingText, isPreview, redirectToId } = this.state;
+    if (redirectToId) {
+      if (redirectToId === true) {
+        return <Redirect to="/file" />;
+      } else {
+        return <Redirect to={`/file/${redirectToId}`} />;
+      }
+    }
     if (draft.contentType === "note") {
       const { title, content } = draft.draftContent;
       return (
@@ -137,10 +149,17 @@ class NoteFileEditorController extends Component<
       newStructure.splice(structureIdx, 1);
       this.props.dispatch(setStructure(draftPayload.parentId, newStructure));
     }
+    const isSmallScreen = window.innerWidth < smScrnBrkPx;
     if (draftPayload.uuid) {
       this.props.dispatch(setSelectedItemId(draftPayload.uuid));
+      if (isSmallScreen) {
+        this.setState({ redirectToId: draftPayload.uuid });
+      }
     } else {
       this.props.dispatch(setSelectedItemId(newStructure[0]));
+      if (isSmallScreen) {
+        this.setState({ redirectToId: true });
+      }
     }
   };
 
@@ -268,6 +287,12 @@ class NoteFileEditorController extends Component<
         })
       );
       dispatch(setSelectedItemId(item.uuid));
+      const isSmallScreen = window.innerWidth < smScrnBrkPx;
+      if (isSmallScreen) {
+        this.setState({
+          redirectToId: item.uuid
+        });
+      }
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed saving note!");
       this.setState({ loading: false, loadingText: undefined });
@@ -298,15 +323,15 @@ class NoteFileEditorController extends Component<
       const { deleteItem } = response.data as IDeleteItemResponseData;
       const dirId =
         (deleteItem.parent && deleteItem.parent.uuid) || user.username;
+      this.setState({
+        loading: false,
+        loadingText: undefined
+      });
       const updatedStructure = [...structure[dirId]];
       const delIdx = updatedStructure.indexOf(deleteItem.uuid);
       if (delIdx >= 0) {
         updatedStructure.splice(delIdx, 1);
       }
-      this.setState({
-        loading: false,
-        loadingText: undefined
-      });
       dispatch(
         addAlert({
           type: "success",
@@ -320,6 +345,12 @@ class NoteFileEditorController extends Component<
         upsertProcessedItem(deleteItem.uuid, deleteItem.updatedAt, null, null)
       );
       dispatch(setSelectedItemId(updatedStructure[0]));
+      const isSmallScreen = window.innerWidth < smScrnBrkPx;
+      if (isSmallScreen) {
+        this.setState({
+          redirectToId: true
+        });
+      }
     } catch (err) {
       const { errors } = parseGraphQLError(err, "Failed deleting note!");
       this.setState({ loading: false, loadingText: undefined });

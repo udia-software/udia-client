@@ -7,9 +7,8 @@ import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
 import SimpleLoader from "../Helpers/SimpleLoader";
-import NoteFileEditorController from "../Notes/NoteFileEditorController";
 import { MutedSpan } from "../Notes/NotesShared";
-import RawItemEditorController from "./RawItemEditorController";
+import { determineContentViewer } from "./ItemFileShared";
 
 const FilesList = styled.ul`
   list-style-type: none;
@@ -328,50 +327,24 @@ export const DirectoryView = ({
   );
 };
 
-const determineContentViewer = (
-  id: string | undefined,
-  processedItems: IProcessedItemsState,
-  draftItems: IDraftItemsState,
-  rawItems: IRawItemsState
-) => {
-  if (id) {
-    if (id in processedItems) {
-      const pip = processedItems[id];
-      switch (pip.contentType) {
-        case "note":
-          return <NoteFileEditorController editItemId={id} />;
-        case "directory":
-          return <span>TODO: DIR</span>;
-        case null:
-          return <RawItemEditorController itemId={id} />;
-      }
-    }
-    if (id in draftItems) {
-      const dip = draftItems[id];
-      switch (dip.contentType) {
-        case "note":
-          return <NoteFileEditorController editItemId={id} />;
-        case "directory":
-          return <span>TODO: DIR</span>;
-      }
-    }
-    if (id in rawItems) {
-      return <RawItemEditorController itemId={id} />;
-    }
-  }
-  return <NoteFileEditorController />;
-};
-
 // File Browser View
 
 const FileBrowserContainer = styled.div`
   width: 99%;
   max-width: 100vw;
   display: grid;
-  grid-template-columns: 18em 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: "file-list file-content";
-  grid-column-gap: 1em;
+  @media only screen and (max-width: ${props =>
+      props.theme.smScrnBrkPx - 1}px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "file-list";
+  }
+  @media only screen and (min-width: ${props => props.theme.smScrnBrkPx}px) {
+    grid-template-columns: 18em 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "file-list file-content";
+    grid-column-gap: 1em;
+  }
 `;
 
 const FileListContainer = styled.div`
@@ -386,6 +359,7 @@ interface IFileBrowserViewProps {
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
   fileStructure: IStructureState;
+  isSmallScreen?: boolean;
   selectedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
@@ -397,6 +371,7 @@ export const FileBrowserView = ({
   rawItems,
   fileStructure,
   selectedItemId,
+  isSmallScreen,
   handleClickItemEvent,
   handleClickNewNote
 }: IFileBrowserViewProps) => (
@@ -419,13 +394,15 @@ export const FileBrowserView = ({
         );
       })}
     </FileListContainer>
-    <FileContentContainer>
-      {determineContentViewer(
-        selectedItemId,
-        processedItems,
-        draftItems,
-        rawItems
-      )}
-    </FileContentContainer>
+    {!isSmallScreen && (
+      <FileContentContainer>
+        {determineContentViewer(
+          selectedItemId,
+          processedItems,
+          draftItems,
+          rawItems
+        )}
+      </FileContentContainer>
+    )}
   </FileBrowserContainer>
 );

@@ -1,4 +1,44 @@
 import gql from "graphql-tag";
+import React from "react";
+import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
+import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
+import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
+import NoteFileEditorController from "../Notes/NoteFileEditorController";
+import RawItemEditorController from "./RawItemEditorController";
+
+export const determineContentViewer = (
+  id: string | undefined,
+  processedItems: IProcessedItemsState,
+  draftItems: IDraftItemsState,
+  rawItems: IRawItemsState
+) => {
+  if (id) {
+    if (id in processedItems) {
+      const pip = processedItems[id];
+      switch (pip.contentType) {
+        case "note":
+          return <NoteFileEditorController editItemId={id} />;
+        case "directory":
+          return <span>TODO: DIR</span>;
+        case null:
+          return <RawItemEditorController itemId={id} />;
+      }
+    }
+    if (id in draftItems) {
+      const dip = draftItems[id];
+      switch (dip.contentType) {
+        case "note":
+          return <NoteFileEditorController editItemId={id} />;
+        case "directory":
+          return <span>TODO: DIR</span>;
+      }
+    }
+    if (id in rawItems) {
+      return <RawItemEditorController itemId={id} />;
+    }
+  }
+  return <NoteFileEditorController />;
+};
 
 export const GET_ITEMS_QUERY = gql`
   query GetItemsQuery(
