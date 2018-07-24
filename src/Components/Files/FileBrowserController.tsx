@@ -66,6 +66,7 @@ class FileBrowserController extends Component<
     window.addEventListener("resize", this.handleResizeEvent);
     await this.queryAndProcessUserItemsPage();
     this.setFileStructureState();
+    
   }
 
   public async componentDidUpdate(prevProps: IProps) {
@@ -76,15 +77,13 @@ class FileBrowserController extends Component<
       selectedItemId,
       draftItems
     } = this.props;
-    let triggerSetStructure = false;
 
+    let triggerSetStructure = false;
     // is there a new draft item?
     const newDrafts = Object.keys(draftItems).filter(
       id => !(id in prevProps.draftItems)
     );
     triggerSetStructure = triggerSetStructure || newDrafts.length > 0;
-
-    // is there a new processed item?
     if (triggerSetStructure) {
       this.setFileStructureState();
     }

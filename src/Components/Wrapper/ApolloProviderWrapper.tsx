@@ -44,17 +44,16 @@ const TOKEN_RETIRE_DAYS = 6;
  * therefore, there's a loading state which forcibly mounts and unmounts the provider.
  */
 const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
-  let client: ApolloClient<NormalizedCacheObject>;
-  let userObserver: ZenObservable.Subscription | null = null;
-
   class RefreshingApolloProvider extends Component<IProps, IState> {
+    private client: ApolloClient<NormalizedCacheObject>;
+    private userObserver: ZenObservable.Subscription | null = null;
     constructor(props: IProps) {
       super(props);
       const token =
         this.props.token && this.quickCheckJWT(this.props.token)
           ? this.props.token
           : null;
-      client = initApolloClient(token);
+      this.client = initApolloClient(token);
       this.state = {
         loading: false
       };
@@ -68,7 +67,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
       const { token } = this.props;
       if (!token) {
         // Unauthenticated, just return the fetch attempt
-        return this.fetchAndSubscribeToUser(client);
+        return this.fetchAndSubscribeToUser(this.client);
       }
 
       // Authenticated, perform JWT sanity checks
@@ -88,7 +87,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
         console.info("Token is getting old... attempt to refresh.");
         try {
           this.setState({ loading: true });
-          const resp = await client.mutate<IRefreshJWTResponseData>({
+          const resp = await this.client.mutate<IRefreshJWTResponseData>({
             mutation: REFRESH_JWT_MUTATION
           });
           const { refreshJWT } = resp.data as IRefreshJWTResponseData;
@@ -107,8 +106,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
               )}`
             );
             this.props.dispatch(setAuthJWT(refreshJWT));
-            client = initApolloClient(refreshJWT);
-            // await this.fetchAndSubscribeToUser(newClient);
+            this.client = initApolloClient(refreshJWT);
           } else {
             console.info(
               "Request was successful but no token was returned! Purging local user..."
@@ -117,7 +115,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           }
         } catch (err) {
           console.error(err);
-          await this.fetchAndSubscribeToUser(client);
+          await this.fetchAndSubscribeToUser(this.client);
         } finally {
           this.setState({ loading: false });
         }
@@ -126,7 +124,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           `The JWT will refresh itself on a page reload after ` +
             `its life expectancy is less than ${TOKEN_RETIRE_DAYS} days.`
         );
-        await this.fetchAndSubscribeToUser(client);
+        await this.fetchAndSubscribeToUser(this.client);
       }
     }
 
@@ -138,11 +136,11 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           this.props.token && this.quickCheckJWT(this.props.token)
             ? this.props.token
             : null;
-        client = initApolloClient(token);
+        this.client = initApolloClient(token);
         console.info(
           `Refreshed ApolloProvider Client ${token ? `(JWT Set)` : "(No JWT)"}`
         );
-        await this.fetchAndSubscribeToUser(client);
+        await this.fetchAndSubscribeToUser(this.client);
         this.setState({ loading: false });
       }
     }
@@ -156,8 +154,8 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
 
     public componentWillUnmount() {
       window.removeEventListener("storage", this.handleLocalStorageUpdated);
-      if (!!userObserver) {
-        userObserver.unsubscribe();
+      if (this.userObserver) {
+        this.userObserver.unsubscribe();
       }
     }
 
@@ -167,7 +165,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
       if (loading) {
         return WrapperLoadingComponent({});
       }
-      return <ApolloProvider client={client} children={WrappedComponent} />;
+      return <ApolloProvider client={this.client} children={WrappedComponent} />;
     }
 
     /**
@@ -191,11 +189,11 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
       try {
         const { dispatch } = this.props;
         // if a user subscription already exists, unsubscribe
-        if (!!userObserver) {
-          userObserver.unsubscribe();
+        if (this.userObserver) {
+          this.userObserver.unsubscribe();
         }
         // Perform gql query to get the user
-        let meQueryResponse = await client.query<IMeResponseData | null>({
+        let meQueryResponse = await clientInstance.query<IMeResponseData | null>({
           fetchPolicy: "network-only",
           query: GET_ME_QUERY
         });
@@ -241,12 +239,12 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           });
 
         // set the observer in state, so we can unsubscribe later
-        userObserver = newUserObserver;
+        this.userObserver = newUserObserver;
       } catch (err) {
         console.error(err);
         // If the server is down, just clear the observer?
-        if (userObserver) {
-          userObserver.unsubscribe();
+        if (this.userObserver) {
+          this.userObserver.unsubscribe();
         }
       }
     }

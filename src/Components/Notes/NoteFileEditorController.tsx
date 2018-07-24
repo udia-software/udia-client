@@ -135,7 +135,7 @@ class NoteFileEditorController extends Component<
     dispatch(clearDraftItem(draftId));
     dispatch(
       addAlert({
-        type: "success",
+        type: "info",
         timestamp: Date.now(),
         content: `Discarded draft '${(draftPayload.contentType === "note" &&
           draftPayload.draftContent.title) ||
