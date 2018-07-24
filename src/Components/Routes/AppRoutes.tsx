@@ -6,7 +6,6 @@ import SignInController from "../Auth/SignInController";
 import SignUpController from "../Auth/SignUpController";
 import VerifyEmailController from "../Auth/VerifyEmailController";
 import Contact from "../Contact";
-import DisplayFileController from "../Files/DisplayFileController";
 import FileBrowserController from "../Files/FileBrowserController";
 import Health from "../Health";
 import Home from "../Home";
@@ -62,7 +61,7 @@ export default () => (
     <Route
       exact={true}
       path="/file/:id"
-      component={WithAuth(DisplayFileController, true, "/sign-in")}
+      component={WithAuth(FileBrowserController, true, "/sign-in")}
     />
     {/* These routes have the sidebar, whereas the above ones don't */}
     <Route path="/auth" component={AuthRoutes} />

@@ -1,9 +1,7 @@
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import React, { Component } from "react";
-import { withApollo } from "react-apollo";
+import { withApollo, WithApolloClient } from "react-apollo";
 import { connect } from "react-redux";
-import { Redirect } from "react-router";
+import { match, Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -33,8 +31,8 @@ import {
 const { smScrnBrkPx } = BaseTheme;
 
 interface IProps {
+  match: match<{ id?: string }>;
   dispatch: Dispatch;
-  client: ApolloClient<NormalizedCacheObject>;
   user: FullUser;
   secrets: ISecretsState;
   rawItems: IRawItemsState;
@@ -47,11 +45,14 @@ interface IProps {
 interface IState {
   isSmallScreen: boolean;
   cryptoManager: CryptoManager | null;
-  redirectToId?: string;
+  redirectToId?: string | boolean;
 }
 
-class FileBrowserController extends Component<IProps, IState> {
-  constructor(props: IProps) {
+class FileBrowserController extends Component<
+  WithApolloClient<IProps>,
+  IState
+> {
+  constructor(props: WithApolloClient<IProps>) {
     super(props);
     document.title = "File Browser - UDIA";
     const cryptoManager = this.cryptoManagerCheck();
@@ -68,10 +69,17 @@ class FileBrowserController extends Component<IProps, IState> {
   }
 
   public async componentDidUpdate(prevProps: IProps) {
+    const {
+      match: {
+        params: { id: urlParamId }
+      },
+      selectedItemId,
+      draftItems
+    } = this.props;
     let triggerSetStructure = false;
 
     // is there a new draft item?
-    const newDrafts = Object.keys(this.props.draftItems).filter(
+    const newDrafts = Object.keys(draftItems).filter(
       id => !(id in prevProps.draftItems)
     );
     triggerSetStructure = triggerSetStructure || newDrafts.length > 0;
@@ -79,6 +87,26 @@ class FileBrowserController extends Component<IProps, IState> {
     // is there a new processed item?
     if (triggerSetStructure) {
       this.setFileStructureState();
+    }
+
+    // handle small screen redirection
+    if (this.state.isSmallScreen && !this.state.redirectToId) {
+      // no selected item id, redirect to list
+      if (!selectedItemId) {
+        this.setState({ redirectToId: true });
+      }
+      // url parameter has changed?
+      else if (urlParamId && urlParamId !== selectedItemId) {
+        // check for draft
+        if (
+          selectedItemId in draftItems &&
+          draftItems[selectedItemId].uuid === urlParamId
+        ) {
+          this.setState({ redirectToId: selectedItemId });
+        } else {
+          this.setState({ redirectToId: true });
+        }
+      }
     }
   }
 
@@ -89,6 +117,9 @@ class FileBrowserController extends Component<IProps, IState> {
 
   public render() {
     const {
+      match: {
+        params: { id: urlParamId }
+      },
       processedItems,
       rawItems,
       selectedItemId,
@@ -96,11 +127,18 @@ class FileBrowserController extends Component<IProps, IState> {
       structure
     } = this.props;
     const { isSmallScreen, redirectToId } = this.state;
-    if (isSmallScreen && redirectToId) {
-      return <Redirect to={`/file/${redirectToId}`} push={true} />;
+
+    if (isSmallScreen) {
+      if (redirectToId === true && urlParamId) {
+        return <Redirect to="/file" />;
+      }
+      if (redirectToId && redirectToId !== true &&  !urlParamId) {
+        return <Redirect to={`/file/${redirectToId}`} push={true} />;
+      }
     }
     return (
       <FileBrowserView
+        urlParamId={urlParamId}
         processedItems={processedItems}
         draftItems={draftItems}
         rawItems={rawItems}

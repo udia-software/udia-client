@@ -130,16 +130,6 @@ function genDupTitleCountMap(
   return idToCountMap;
 }
 
-interface INoteItemViewProps {
-  itemClicked: boolean;
-  title: string;
-  count: number;
-  type: string;
-  isDraft?: boolean;
-  isRaw?: boolean;
-  handleClickItemEvent: MouseEventHandler<HTMLElement>;
-}
-
 const renderFileTypeExtension = (noteType: string) => {
   switch (noteType) {
     case "markdown":
@@ -152,6 +142,16 @@ const renderFileTypeExtension = (noteType: string) => {
       return noteType;
   }
 };
+
+interface INoteItemViewProps {
+  itemClicked: boolean;
+  title: string;
+  count: number;
+  type: string;
+  isDraft?: boolean;
+  isRaw?: boolean;
+  handleClickItemEvent: MouseEventHandler<HTMLElement>;
+}
 
 const NoteItemView = ({
   itemClicked,
@@ -193,6 +193,7 @@ interface IDirectoryViewProps {
   rawItems: IRawItemsState;
   fileStructure: { [uuid: string]: string[] };
   clickedItemId?: string;
+  isSmallScreen?: boolean;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
   open: boolean;
@@ -208,6 +209,7 @@ export const DirectoryView = ({
   rawItems,
   fileStructure,
   clickedItemId,
+  isSmallScreen,
   handleClickItemEvent,
   handleClickNewNote,
   open = false
@@ -329,15 +331,18 @@ export const DirectoryView = ({
 
 // File Browser View
 
-const FileBrowserContainer = styled.div`
+const FileBrowserContainer = styled.div.attrs<{ smScrnTemplateArea: string }>(
+  {}
+)`
   width: 99%;
+  height: 100%;
   max-width: 100vw;
   display: grid;
   @media only screen and (max-width: ${props =>
-      props.theme.smScrnBrkPx - 1}px) {
+    props.theme.smScrnBrkPx - 1}px) {
+    grid-template-areas: "${props => props.smScrnTemplateArea}";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: "file-list";
   }
   @media only screen and (min-width: ${props => props.theme.smScrnBrkPx}px) {
     grid-template-columns: 18em 1fr;
@@ -355,6 +360,7 @@ const FileContentContainer = styled.div`
 `;
 
 interface IFileBrowserViewProps {
+  urlParamId?: string;
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
@@ -366,6 +372,7 @@ interface IFileBrowserViewProps {
 }
 
 export const FileBrowserView = ({
+  urlParamId,
   processedItems,
   draftItems,
   rawItems,
@@ -375,26 +382,31 @@ export const FileBrowserView = ({
   handleClickItemEvent,
   handleClickNewNote
 }: IFileBrowserViewProps) => (
-  <FileBrowserContainer>
-    <FileListContainer>
-      {Object.keys(fileStructure).map(root => {
-        return (
-          <DirectoryView
-            key={root}
-            dirName={root}
-            processedItems={processedItems}
-            draftItems={draftItems}
-            rawItems={rawItems}
-            fileStructure={fileStructure}
-            clickedItemId={selectedItemId}
-            handleClickItemEvent={handleClickItemEvent}
-            handleClickNewNote={handleClickNewNote}
-            open={true}
-          />
-        );
-      })}
-    </FileListContainer>
-    {!isSmallScreen && (
+  <FileBrowserContainer
+    smScrnTemplateArea={!!urlParamId ? "file-content" : "file-list"}
+  >
+    {((isSmallScreen && !urlParamId) || !isSmallScreen) && (
+      <FileListContainer>
+        {Object.keys(fileStructure).map(root => {
+          return (
+            <DirectoryView
+              key={root}
+              dirName={root}
+              processedItems={processedItems}
+              draftItems={draftItems}
+              rawItems={rawItems}
+              fileStructure={fileStructure}
+              clickedItemId={selectedItemId}
+              handleClickItemEvent={handleClickItemEvent}
+              handleClickNewNote={handleClickNewNote}
+              isSmallScreen={isSmallScreen}
+              open={true}
+            />
+          );
+        })}
+      </FileListContainer>
+    )}
+    {((isSmallScreen && !!urlParamId) || !isSmallScreen) && (
       <FileContentContainer>
         {determineContentViewer(
           selectedItemId,
