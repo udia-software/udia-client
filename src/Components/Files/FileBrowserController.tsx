@@ -67,11 +67,14 @@ class FileBrowserController extends Component<IProps, IState> {
 
   public async componentDidUpdate(prevProps: IProps) {
     let triggerSetStructure = false;
+
     // is there a new draft item?
     const newDrafts = Object.keys(this.props.draftItems).filter(
       id => !(id in prevProps.draftItems)
     );
     triggerSetStructure = triggerSetStructure || newDrafts.length > 0;
+
+    // is there a new processed item?
     if (triggerSetStructure) {
       this.setFileStructureState();
     }
@@ -92,11 +95,11 @@ class FileBrowserController extends Component<IProps, IState> {
     } = this.props;
     return (
       <FileBrowserView
-        rawItems={rawItems}
         processedItems={processedItems}
         draftItems={draftItems}
+        rawItems={rawItems}
         fileStructure={structure}
-        clickedItemId={selectedItemId}
+        selectedItemId={selectedItemId}
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
       />
@@ -154,6 +157,7 @@ class FileBrowserController extends Component<IProps, IState> {
     let nextMSDatetime: number | undefined;
     try {
       const { dispatch, client, user } = this.props;
+      dispatch(setStatus("loading", "Fetching items..."));
       const params: Partial<IGetItemsParams> = {
         limit,
         username: user.username,
@@ -162,7 +166,8 @@ class FileBrowserController extends Component<IProps, IState> {
       };
       const response = await client.query<IGetItemsResponseData>({
         query: GET_ITEMS_QUERY,
-        variables: { params }
+        variables: { params },
+        fetchPolicy: "network-only"
       });
       const { getItems } = response.data;
       dispatch(upsertRawItems(getItems.items));
@@ -175,9 +180,13 @@ class FileBrowserController extends Component<IProps, IState> {
         const createdAts = getItems.items.map(item => item.createdAt);
         nextMSDatetime = Math.max(...createdAts);
       }
+      dispatch(clearStatus());
     } catch (err) {
       // tslint:disable-next-line:no-console
       console.error(err);
+      this.props.dispatch(
+        setStatus("error", err.message || "Failed to get items!")
+      );
     }
     return nextMSDatetime;
   };
@@ -230,7 +239,8 @@ class FileBrowserController extends Component<IProps, IState> {
       processedItems,
       draftItems,
       user,
-      structure
+      structure,
+      selectedItemId
     } = this.props;
     const directory = user.username;
     const draftItemIds = Object.keys(draftItems).reduce(
@@ -261,6 +271,9 @@ class FileBrowserController extends Component<IProps, IState> {
     }, draftItemIds || []);
     const fileStructureIds = userItemIds.sort(this.itemIdCompareFunction);
     dispatch(setStructure(directory, fileStructureIds));
+    if (!selectedItemId) {
+      dispatch(setSelectedItemId(fileStructureIds[0]));
+    }
   };
 
   private itemIdCompareFunction = (a: string, b: string) => {

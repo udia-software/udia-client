@@ -1,10 +1,24 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { ChangeEventHandler, MouseEventHandler, RefObject } from "react";
+import React, {
+  ChangeEventHandler,
+  FocusEventHandler,
+  MouseEventHandler,
+  RefObject
+} from "react";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import { MutedSpan, NoteMarkdownContent, ViewNoteTitle } from "./NotesShared";
 
+const NoteEditorLoadingGrid = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-areas: "note-editor";
+`;
+
 const NoteFileEditorContainer = styled.div`
+  grid-area: note-editor;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -43,34 +57,53 @@ const ProcessDraftButton = styled(Button)`
   width: 8em;
 `;
 
-const TogglePreviewButton = styled(Button)`
-  margin: auto;
-  padding: 0.3em 0.1em;
-  width: 8em;
+const DiscardDraftButton = styled(ProcessDraftButton)`
+  border-color: ${props => props.theme.red};
+`;
+
+const SaveDraftButton = styled(ProcessDraftButton)`
+  border-color: ${props => props.theme.green};
 `;
 
 interface IProps {
+  loading: boolean;
+  loadingText?: string;
   isPreview: boolean;
   hasDraft: boolean;
   titleValue: string;
   contentValue: string;
   handleTogglePreview: MouseEventHandler<HTMLElement>;
+  handleDraftFocus: FocusEventHandler<HTMLTextAreaElement>;
   handleDraftChange: ChangeEventHandler<HTMLTextAreaElement>;
   handleDiscardDraft: MouseEventHandler<HTMLElement>;
-  contentEditorRef: RefObject<HTMLTextAreaElement>;
+  handleSaveDraft: MouseEventHandler<HTMLElement>;
+  handleDeleteNote: MouseEventHandler<HTMLElement>;
+  titleRef: RefObject<HTMLTextAreaElement>;
+  contentRef: RefObject<HTMLTextAreaElement>;
 }
 
 const NoteFileEditorView = ({
+  loading,
+  loadingText,
   isPreview,
   hasDraft,
   titleValue,
   contentValue,
-  handleTogglePreview,
   handleDraftChange,
+  handleDraftFocus,
+  handleTogglePreview,
   handleDiscardDraft,
-  contentEditorRef
+  handleSaveDraft,
+  handleDeleteNote,
+  titleRef,
+  contentRef
 }: IProps) => (
-  <div style={{ height: "100%" }}>
+  <NoteEditorLoadingGrid>
+    <GridTemplateLoadingOverlay
+      gridAreaName="note-editor"
+      loading={loading}
+      loadingText={loadingText}
+    />
     <NoteFileEditorContainer>
       {isPreview ? (
         <ViewNoteTitle>
@@ -79,9 +112,11 @@ const NoteFileEditorView = ({
       ) : (
         <EditNoteTitle
           name="title"
+          innerRef={titleRef}
           value={titleValue}
           placeholder="Untitled"
           onChange={handleDraftChange}
+          onFocus={handleDraftFocus}
         />
       )}
       {isPreview ? (
@@ -95,26 +130,30 @@ const NoteFileEditorView = ({
       ) : (
         <EditNoteContent
           name="content"
-          autoFocus={true}
-          innerRef={contentEditorRef}
+          innerRef={contentRef}
           value={contentValue}
           placeholder={`- What is meaningful to you?\n- What do you need to remember for later?`}
           onChange={handleDraftChange}
+          onFocus={handleDraftFocus}
         />
       )}
       <EditorActions>
         {hasDraft && (
-          <ProcessDraftButton onClick={handleDiscardDraft}>
+          <DiscardDraftButton onClick={handleDiscardDraft}>
             <FontAwesomeIcon icon="trash" /> Discard Draft
-          </ProcessDraftButton>
+          </DiscardDraftButton>
         )}
         {hasDraft && (
-          <ProcessDraftButton>
+          <SaveDraftButton onClick={handleSaveDraft}>
             <FontAwesomeIcon icon="save" /> Save Draft
-          </ProcessDraftButton>
+          </SaveDraftButton>
         )}
-
-        <TogglePreviewButton onClick={handleTogglePreview}>
+        {!hasDraft && (
+          <DiscardDraftButton onClick={handleDeleteNote}>
+            <FontAwesomeIcon icon="trash" /> Delete Note
+          </DiscardDraftButton>
+        )}
+        <ProcessDraftButton onClick={handleTogglePreview}>
           {isPreview ? (
             <span>
               <FontAwesomeIcon icon="pencil-alt" /> Edit Note
@@ -124,10 +163,10 @@ const NoteFileEditorView = ({
               <FontAwesomeIcon icon="eye" /> Preview Note
             </span>
           )}
-        </TogglePreviewButton>
+        </ProcessDraftButton>
       </EditorActions>
     </NoteFileEditorContainer>
-  </div>
+  </NoteEditorLoadingGrid>
 );
 
 export default NoteFileEditorView;

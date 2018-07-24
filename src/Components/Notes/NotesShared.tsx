@@ -4,6 +4,10 @@ import gql from "graphql-tag";
 import ReactMarkdown from "react-markdown";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
 import styled from "../AppStyles";
+import {
+  DELETE_ITEM_MUTATION,
+  IDeleteItemResponseData
+} from "../Files/ItemFileShared";
 import { ThemedLink } from "../Helpers/ThemedLinkAnchor";
 
 export const ViewNoteTitle = styled.h1`
@@ -166,35 +170,4 @@ const GET_ITEM_QUERY = gql`
 `;
 interface IGetItemResponseData {
   getItem: Item;
-}
-
-const DELETE_ITEM_MUTATION = gql`
-  mutation DeleteItemMutation($id: ID!, $childrenParams: ItemPaginationInput) {
-    deleteItem(id: $id) {
-      uuid
-      content
-      contentType
-      encItemKey
-      user {
-        uuid
-        username
-        pubVerifyKey
-      }
-      deleted
-      parent {
-        uuid
-      }
-      children(params: $childrenParams) {
-        count
-        items {
-          uuid
-        }
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-interface IDeleteItemResponseData {
-  deleteItem: Item;
 }

@@ -33,7 +33,6 @@ export const GET_ITEMS_QUERY = gql`
     }
   }
 `;
-
 export interface IGetItemsParams {
   username: string; // Filter items by username (or null for orphaned by deleted user)
   parentId: string; // Filter items by parentID (or null for root)
@@ -45,10 +44,114 @@ export interface IGetItemsParams {
   sort: "createdAt" | "updatedAt"; // pretty much always leave this as createdAt
   order: "DESC" | "ASC"; // Order items Pby? (Defaults to DESC)
 }
-
 export interface IGetItemsResponseData {
   getItems: {
     count: number;
     items: Item[];
   };
+}
+
+export const CREATE_ITEM_MUTATION = gql`
+  mutation CreateItemMutation($params: CreateItemInput!) {
+    createItem(params: $params) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export interface ICreateItemInputParams {
+  content: string;
+  contentType: string;
+  encItemKey?: string;
+  parentId?: string;
+}
+export interface ICreateItemMutationResponse {
+  createItem: Item;
+}
+
+export const UPDATE_ITEM_MUTATION = gql`
+  mutation UpdateItemMutation($id: ID!, $params: UpdateItemInput!) {
+    updateItem(id: $id, params: $params) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export interface IUpdateItemInput {
+  content?: string;
+  contentType?: string;
+  encItemKey?: string;
+  parentId?: string;
+}
+export interface IUpdateItemMutationResponse {
+  updateItem: Item;
+}
+
+export const DELETE_ITEM_MUTATION = gql`
+  mutation DeleteItemMutation($id: ID!, $childrenParams: ItemPaginationInput) {
+    deleteItem(id: $id) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children(params: $childrenParams) {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export interface IDeleteItemResponseData {
+  deleteItem: Item;
 }
