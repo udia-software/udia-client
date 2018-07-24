@@ -322,6 +322,11 @@ export const DirectoryView = ({
               // catch all error state
               return <SimpleLoader key={id} loading={true} />;
             })}
+            {fileStructure[dirName].length === 0 && (
+              <li>
+                <MutedSpan>No Files</MutedSpan>
+              </li>
+            )}
           </FilesList>
         )}
       </FilesItem>
