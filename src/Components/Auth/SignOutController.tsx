@@ -7,7 +7,6 @@ import {
   confirmSignOut
 } from "../../Modules/Reducers/Auth/Actions";
 import { clearDraftItems } from "../../Modules/Reducers/DraftItems/Actions";
-import { clearNotesData } from "../../Modules/Reducers/Notes/Actions";
 import { clearProcessedItems } from "../../Modules/Reducers/ProcessedItems/Actions";
 import { clearRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
@@ -72,7 +71,6 @@ class SignOutController extends Component<IProps> {
     if (confirmSignOutVal) {
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
-      dispatch(clearNotesData());
       dispatch(clearProcessedItems());
       dispatch(clearRawItems());
       dispatch(clearDraftItems());

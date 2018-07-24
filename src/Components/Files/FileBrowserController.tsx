@@ -3,6 +3,7 @@ import { ApolloClient } from "apollo-client";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import CryptoManager from "../../Modules/Crypto/CryptoManager";
@@ -29,7 +30,7 @@ import {
   IGetItemsResponseData
 } from "./ItemFileShared";
 
-const { lgScrnBrkPx } = BaseTheme;
+const { smScrnBrkPx } = BaseTheme;
 
 interface IProps {
   dispatch: Dispatch;
@@ -44,8 +45,9 @@ interface IProps {
 }
 
 interface IState {
-  isLargeScreen: boolean;
+  isSmallScreen: boolean;
   cryptoManager: CryptoManager | null;
+  redirectToId?: string;
 }
 
 class FileBrowserController extends Component<IProps, IState> {
@@ -54,7 +56,7 @@ class FileBrowserController extends Component<IProps, IState> {
     document.title = "File Browser - UDIA";
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
-      isLargeScreen: window.innerWidth >= lgScrnBrkPx,
+      isSmallScreen: window.innerWidth < smScrnBrkPx,
       cryptoManager
     };
   }
@@ -93,6 +95,10 @@ class FileBrowserController extends Component<IProps, IState> {
       draftItems,
       structure
     } = this.props;
+    const { isSmallScreen, redirectToId } = this.state;
+    if (isSmallScreen && redirectToId) {
+      return <Redirect to={`/file/${redirectToId}`} push={true} />;
+    }
     return (
       <FileBrowserView
         processedItems={processedItems}
@@ -100,6 +106,7 @@ class FileBrowserController extends Component<IProps, IState> {
         rawItems={rawItems}
         fileStructure={structure}
         selectedItemId={selectedItemId}
+        isSmallScreen={isSmallScreen}
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
       />
@@ -108,14 +115,18 @@ class FileBrowserController extends Component<IProps, IState> {
 
   protected handleResizeEvent = () =>
     this.setState({
-      isLargeScreen: window.innerWidth >= lgScrnBrkPx
+      isSmallScreen: window.innerWidth < smScrnBrkPx
     });
 
   protected handleClickItemEvent = (id: string) => () => {
     this.props.dispatch(setSelectedItemId(id));
+    const { isSmallScreen } = this.state;
+    if (isSmallScreen) {
+      this.setState({ redirectToId: id });
+    }
   };
 
-  protected handleClickNewNote = (id: string) => () => {
+  protected handleClickNewNote = (parentId: string) => () => {
     const newDraftId = `${Date.now()}`;
     this.props.dispatch(
       upsertDraftItem(
@@ -126,10 +137,14 @@ class FileBrowserController extends Component<IProps, IState> {
           content: "",
           noteType: "markdown"
         },
-        id
+        parentId
       )
     );
     this.props.dispatch(setSelectedItemId(newDraftId));
+    const { isSmallScreen } = this.state;
+    if (isSmallScreen) {
+      this.setState({ redirectToId: newDraftId });
+    }
   };
 
   private cryptoManagerCheck() {

@@ -95,9 +95,6 @@ class Header extends Component<IProps> {
               <StyledSubTitleLink to="/file" activeClassName={activeClassName}>
                 Files
               </StyledSubTitleLink>
-              <StyledSubTitleLink to="/note" activeClassName={activeClassName}>
-                Secret Notes
-              </StyledSubTitleLink>
               <StyledSubTitleLink to="/auth" activeClassName={activeClassName}>
                 {selfUsername ? selfUsername : "ERR"}
               </StyledSubTitleLink>

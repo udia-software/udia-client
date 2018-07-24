@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import styled from "../AppStyles";
+import { Button } from "../Helpers/Button";
 import FieldErrors from "../Helpers/FieldErrors";
 import { HorizontalLine, MutedSpan } from "../Notes/NotesShared";
 
@@ -20,12 +21,14 @@ interface IProps {
   itemId: string;
   rawItem?: Item;
   processedItemPayload?: ProcessedItemPayload;
+  handleDeleteItem: MouseEventHandler<HTMLElement>;
 }
 
 const RawItemEditorView = ({
   itemId,
   rawItem,
-  processedItemPayload
+  processedItemPayload,
+  handleDeleteItem
 }: IProps) => (
   <RawItemEditorContainer>
     <span style={{ fontSize: "1.5em" }}>{itemId}</span>
@@ -43,6 +46,7 @@ const RawItemEditorView = ({
         <FieldErrors errors={processedItemPayload.errors || []} />
       </div>
     )}
+    <Button onClick={handleDeleteItem}>Delete Item</Button>
     <HorizontalLine />
     <MutedSpan>Raw Item:</MutedSpan>
     {rawItem ? (
