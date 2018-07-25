@@ -3,8 +3,19 @@ import React from "react";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
+import styled from "../AppStyles";
+import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
+import UdiaStatement from "../Helpers/StatementGenerator";
 import NoteFileEditorController from "./NoteFileEditorController";
 import RawItemEditorController from "./RawItemEditorController";
+
+const IterimContentState = styled.div`
+  display: grid;
+  place-content: center;
+  grid-template-areas: "iterim-content";
+  width: 100%;
+  height: 100%;
+`;
 
 export const determineContentViewer = (
   id: string | undefined,
@@ -12,7 +23,7 @@ export const determineContentViewer = (
   draftItems: IDraftItemsState,
   rawItems: IRawItemsState
 ) => {
-  if (id) {
+  if (typeof id !== "undefined") {
     if (id in processedItems) {
       const pip = processedItems[id];
       switch (pip.contentType) {
@@ -37,7 +48,15 @@ export const determineContentViewer = (
       return <RawItemEditorController itemId={id} />;
     }
   }
-  return <NoteFileEditorController />;
+  return (
+    <IterimContentState>
+      <GridTemplateLoadingOverlay
+        gridAreaName="interim-content"
+        loading={true}
+        loadingText={UdiaStatement()}
+      />
+    </IterimContentState>
+  );
 };
 
 export const GET_ITEMS_QUERY = gql`

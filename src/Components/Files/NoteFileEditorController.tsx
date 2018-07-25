@@ -353,7 +353,7 @@ class NoteFileEditorController extends Component<
         : this.contentTextareaRef.current;
     if (ref) {
       const curFocusId = document.activeElement.id;
-      if (ref.id !== curFocusId) {
+      if (curFocusId !== "search-input" && ref.id !== curFocusId) {
         ref.focus();
       }
     }

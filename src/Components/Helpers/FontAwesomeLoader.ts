@@ -14,6 +14,7 @@ import {
   faPencilAlt,
   faPlus,
   faSave,
+  faSearch,
   faSpinner,
   faTrash,
   faUser,
@@ -40,6 +41,7 @@ const loadFontAwesomeIcons = () => {
   library.add(faPencilAlt); // alternative pencil (for editor icon)
   library.add(faTrash); // trash can for discarding drafts
   library.add(faSave); // save icon for committing drafts to server
+  library.add(faSearch); // search icon
 };
 
 export default loadFontAwesomeIcons;
