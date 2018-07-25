@@ -339,12 +339,13 @@ export const DirectoryView = ({
 const FileBrowserContainer = styled.div.attrs<{ smScrnTemplateArea: string }>(
   {}
 )`
-  width: 99%;
+  width: 100%;
   height: 100%;
   max-width: 100vw;
   display: grid;
   @media only screen and (max-width: ${props =>
     props.theme.smScrnBrkPx - 1}px) {
+    justify-items: stretch;
     grid-template-areas: "${props => props.smScrnTemplateArea}";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;

@@ -115,6 +115,7 @@ const NoteFileEditorView = ({
         <EditNoteTitle
           id="edit-note-title"
           key="edit-note-title"
+          rows={1}
           name="title"
           innerRef={titleRef}
           value={titleValue}
