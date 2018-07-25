@@ -231,7 +231,7 @@ interface IDirectoryViewProps {
   rawItems: IRawItemsState;
   fileStructure: { [uuid: string]: string[] };
   searchValue?: string;
-  clickedItemId?: string;
+  selectedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote?: (id: string) => MouseEventHandler<HTMLElement>;
   open: boolean;
@@ -248,7 +248,7 @@ export const DirectoryView = ({
   rawItems,
   fileStructure,
   searchValue,
-  clickedItemId,
+  selectedItemId,
   handleClickItemEvent,
   handleClickNewNote,
   open = false,
@@ -291,14 +291,13 @@ export const DirectoryView = ({
                   case "note": {
                     if (pip.processedContent) {
                       const { title, noteType, content } = pip.processedContent;
-                      // check if selected draft for item
                       const itemClicked =
-                        clickedItemId === id ||
+                        selectedItemId === id ||
                         !!(
-                          clickedItemId &&
-                          draftItems[clickedItemId] &&
-                          draftItems[clickedItemId].uuid &&
-                          draftItems[clickedItemId].uuid === id
+                          selectedItemId &&
+                          draftItems[selectedItemId] &&
+                          draftItems[selectedItemId].uuid &&
+                          draftItems[selectedItemId].uuid === id
                         );
                       return (
                         <NoteItemView
@@ -324,7 +323,7 @@ export const DirectoryView = ({
                   case "note": {
                     const { title, noteType, content } = dip.draftContent;
                     const itemClicked =
-                      clickedItemId === id || clickedItemId === dip.uuid;
+                      selectedItemId === id || selectedItemId === dip.uuid;
                     return (
                       <NoteItemView
                         key={id}
@@ -348,7 +347,7 @@ export const DirectoryView = ({
                 return (
                   <NoteItemView
                     key={id}
-                    itemClicked={clickedItemId === id}
+                    itemClicked={selectedItemId === id}
                     title={ri.uuid}
                     count={0}
                     type={ri.contentType || "deleted"}
@@ -467,7 +466,7 @@ export const FileBrowserView = ({
             draftItems={draftItems}
             rawItems={rawItems}
             fileStructure={{ ["Search Results"]: searchResults }}
-            clickedItemId={selectedItemId}
+            selectedItemId={selectedItemId}
             handleClickItemEvent={handleClickItemEvent}
             open={true}
             searchValue={searchValue}
@@ -483,7 +482,7 @@ export const FileBrowserView = ({
                 draftItems={draftItems}
                 rawItems={rawItems}
                 fileStructure={fileStructure}
-                clickedItemId={selectedItemId}
+                selectedItemId={selectedItemId}
                 handleClickItemEvent={handleClickItemEvent}
                 handleClickNewNote={handleClickNewNote}
                 isSmallScreen={isSmallScreen}

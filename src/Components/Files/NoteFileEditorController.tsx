@@ -127,6 +127,7 @@ class NoteFileEditorController extends Component<
 
   protected handleTogglePreview: MouseEventHandler<HTMLElement> = e => {
     e.preventDefault();
+    window.scrollTo(0, 0);
     this.setState({ isPreview: !this.state.isPreview });
   };
 
@@ -141,7 +142,7 @@ class NoteFileEditorController extends Component<
         timestamp: Date.now(),
         content: `Discarded draft '${(draftPayload.contentType === "note" &&
           draftPayload.draftContent.title) ||
-          "Untitled"}'`
+          "Untitled"}'.`
       })
     );
     const newStructure = [...structure[draftPayload.parentId]];
@@ -247,6 +248,10 @@ class NoteFileEditorController extends Component<
         } = mutationResponse.data as ICreateItemMutationResponse;
         item = createItem;
       }
+      this.setState({
+        loading: false,
+        loadingText: undefined
+      });
       dispatch(upsertRawItem(item));
       dispatch(
         upsertProcessedItem(
@@ -265,10 +270,6 @@ class NoteFileEditorController extends Component<
       if (draftIdx >= 0) {
         updatedStructure.splice(draftIdx, 1);
       }
-      this.setState({
-        loading: false,
-        loadingText: undefined
-      });
       dispatch(setStructure(currentDraft.parentId, updatedStructure));
       dispatch(clearDraftItem(draftId));
       dispatch(
@@ -277,7 +278,7 @@ class NoteFileEditorController extends Component<
           timestamp: item.updatedAt,
           content: `${
             currentDraft.uuid ? "Updated" : "Created"
-          } note '${currentDraft.draftContent.title || "Untitled"}'`
+          } note '${currentDraft.draftContent.title || "Untitled"}'.`
         })
       );
       dispatch(setSelectedItemId(item.uuid));
@@ -324,7 +325,7 @@ class NoteFileEditorController extends Component<
         addAlert({
           type: "success",
           timestamp: deleteItem.updatedAt,
-          content: "Successfully deleted item."
+          content: `Deleted item '${deleteItem.uuid}'.`
         })
       );
       dispatch(setStructure(dirId, updatedStructure));
@@ -334,13 +335,13 @@ class NoteFileEditorController extends Component<
       );
       dispatch(setSelectedItemId(updatedStructure[0]));
     } catch (err) {
-      const { errors } = parseGraphQLError(err, "Failed deleting note!");
+      const { errors } = parseGraphQLError(err, "Failed deleting item!");
       this.setState({ loading: false, loadingText: undefined });
       this.props.dispatch(
         addAlert({
           type: "error",
           timestamp: Date.now(),
-          content: errors[0] || "Failed deleting note!"
+          content: errors[0] || "Failed deleting item!"
         })
       );
     }

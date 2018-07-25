@@ -63,7 +63,7 @@ class RawItemEditorController extends Component<WithApolloClient<IProps>> {
         addAlert({
           type: "success",
           timestamp: deleteItem.updatedAt,
-          content: "Successfully deleted item."
+          content: `Deleted item '${deleteItem.uuid}'.`
         })
       );
       dispatch(setStructure(dirId, updatedStructure));
@@ -73,12 +73,12 @@ class RawItemEditorController extends Component<WithApolloClient<IProps>> {
       );
       dispatch(setSelectedItemId(updatedStructure[0]));
     } catch (err) {
-      const { errors } = parseGraphQLError(err, "Failed to delete item!");
+      const { errors } = parseGraphQLError(err, "Failed deleting item!");
       this.props.dispatch(
         addAlert({
           type: "error",
           timestamp: Date.now(),
-          content: errors[0] || "Failed to delete item!"
+          content: errors[0] || "Failed deleting item!"
         })
       );
     }

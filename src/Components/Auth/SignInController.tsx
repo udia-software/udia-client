@@ -21,6 +21,7 @@ import {
   setBase64AK,
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
+import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignInView from "./SignInView";
@@ -181,8 +182,32 @@ class SignInController extends Component<IProps, IState>
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
-      dispatch(setBase64MK(Buffer.from(derivedBufferOutput.mk).toString("base64")));
-      dispatch(setBase64AK(Buffer.from(derivedBufferOutput.ak).toString("base64")));
+      dispatch(
+        addAlert({
+          type: "success",
+          timestamp: Date.now(),
+          content: `Welcome back, ${user.username}.`
+        })
+      );
+      const emailVerified = user.emails.reduce(
+        (acc, cur) => acc || cur.verified,
+        false
+      );
+      if (!emailVerified) {
+        dispatch(
+          addAlert({
+            type: "error",
+            timestamp: Date.now(),
+            content: `Please verify your email!`
+          })
+        );
+      }
+      dispatch(
+        setBase64MK(Buffer.from(derivedBufferOutput.mk).toString("base64"))
+      );
+      dispatch(
+        setBase64AK(Buffer.from(derivedBufferOutput.ak).toString("base64"))
+      );
       dispatch(setAuthData({ user, jwt }));
     } catch (err) {
       const { errors, emailErrors, passwordErrors } = parseGraphQLError(
