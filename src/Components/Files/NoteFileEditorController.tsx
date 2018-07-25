@@ -26,6 +26,7 @@ import {
   addAlert,
   setSelectedItemId
 } from "../../Modules/Reducers/Transient/Actions";
+import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import {
   CREATE_ITEM_MUTATION,
   DELETE_ITEM_MUTATION,
@@ -33,8 +34,7 @@ import {
   IDeleteItemResponseData,
   IUpdateItemMutationResponse,
   UPDATE_ITEM_MUTATION
-} from "../Files/ItemFileShared";
-import parseGraphQLError from "../Helpers/ParseGraphQLError";
+} from "./ItemFileShared";
 import NoteFileEditorView from "./NoteFileEditorView";
 
 interface IProps {

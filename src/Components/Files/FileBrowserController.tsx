@@ -9,7 +9,7 @@ import { upsertDraftItem } from "../../Modules/Reducers/DraftItems/Actions";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { upsertProcessedItem } from "../../Modules/Reducers/ProcessedItems/Actions";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
-import { upsertRawItems } from "../../Modules/Reducers/RawItems/Actions";
+import { upsertRawItem, upsertRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { ISecretsState } from "../../Modules/Reducers/Secrets/Reducer";
 import { setStructure } from "../../Modules/Reducers/Structure/Actions";
@@ -23,9 +23,14 @@ import {
 import { BaseTheme } from "../AppStyles";
 import { FileBrowserView } from "./FileBrowserViews";
 import {
+  GET_ITEM_QUERY,
   GET_ITEMS_QUERY,
+  IGetItemResponseData,
   IGetItemsParams,
-  IGetItemsResponseData
+  IGetItemsResponseData,
+  IItemSubscriptionParams,
+  IItemSubscriptionPayload,
+  ITEM_SUBSCRIPTION
 } from "./ItemFileShared";
 
 const { smScrnBrkPx } = BaseTheme;
@@ -52,6 +57,7 @@ class FileBrowserController extends Component<
   WithApolloClient<IProps>,
   IState
 > {
+  private itemObserver: ZenObservable.Subscription | null = null;
   constructor(props: WithApolloClient<IProps>) {
     super(props);
     document.title = "File Browser - UDIA";
@@ -66,7 +72,7 @@ class FileBrowserController extends Component<
     window.addEventListener("resize", this.handleResizeEvent);
     await this.queryAndProcessUserItemsPage();
     this.setFileStructureState();
-    
+    await this.subscribeToUserItems();
   }
 
   public async componentDidUpdate(prevProps: IProps) {
@@ -75,15 +81,38 @@ class FileBrowserController extends Component<
         params: { id: urlParamId }
       },
       selectedItemId,
-      draftItems
+      draftItems,
+      processedItems,
+      rawItems
     } = this.props;
 
-    let triggerSetStructure = false;
-    // is there a new draft item?
-    const newDrafts = Object.keys(draftItems).filter(
-      id => !(id in prevProps.draftItems)
-    );
-    triggerSetStructure = triggerSetStructure || newDrafts.length > 0;
+    // have draft lengths changed
+    let triggerSetStructure =
+      Object.keys(prevProps.draftItems).length !==
+      Object.keys(draftItems).length;
+
+    if (!triggerSetStructure) {
+      // have processed items count changed
+      const newPIKeys = Object.keys(processedItems);
+      const oldPIKeys = Object.keys(prevProps.processedItems);
+      triggerSetStructure = newPIKeys.length !== oldPIKeys.length;
+    }
+    if (!triggerSetStructure) {
+      // have raw items count changed
+      const newRIKeys = Object.keys(rawItems);
+      const oldRIKeys = Object.keys(prevProps.rawItems);
+      triggerSetStructure = newRIKeys.length !== oldRIKeys.length;
+    }
+    if (!triggerSetStructure) {
+      // have processed items content changed
+      Object.keys(processedItems).forEach(id => {
+        const oldPI = prevProps.processedItems[id];
+        const newPI = processedItems[id];
+        triggerSetStructure =
+          triggerSetStructure || oldPI.processedAt !== newPI.processedAt;
+      });
+    }
+
     if (triggerSetStructure) {
       this.setFileStructureState();
     }
@@ -112,6 +141,9 @@ class FileBrowserController extends Component<
   public componentWillUnmount() {
     window.removeEventListener("resize", this.handleResizeEvent);
     this.props.dispatch(clearStatus());
+    if (this.itemObserver) {
+      this.itemObserver.unsubscribe();
+    }
   }
 
   public render() {
@@ -131,7 +163,7 @@ class FileBrowserController extends Component<
       if (redirectToId === true && urlParamId) {
         return <Redirect to="/file" />;
       }
-      if (redirectToId && redirectToId !== true &&  !urlParamId) {
+      if (redirectToId && redirectToId !== true && !urlParamId) {
         return <Redirect to={`/file/${redirectToId}`} push={true} />;
       }
     }
@@ -243,18 +275,86 @@ class FileBrowserController extends Component<
     return nextMSDatetime;
   };
 
+  private subscribeToUserItems = async () => {
+    try {
+      const { client, user } = this.props;
+      const params: IItemSubscriptionParams = { userId: user.uuid };
+      const newItemObserver = client
+        .subscribe<{ data: IItemSubscriptionPayload }>({
+          query: ITEM_SUBSCRIPTION,
+          variables: { params }
+        })
+        .subscribe(async payload => {
+          if (payload && payload.data) {
+            const {
+              itemSubscription: { uuid, type, timestamp }
+            } = payload.data;
+            const queryResponse = await client.query<IGetItemResponseData>({
+              query: GET_ITEM_QUERY,
+              variables: { id: uuid },
+              fetchPolicy: "network-only"
+            });
+            const { getItem } = queryResponse.data;
+            this.props.dispatch(upsertRawItem(getItem));
+            await this.processItem(getItem);
+            const processedItem = this.props.processedItems[getItem.uuid];
+            let content = "";
+            switch (type) {
+              case "ITEM_CREATED":
+                content = "Created ";
+                break;
+              case "ITEM_UPDATED":
+                content = "Updated ";
+                break;
+              case "ITEM_DELETED": {
+                content = "Deleted ";
+                const dirId = (getItem.parent && getItem.parent.uuid) || user.username;
+                const updatedStructure = [...this.props.structure[dirId]];
+                const delIdx = updatedStructure.indexOf(getItem.uuid);
+                if (delIdx >= 0) {
+                  updatedStructure.splice(delIdx, 1);
+                  this.props.dispatch(setStructure(dirId, updatedStructure));
+                }
+                break;
+              }
+            }
+            switch (processedItem.contentType) {
+              case "note":
+                content += `note "${processedItem.processedContent.title ||
+                  "Untitled"}".`;
+                break;
+              case "directory":
+                content += `directory "${
+                  processedItem.processedContent.dirName
+                }".`;
+                break;
+              default:
+                content += `item "${getItem.uuid}".`;
+                break;
+            }
+            this.props.dispatch(
+              addAlert({ type: "success", timestamp, content })
+            );
+          }
+        });
+      this.itemObserver = newItemObserver;
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error(err);
+    }
+  };
+
   private processItem = async (item: Item, bypassCache?: boolean) => {
     const { dispatch, user, processedItems, secrets } = this.props;
     const { cryptoManager } = this.state;
     try {
       if (
-        // item has been deleted or
-        item.deleted || // we've procesed this item already
-        (item.uuid in processedItems &&
-          // and the item hasn't been updated since we last processed it
-          processedItems[item.uuid].processedAt > item.updatedAt &&
-          // and we are not bypassing the cache
-          !bypassCache)
+        // we've procesed this item already
+        item.uuid in processedItems &&
+        // and the item hasn't been updated since we last processed it
+        processedItems[item.uuid].processedAt > item.updatedAt &&
+        // and we are not bypassing the cache
+        !bypassCache
       ) {
         return;
       } else if (!cryptoManager) {
@@ -263,6 +363,9 @@ class FileBrowserController extends Component<
       } else if (!secrets.akB64 || !secrets.mkB64) {
         this.props.dispatch(setStatus("error", "No AK or MK!"));
         throw new Error("Encryption secrets not set! Please re-authenticate.");
+      } else if (item.deleted) {
+        dispatch(upsertProcessedItem(item.uuid, Date.now(), null, null));
+        return;
       }
       switch (item.contentType) {
         case "note":
@@ -287,7 +390,6 @@ class FileBrowserController extends Component<
   private setFileStructureState = () => {
     const {
       dispatch,
-      rawItems,
       processedItems,
       draftItems,
       user,
@@ -309,8 +411,8 @@ class FileBrowserController extends Component<
       },
       structure[directory] || []
     );
-    const userItemIds = Object.keys(rawItems).reduce((acc: string[], uuid) => {
-      const rawItem = rawItems[uuid];
+    const userItemIds = Object.keys(this.props.rawItems).reduce((acc: string[], uuid) => {
+      const rawItem = this.props.rawItems[uuid];
       if (
         rawItem &&
         !rawItem.deleted &&

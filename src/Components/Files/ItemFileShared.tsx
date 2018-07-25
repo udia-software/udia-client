@@ -3,7 +3,7 @@ import React from "react";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
-import NoteFileEditorController from "../Notes/NoteFileEditorController";
+import NoteFileEditorController from "./NoteFileEditorController";
 import RawItemEditorController from "./RawItemEditorController";
 
 export const determineContentViewer = (
@@ -89,6 +89,37 @@ export interface IGetItemsResponseData {
     count: number;
     items: Item[];
   };
+}
+
+export const GET_ITEM_QUERY = gql`
+  query GetItemQuery($id: ID!, $childrenParams: ItemPaginationInput) {
+    getItem(id: $id) {
+      uuid
+      content
+      contentType
+      encItemKey
+      user {
+        uuid
+        username
+        pubVerifyKey
+      }
+      deleted
+      parent {
+        uuid
+      }
+      children(params: $childrenParams) {
+        count
+        items {
+          uuid
+        }
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export interface IGetItemResponseData {
+  getItem: Item;
 }
 
 export const CREATE_ITEM_MUTATION = gql`
@@ -194,4 +225,28 @@ export const DELETE_ITEM_MUTATION = gql`
 `;
 export interface IDeleteItemResponseData {
   deleteItem: Item;
+}
+
+export const ITEM_SUBSCRIPTION = gql`
+  subscription ItemSubscription($params: ItemSubscriptionInput!) {
+    itemSubscription(params: $params) {
+      uuid
+      type
+      timestamp
+      meta
+    }
+  }
+`;
+export interface IItemSubscriptionParams {
+  ancestorId?: string;
+  parentId?: string;
+  userId?: string;
+}
+export interface IItemSubscriptionPayload {
+  itemSubscription: {
+    uuid: string;
+    type: "ITEM_CREATED" | "ITEM_UPDATED" | "ITEM_DELETED";
+    timestamp: number;
+    meta: string | null;
+  };
 }

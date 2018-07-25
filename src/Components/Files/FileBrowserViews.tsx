@@ -7,8 +7,8 @@ import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
 import SimpleLoader from "../Helpers/SimpleLoader";
-import { MutedSpan } from "../Notes/NotesShared";
 import { determineContentViewer } from "./ItemFileShared";
+import { MutedSpan } from "./NotesShared";
 
 const FilesList = styled.ul`
   list-style-type: none;
@@ -139,7 +139,7 @@ const renderFileTypeExtension = (noteType: string) => {
     case "note":
       return ".note";
     default:
-      return noteType;
+      return `.${noteType}`;
   }
 };
 
