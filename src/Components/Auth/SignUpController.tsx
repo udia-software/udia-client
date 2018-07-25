@@ -20,6 +20,7 @@ import {
   setFormUsername
 } from "../../Modules/Reducers/Auth/Actions";
 import { setBase64AK, setBase64MK } from "../../Modules/Reducers/Secrets/Actions";
+import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignUpView from "./SignUpView";
@@ -354,6 +355,11 @@ class SignUpController extends Component<IProps, IState>
 
       // Set up the client given the successful response
       this.setState({ loadingText: "Setting up client..." });
+      dispatch(addAlert({
+        type: "success",
+        timestamp: Date.now(),
+        content: `UDIA welcomes you, ${user.username}!`
+      }));
       dispatch(setBase64MK(Buffer.from(mk).toString("base64")));
       dispatch(setBase64AK(Buffer.from(ak).toString("base64")));
       dispatch(setAuthData({ jwt, user }));

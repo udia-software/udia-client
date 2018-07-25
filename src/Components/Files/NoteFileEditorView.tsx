@@ -18,6 +18,10 @@ const ViewNoteTitle = styled.h1`
 
 const NoteMarkdownContent = styled(ReactMarkdown)`
   flex: 10 1 100%;
+  img {
+    max-width: 100%;
+    height: auto;
+  }
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;

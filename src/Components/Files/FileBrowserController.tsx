@@ -411,16 +411,16 @@ class FileBrowserController extends Component<
             }
             switch (processedItem.contentType) {
               case "note":
-                content += `note "${processedItem.processedContent.title ||
-                  "Untitled"}".`;
+                content += `note '${processedItem.processedContent.title ||
+                  "Untitled"}'.`;
                 break;
               case "directory":
-                content += `directory "${
+                content += `directory '${
                   processedItem.processedContent.dirName
-                }".`;
+                }'.`;
                 break;
               default:
-                content += `item "${getItem.uuid}".`;
+                content += `item '${getItem.uuid}'.`;
                 break;
             }
             this.props.dispatch(

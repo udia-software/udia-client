@@ -307,7 +307,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "success",
-              content: `Added email ${meta}.`,
+              content: `Added email '${meta}'.`,
               timestamp
             })
           );
@@ -316,7 +316,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "success",
-              content: `Sent verification to ${meta}.`,
+              content: `Sent verification to '${meta}'.`,
               timestamp
             })
           );
@@ -325,7 +325,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "success",
-              content: `Verified ${meta}.`,
+              content: `Verified email '${meta}'.`,
               timestamp
             })
           );
@@ -334,7 +334,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "success",
-              content: `Primary email set to ${meta}.`,
+              content: `Primary email set to '${meta}'.`,
               timestamp
             })
           );
@@ -343,7 +343,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "success",
-              content: `Removed email ${meta}.`,
+              content: `Removed email '${meta}'.`,
               timestamp
             })
           );
@@ -361,7 +361,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "error",
-              content: `Master password hard reset requested.`,
+              content: `Master password hard reset requested!`,
               timestamp
             })
           );
@@ -370,7 +370,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "error",
-              content: `Master password hard reset.`,
+              content: `Master password hard reset!`,
               timestamp
             })
           );
@@ -379,7 +379,7 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
           dispatch(
             addAlert({
               type: "error",
-              content: `User ${uuid} deleted.`,
+              content: `User '${uuid}' deleted.`,
               timestamp
             })
           );

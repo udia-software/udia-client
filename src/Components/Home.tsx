@@ -28,7 +28,9 @@ class Home extends Component<IProps> {
     return (
       <HomeContainer>
         <h1>UDIA</h1>
-        {user && <p>Welcome, {user.username}.</p>}
+        {user && (
+          <p style={{ textAlign: "center" }}>Welcome, {user.username}.</p>
+        )}
         <h3 style={{ padding: 0, margin: "0 0 1em 0" }}>
           This iteration of UDIA is:
         </h3>
@@ -40,13 +42,14 @@ class Home extends Component<IProps> {
           </ul>
           and a materialization of the universal API.
         </div>
-        <p style={{ textAlign: "center", maxWidth: "18em" }}>
-          <ThemedLink to="/health">
-            Ensure your browser supports the cryptographic algorithms.
-          </ThemedLink>
-          <br />
+        <div style={{ textAlign: "center", maxWidth: "18em" }}>
+          <p>
+            <ThemedLink to="/health">
+              Ensure your browser supports the cryptographic algorithms.
+            </ThemedLink>
+          </p>
           We are all agents of the universal dream.
-        </p>
+        </div>
       </HomeContainer>
     );
   }

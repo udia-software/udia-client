@@ -11,6 +11,7 @@ import { clearProcessedItems } from "../../Modules/Reducers/ProcessedItems/Actio
 import { clearRawItems } from "../../Modules/Reducers/RawItems/Actions";
 import { clearSecretsData } from "../../Modules/Reducers/Secrets/Actions";
 import { clearStructure } from "../../Modules/Reducers/Structure/Actions";
+import { addAlert } from "../../Modules/Reducers/Transient/Actions";
 import { Button } from "../Helpers/Button";
 import { ThemedLink } from "../Helpers/ThemedLinkAnchor";
 import {
@@ -24,19 +25,21 @@ import {
 interface IProps {
   dispatch: Dispatch;
   confirmSignOutVal: boolean;
+  user: FullUser | null;
 }
 
 class SignOutController extends Component<IProps> {
   constructor(props: IProps) {
     super(props);
     document.title = "Sign Out - UDIA";
-    const { confirmSignOutVal, dispatch } = props;
-    this.handleSignOut({ confirmSignOutVal, dispatch });
   }
 
-  public componentWillReceiveProps(nextProps: IProps) {
-    const { confirmSignOutVal, dispatch } = nextProps;
-    this.handleSignOut({ confirmSignOutVal, dispatch });
+  public componentDidMount() {
+    this.processSignOut();
+  }
+
+  public componentDidUpdate() {
+    this.processSignOut();
   }
 
   public handleSubmit: FormEventHandler<HTMLFormElement> = e => {
@@ -61,14 +64,18 @@ class SignOutController extends Component<IProps> {
     );
   }
 
-  private handleSignOut = ({
-    confirmSignOutVal,
-    dispatch
-  }: {
-    confirmSignOutVal: boolean;
-    dispatch: Dispatch;
-  }) => {
+  private processSignOut = () => {
+    const { dispatch, user, confirmSignOutVal } = this.props;
     if (confirmSignOutVal) {
+      if (user) {
+        dispatch(
+          addAlert({
+            type: "info",
+            timestamp: Date.now(),
+            content: `Goodbye, ${user.username}.`
+          })
+        );
+      }
       dispatch(clearSecretsData());
       dispatch(clearAuthData());
       dispatch(clearProcessedItems());
@@ -80,6 +87,7 @@ class SignOutController extends Component<IProps> {
 }
 
 const mapStateToProps = (state: IRootState) => ({
+  user: state.auth.authUser,
   confirmSignOutVal: state.auth.confirmSignOut
 });
 

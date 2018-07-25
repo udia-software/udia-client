@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { withTheme } from "styled-components";
 import { IRootState } from "../Modules/ConfigureReduxStore";
 import {
   isAuthenticated as selectIsAuth,
@@ -60,65 +59,49 @@ const HeaderSubMenu = styled.div`
 `;
 
 interface IProps {
-  isAuthenticated: boolean;
-  selfUsername: string | false;
+  isAuthenticated?: boolean;
+  selfUsername?: string | false;
 }
 
-class Header extends Component<IProps> {
-  public render() {
-    const { isAuthenticated, selfUsername } = this.props;
+const Header = ({ isAuthenticated, selfUsername }: IProps) => (
+  <HeaderContainer>
+    <StyledTitleLink to="/" activeClassName={activeClassName}>
+      UDIA
+    </StyledTitleLink>
+    <HeaderSubMenu>
+      {!isAuthenticated && (
+        <Fragment>
+          <StyledSubTitleLink to="/sign-in" activeClassName={activeClassName}>
+            Sign In
+          </StyledSubTitleLink>
+          <StyledSubTitleLink to="/sign-up" activeClassName={activeClassName}>
+            Sign Up
+          </StyledSubTitleLink>
+        </Fragment>
+      )}
+      {isAuthenticated && (
+        <Fragment>
+          <StyledSubTitleLink to="/file" activeClassName={activeClassName}>
+            Files
+          </StyledSubTitleLink>
+          <StyledSubTitleLink to="/auth" activeClassName={activeClassName}>
+            {selfUsername ? selfUsername : "ERR"}
+          </StyledSubTitleLink>
+        </Fragment>
+      )}
+    </HeaderSubMenu>
+  </HeaderContainer>
+);
 
-    return (
-      <HeaderContainer>
-        <StyledTitleLink to="/" activeClassName={activeClassName}>
-          UDIA
-        </StyledTitleLink>
-        <HeaderSubMenu>
-          {!isAuthenticated && (
-            <Fragment>
-              <StyledSubTitleLink
-                to="/sign-in"
-                activeClassName={activeClassName}
-              >
-                Sign In
-              </StyledSubTitleLink>
-              <StyledSubTitleLink
-                to="/sign-up"
-                activeClassName={activeClassName}
-              >
-                Sign Up
-              </StyledSubTitleLink>
-            </Fragment>
-          )}
-          {isAuthenticated && (
-            <Fragment>
-              <StyledSubTitleLink to="/file" activeClassName={activeClassName}>
-                Files
-              </StyledSubTitleLink>
-              <StyledSubTitleLink to="/auth" activeClassName={activeClassName}>
-                {selfUsername ? selfUsername : "ERR"}
-              </StyledSubTitleLink>
-            </Fragment>
-          )}
-        </HeaderSubMenu>
-      </HeaderContainer>
-    );
-  }
-}
-
-function mapStateToProps(state: IRootState) {
-  return {
-    isAuthenticated: selectIsAuth(state),
-    selfUsername: selectSelfUsername(state)
-  };
-}
+const mapStateToProps = (state: IRootState) => ({
+  isAuthenticated: selectIsAuth(state),
+  selfUsername: selectSelfUsername(state)
+});
 
 // Pure: false here is necessary to get the NavLinks active styles working
-export default withTheme(
-  connect(
-    mapStateToProps,
-    null,
-    null,
-    { pure: false }
-  )(Header)
-);
+export default connect(
+  mapStateToProps,
+  null,
+  null,
+  { pure: false }
+)(Header);
