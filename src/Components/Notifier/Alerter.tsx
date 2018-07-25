@@ -6,7 +6,7 @@ import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { removeAlert } from "../../Modules/Reducers/Transient/Actions";
 import styled from "../AppStyles";
-import { MutedSpan } from "../Notes/NotesShared";
+import { MutedSpan } from "../Files/NotesShared";
 
 const DISMISS_ALERT_MS = 5000;
 const TRANSITION_TIMEOUT_MS = 200;

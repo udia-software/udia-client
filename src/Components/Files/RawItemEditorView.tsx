@@ -3,7 +3,7 @@ import React, { MouseEventHandler } from "react";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
 import FieldErrors from "../Helpers/FieldErrors";
-import { HorizontalLine, MutedSpan } from "../Notes/NotesShared";
+import { HorizontalLine, MutedSpan } from "./NotesShared";
 
 const RawItemEditorContainer = styled.div`
   display: flex;
