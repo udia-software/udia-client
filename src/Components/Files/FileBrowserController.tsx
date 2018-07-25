@@ -314,6 +314,7 @@ class FileBrowserController extends Component<
                 if (delIdx >= 0) {
                   updatedStructure.splice(delIdx, 1);
                   this.props.dispatch(setStructure(dirId, updatedStructure));
+                  this.props.dispatch(setSelectedItemId(updatedStructure[0]));
                 }
                 break;
               }
@@ -372,6 +373,7 @@ class FileBrowserController extends Component<
           const note = await cryptoManager.decryptNoteFromItem(
             item,
             user.encSecretKey,
+            user.pubVerifyKey,
             secrets.akB64,
             secrets.mkB64
           );

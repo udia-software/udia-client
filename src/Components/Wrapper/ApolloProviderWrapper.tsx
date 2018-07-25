@@ -242,10 +242,6 @@ const RefreshingApolloProviderWrapper = (WrappedComponent: ReactNode) => {
         this.userObserver = newUserObserver;
       } catch (err) {
         console.error(err);
-        // If the server is down, just clear the observer?
-        if (this.userObserver) {
-          this.userObserver.unsubscribe();
-        }
       }
     }
 

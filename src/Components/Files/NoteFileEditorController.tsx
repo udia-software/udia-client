@@ -92,7 +92,6 @@ class NoteFileEditorController extends Component<
       const { title, content } = draft.draftContent;
       return (
         <NoteFileEditorView
-          key={draftId}
           loading={loading}
           loadingText={loadingText}
           hasDraft={draftId in draftItems}
@@ -164,7 +163,7 @@ class NoteFileEditorController extends Component<
         ...draftPayload.draftContent,
         [e.currentTarget.name]: e.currentTarget.value
       };
-      dispatch(setSelectedItemId(draftId));
+      // dispatch(setSelectedItemId(draftId));
       dispatch(
         upsertDraftItem(
           draftId,
@@ -346,12 +345,17 @@ class NoteFileEditorController extends Component<
 
   private processEditorFocus = () => {
     const { focusOn } = this.state;
-    // const curFocusOn = document.activeElement.getAttribute("name");
-    if (this.contentTextareaRef.current && focusOn !== "title") {
-      this.contentTextareaRef.current.focus();
-    }
-    if (this.titleTextareaRef.current && focusOn === "title") {
-      this.titleTextareaRef.current.focus();
+    const ref =
+      focusOn === "title"
+        ? this.titleTextareaRef.current
+        : this.contentTextareaRef.current;
+    if (ref) {
+      const curFocusId = document.activeElement.id;
+      // tslint:disable-next-line:no-console
+      console.log(`${curFocusId} !== ${ref.id} is ${curFocusId !== ref.id}`)
+      if (ref.id !== curFocusId) {
+        ref.focus();
+      }
     }
   };
 

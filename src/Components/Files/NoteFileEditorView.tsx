@@ -113,6 +113,8 @@ const NoteFileEditorView = ({
         </ViewNoteTitle>
       ) : (
         <EditNoteTitle
+          id="edit-note-title"
+          key="edit-note-title"
           name="title"
           innerRef={titleRef}
           value={titleValue}
@@ -131,6 +133,8 @@ const NoteFileEditorView = ({
         </div>
       ) : (
         <EditNoteContent
+          id="edit-note-content"
+          key="edit-note-content"
           name="content"
           innerRef={contentRef}
           value={contentValue}
@@ -150,11 +154,12 @@ const NoteFileEditorView = ({
             <FontAwesomeIcon icon="save" /> Save Draft
           </SaveDraftButton>
         )}
-        {!hasDraft && isRaw && (
-          <DiscardDraftButton onClick={handleDeleteNote}>
-            <FontAwesomeIcon icon="trash" /> Delete Note
-          </DiscardDraftButton>
-        )}
+        {!hasDraft &&
+          isRaw && (
+            <DiscardDraftButton onClick={handleDeleteNote}>
+              <FontAwesomeIcon icon="trash" /> Delete Note
+            </DiscardDraftButton>
+          )}
         <ProcessDraftButton onClick={handleTogglePreview}>
           {isPreview ? (
             <span>
