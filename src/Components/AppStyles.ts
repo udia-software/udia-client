@@ -32,7 +32,7 @@ const StyledComponents = styledComponents as styledComponents.ThemedStyledCompon
 const { default: styled, css, injectGlobal, keyframes } = StyledComponents;
 const ThemeProvider: React.ComponentClass = StyledComponents.ThemeProvider;
 
-export const BaseTheme = {
+const BaseTheme = {
   smScrnBrkPx: 768,
   lgScrnBrkPx: 992,
   purple: "rebeccapurple",
@@ -94,5 +94,36 @@ const LightTheme: IThemeInterface = {
   inputBaseBackgroundColor: "hsla(0, 0%, 0%, 0.05)"
 };
 
+// Transition styles
+const TransitionTimeoutMS = 200;
+const TransitionClassname = "fade";
+const TransitionCSS = css`
+  &.${TransitionClassname + "-enter"} {
+    opacity: 0.01;
+  }
+  &.${TransitionClassname + "-enter-active"} {
+    opacity: 1;
+    transition: opacity ${TransitionTimeoutMS}ms ease-in;
+  }
+  &.${TransitionClassname + "-exit"} {
+    opacity: 1;
+  }
+  &.${TransitionClassname + "-exit-active"} {
+    opacity: 0.01;
+    transition: opacity ${TransitionTimeoutMS}ms ease-in;
+  }
+`;
+
 export default styled;
-export { css, injectGlobal, keyframes, ThemeProvider, DarkTheme, LightTheme };
+export {
+  css,
+  injectGlobal,
+  keyframes,
+  ThemeProvider,
+  BaseTheme,
+  DarkTheme,
+  LightTheme,
+  TransitionTimeoutMS,
+  TransitionClassname,
+  TransitionCSS
+};

@@ -5,10 +5,40 @@ import React, {
   MouseEventHandler,
   RefObject
 } from "react";
+import ReactMarkdown from "react-markdown";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
-import { MutedSpan, NoteMarkdownContent, ViewNoteTitle } from "./NotesShared";
+import MutedSpan from "../Helpers/MutedSpan";
+
+const ViewNoteTitle = styled.h1`
+  padding: 0;
+  margin: 0;
+`;
+
+const NoteMarkdownContent = styled(ReactMarkdown)`
+  flex: 10 1 100%;
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: ${props => props.theme.panelBackgroundColor};
+  }
+  a {
+    cursor: pointer;
+    transition: color 0.1s ease;
+    text-decoration: none;
+    color: ${props => props.theme.intermediateColor};
+    &:hover {
+      color: ${props => props.theme.primaryColor};
+    }
+  }
+`;
+
+const NoteTextContent = styled.div`
+  flex: 10 1 100%;
+  margin-top: 1em;
+  white-space: pre-wrap;
+`;
 
 const NoteEditorLoadingGrid = styled.div`
   width: 100%;
@@ -27,6 +57,7 @@ const NoteFileEditorContainer = styled.div`
 
 const EditNoteTitle = styled.textarea`
   background: transparent;
+  font-family: monospace;
   color: ${props => props.theme.primaryColor};
   border: 0px;
   padding: 0;
@@ -38,6 +69,7 @@ const EditNoteTitle = styled.textarea`
 
 const EditNoteContent = styled.textarea`
   background: transparent;
+  font-family: monospace;
   color: ${props => props.theme.primaryColor};
   border: 0px;
   padding: 0;
@@ -71,6 +103,7 @@ interface IProps {
   isRaw: boolean;
   isPreview: boolean;
   hasDraft: boolean;
+  noteType: "text" | "markdown";
   titleValue: string;
   contentValue: string;
   handleTogglePreview: MouseEventHandler<HTMLElement>;
@@ -89,6 +122,7 @@ const NoteFileEditorView = ({
   isRaw,
   isPreview,
   hasDraft,
+  noteType,
   titleValue,
   contentValue,
   handleDraftChange,
@@ -127,7 +161,11 @@ const NoteFileEditorView = ({
       {isPreview ? (
         <div style={{ height: "100%" }}>
           {contentValue ? (
-            <NoteMarkdownContent source={contentValue} />
+            noteType === "markdown" ? (
+              <NoteMarkdownContent source={contentValue} />
+            ) : (
+              <NoteTextContent>{contentValue}</NoteTextContent>
+            )
           ) : (
             <MutedSpan>No Content</MutedSpan>
           )}

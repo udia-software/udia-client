@@ -91,7 +91,7 @@ class NoteFileEditorController extends Component<
     const { loading, loadingText, isPreview } = this.state;
 
     if (draft.contentType === "note") {
-      const { title, content } = draft.draftContent;
+      const { title, content, noteType } = draft.draftContent;
       return (
         <NoteFileEditorView
           loading={loading}
@@ -99,6 +99,7 @@ class NoteFileEditorController extends Component<
           hasDraft={draftId in draftItems}
           isPreview={isPreview}
           isRaw={!!draft.uuid}
+          noteType={noteType}
           titleValue={title}
           contentValue={content}
           handleTogglePreview={this.handleTogglePreview}
@@ -264,12 +265,12 @@ class NoteFileEditorController extends Component<
       if (draftIdx >= 0) {
         updatedStructure.splice(draftIdx, 1);
       }
-      dispatch(setStructure(currentDraft.parentId, updatedStructure));
-      dispatch(clearDraftItem(draftId));
       this.setState({
         loading: false,
         loadingText: undefined
       });
+      dispatch(setStructure(currentDraft.parentId, updatedStructure));
+      dispatch(clearDraftItem(draftId));
       dispatch(
         addAlert({
           type: "success",
