@@ -34,14 +34,14 @@ type IProps = RouteComponentProps<IBaseProps> & IBaseProps;
 
 class Status extends Component<IProps> {
   public componentWillMount() {
-    const { dispatch, user, appJustLoaded } = this.props;
+    const { dispatch, user, appJustLoaded, location } = this.props;
     if (appJustLoaded) {
       if (user) {
         const emailVerified = user.emails.reduce(
           (acc, cur) => acc || cur.verified,
           false
         );
-        if (!emailVerified) {
+        if (!emailVerified && !location.pathname.startsWith("/verify-email")) {
           dispatch(
             addAlert({
               type: "error",
