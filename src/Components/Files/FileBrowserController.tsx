@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEventHandler, Component } from "react";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { connect } from "react-redux";
 import { match, Redirect } from "react-router";
@@ -9,7 +9,10 @@ import { upsertDraftItem } from "../../Modules/Reducers/DraftItems/Actions";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { upsertProcessedItem } from "../../Modules/Reducers/ProcessedItems/Actions";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
-import { upsertRawItem, upsertRawItems } from "../../Modules/Reducers/RawItems/Actions";
+import {
+  upsertRawItem,
+  upsertRawItems
+} from "../../Modules/Reducers/RawItems/Actions";
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { ISecretsState } from "../../Modules/Reducers/Secrets/Reducer";
 import { setStructure } from "../../Modules/Reducers/Structure/Actions";
@@ -51,6 +54,8 @@ interface IState {
   isSmallScreen: boolean;
   cryptoManager: CryptoManager | null;
   redirectToId?: string | boolean;
+  searchValue: string;
+  searchResults: string[];
 }
 
 class FileBrowserController extends Component<
@@ -64,7 +69,9 @@ class FileBrowserController extends Component<
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
       isSmallScreen: window.innerWidth < smScrnBrkPx,
-      cryptoManager
+      cryptoManager,
+      searchValue: "",
+      searchResults: []
     };
   }
 
@@ -157,7 +164,12 @@ class FileBrowserController extends Component<
       draftItems,
       structure
     } = this.props;
-    const { isSmallScreen, redirectToId } = this.state;
+    const {
+      isSmallScreen,
+      redirectToId,
+      searchValue,
+      searchResults
+    } = this.state;
 
     if (isSmallScreen) {
       if (redirectToId === true && urlParamId) {
@@ -174,10 +186,13 @@ class FileBrowserController extends Component<
         draftItems={draftItems}
         rawItems={rawItems}
         fileStructure={structure}
+        searchValue={searchValue}
+        searchResults={searchResults}
         selectedItemId={selectedItemId}
         isSmallScreen={isSmallScreen}
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
+        handleChangeSearchValue={this.handleChangeSearchValue}
       />
     );
   }
@@ -214,6 +229,80 @@ class FileBrowserController extends Component<
     if (isSmallScreen) {
       this.setState({ redirectToId: newDraftId });
     }
+  };
+
+  protected handleChangeSearchValue: ChangeEventHandler<
+    HTMLInputElement
+  > = e => {
+    const searchValue = e.currentTarget.value;
+    const { processedItems, draftItems } = this.props;
+    const searchResults: string[] = [];
+    if (searchValue) {
+      const lcSearchValue = searchValue.toLowerCase();
+      searchResults.push(
+        ...Object.keys(draftItems).reduce((acc: string[], draftId) => {
+          const di = draftItems[draftId];
+          if (di) {
+            switch (di.contentType) {
+              case "note":
+                if (
+                  di.draftContent.content
+                    .toLowerCase()
+                    .includes(lcSearchValue) ||
+                  di.draftContent.title.toLowerCase().includes(lcSearchValue)
+                ) {
+                  acc.push(draftId);
+                }
+                break;
+              case "directory":
+                if (
+                  di.draftContent.dirName.toLowerCase().includes(lcSearchValue)
+                ) {
+                  acc.push(draftId);
+                }
+                break;
+            }
+          }
+          return acc;
+        }, [])
+      );
+      searchResults.push(
+        ...Object.keys(processedItems).reduce((acc: string[], uuid) => {
+          const pi = processedItems[uuid];
+          if (pi) {
+            switch (pi.contentType) {
+              case "note":
+                if (
+                  pi.processedContent.content
+                    .toLowerCase()
+                    .includes(lcSearchValue) ||
+                  pi.processedContent.title
+                    .toLowerCase()
+                    .includes(lcSearchValue)
+                ) {
+                  acc.push(uuid);
+                }
+                break;
+              case "directory":
+                if (
+                  pi.processedContent.dirName
+                    .toLowerCase()
+                    .includes(lcSearchValue)
+                ) {
+                  acc.push(uuid);
+                }
+                break;
+            }
+          }
+          return acc;
+        }, [])
+      );
+      searchResults.sort(this.itemIdCompareFunction);
+      this.props.dispatch(setSelectedItemId(searchResults[0]));
+    } else {
+      this.setFileStructureState()
+    }
+    this.setState({ searchValue, searchResults });
   };
 
   private cryptoManagerCheck() {
@@ -308,7 +397,8 @@ class FileBrowserController extends Component<
                 break;
               case "ITEM_DELETED": {
                 content = "Deleted ";
-                const dirId = (getItem.parent && getItem.parent.uuid) || user.username;
+                const dirId =
+                  (getItem.parent && getItem.parent.uuid) || user.username;
                 const updatedStructure = [...this.props.structure[dirId]];
                 const delIdx = updatedStructure.indexOf(getItem.uuid);
                 if (delIdx >= 0) {
@@ -413,18 +503,21 @@ class FileBrowserController extends Component<
       },
       structure[directory] || []
     );
-    const userItemIds = Object.keys(this.props.rawItems).reduce((acc: string[], uuid) => {
-      const rawItem = this.props.rawItems[uuid];
-      if (
-        rawItem &&
-        !rawItem.deleted &&
-        uuid in processedItems &&
-        acc.indexOf(uuid) < 0
-      ) {
-        acc.push(uuid);
-      }
-      return acc;
-    }, draftItemIds || []);
+    const userItemIds = Object.keys(this.props.rawItems).reduce(
+      (acc: string[], uuid) => {
+        const rawItem = this.props.rawItems[uuid];
+        if (
+          rawItem &&
+          !rawItem.deleted &&
+          uuid in processedItems &&
+          acc.indexOf(uuid) < 0
+        ) {
+          acc.push(uuid);
+        }
+        return acc;
+      },
+      draftItemIds || []
+    );
     const fileStructureIds = userItemIds.sort(this.itemIdCompareFunction);
     dispatch(setStructure(directory, fileStructureIds));
     if (!selectedItemId) {
