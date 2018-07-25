@@ -5,12 +5,14 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { removeAlert } from "../../Modules/Reducers/Transient/Actions";
-import styled from "../AppStyles";
-import { MutedSpan } from "../Files/NotesShared";
+import styled, {
+  TransitionClassname,
+  TransitionCSS,
+  TransitionTimeoutMS
+} from "../AppStyles";
+import MutedSpan from "../Helpers/MutedSpan";
 
 const DISMISS_ALERT_MS = 5000;
-const TRANSITION_TIMEOUT_MS = 200;
-const TRANSITION_CLASSNAME = "alert";
 
 const AlertsContainer = styled.div`
   position: fixed;
@@ -22,6 +24,7 @@ const AlertsContainer = styled.div`
 const AlertContainer = styled.div.attrs<{
   type?: "info" | "success" | "error";
 }>({})`
+  ${TransitionCSS};
   top: 0;
   bottom: auto;
   left: auto;
@@ -54,20 +57,6 @@ const AlertContainer = styled.div.attrs<{
     }};
   background-color: ${props => props.theme.panelBackgroundColor};
   cursor: pointer;
-  &.${TRANSITION_CLASSNAME + "-enter"} {
-    opacity: 0.01;
-  }
-  &.${TRANSITION_CLASSNAME + "-enter-active"} {
-    opacity: 1;
-    transition: opacity ${TRANSITION_TIMEOUT_MS}ms ease-in;
-  }
-  &.${TRANSITION_CLASSNAME + "-exit"} {
-    opacity: 1;
-  }
-  &.${TRANSITION_CLASSNAME + "-exit-active"} {
-    opacity: 0.01;
-    transition: opacity ${TRANSITION_TIMEOUT_MS}ms ease-in;
-  }
 `;
 
 interface IProps {
@@ -97,8 +86,8 @@ class AlertWrapper extends Component<IProps> {
           {alerts.map((payload, idx) => (
             <CSSTransition
               key={payload.timestamp} // should be fine
-              timeout={TRANSITION_TIMEOUT_MS}
-              classNames={TRANSITION_CLASSNAME}
+              timeout={TransitionTimeoutMS}
+              classNames={TransitionClassname}
             >
               <AlertContainer
                 onClick={this.handleDismissAlertByIndex(idx)}

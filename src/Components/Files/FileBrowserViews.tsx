@@ -6,9 +6,9 @@ import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
+import MutedSpan from "../Helpers/MutedSpan";
 import SimpleLoader from "../Helpers/SimpleLoader";
 import { determineContentViewer } from "./ItemFileShared";
-import { MutedSpan } from "./NotesShared";
 
 const FilesList = styled.ul`
   list-style-type: none;
