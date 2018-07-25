@@ -77,10 +77,12 @@ class NoteFileEditorController extends Component<
 
   public componentDidMount() {
     this.processEditorFocus();
+    this.processTitleScrollHeight();
   }
 
   public componentDidUpdate() {
     this.processEditorFocus();
+    this.processTitleScrollHeight();
   }
 
   public render() {
@@ -351,10 +353,17 @@ class NoteFileEditorController extends Component<
         : this.contentTextareaRef.current;
     if (ref) {
       const curFocusId = document.activeElement.id;
-      // tslint:disable-next-line:no-console
-      console.log(`${curFocusId} !== ${ref.id} is ${curFocusId !== ref.id}`)
       if (ref.id !== curFocusId) {
         ref.focus();
+      }
+    }
+  };
+
+  private processTitleScrollHeight = () => {
+    const ref = this.titleTextareaRef.current;
+    if (ref) {
+      while (ref.scrollHeight > ref.clientHeight) {
+        ref.rows = ref.rows + 1;
       }
     }
   };
