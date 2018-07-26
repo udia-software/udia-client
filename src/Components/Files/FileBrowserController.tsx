@@ -78,7 +78,10 @@ class FileBrowserController extends Component<
   public async componentDidMount() {
     this.setFileStructureState();
     window.addEventListener("resize", this.handleResizeEvent);
-    await this.queryAndProcessUserItemsPage();
+    let nextPageMS: number | undefined;
+    do {
+      nextPageMS = await this.queryAndProcessUserItemsPage();
+    } while (nextPageMS);
     this.setFileStructureState();
     await this.subscribeToUserItems();
   }
