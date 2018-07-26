@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect, RouteComponentProps, withRouter } from "react-router";
@@ -20,6 +21,7 @@ const StatusContainer = styled.div`
   left: 0;
   bottom: 0;
   border: 1px solid ${props => props.theme.primaryColor};
+  background-color: ${props => props.theme.panelBackgroundColor};
   border-radius: 3px;
 `;
 
@@ -63,7 +65,12 @@ class Status extends Component<IProps> {
     return status ? (
       <StatusContainer>
         <SimpleLoader loading={status.type === "loading"} />
-        {status.content}
+        {status.type === "info" && <FontAwesomeIcon icon="info-circle" />}
+        {status.type === "success" && <FontAwesomeIcon icon="check-circle" />}
+        {status.type === "error" && (
+          <FontAwesomeIcon icon="exclamation-triangle" />
+        )}
+        {" " + status.content}
       </StatusContainer>
     ) : null;
   }

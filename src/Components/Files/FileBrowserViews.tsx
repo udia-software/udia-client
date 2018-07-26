@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DateTime } from "luxon";
 import React, { ChangeEventHandler, MouseEventHandler } from "react";
 import { IDraftItemsState } from "../../Modules/Reducers/DraftItems/Reducer";
 import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Reducer";
@@ -26,6 +27,8 @@ const FilesItem = styled.li`
 `;
 
 const ItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100%;
   cursor: pointer;
 `;
@@ -184,6 +187,7 @@ interface INoteItemViewProps {
   preview?: string;
   isDraft?: boolean;
   isRaw?: boolean;
+  createdAtString?: string;
   handleClickItemEvent: MouseEventHandler<HTMLElement>;
 }
 
@@ -195,6 +199,7 @@ const NoteItemView = ({
   preview,
   isDraft,
   isRaw,
+  createdAtString,
   handleClickItemEvent
 }: INoteItemViewProps) => (
   <FilesItem>
@@ -220,6 +225,7 @@ const NoteItemView = ({
         </ItemNameText>
       </ItemName>
       {preview && <MutedSpan>{preview}</MutedSpan>}
+      {createdAtString && <MutedSpan>Created on: {createdAtString}</MutedSpan>}
     </ItemContainer>
   </FilesItem>
 );
@@ -285,76 +291,83 @@ export const DirectoryView = ({
         {open && (
           <FilesList>
             {fileStructure[dirName].map(id => {
+              let noteItemProps: INoteItemViewProps | null = null;
+              // check if item has been processed
               if (processedItems[id]) {
                 const pip = processedItems[id];
                 switch (pip.contentType) {
                   case "note": {
-                    if (pip.processedContent) {
-                      const { title, noteType, content } = pip.processedContent;
-                      const itemClicked =
-                        selectedItemId === id ||
-                        !!(
-                          selectedItemId &&
-                          draftItems[selectedItemId] &&
-                          draftItems[selectedItemId].uuid &&
-                          draftItems[selectedItemId].uuid === id
-                        );
-                      return (
-                        <NoteItemView
-                          key={id}
-                          itemClicked={itemClicked}
-                          title={title}
-                          count={idToCountMap[id]}
-                          type={noteType}
-                          handleClickItemEvent={handleClickItemEvent(id)}
-                          preview={generateNotePreview(
-                            content,
-                            searchValue || isSmallScreen
-                          )}
-                        />
+                    const { title, noteType, content } = pip.processedContent;
+                    const itemClicked =
+                      selectedItemId === id ||
+                      !!(
+                        selectedItemId &&
+                        draftItems[selectedItemId] &&
+                        draftItems[selectedItemId].uuid &&
+                        draftItems[selectedItemId].uuid === id
                       );
-                    }
+                    noteItemProps = {
+                      itemClicked,
+                      title,
+                      count: idToCountMap[id],
+                      type: noteType,
+                      isRaw: false,
+                      handleClickItemEvent: handleClickItemEvent(id),
+                      preview: generateNotePreview(
+                        content,
+                        searchValue || isSmallScreen
+                      )
+                    };
+                    break;
                   }
                 }
               }
-              if (draftItems[id]) {
+              // fallthough, check if item has draft
+              if (!noteItemProps && draftItems[id]) {
                 const dip = draftItems[id];
                 switch (dip.contentType) {
                   case "note": {
                     const { title, noteType, content } = dip.draftContent;
                     const itemClicked =
                       selectedItemId === id || selectedItemId === dip.uuid;
-                    return (
-                      <NoteItemView
-                        key={id}
-                        itemClicked={itemClicked}
-                        title={title}
-                        count={idToCountMap[id]}
-                        type={noteType}
-                        isDraft={true}
-                        handleClickItemEvent={handleClickItemEvent(id)}
-                        preview={generateNotePreview(
-                          content,
-                          searchValue || isSmallScreen
-                        )}
-                      />
-                    );
+                    noteItemProps = {
+                      itemClicked,
+                      title,
+                      count: idToCountMap[id],
+                      type: noteType,
+                      isRaw: false,
+                      isDraft: true,
+                      handleClickItemEvent: handleClickItemEvent(id),
+                      preview: generateNotePreview(
+                        content,
+                        searchValue || isSmallScreen
+                      ),
+                      createdAtString: DateTime.fromMillis(
+                        parseInt(id, 10)
+                      ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)
+                    };
+                    break;
                   }
                 }
               }
+              // extend (or catch), add raw item values (like createdAtString)
               if (rawItems[id]) {
                 const ri = rawItems[id];
-                return (
-                  <NoteItemView
-                    key={id}
-                    itemClicked={selectedItemId === id}
-                    title={ri.uuid}
-                    count={0}
-                    type={ri.contentType || "deleted"}
-                    isRaw={true}
-                    handleClickItemEvent={handleClickItemEvent(id)}
-                  />
-                );
+                noteItemProps = {
+                  itemClicked: selectedItemId === id,
+                  title: ri.uuid,
+                  count: 0,
+                  type: ri.contentType || "deleted",
+                  isRaw: true,
+                  handleClickItemEvent: handleClickItemEvent(id),
+                  createdAtString: DateTime.fromMillis(
+                    ri.createdAt
+                  ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS),
+                  ...noteItemProps
+                };
+              }
+              if (noteItemProps) {
+                return <NoteItemView key={id} {...noteItemProps} />;
               }
               // catch all error state
               return <SimpleLoader key={id} loading={true} />;

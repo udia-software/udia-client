@@ -301,7 +301,7 @@ class FileBrowserController extends Component<
       searchResults.sort(this.itemIdCompareFunction);
       this.props.dispatch(setSelectedItemId(searchResults[0]));
     } else {
-      this.setFileStructureState()
+      this.setFileStructureState();
     }
     this.setState({ searchValue, searchResults });
   };
@@ -324,10 +324,10 @@ class FileBrowserController extends Component<
   }
 
   private queryAndProcessUserItemsPage = async (
-    fromMSDateTime: number = Date.now(),
+    fromMSDateTime: number = Math.ceil(Date.now() / 4500) * 4500, // ceil to future 45s increments
     bypassCache?: boolean
   ) => {
-    const limit = 6;
+    const limit = 4;
     let nextMSDatetime: number | undefined;
     try {
       const { dispatch, client, user } = this.props;
@@ -341,7 +341,7 @@ class FileBrowserController extends Component<
       const response = await client.query<IGetItemsResponseData>({
         query: GET_ITEMS_QUERY,
         variables: { params },
-        fetchPolicy: "network-only"
+        fetchPolicy: bypassCache ? "network-only" : "cache-first"
       });
       const { getItems } = response.data;
       dispatch(upsertRawItems(getItems.items));
@@ -386,7 +386,7 @@ class FileBrowserController extends Component<
             });
             const { getItem } = queryResponse.data;
             this.props.dispatch(upsertRawItem(getItem));
-            await this.processItem(getItem);
+            await this.processItem(getItem, true);
             const processedItem = this.props.processedItems[getItem.uuid];
             let content = "";
             switch (type) {
