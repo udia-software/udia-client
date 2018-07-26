@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DateTime } from "luxon";
 import React, {
   ChangeEventHandler,
   FocusEventHandler,
@@ -9,7 +10,25 @@ import ReactMarkdown from "react-markdown";
 import styled from "../AppStyles";
 import { Button } from "../Helpers/Button";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
+import HorizontalLine from "../Helpers/HorizontalLine";
 import MutedSpan from "../Helpers/MutedSpan";
+import { ThemedAnchor } from "../Helpers/ThemedLinkAnchor";
+
+const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
+  const elem = document.createElement("a");
+  const rawFile = new Blob([JSON.stringify(raw, null, 2)], {
+    type: "application/json"
+  });
+  elem.href = URL.createObjectURL(rawFile);
+  let filename = "Untitled";
+  if (type === "ENC" && (raw as Item).uuid) {
+    filename = (raw as Item).uuid;
+  } else if (type === "DEC" && (raw as DecryptedNote).title) {
+    filename = (raw as DecryptedNote).title;
+  }
+  elem.download = `${filename}.json`;
+  elem.click();
+};
 
 const ViewNoteTitle = styled.h1`
   padding: 0;
@@ -101,15 +120,22 @@ const SaveDraftButton = styled(ProcessDraftButton)`
   border-color: ${props => props.theme.green};
 `;
 
+const HiddenPointerAnchor = styled(ThemedAnchor)`
+  color: ${props => props.theme.backgroundColor};
+`;
+
 interface IProps {
   loading: boolean;
   loadingText?: string;
-  isRaw: boolean;
+  isEditing: boolean;
   isPreview: boolean;
   hasDraft: boolean;
   noteType: "text" | "markdown";
   titleValue: string;
   contentValue: string;
+  protocolVersion?: string;
+  rawNoteItem?: Item;
+  processedNoteItem?: ProcessedNotePayload;
   handleTogglePreview: MouseEventHandler<HTMLElement>;
   handleDraftFocus: FocusEventHandler<HTMLTextAreaElement>;
   handleDraftChange: ChangeEventHandler<HTMLTextAreaElement>;
@@ -123,12 +149,15 @@ interface IProps {
 const NoteFileEditorView = ({
   loading,
   loadingText,
-  isRaw,
+  isEditing,
   isPreview,
   hasDraft,
   noteType,
   titleValue,
   contentValue,
+  protocolVersion,
+  rawNoteItem,
+  processedNoteItem,
   handleDraftChange,
   handleDraftFocus,
   handleTogglePreview,
@@ -186,6 +215,49 @@ const NoteFileEditorView = ({
           onFocus={handleDraftFocus}
         />
       )}
+      {isPreview && rawNoteItem && !hasDraft ? (
+        <div style={{ width: "100%" }}>
+          <HorizontalLine />
+          {processedNoteItem && (
+            <span>
+              {"client processed on: "}
+              <MutedSpan>
+                {DateTime.fromMillis(
+                  processedNoteItem.processedAt
+                ).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)}
+              </MutedSpan>
+              {" • "}
+            </span>
+          )}
+          note last updated:{" "}
+          <MutedSpan>
+            {DateTime.fromMillis(rawNoteItem.updatedAt).toLocaleString(
+              DateTime.DATETIME_HUGE_WITH_SECONDS
+            )}
+          </MutedSpan>
+          <br />
+          <code>
+            ENC PROTO VER: {protocolVersion} {" • "}
+            <ThemedAnchor onClick={downloadRaw(rawNoteItem, "ENC")}>
+              DL ENC_RAW
+            </ThemedAnchor>
+            {processedNoteItem &&
+              processedNoteItem.processedContent && (
+                <span>
+                  {" • "}
+                  <HiddenPointerAnchor
+                    onClick={downloadRaw(
+                      processedNoteItem.processedContent,
+                      "DEC"
+                    )}
+                  >
+                    DL DEC_RAW
+                  </HiddenPointerAnchor>
+                </span>
+              )}
+          </code>
+        </div>
+      ) : null}
       <EditorActions>
         {hasDraft && (
           <DiscardDraftButton onClick={handleDiscardDraft}>
@@ -198,7 +270,7 @@ const NoteFileEditorView = ({
           </SaveDraftButton>
         )}
         {!hasDraft &&
-          isRaw && (
+          isEditing && (
             <DiscardDraftButton onClick={handleDeleteNote}>
               <FontAwesomeIcon icon="trash" /> Delete Note
             </DiscardDraftButton>

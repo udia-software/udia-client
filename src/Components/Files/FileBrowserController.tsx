@@ -207,10 +207,18 @@ class FileBrowserController extends Component<
     });
 
   protected handleClickItemEvent = (id: string) => () => {
-    this.props.dispatch(setSelectedItemId(id));
+    const { dispatch, draftItems } = this.props;
+    let redirectToId = id;
+    const existingDraft = draftItems[id];
+    if (existingDraft && existingDraft.uuid) {
+      dispatch(setSelectedItemId(existingDraft.uuid));
+      redirectToId = existingDraft.uuid;
+    } else {
+      dispatch(setSelectedItemId(id));
+    }
     const { isSmallScreen } = this.state;
     if (isSmallScreen) {
-      this.setState({ redirectToId: id });
+      this.setState({ redirectToId });
     }
   };
 
@@ -327,10 +335,10 @@ class FileBrowserController extends Component<
   }
 
   private queryAndProcessUserItemsPage = async (
-    fromMSDateTime: number = Math.ceil(Date.now() / 4500) * 4500, // ceil to future 45s increments
+    fromMSDateTime: number = Math.ceil(Date.now() / 45000) * 45000, // ceil to future 45s increments
+    limit: number = 4,
     bypassCache?: boolean
   ) => {
-    const limit = 4;
     let nextMSDatetime: number | undefined;
     try {
       const { dispatch, client, user } = this.props;
