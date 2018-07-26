@@ -87,21 +87,30 @@ class NoteFileEditorController extends Component<
 
   public render() {
     const [draftId, draft] = this.getCurrentDraft();
-    const { draftItems } = this.props;
+    const { draftItems, rawItems, processedItems } = this.props;
     const { loading, loadingText, isPreview } = this.state;
 
     if (draft.contentType === "note") {
+      const rawItem = draft.uuid ? rawItems[draft.uuid] : undefined;
+      const processedItem = draft.uuid
+        ? (processedItems[draft.uuid] as ProcessedNotePayload)
+        : undefined;
       const { title, content, noteType } = draft.draftContent;
+      const protocolVersion = rawItem && rawItem.content ? rawItem.content.split(":")[0] : undefined;
+
       return (
         <NoteFileEditorView
           loading={loading}
           loadingText={loadingText}
           hasDraft={draftId in draftItems}
           isPreview={isPreview}
-          isRaw={!!draft.uuid}
+          isEditing={!!draft.uuid}
           noteType={noteType}
           titleValue={title}
           contentValue={content}
+          protocolVersion={protocolVersion}
+          rawNoteItem={rawItem}
+          processedNoteItem={processedItem}
           handleTogglePreview={this.handleTogglePreview}
           handleDraftFocus={this.handleDraftFocus}
           handleDraftChange={this.handleDraftChange}
@@ -250,8 +259,10 @@ class NoteFileEditorController extends Component<
       }
       this.setState({
         loading: false,
-        loadingText: undefined
+        loadingText: undefined,
+        isPreview: true
       });
+      window.scrollTo(0, 0);
       dispatch(upsertRawItem(item));
       dispatch(
         upsertProcessedItem(
