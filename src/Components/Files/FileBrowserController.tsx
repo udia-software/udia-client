@@ -355,7 +355,7 @@ class FileBrowserController extends Component<
         nextMSDatetime = undefined;
       } else {
         const createdAts = getItems.items.map(item => item.createdAt);
-        nextMSDatetime = Math.max(...createdAts);
+        nextMSDatetime = Math.min(...createdAts);
       }
       dispatch(clearStatus());
     } catch (err) {
