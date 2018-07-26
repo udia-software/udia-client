@@ -2,14 +2,17 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
   faCheck,
+  faCheckCircle,
   faEllipsisV,
   faEnvelope,
+  faExclamationTriangle,
   faEye,
   faEyeSlash,
   faFile,
   faFileAlt,
   faFolder,
   faFolderOpen,
+  faInfoCircle,
   faKey,
   faPencilAlt,
   faPlus,
@@ -18,7 +21,7 @@ import {
   faSpinner,
   faTrash,
   faUser,
-  faUserSlash
+  faUserSlash,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Font awesome icons must be loaded before use in the app
@@ -42,6 +45,9 @@ const loadFontAwesomeIcons = () => {
   library.add(faTrash); // trash can for discarding drafts
   library.add(faSave); // save icon for committing drafts to server
   library.add(faSearch); // search icon
+  library.add(faInfoCircle); // info circle (status)
+  library.add(faExclamationTriangle); // exclaimation triangle (status)
+  library.add(faCheckCircle); // checkmark in circle (status)
 };
 
 export default loadFontAwesomeIcons;
