@@ -51,11 +51,13 @@ interface IProps {
 }
 
 interface IState {
+  loading: boolean;
   isSmallScreen: boolean;
   cryptoManager: CryptoManager | null;
   redirectToId?: string | boolean;
   searchValue: string;
   searchResults: string[];
+  closedFolder: { [structureId: string]: boolean };
 }
 
 class FileBrowserController extends Component<
@@ -68,14 +70,17 @@ class FileBrowserController extends Component<
     document.title = "File Browser - UDIA";
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
+      loading: true,
       isSmallScreen: window.innerWidth < smScrnBrkPx,
       cryptoManager,
       searchValue: "",
-      searchResults: []
+      searchResults: [],
+      closedFolder: {}
     };
   }
 
   public async componentDidMount() {
+    this.setState({ loading: true });
     this.setFileStructureState();
     window.addEventListener("resize", this.handleResizeEvent);
     let nextPageMS: number | undefined;
@@ -87,6 +92,7 @@ class FileBrowserController extends Component<
       );
     } while (nextPageMS);
     this.setFileStructureState();
+    this.setState({ loading: false });
     await this.subscribeToUserItems();
   }
 
@@ -174,10 +180,12 @@ class FileBrowserController extends Component<
       user
     } = this.props;
     const {
+      loading,
       isSmallScreen,
       redirectToId,
       searchValue,
-      searchResults
+      searchResults,
+      closedFolder
     } = this.state;
 
     if (isSmallScreen) {
@@ -190,6 +198,7 @@ class FileBrowserController extends Component<
     }
     return (
       <FileBrowserView
+        loading={loading}
         urlParamId={urlParamId}
         rootDirName={user.username}
         processedItems={processedItems}
@@ -198,6 +207,7 @@ class FileBrowserController extends Component<
         fileStructure={structure}
         searchValue={searchValue}
         searchResults={searchResults}
+        closedFolder={closedFolder}
         selectedItemId={selectedItemId}
         isSmallScreen={isSmallScreen}
         handleClickItemEvent={this.handleClickItemEvent}
@@ -214,9 +224,21 @@ class FileBrowserController extends Component<
     });
 
   protected handleClickItemEvent = (id: string) => () => {
-    const { dispatch, draftItems } = this.props;
+    const { dispatch, draftItems, structure } = this.props;
     let redirectToId = id;
     const existingDraft = draftItems[id];
+
+    if (id in structure) {
+      // is folder
+      this.setState({
+        closedFolder: {
+          ...this.state.closedFolder,
+          [id]: !this.state.closedFolder[id]
+        }
+      });
+      return;
+    }
+
     if (existingDraft && existingDraft.uuid) {
       dispatch(setSelectedItemId(existingDraft.uuid));
       redirectToId = existingDraft.uuid;
@@ -253,12 +275,7 @@ class FileBrowserController extends Component<
   protected handleClickNewDirectory = (parentId: string) => () => {
     const newDraftId = `${Date.now()}`;
     this.props.dispatch(
-      upsertDraftItem(
-        newDraftId,
-        "directory",
-        { dirName: "" },
-        parentId
-      )
+      upsertDraftItem(newDraftId, "directory", { dirName: "" }, parentId)
     );
     this.props.dispatch(setSelectedItemId(newDraftId));
   };
@@ -498,7 +515,12 @@ class FileBrowserController extends Component<
         secrets.mkB64
       );
       dispatch(
-        upsertProcessedItem(item.uuid, Date.now(), item.contentType, decryptedItem)
+        upsertProcessedItem(
+          item.uuid,
+          Date.now(),
+          item.contentType,
+          decryptedItem
+        )
       );
     } catch (err) {
       const errMsg = err.message || `Failed to decrypt item ${item.uuid}`;
@@ -556,7 +578,7 @@ class FileBrowserController extends Component<
       dispatch(setStructure(structureKey, fileStructureIds));
     });
     if (!selectedItemId) {
-      dispatch(setSelectedItemId(partialStructure[userRootDir][0]));
+      dispatch(setSelectedItemId((partialStructure[userRootDir] || [])[0]));
     }
   };
 

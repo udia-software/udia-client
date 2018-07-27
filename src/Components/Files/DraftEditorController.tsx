@@ -380,7 +380,7 @@ class DraftEditorController extends Component<
         loading: false,
         loadingText: undefined
       });
-      const updatedStructure = [...structure[dirId]];
+      const updatedStructure = [...(structure[dirId] || [])];
       const delIdx = updatedStructure.indexOf(deleteItem.uuid);
       if (delIdx >= 0) {
         updatedStructure.splice(delIdx, 1);
