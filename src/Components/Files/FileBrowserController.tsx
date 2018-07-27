@@ -256,7 +256,7 @@ class FileBrowserController extends Component<
       upsertDraftItem(
         newDraftId,
         "directory",
-        { dirName: "testnewdir" },
+        { dirName: "" },
         parentId
       )
     );
@@ -490,19 +490,16 @@ class FileBrowserController extends Component<
         dispatch(upsertProcessedItem(item.uuid, Date.now(), null, null));
         return;
       }
-      switch (item.contentType) {
-        case "note":
-          const note = await cryptoManager.decryptNoteFromItem(
-            item,
-            user.encSecretKey,
-            user.pubVerifyKey,
-            secrets.akB64,
-            secrets.mkB64
-          );
-          dispatch(
-            upsertProcessedItem(item.uuid, Date.now(), item.contentType, note)
-          );
-      }
+      const decryptedItem = await cryptoManager.decryptFromItem(
+        item,
+        user.encSecretKey,
+        user.pubVerifyKey,
+        secrets.akB64,
+        secrets.mkB64
+      );
+      dispatch(
+        upsertProcessedItem(item.uuid, Date.now(), item.contentType, decryptedItem)
+      );
     } catch (err) {
       const errMsg = err.message || `Failed to decrypt item ${item.uuid}`;
       dispatch(
@@ -514,46 +511,52 @@ class FileBrowserController extends Component<
   private setFileStructureState = () => {
     const {
       dispatch,
-      processedItems,
       draftItems,
       user,
       structure,
       selectedItemId
     } = this.props;
-    const directory = user.username;
-    const draftItemIds = Object.keys(draftItems).reduce(
-      (acc: string[], createdAt) => {
+    let partialStructure: { [structureId: string]: string[] } = {};
+    const userRootDir = user.username;
+
+    partialStructure = {
+      ...Object.keys(draftItems).reduce((acc, createdAt) => {
         const draftPayload = draftItems[createdAt];
-        if (
-          draftPayload &&
-          draftPayload.parentId === directory &&
-          acc.indexOf(createdAt) < 0
-        ) {
-          acc.push(createdAt);
+        if (draftPayload) {
+          const dirDrafts = [...(acc[draftPayload.parentId] || [])];
+          if (dirDrafts.indexOf(createdAt) < 0) {
+            dirDrafts.push(createdAt);
+            acc[draftPayload.parentId] = dirDrafts;
+          }
         }
         return acc;
-      },
-      structure[directory] || []
-    );
-    const userItemIds = Object.keys(this.props.rawItems).reduce(
-      (acc: string[], uuid) => {
+      }, structure)
+    };
+
+    partialStructure = {
+      ...partialStructure,
+      ...Object.keys(this.props.rawItems).reduce((acc, uuid) => {
         const rawItem = this.props.rawItems[uuid];
-        if (
-          rawItem &&
-          !rawItem.deleted &&
-          uuid in processedItems &&
-          acc.indexOf(uuid) < 0
-        ) {
-          acc.push(uuid);
+        if (rawItem && !rawItem.deleted) {
+          const pKey = (rawItem.parent && rawItem.parent.uuid) || userRootDir;
+          const dirItems = [...(acc[pKey] || [])];
+          if (dirItems.indexOf(uuid) < 0) {
+            dirItems.push(uuid);
+            acc[pKey] = dirItems;
+          }
         }
         return acc;
-      },
-      draftItemIds || []
-    );
-    const fileStructureIds = userItemIds.sort(this.itemIdCompareFunction);
-    dispatch(setStructure(directory, fileStructureIds));
+      }, partialStructure)
+    };
+
+    Object.keys(partialStructure).forEach(structureKey => {
+      const fileStructureIds = partialStructure[structureKey].sort(
+        this.itemIdCompareFunction
+      );
+      dispatch(setStructure(structureKey, fileStructureIds));
+    });
     if (!selectedItemId) {
-      dispatch(setSelectedItemId(fileStructureIds[0]));
+      dispatch(setSelectedItemId(partialStructure[userRootDir][0]));
     }
   };
 

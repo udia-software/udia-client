@@ -13,6 +13,7 @@ interface IProps {
   titleValue: string;
   handleDraftChange: ChangeEventHandler<HTMLTextAreaElement>;
   handleDraftFocus: FocusEventHandler<HTMLTextAreaElement>;
+  handleDiscardDraft: MouseEventHandler<HTMLButtonElement>;
   handleSaveDraft: MouseEventHandler<HTMLButtonElement>;
   dirNameRef: RefObject<HTMLTextAreaElement>;
 }
@@ -21,6 +22,7 @@ const DirectoryItemEditorView = ({
   titleValue,
   handleDraftChange,
   handleDraftFocus,
+  handleDiscardDraft,
   handleSaveDraft,
   dirNameRef
 }: IProps) => (
@@ -37,6 +39,7 @@ const DirectoryItemEditorView = ({
       onChange={handleDraftChange}
       onFocus={handleDraftFocus}
     />
+    <Button onClick={handleDiscardDraft}>Discard Changes</Button>
     <Button onClick={handleSaveDraft}>Save Directory</Button>
   </div>
 );
