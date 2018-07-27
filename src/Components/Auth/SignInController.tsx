@@ -22,7 +22,6 @@ import {
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
-import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignInView from "./SignInView";
 
@@ -43,13 +42,13 @@ interface IState {
   showPassword: boolean;
 }
 
-class SignInController extends Component<IProps, IState>
-  implements isMountable {
-  public isMountableMounted = false;
+class SignInController extends Component<IProps, IState> {
+  private isMountableMounted: boolean;
 
   constructor(props: IProps) {
     super(props);
     document.title = "Sign In - UDIA";
+    this.isMountableMounted = false;
     const errors: string[] = [];
     let cryptoManager: CryptoManager | null = null;
     try {

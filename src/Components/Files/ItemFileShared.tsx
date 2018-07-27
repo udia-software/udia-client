@@ -5,6 +5,7 @@ import { IProcessedItemsState } from "../../Modules/Reducers/ProcessedItems/Redu
 import { IRawItemsState } from "../../Modules/Reducers/RawItems/Reducer";
 import { IStructureState } from "../../Modules/Reducers/Structure/Reducer";
 import styled from "../AppStyles";
+import { Button } from "../Helpers/Button";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import UdiaStatement from "../Helpers/StatementGenerator";
 import DraftEditorController from "./DraftEditorController";
@@ -41,16 +42,33 @@ export const findOrInitDraft = (
         parentId = dirId;
       }
     }
-    if (processedItem && processedItem.contentType === "note") {
-      return {
-        draftId: `${Date.now()}`,
-        draft: {
-          contentType: processedItem.contentType,
-          draftContent: processedItem.processedContent,
-          parentId,
-          uuid: lookupDraftId
+    if (processedItem) {
+      const draftId = `${Date.now()}`;
+      const uuid = lookupDraftId;
+      if (processedItem.contentType) {
+        // sigh, typescript can't reconcile the contentType to processedContent attribute here
+        if (processedItem.contentType === "note") {
+          return {
+            draftId,
+            draft: {
+              contentType: processedItem.contentType,
+              draftContent: processedItem.processedContent,
+              parentId,
+              uuid
+            }
+          };
+        } else {
+          return {
+            draftId,
+            draft: {
+              contentType: processedItem.contentType,
+              draftContent: processedItem.processedContent,
+              parentId,
+              uuid
+            }
+          };
         }
-      };
+      }
     }
   }
   // Not editing. Probably creating a new item (or fallback edit item not found)
@@ -80,6 +98,25 @@ export const EditItemTitle = styled.textarea`
   width: 100%;
 `;
 
+export const EditorActions = styled.div`
+  width: 100%;
+  text-align: right;
+`;
+
+export const ProcessDraftButton = styled(Button)`
+  margin: auto;
+  padding: 0.3em 0.1em;
+  width: 8em;
+`;
+
+export const DiscardDraftButton = styled(ProcessDraftButton)`
+  border-color: ${props => props.theme.red};
+`;
+
+export const SaveDraftButton = styled(ProcessDraftButton)`
+  border-color: ${props => props.theme.green};
+`;
+
 const IterimContentState = styled.div`
   display: grid;
   place-content: center;
@@ -88,7 +125,7 @@ const IterimContentState = styled.div`
   height: 100%;
 `;
 
-const NoContentComponent =  () =>(
+const NoContentComponent = () => (
   <IterimContentState>
     <GridTemplateLoadingOverlay
       gridAreaName="interim-content"
@@ -109,22 +146,14 @@ export const determineContentViewer = (
       const pip = processedItems[id];
       switch (pip.contentType) {
         case "note":
-          return <DraftEditorController itemOrDraftId={id} />;
         case "directory":
-          // return <span>TODO: DIR PROCESSED</span>;
-          return <NoContentComponent />;
+          return <DraftEditorController itemOrDraftId={id} />;
         case null:
           return <RawItemEditorController itemId={id} />;
       }
     }
     if (id in draftItems) {
-      const dip = draftItems[id];
-      switch (dip.contentType) {
-        case "note":
-          return <DraftEditorController itemOrDraftId={id} />;
-        case "directory":
-          return <DraftEditorController itemOrDraftId={id} />;
-      }
+      return <DraftEditorController itemOrDraftId={id} />;
     }
     if (id in rawItems) {
       return <RawItemEditorController itemId={id} />;

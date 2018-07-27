@@ -268,6 +268,10 @@ class FileBrowserController extends Component<
       upsertDraftItem(newDraftId, "directory", { dirName: "" }, parentId)
     );
     this.props.dispatch(setSelectedItemId(newDraftId));
+    const { isSmallScreen } = this.state;
+    if (isSmallScreen) {
+      this.setState({ redirectToId: newDraftId });
+    }
   };
 
   protected handleClickDirectoryCollapse = (id: string) => () => {
@@ -397,7 +401,7 @@ class FileBrowserController extends Component<
       const { getItems } = response.data;
       dispatch(upsertRawItems(getItems.items));
       for (const item of getItems.items) {
-        await this.processItem(item, bypassCache);
+        await this.processItem(item, bypassCache, true);
       }
       if (getItems.items.length < limit) {
         nextMSDatetime = undefined;
@@ -487,7 +491,7 @@ class FileBrowserController extends Component<
     }
   };
 
-  private processItem = async (item: Item, bypassCache?: boolean) => {
+  private processItem = async (item: Item, bypassCache?: boolean, processDeleted?: boolean) => {
     const { dispatch, user, processedItems, secrets } = this.props;
     const { cryptoManager } = this.state;
     try {
@@ -506,7 +510,7 @@ class FileBrowserController extends Component<
       } else if (!secrets.akB64 || !secrets.mkB64) {
         this.props.dispatch(setStatus("error", "No AK or MK!"));
         throw new Error("Encryption secrets not set! Please re-authenticate.");
-      } else if (item.deleted) {
+      } else if (!processDeleted && item.deleted) {
         dispatch(upsertProcessedItem(item.uuid, Date.now(), null, null));
         return;
       }

@@ -18,7 +18,6 @@ import {
   setBase64AK,
   setBase64MK
 } from "../../Modules/Reducers/Secrets/Actions";
-import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import ResetPasswordView from "./ResetPasswordView";
 
@@ -47,9 +46,7 @@ interface IState {
   showPassword: boolean;
 }
 
-class ResetPasswordController extends Component<IProps, IState>
-  implements isMountable {
-  public isMountableMounted = false;
+class ResetPasswordController extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     document.title = "Reset Password - UDIA";
@@ -75,7 +72,6 @@ class ResetPasswordController extends Component<IProps, IState>
   }
 
   public async componentDidMount() {
-    this.isMountableMounted = true;
     const urlVerificationToken =
       this.props.match.params.verificationToken || "";
     if (urlVerificationToken) {
@@ -86,7 +82,6 @@ class ResetPasswordController extends Component<IProps, IState>
 
   public componentWillUnmount() {
     clearInterval(this.state.tokenValidityTick);
-    this.isMountableMounted = false;
   }
 
   public render() {
