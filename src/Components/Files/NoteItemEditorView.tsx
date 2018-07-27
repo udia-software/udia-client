@@ -8,12 +8,11 @@ import React, {
 } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "../AppStyles";
-import { Button } from "../Helpers/Button";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import HorizontalLine from "../Helpers/HorizontalLine";
 import MutedSpan from "../Helpers/MutedSpan";
 import { ThemedAnchor } from "../Helpers/ThemedLinkAnchor";
-import { EditItemTitle } from "./ItemFileShared";
+import { DiscardDraftButton, EditItemTitle, EditorActions, ProcessDraftButton, SaveDraftButton } from "./ItemFileShared";
 
 const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
   const elem = document.createElement("a");
@@ -88,25 +87,6 @@ const EditNoteContent = styled.textarea`
   margin: 0;
   width: 100%;
   height: 100%;
-`;
-
-const EditorActions = styled.div`
-  width: 100%;
-  text-align: right;
-`;
-
-const ProcessDraftButton = styled(Button)`
-  margin: auto;
-  padding: 0.3em 0.1em;
-  width: 8em;
-`;
-
-const DiscardDraftButton = styled(ProcessDraftButton)`
-  border-color: ${props => props.theme.red};
-`;
-
-const SaveDraftButton = styled(ProcessDraftButton)`
-  border-color: ${props => props.theme.green};
 `;
 
 const HiddenPointerAnchor = styled(ThemedAnchor)`

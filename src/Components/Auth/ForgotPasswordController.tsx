@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { IRootState } from "../../Modules/ConfigureReduxStore";
 import { setFormEmail } from "../../Modules/Reducers/Auth/Actions";
-import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import ForgotPasswordView from "./ForgotPasswordView";
 
@@ -26,13 +25,13 @@ interface IState {
   requestSent: boolean;
 }
 
-class ForgotPasswordController extends Component<IProps, IState>
-  implements isMountable {
-  public isMountableMounted = false;
+class ForgotPasswordController extends Component<IProps, IState> {
+  private isMountableMounted: boolean;
 
   constructor(props: IProps) {
     super(props);
     document.title = "Forgot Password - UDIA";
+    this.isMountableMounted = false;
     this.state = {
       loading: false,
       errors: [],

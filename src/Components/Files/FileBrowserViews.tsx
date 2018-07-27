@@ -91,6 +91,12 @@ const AddNoteIcon = () => (
   </span>
 );
 
+const EditDirectoryIcon = () => (
+  <span className="fa-layers fa-fw">
+    <FontAwesomeIcon icon="pencil-alt" />
+  </span>
+)
+
 const FileAddButtonContainer = styled.div`
   display: inline;
   align-self: flex-end;
@@ -309,9 +315,12 @@ export const DirectoryView = ({
   return (
     <FilesList>
       <FileItemContainer>
-        <ItemName>
+        <ItemName itemClicked={selectedItemId === structureKey}>
           <DirectoryNameText
-            onClick={handleClickDirectoryCollapse && handleClickDirectoryCollapse(structureKey)}
+            onClick={
+              handleClickDirectoryCollapse &&
+              handleClickDirectoryCollapse(structureKey)
+            }
           >
             {searchValue ? (
               <IconHolder icon="search" />
@@ -323,6 +332,11 @@ export const DirectoryView = ({
             {dirName}
           </DirectoryNameText>
           <FileAddButtonContainer>
+            {handleClickItemEvent && (
+              <FileAddButton onClick={handleClickItemEvent(structureKey)}>
+                <EditDirectoryIcon />
+              </FileAddButton>
+            )}
             {handleClickNewDirectory && (
               <FileAddButton onClick={handleClickNewDirectory(structureKey)}>
                 <AddDirectoryIcon />
@@ -387,7 +401,9 @@ export const DirectoryView = ({
                         createdAtString={DateTime.fromMillis(
                           rawItems[id] && rawItems[id].createdAt
                         ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
-                        handleClickDirectoryCollapse={handleClickDirectoryCollapse}
+                        handleClickDirectoryCollapse={
+                          handleClickDirectoryCollapse
+                        }
                         handleClickItemEvent={
                           searchValue ? undefined : handleClickItemEvent
                         }

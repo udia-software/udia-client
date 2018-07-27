@@ -136,7 +136,7 @@ class DraftEditorController extends Component<
           handleDraftChange={this.handleDraftChange}
           handleDiscardDraft={this.handleDiscardDraft}
           handleSaveDraft={this.handleSaveDraft}
-          handleDeleteNote={this.handleDeleteNote}
+          handleDeleteNote={this.handleDeleteItem}
           titleRef={this.titleTextareaRef}
           contentRef={this.contentTextareaRef}
         />
@@ -146,10 +146,13 @@ class DraftEditorController extends Component<
         <DirectoryItemEditorView
           loading={false}
           titleValue={draft.draftContent.dirName}
+          hasDraft={draftId in draftItems}
+          isEditing={!!draft.uuid}
           handleDraftChange={this.handleDraftChange}
           handleDraftFocus={this.handleDraftFocus}
           handleDiscardDraft={this.handleDiscardDraft}
           handleSaveDraft={this.handleSaveDraft}
+          handleDeleteDirectory={this.handleDeleteItem}
           dirNameRef={this.dirNameTextareaRef}
         />
       );
@@ -194,9 +197,11 @@ class DraftEditorController extends Component<
       addAlert({
         type: "info",
         timestamp: Date.now(),
-        content: `Discarded draft '${(draftPayload.contentType === "note" &&
-          draftPayload.draftContent.title) ||
-          "Untitled"}'.`
+        content: `Discarded draft ${
+          draftPayload.contentType
+        } '${(draftPayload.contentType === "note"
+          ? draftPayload.draftContent.title
+          : draftPayload.draftContent.dirName) || "Untitled"}'.`
       })
     );
     const newStructure = [...structure[draftPayload.parentId]];
@@ -298,15 +303,13 @@ class DraftEditorController extends Component<
       >({ mutation, variables });
       let item: Item;
       if (!!draft.uuid) {
-        const {
-          updateItem
-        } = mutationResponse.data as IUpdateItemMutationResponse;
-        item = updateItem;
+        ({
+          updateItem: item
+        } = mutationResponse.data as IUpdateItemMutationResponse);
       } else {
-        const {
-          createItem
-        } = mutationResponse.data as ICreateItemMutationResponse;
-        item = createItem;
+        ({
+          createItem: item
+        } = mutationResponse.data as ICreateItemMutationResponse);
       }
       this.setState({
         loading: false,
@@ -333,6 +336,9 @@ class DraftEditorController extends Component<
         updatedStructure.splice(draftIdx, 1);
       }
       dispatch(setStructure(draft.parentId, updatedStructure));
+      if (item.contentType === "directory") {
+        dispatch(setStructure(item.uuid, [...(structure[item.uuid] || [])]));
+      }
       dispatch(clearDraftItem(draftId));
       dispatch(
         addAlert({
@@ -359,7 +365,7 @@ class DraftEditorController extends Component<
     }
   };
 
-  protected handleDeleteNote = async () => {
+  protected handleDeleteItem = async () => {
     try {
       const { client, user, itemOrDraftId, structure, dispatch } = this.props;
       if (!itemOrDraftId) {
@@ -367,7 +373,7 @@ class DraftEditorController extends Component<
       }
       this.setState({
         loading: true,
-        loadingText: "Deleting note from the server..."
+        loadingText: "Deleting item from the server..."
       });
       const response = await client.mutate({
         mutation: DELETE_ITEM_MUTATION,
@@ -393,6 +399,9 @@ class DraftEditorController extends Component<
         })
       );
       dispatch(setStructure(dirId, updatedStructure));
+      if (deleteItem.uuid in structure) {
+        dispatch(setStructure(deleteItem.uuid, []));
+      }
       dispatch(upsertRawItem(deleteItem));
       dispatch(
         upsertProcessedItem(deleteItem.uuid, deleteItem.updatedAt, null, null)
@@ -426,8 +435,10 @@ class DraftEditorController extends Component<
   };
 
   private processTitleScrollHeight = () => {
-    const ref = this.titleTextareaRef.current;
+    const ref =
+      this.titleTextareaRef.current || this.dirNameTextareaRef.current;
     if (ref) {
+      ref.rows = 1;
       while (ref.scrollHeight > ref.clientHeight) {
         ref.rows = ref.rows + 1;
       }
