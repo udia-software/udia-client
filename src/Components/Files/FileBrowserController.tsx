@@ -213,6 +213,7 @@ class FileBrowserController extends Component<
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
         handleClickNewDirectory={this.handleClickNewDirectory}
+        handleClickDirectoryCollapse={this.handleClickDirectoryCollapse}
         handleChangeSearchValue={this.handleChangeSearchValue}
       />
     );
@@ -224,20 +225,9 @@ class FileBrowserController extends Component<
     });
 
   protected handleClickItemEvent = (id: string) => () => {
-    const { dispatch, draftItems, structure } = this.props;
+    const { dispatch, draftItems } = this.props;
     let redirectToId = id;
     const existingDraft = draftItems[id];
-
-    if (id in structure) {
-      // is folder
-      this.setState({
-        closedFolder: {
-          ...this.state.closedFolder,
-          [id]: !this.state.closedFolder[id]
-        }
-      });
-      return;
-    }
 
     if (existingDraft && existingDraft.uuid) {
       dispatch(setSelectedItemId(existingDraft.uuid));
@@ -279,6 +269,19 @@ class FileBrowserController extends Component<
     );
     this.props.dispatch(setSelectedItemId(newDraftId));
   };
+
+  protected handleClickDirectoryCollapse = (id: string) => () => {
+    const { structure } = this.props;
+    if (id in structure) {
+      // is folder
+      this.setState({
+        closedFolder: {
+          ...this.state.closedFolder,
+          [id]: !this.state.closedFolder[id]
+        }
+      });
+    }
+  }
 
   protected handleChangeSearchValue: ChangeEventHandler<
     HTMLInputElement

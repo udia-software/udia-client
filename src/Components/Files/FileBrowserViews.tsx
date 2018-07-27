@@ -269,9 +269,10 @@ interface IDirectoryViewProps {
   searchValue?: string;
   selectedItemId?: string;
   createdAtString?: string;
-  handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickItemEvent?: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote?: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewDirectory?: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickDirectoryCollapse?: (id: string) => MouseEventHandler<HTMLElement>;
   open: boolean;
   isSmallScreen?: boolean;
 }
@@ -293,6 +294,7 @@ export const DirectoryView = ({
   handleClickItemEvent,
   handleClickNewNote,
   handleClickNewDirectory,
+  handleClickDirectoryCollapse,
   open = false,
   isSmallScreen
 }: IDirectoryViewProps): JSX.Element => {
@@ -308,7 +310,9 @@ export const DirectoryView = ({
     <FilesList>
       <FileItemContainer>
         <ItemName>
-          <DirectoryNameText onClick={handleClickItemEvent(structureKey)}>
+          <DirectoryNameText
+            onClick={handleClickDirectoryCollapse && handleClickDirectoryCollapse(structureKey)}
+          >
             {searchValue ? (
               <IconHolder icon="search" />
             ) : open ? (
@@ -383,10 +387,13 @@ export const DirectoryView = ({
                         createdAtString={DateTime.fromMillis(
                           rawItems[id] && rawItems[id].createdAt
                         ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
-                        handleClickItemEvent={handleClickItemEvent}
+                        handleClickDirectoryCollapse={handleClickDirectoryCollapse}
+                        handleClickItemEvent={
+                          searchValue ? undefined : handleClickItemEvent
+                        }
                         handleClickNewNote={handleClickNewNote}
                         handleClickNewDirectory={handleClickNewDirectory}
-                        open={!closedFolder[id]}
+                        open={searchValue ? false : !closedFolder[id]}
                         isSmallScreen={isSmallScreen}
                       />
                     );
@@ -451,7 +458,9 @@ export const DirectoryView = ({
                 return (
                   <FileView
                     key={id}
-                    handleClickItemEvent={handleClickItemEvent(id)}
+                    handleClickItemEvent={
+                      handleClickItemEvent && handleClickItemEvent(id)
+                    }
                     {...fileProps}
                   />
                 );
@@ -535,6 +544,7 @@ interface IFileBrowserViewProps {
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewDirectory: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickDirectoryCollapse: (id: string) => MouseEventHandler<HTMLElement>;
   handleChangeSearchValue: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -554,6 +564,7 @@ export const FileBrowserView = ({
   handleClickItemEvent,
   handleClickNewNote,
   handleClickNewDirectory,
+  handleClickDirectoryCollapse,
   handleChangeSearchValue
 }: IFileBrowserViewProps) => (
   <FileBrowserContainer
@@ -593,6 +604,7 @@ export const FileBrowserView = ({
             closedFolder={closedFolder}
             fileStructure={fileStructure}
             selectedItemId={selectedItemId}
+            handleClickDirectoryCollapse={handleClickDirectoryCollapse}
             handleClickItemEvent={handleClickItemEvent}
             handleClickNewNote={handleClickNewNote}
             handleClickNewDirectory={handleClickNewDirectory}
