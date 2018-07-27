@@ -80,13 +80,17 @@ class FileBrowserController extends Component<
     window.addEventListener("resize", this.handleResizeEvent);
     let nextPageMS: number | undefined;
     do {
-      nextPageMS = await this.queryAndProcessUserItemsPage(nextPageMS);
+      nextPageMS = await this.queryAndProcessUserItemsPage(
+        nextPageMS,
+        nextPageMS ? 32 : 1, // first pass, get one item. Subsequent passes, get 32 items
+        nextPageMS ? false : true // first pass, bypassCache. Subsequent passes, use cache-first
+      );
     } while (nextPageMS);
     this.setFileStructureState();
     await this.subscribeToUserItems();
   }
 
-  public async componentDidUpdate(prevProps: IProps) {
+  public componentDidUpdate(prevProps: IProps) {
     const {
       match: {
         params: { id: urlParamId }
@@ -166,7 +170,8 @@ class FileBrowserController extends Component<
       rawItems,
       selectedItemId,
       draftItems,
-      structure
+      structure,
+      user
     } = this.props;
     const {
       isSmallScreen,
@@ -186,6 +191,7 @@ class FileBrowserController extends Component<
     return (
       <FileBrowserView
         urlParamId={urlParamId}
+        rootDirName={user.username}
         processedItems={processedItems}
         draftItems={draftItems}
         rawItems={rawItems}
@@ -196,6 +202,7 @@ class FileBrowserController extends Component<
         isSmallScreen={isSmallScreen}
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
+        handleClickNewDirectory={this.handleClickNewDirectory}
         handleChangeSearchValue={this.handleChangeSearchValue}
       />
     );
@@ -241,6 +248,19 @@ class FileBrowserController extends Component<
     if (isSmallScreen) {
       this.setState({ redirectToId: newDraftId });
     }
+  };
+
+  protected handleClickNewDirectory = (parentId: string) => () => {
+    const newDraftId = `${Date.now()}`;
+    this.props.dispatch(
+      upsertDraftItem(
+        newDraftId,
+        "directory",
+        { dirName: "testnewdir" },
+        parentId
+      )
+    );
+    this.props.dispatch(setSelectedItemId(newDraftId));
   };
 
   protected handleChangeSearchValue: ChangeEventHandler<
@@ -336,7 +356,7 @@ class FileBrowserController extends Component<
 
   private queryAndProcessUserItemsPage = async (
     fromMSDateTime: number = Math.ceil(Date.now() / 45000) * 45000, // ceil to future 45s increments
-    limit: number = 4,
+    limit: number,
     bypassCache?: boolean
   ) => {
     let nextMSDatetime: number | undefined;

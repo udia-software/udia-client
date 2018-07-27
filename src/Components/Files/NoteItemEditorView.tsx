@@ -13,6 +13,7 @@ import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import HorizontalLine from "../Helpers/HorizontalLine";
 import MutedSpan from "../Helpers/MutedSpan";
 import { ThemedAnchor } from "../Helpers/ThemedLinkAnchor";
+import { EditItemTitle } from "./ItemFileShared";
 
 const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
   const elem = document.createElement("a");
@@ -78,18 +79,6 @@ const NoteFileEditorContainer = styled.div`
   height: 100%;
 `;
 
-const EditNoteTitle = styled.textarea`
-  background: transparent;
-  font-family: monospace;
-  color: ${props => props.theme.primaryColor};
-  border: 0px;
-  padding: 0;
-  margin: 0;
-  font-size: 2em;
-  height: auto;
-  width: 100%;
-`;
-
 const EditNoteContent = styled.textarea`
   background: transparent;
   font-family: monospace;
@@ -146,7 +135,7 @@ interface IProps {
   contentRef: RefObject<HTMLTextAreaElement>;
 }
 
-const NoteFileEditorView = ({
+const NoteItemEditorView = ({
   loading,
   loadingText,
   isEditing,
@@ -179,7 +168,7 @@ const NoteFileEditorView = ({
           {titleValue || <MutedSpan>Untitled</MutedSpan>}
         </ViewNoteTitle>
       ) : (
-        <EditNoteTitle
+        <EditItemTitle
           id="edit-note-title"
           key="edit-note-title"
           rows={1}
@@ -291,4 +280,4 @@ const NoteFileEditorView = ({
   </NoteEditorLoadingGrid>
 );
 
-export default NoteFileEditorView;
+export default NoteItemEditorView;
