@@ -88,6 +88,16 @@ const IterimContentState = styled.div`
   height: 100%;
 `;
 
+const NoContentComponent =  () =>(
+  <IterimContentState>
+    <GridTemplateLoadingOverlay
+      gridAreaName="interim-content"
+      loading={true}
+      loadingText={UdiaStatement()}
+    />
+  </IterimContentState>
+);
+
 export const determineContentViewer = (
   id: string | undefined,
   processedItems: IProcessedItemsState,
@@ -101,7 +111,8 @@ export const determineContentViewer = (
         case "note":
           return <DraftEditorController itemOrDraftId={id} />;
         case "directory":
-          return <span>TODO: DIR PROCESSED</span>;
+          // return <span>TODO: DIR PROCESSED</span>;
+          return <NoContentComponent />;
         case null:
           return <RawItemEditorController itemId={id} />;
       }
@@ -119,15 +130,7 @@ export const determineContentViewer = (
       return <RawItemEditorController itemId={id} />;
     }
   }
-  return (
-    <IterimContentState>
-      <GridTemplateLoadingOverlay
-        gridAreaName="interim-content"
-        loading={true}
-        loadingText={UdiaStatement()}
-      />
-    </IterimContentState>
-  );
+  return <NoContentComponent />;
 };
 
 export const GET_ITEMS_QUERY = gql`

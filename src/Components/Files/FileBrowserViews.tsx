@@ -53,6 +53,15 @@ const ItemNameText = styled.span`
   word-wrap: break-word;
 `;
 
+const DirectoryNameText = styled.span`
+  width: auto;
+  word-wrap: break-word;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const IconHolder = styled(FontAwesomeIcon)`
   margin: 0 0.4em 0 0;
   ${ItemContainer}:hover & {
@@ -94,6 +103,12 @@ const FileAddButton = styled(Button)`
   width: auto;
   padding: 0.1em;
   margin: 0;
+  font-size: 1em;
+  @media only screen and (max-width: ${props =>
+      props.theme.smScrnBrkPx - 1}px) {
+    font-size: 1.4em;
+    margin-right: 0.2em;
+  }
 `;
 
 /**
@@ -250,6 +265,7 @@ interface IDirectoryViewProps {
   draftItems: IDraftItemsState;
   rawItems: IRawItemsState;
   fileStructure: { [uuid: string]: string[] };
+  closedFolder: { [structureId: string]: boolean };
   searchValue?: string;
   selectedItemId?: string;
   createdAtString?: string;
@@ -270,6 +286,7 @@ export const DirectoryView = ({
   draftItems,
   rawItems,
   fileStructure,
+  closedFolder,
   searchValue,
   selectedItemId,
   createdAtString,
@@ -291,14 +308,16 @@ export const DirectoryView = ({
     <FilesList>
       <FileItemContainer>
         <ItemName>
-          {searchValue ? (
-            <IconHolder icon="search" />
-          ) : open ? (
-            <IconHolder icon="folder-open" />
-          ) : (
-            <IconHolder icon="folder" />
-          )}
-          {dirName}
+          <DirectoryNameText onClick={handleClickItemEvent(structureKey)}>
+            {searchValue ? (
+              <IconHolder icon="search" />
+            ) : open ? (
+              <IconHolder icon="folder-open" />
+            ) : (
+              <IconHolder icon="folder" />
+            )}
+            {dirName}
+          </DirectoryNameText>
           <FileAddButtonContainer>
             {handleClickNewDirectory && (
               <FileAddButton onClick={handleClickNewDirectory(structureKey)}>
@@ -358,6 +377,7 @@ export const DirectoryView = ({
                         processedItems={processedItems}
                         draftItems={draftItems}
                         rawItems={rawItems}
+                        closedFolder={closedFolder}
                         fileStructure={fileStructure}
                         selectedItemId={selectedItemId}
                         createdAtString={DateTime.fromMillis(
@@ -366,7 +386,7 @@ export const DirectoryView = ({
                         handleClickItemEvent={handleClickItemEvent}
                         handleClickNewNote={handleClickNewNote}
                         handleClickNewDirectory={handleClickNewDirectory}
-                        open={true}
+                        open={!closedFolder[id]}
                         isSmallScreen={isSmallScreen}
                       />
                     );
@@ -505,9 +525,11 @@ interface IFileBrowserViewProps {
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
+  closedFolder: { [structureId: string]: boolean };
   fileStructure: IStructureState;
   searchValue: string;
   searchResults: string[];
+  loading: boolean;
   isSmallScreen?: boolean;
   selectedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
@@ -517,11 +539,13 @@ interface IFileBrowserViewProps {
 }
 
 export const FileBrowserView = ({
+  loading,
   urlParamId,
   rootDirName,
   processedItems,
   draftItems,
   rawItems,
+  closedFolder,
   fileStructure,
   searchValue,
   searchResults,
@@ -550,6 +574,7 @@ export const FileBrowserView = ({
             processedItems={processedItems}
             draftItems={draftItems}
             rawItems={rawItems}
+            closedFolder={closedFolder}
             fileStructure={{ search: searchResults }}
             selectedItemId={selectedItemId}
             handleClickItemEvent={handleClickItemEvent}
@@ -565,15 +590,17 @@ export const FileBrowserView = ({
             processedItems={processedItems}
             draftItems={draftItems}
             rawItems={rawItems}
+            closedFolder={closedFolder}
             fileStructure={fileStructure}
             selectedItemId={selectedItemId}
             handleClickItemEvent={handleClickItemEvent}
             handleClickNewNote={handleClickNewNote}
             handleClickNewDirectory={handleClickNewDirectory}
             isSmallScreen={isSmallScreen}
-            open={true}
+            open={!closedFolder[rootDirName]}
           />
         )}
+        <SimpleLoader loading={loading} />
       </FileListContainer>
     )}
     {((isSmallScreen && !!urlParamId) || !isSmallScreen) && (
