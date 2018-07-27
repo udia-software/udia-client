@@ -33,7 +33,7 @@ const ItemContainer = styled.div`
   cursor: pointer;
 `;
 
-const ItemName = styled.span.attrs<{ itemClicked?: boolean }>({})`
+const ItemName = styled.div.attrs<{ itemClicked?: boolean }>({})`
   display: flex;
   align-items: stretch;
   align-content: stretch;
@@ -83,15 +83,17 @@ const AddNoteIcon = () => (
 );
 
 const FileAddButtonContainer = styled.div`
-  display: inline-block;
+  display: inline;
   align-self: flex-end;
   width: auto;
   margin-left: auto;
+  text-align: right;
 `;
 
 const FileAddButton = styled(Button)`
   width: auto;
   padding: 0.1em;
+  margin: 0;
 `;
 
 /**
@@ -99,7 +101,7 @@ const FileAddButton = styled(Button)`
  */
 const genDupTitleCountMap = (
   fileStructure: { [uuid: string]: string[] },
-  dirName: string,
+  structureKey: string,
   processedItems: IProcessedItemsState,
   draftItems: IDraftItemsState
 ) => {
@@ -109,7 +111,7 @@ const genDupTitleCountMap = (
   const idToCountMap: {
     [uuid: string]: number;
   } = {};
-  [...fileStructure[dirName]].reverse().forEach(id => {
+  [...(fileStructure[structureKey] || [])].reverse().forEach(id => {
     if (processedItems[id]) {
       const pip = processedItems[id];
       switch (pip.contentType) {
@@ -243,12 +245,14 @@ const FileView = ({
 
 interface IDirectoryViewProps {
   dirName: string;
+  structureKey: string;
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
   rawItems: IRawItemsState;
   fileStructure: { [uuid: string]: string[] };
   searchValue?: string;
   selectedItemId?: string;
+  createdAtString?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote?: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewDirectory?: (id: string) => MouseEventHandler<HTMLElement>;
@@ -261,21 +265,28 @@ interface IDirectoryViewProps {
  */
 export const DirectoryView = ({
   dirName,
+  structureKey,
   processedItems,
   draftItems,
   rawItems,
   fileStructure,
   searchValue,
   selectedItemId,
+  createdAtString,
   handleClickItemEvent,
   handleClickNewNote,
   handleClickNewDirectory,
   open = false,
   isSmallScreen
-}: IDirectoryViewProps) => {
+}: IDirectoryViewProps): JSX.Element => {
   const idToCountMap: {
     [uuid: string]: number;
-  } = genDupTitleCountMap(fileStructure, dirName, processedItems, draftItems);
+  } = genDupTitleCountMap(
+    fileStructure,
+    structureKey,
+    processedItems,
+    draftItems
+  );
   return (
     <FilesList>
       <FileItemContainer>
@@ -290,41 +301,43 @@ export const DirectoryView = ({
           {dirName}
           <FileAddButtonContainer>
             {handleClickNewDirectory && (
-              <FileAddButton onClick={handleClickNewDirectory(dirName)}>
+              <FileAddButton onClick={handleClickNewDirectory(structureKey)}>
                 <AddDirectoryIcon />
-                New Folder
               </FileAddButton>
             )}
             {handleClickNewNote && (
-              <FileAddButton onClick={handleClickNewNote(dirName)}>
+              <FileAddButton onClick={handleClickNewNote(structureKey)}>
                 <AddNoteIcon />
-                New Note
               </FileAddButton>
             )}
           </FileAddButtonContainer>
         </ItemName>
+        {createdAtString && (
+          <MutedSpan>Created on: {createdAtString}</MutedSpan>
+        )}
         {open && (
           <FilesList>
-            {fileStructure[dirName].map(id => {
+            {(fileStructure[structureKey] || []).map(id => {
               let fileProps: IFileViewProps | null = null;
+              const count = idToCountMap[id];
               // check if item has been processed
               if (processedItems[id]) {
                 const pip = processedItems[id];
+                const itemClicked =
+                  selectedItemId === id ||
+                  !!(
+                    selectedItemId &&
+                    draftItems[selectedItemId] &&
+                    draftItems[selectedItemId].uuid &&
+                    draftItems[selectedItemId].uuid === id
+                  );
                 switch (pip.contentType) {
                   case "note": {
                     const { title, noteType, content } = pip.processedContent;
-                    const itemClicked =
-                      selectedItemId === id ||
-                      !!(
-                        selectedItemId &&
-                        draftItems[selectedItemId] &&
-                        draftItems[selectedItemId].uuid &&
-                        draftItems[selectedItemId].uuid === id
-                      );
                     fileProps = {
                       itemClicked,
                       title,
-                      count: idToCountMap[id],
+                      count,
                       type: noteType,
                       isRaw: false,
                       preview: generateNotePreview(
@@ -333,6 +346,30 @@ export const DirectoryView = ({
                       )
                     };
                     break;
+                  }
+                  case "directory": {
+                    // return the directory view?
+                    const { dirName: title } = pip.processedContent;
+                    return (
+                      <DirectoryView
+                        key={id}
+                        dirName={title}
+                        structureKey={id}
+                        processedItems={processedItems}
+                        draftItems={draftItems}
+                        rawItems={rawItems}
+                        fileStructure={fileStructure}
+                        selectedItemId={selectedItemId}
+                        createdAtString={DateTime.fromMillis(
+                          rawItems[id] && rawItems[id].createdAt
+                        ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
+                        handleClickItemEvent={handleClickItemEvent}
+                        handleClickNewNote={handleClickNewNote}
+                        handleClickNewDirectory={handleClickNewDirectory}
+                        open={true}
+                        isSmallScreen={isSmallScreen}
+                      />
+                    );
                   }
                 }
               }
@@ -347,7 +384,7 @@ export const DirectoryView = ({
                     fileProps = {
                       itemClicked,
                       title,
-                      count: idToCountMap[id],
+                      count,
                       type: noteType,
                       isRaw: false,
                       isDraft: true,
@@ -367,7 +404,7 @@ export const DirectoryView = ({
                     fileProps = {
                       itemClicked,
                       title,
-                      count: idToCountMap[id],
+                      count,
                       type: "directory",
                       isRaw: false,
                       isDraft: true
@@ -402,7 +439,7 @@ export const DirectoryView = ({
               // catch all error state
               return <SimpleLoader key={id} loading={true} />;
             })}
-            {fileStructure[dirName].length === 0 && (
+            {(fileStructure[structureKey] || []).length === 0 && (
               <li>
                 <MutedSpan>No Files</MutedSpan>
               </li>
@@ -509,10 +546,11 @@ export const FileBrowserView = ({
         {searchValue ? (
           <DirectoryView
             dirName="Search Results"
+            structureKey="search"
             processedItems={processedItems}
             draftItems={draftItems}
             rawItems={rawItems}
-            fileStructure={{ ["Search Results"]: searchResults }}
+            fileStructure={{ search: searchResults }}
             selectedItemId={selectedItemId}
             handleClickItemEvent={handleClickItemEvent}
             open={true}
@@ -523,6 +561,7 @@ export const FileBrowserView = ({
           <DirectoryView
             key={rootDirName}
             dirName={rootDirName}
+            structureKey={rootDirName}
             processedItems={processedItems}
             draftItems={draftItems}
             rawItems={rawItems}

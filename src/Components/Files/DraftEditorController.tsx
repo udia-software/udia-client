@@ -148,6 +148,7 @@ class DraftEditorController extends Component<
           titleValue={draft.draftContent.dirName}
           handleDraftChange={this.handleDraftChange}
           handleDraftFocus={this.handleDraftFocus}
+          handleDiscardDraft={this.handleDiscardDraft}
           handleSaveDraft={this.handleSaveDraft}
           dirNameRef={this.dirNameTextareaRef}
         />
@@ -322,7 +323,7 @@ class DraftEditorController extends Component<
           draft.draftContent
         )
       );
-      let updatedStructure = [...structure[draft.parentId]];
+      let updatedStructure = [...(structure[draft.parentId] || [])];
       const itemIdx = updatedStructure.indexOf(item.uuid);
       if (itemIdx < 0) {
         updatedStructure = [item.uuid, ...updatedStructure];
