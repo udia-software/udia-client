@@ -28,7 +28,7 @@ const BodyContainer = styled.div`
   width: 100%;
   max-width: 100vw;
   height: 100%;
-  min-height: 84vh;
+  min-height: 78vh;
   word-break: break-word;
   margin-bottom: 1em;
 `;

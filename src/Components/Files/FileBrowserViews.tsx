@@ -17,7 +17,7 @@ const FilesList = styled.ul`
   margin: 0;
 `;
 
-const FilesItem = styled.li`
+const FileItemContainer = styled.li`
   margin-top: 0.2em;
   padding-left: 0.2em;
   border-left: 1px solid ${props => props.theme.backgroundColor};
@@ -82,15 +82,20 @@ const AddNoteIcon = () => (
   </span>
 );
 
-const FileAddButton = styled(Button)`
+const FileAddButtonContainer = styled.div`
+  display: inline-block;
   align-self: flex-end;
   width: auto;
+  margin-left: auto;
+`;
+
+const FileAddButton = styled(Button)`
+  width: auto;
   padding: 0.1em;
-  margin: 0 0 0 auto;
 `;
 
 /**
- * Helper function to generate a unique tile for each note (appends number for duplicate title)
+ * Helper function to generate a unique tile for each note (appends number for duplicate title/name)
  */
 const genDupTitleCountMap = (
   fileStructure: { [uuid: string]: string[] },
@@ -141,16 +146,18 @@ const genDupTitleCountMap = (
   return idToCountMap;
 };
 
-const renderFileTypeExtension = (noteType: string) => {
-  switch (noteType) {
+const renderFileTypeExtension = (fileType: string) => {
+  switch (fileType) {
     case "markdown":
       return ".md";
     case "text":
       return ".txt";
     case "note":
       return ".note";
+    case "directory":
+      return "";
     default:
-      return `.${noteType}`;
+      return `.${fileType}`;
   }
 };
 
@@ -179,19 +186,19 @@ const generateNotePreview = (
   }
 };
 
-interface INoteItemViewProps {
+interface IFileViewProps {
   itemClicked: boolean;
   title: string;
   count: number;
   type: string;
+  isRaw: boolean;
   preview?: string;
   isDraft?: boolean;
-  isRaw?: boolean;
   createdAtString?: string;
-  handleClickItemEvent: MouseEventHandler<HTMLElement>;
+  handleClickItemEvent?: MouseEventHandler<HTMLElement>;
 }
 
-const NoteItemView = ({
+const FileView = ({
   itemClicked,
   title,
   count,
@@ -201,11 +208,15 @@ const NoteItemView = ({
   isRaw,
   createdAtString,
   handleClickItemEvent
-}: INoteItemViewProps) => (
-  <FilesItem>
+}: IFileViewProps) => (
+  <FileItemContainer>
     <ItemContainer onClick={handleClickItemEvent}>
       <ItemName itemClicked={itemClicked}>
-        <IconHolder icon="file-alt" />
+        {type === "directory" ? (
+          <IconHolder icon="folder" />
+        ) : (
+          <IconHolder icon="file-alt" />
+        )}
         <ItemNameText>
           {title ? (
             isRaw ? (
@@ -227,7 +238,7 @@ const NoteItemView = ({
       {preview && <MutedSpan>{preview}</MutedSpan>}
       {createdAtString && <MutedSpan>Created on: {createdAtString}</MutedSpan>}
     </ItemContainer>
-  </FilesItem>
+  </FileItemContainer>
 );
 
 interface IDirectoryViewProps {
@@ -240,6 +251,7 @@ interface IDirectoryViewProps {
   selectedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote?: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickNewDirectory?: (id: string) => MouseEventHandler<HTMLElement>;
   open: boolean;
   isSmallScreen?: boolean;
 }
@@ -257,6 +269,7 @@ export const DirectoryView = ({
   selectedItemId,
   handleClickItemEvent,
   handleClickNewNote,
+  handleClickNewDirectory,
   open = false,
   isSmallScreen
 }: IDirectoryViewProps) => {
@@ -265,7 +278,7 @@ export const DirectoryView = ({
   } = genDupTitleCountMap(fileStructure, dirName, processedItems, draftItems);
   return (
     <FilesList>
-      <FilesItem>
+      <FileItemContainer>
         <ItemName>
           {searchValue ? (
             <IconHolder icon="search" />
@@ -275,23 +288,25 @@ export const DirectoryView = ({
             <IconHolder icon="folder" />
           )}
           {dirName}
-          {null && (
-            <FileAddButton>
-              <AddDirectoryIcon />
-              New Folder
-            </FileAddButton>
-          )}
-          {handleClickNewNote && (
-            <FileAddButton onClick={handleClickNewNote(dirName)}>
-              <AddNoteIcon />
-              New Note
-            </FileAddButton>
-          )}
+          <FileAddButtonContainer>
+            {handleClickNewDirectory && (
+              <FileAddButton onClick={handleClickNewDirectory(dirName)}>
+                <AddDirectoryIcon />
+                New Folder
+              </FileAddButton>
+            )}
+            {handleClickNewNote && (
+              <FileAddButton onClick={handleClickNewNote(dirName)}>
+                <AddNoteIcon />
+                New Note
+              </FileAddButton>
+            )}
+          </FileAddButtonContainer>
         </ItemName>
         {open && (
           <FilesList>
             {fileStructure[dirName].map(id => {
-              let noteItemProps: INoteItemViewProps | null = null;
+              let fileProps: IFileViewProps | null = null;
               // check if item has been processed
               if (processedItems[id]) {
                 const pip = processedItems[id];
@@ -306,13 +321,12 @@ export const DirectoryView = ({
                         draftItems[selectedItemId].uuid &&
                         draftItems[selectedItemId].uuid === id
                       );
-                    noteItemProps = {
+                    fileProps = {
                       itemClicked,
                       title,
                       count: idToCountMap[id],
                       type: noteType,
                       isRaw: false,
-                      handleClickItemEvent: handleClickItemEvent(id),
                       preview: generateNotePreview(
                         content,
                         searchValue || isSmallScreen
@@ -323,21 +337,20 @@ export const DirectoryView = ({
                 }
               }
               // fallthough, check if item has draft
-              if (!noteItemProps && draftItems[id]) {
+              if (!fileProps && draftItems[id]) {
                 const dip = draftItems[id];
                 switch (dip.contentType) {
                   case "note": {
                     const { title, noteType, content } = dip.draftContent;
                     const itemClicked =
                       selectedItemId === id || selectedItemId === dip.uuid;
-                    noteItemProps = {
+                    fileProps = {
                       itemClicked,
                       title,
                       count: idToCountMap[id],
                       type: noteType,
                       isRaw: false,
                       isDraft: true,
-                      handleClickItemEvent: handleClickItemEvent(id),
                       preview: generateNotePreview(
                         content,
                         searchValue || isSmallScreen
@@ -348,26 +361,43 @@ export const DirectoryView = ({
                     };
                     break;
                   }
+                  case "directory": {
+                    const { dirName: title } = dip.draftContent;
+                    const itemClicked = selectedItemId === id;
+                    fileProps = {
+                      itemClicked,
+                      title,
+                      count: idToCountMap[id],
+                      type: "directory",
+                      isRaw: false,
+                      isDraft: true
+                    };
+                  }
                 }
               }
               // extend (or catch), add raw item values (like createdAtString)
               if (rawItems[id]) {
                 const ri = rawItems[id];
-                noteItemProps = {
+                fileProps = {
                   itemClicked: selectedItemId === id,
                   title: ri.uuid,
                   count: 0,
                   type: ri.contentType || "deleted",
                   isRaw: true,
-                  handleClickItemEvent: handleClickItemEvent(id),
                   createdAtString: DateTime.fromMillis(
                     ri.createdAt
                   ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS),
-                  ...noteItemProps
+                  ...fileProps
                 };
               }
-              if (noteItemProps) {
-                return <NoteItemView key={id} {...noteItemProps} />;
+              if (fileProps) {
+                return (
+                  <FileView
+                    key={id}
+                    handleClickItemEvent={handleClickItemEvent(id)}
+                    {...fileProps}
+                  />
+                );
               }
               // catch all error state
               return <SimpleLoader key={id} loading={true} />;
@@ -379,7 +409,7 @@ export const DirectoryView = ({
             )}
           </FilesList>
         )}
-      </FilesItem>
+      </FileItemContainer>
     </FilesList>
   );
 };
@@ -434,6 +464,7 @@ const FileSearchInput = styled.input`
 
 interface IFileBrowserViewProps {
   urlParamId?: string;
+  rootDirName: string;
   rawItems: IRawItemsState;
   processedItems: IProcessedItemsState;
   draftItems: IDraftItemsState;
@@ -444,11 +475,13 @@ interface IFileBrowserViewProps {
   selectedItemId?: string;
   handleClickItemEvent: (id: string) => MouseEventHandler<HTMLElement>;
   handleClickNewNote: (id: string) => MouseEventHandler<HTMLElement>;
+  handleClickNewDirectory: (id: string) => MouseEventHandler<HTMLElement>;
   handleChangeSearchValue: ChangeEventHandler<HTMLInputElement>;
 }
 
 export const FileBrowserView = ({
   urlParamId,
+  rootDirName,
   processedItems,
   draftItems,
   rawItems,
@@ -459,6 +492,7 @@ export const FileBrowserView = ({
   isSmallScreen,
   handleClickItemEvent,
   handleClickNewNote,
+  handleClickNewDirectory,
   handleChangeSearchValue
 }: IFileBrowserViewProps) => (
   <FileBrowserContainer
@@ -486,23 +520,20 @@ export const FileBrowserView = ({
             isSmallScreen={isSmallScreen}
           />
         ) : (
-          Object.keys(fileStructure).map(root => {
-            return (
-              <DirectoryView
-                key={root}
-                dirName={root}
-                processedItems={processedItems}
-                draftItems={draftItems}
-                rawItems={rawItems}
-                fileStructure={fileStructure}
-                selectedItemId={selectedItemId}
-                handleClickItemEvent={handleClickItemEvent}
-                handleClickNewNote={handleClickNewNote}
-                isSmallScreen={isSmallScreen}
-                open={true}
-              />
-            );
-          })
+          <DirectoryView
+            key={rootDirName}
+            dirName={rootDirName}
+            processedItems={processedItems}
+            draftItems={draftItems}
+            rawItems={rawItems}
+            fileStructure={fileStructure}
+            selectedItemId={selectedItemId}
+            handleClickItemEvent={handleClickItemEvent}
+            handleClickNewNote={handleClickNewNote}
+            handleClickNewDirectory={handleClickNewDirectory}
+            isSmallScreen={isSmallScreen}
+            open={true}
+          />
         )}
       </FileListContainer>
     )}
