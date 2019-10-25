@@ -2,7 +2,7 @@
 declare interface Item {
   uuid: string;
   content: string | null;
-  contentType: "note" | null;
+  contentType: "note" | "directory" | null;
   encItemKey: string | null;
   user: Partial<FullUser>;
   parent: Partial<Item> | null;

@@ -51,11 +51,13 @@ interface IProps {
 }
 
 interface IState {
+  loading: boolean;
   isSmallScreen: boolean;
   cryptoManager: CryptoManager | null;
   redirectToId?: string | boolean;
   searchValue: string;
   searchResults: string[];
+  closedFolder: { [structureId: string]: boolean };
 }
 
 class FileBrowserController extends Component<
@@ -68,25 +70,33 @@ class FileBrowserController extends Component<
     document.title = "File Browser - UDIA";
     const cryptoManager = this.cryptoManagerCheck();
     this.state = {
+      loading: true,
       isSmallScreen: window.innerWidth < smScrnBrkPx,
       cryptoManager,
       searchValue: "",
-      searchResults: []
+      searchResults: [],
+      closedFolder: {}
     };
   }
 
   public async componentDidMount() {
+    this.setState({ loading: true });
     this.setFileStructureState();
     window.addEventListener("resize", this.handleResizeEvent);
     let nextPageMS: number | undefined;
     do {
-      nextPageMS = await this.queryAndProcessUserItemsPage(nextPageMS);
+      nextPageMS = await this.queryAndProcessUserItemsPage(
+        nextPageMS,
+        nextPageMS ? 32 : 1, // first pass, get one item. Subsequent passes, get 32 items
+        nextPageMS ? false : true // first pass, bypassCache. Subsequent passes, use cache-first
+      );
     } while (nextPageMS);
     this.setFileStructureState();
+    this.setState({ loading: false });
     await this.subscribeToUserItems();
   }
 
-  public async componentDidUpdate(prevProps: IProps) {
+  public componentDidUpdate(prevProps: IProps) {
     const {
       match: {
         params: { id: urlParamId }
@@ -166,13 +176,16 @@ class FileBrowserController extends Component<
       rawItems,
       selectedItemId,
       draftItems,
-      structure
+      structure,
+      user
     } = this.props;
     const {
+      loading,
       isSmallScreen,
       redirectToId,
       searchValue,
-      searchResults
+      searchResults,
+      closedFolder
     } = this.state;
 
     if (isSmallScreen) {
@@ -185,17 +198,22 @@ class FileBrowserController extends Component<
     }
     return (
       <FileBrowserView
+        loading={loading}
         urlParamId={urlParamId}
+        rootDirName={user.username}
         processedItems={processedItems}
         draftItems={draftItems}
         rawItems={rawItems}
         fileStructure={structure}
         searchValue={searchValue}
         searchResults={searchResults}
+        closedFolder={closedFolder}
         selectedItemId={selectedItemId}
         isSmallScreen={isSmallScreen}
         handleClickItemEvent={this.handleClickItemEvent}
         handleClickNewNote={this.handleClickNewNote}
+        handleClickNewDirectory={this.handleClickNewDirectory}
+        handleClickDirectoryCollapse={this.handleClickDirectoryCollapse}
         handleChangeSearchValue={this.handleChangeSearchValue}
       />
     );
@@ -210,6 +228,7 @@ class FileBrowserController extends Component<
     const { dispatch, draftItems } = this.props;
     let redirectToId = id;
     const existingDraft = draftItems[id];
+
     if (existingDraft && existingDraft.uuid) {
       dispatch(setSelectedItemId(existingDraft.uuid));
       redirectToId = existingDraft.uuid;
@@ -242,6 +261,31 @@ class FileBrowserController extends Component<
       this.setState({ redirectToId: newDraftId });
     }
   };
+
+  protected handleClickNewDirectory = (parentId: string) => () => {
+    const newDraftId = `${Date.now()}`;
+    this.props.dispatch(
+      upsertDraftItem(newDraftId, "directory", { dirName: "" }, parentId)
+    );
+    this.props.dispatch(setSelectedItemId(newDraftId));
+    const { isSmallScreen } = this.state;
+    if (isSmallScreen) {
+      this.setState({ redirectToId: newDraftId });
+    }
+  };
+
+  protected handleClickDirectoryCollapse = (id: string) => () => {
+    const { structure } = this.props;
+    if (id in structure) {
+      // is folder
+      this.setState({
+        closedFolder: {
+          ...this.state.closedFolder,
+          [id]: !this.state.closedFolder[id]
+        }
+      });
+    }
+  }
 
   protected handleChangeSearchValue: ChangeEventHandler<
     HTMLInputElement
@@ -336,7 +380,7 @@ class FileBrowserController extends Component<
 
   private queryAndProcessUserItemsPage = async (
     fromMSDateTime: number = Math.ceil(Date.now() / 45000) * 45000, // ceil to future 45s increments
-    limit: number = 4,
+    limit: number,
     bypassCache?: boolean
   ) => {
     let nextMSDatetime: number | undefined;
@@ -357,7 +401,7 @@ class FileBrowserController extends Component<
       const { getItems } = response.data;
       dispatch(upsertRawItems(getItems.items));
       for (const item of getItems.items) {
-        await this.processItem(item, bypassCache);
+        await this.processItem(item, bypassCache, true);
       }
       if (getItems.items.length < limit) {
         nextMSDatetime = undefined;
@@ -447,7 +491,7 @@ class FileBrowserController extends Component<
     }
   };
 
-  private processItem = async (item: Item, bypassCache?: boolean) => {
+  private processItem = async (item: Item, bypassCache?: boolean, processDeleted?: boolean) => {
     const { dispatch, user, processedItems, secrets } = this.props;
     const { cryptoManager } = this.state;
     try {
@@ -466,23 +510,25 @@ class FileBrowserController extends Component<
       } else if (!secrets.akB64 || !secrets.mkB64) {
         this.props.dispatch(setStatus("error", "No AK or MK!"));
         throw new Error("Encryption secrets not set! Please re-authenticate.");
-      } else if (item.deleted) {
+      } else if (!processDeleted && item.deleted) {
         dispatch(upsertProcessedItem(item.uuid, Date.now(), null, null));
         return;
       }
-      switch (item.contentType) {
-        case "note":
-          const note = await cryptoManager.decryptNoteFromItem(
-            item,
-            user.encSecretKey,
-            user.pubVerifyKey,
-            secrets.akB64,
-            secrets.mkB64
-          );
-          dispatch(
-            upsertProcessedItem(item.uuid, Date.now(), item.contentType, note)
-          );
-      }
+      const decryptedItem = await cryptoManager.decryptFromItem(
+        item,
+        user.encSecretKey,
+        user.pubVerifyKey,
+        secrets.akB64,
+        secrets.mkB64
+      );
+      dispatch(
+        upsertProcessedItem(
+          item.uuid,
+          Date.now(),
+          item.contentType,
+          decryptedItem
+        )
+      );
     } catch (err) {
       const errMsg = err.message || `Failed to decrypt item ${item.uuid}`;
       dispatch(
@@ -494,46 +540,52 @@ class FileBrowserController extends Component<
   private setFileStructureState = () => {
     const {
       dispatch,
-      processedItems,
       draftItems,
       user,
       structure,
       selectedItemId
     } = this.props;
-    const directory = user.username;
-    const draftItemIds = Object.keys(draftItems).reduce(
-      (acc: string[], createdAt) => {
+    let partialStructure: { [structureId: string]: string[] } = {};
+    const userRootDir = user.username;
+
+    partialStructure = {
+      ...Object.keys(draftItems).reduce((acc, createdAt) => {
         const draftPayload = draftItems[createdAt];
-        if (
-          draftPayload &&
-          draftPayload.parentId === directory &&
-          acc.indexOf(createdAt) < 0
-        ) {
-          acc.push(createdAt);
+        if (draftPayload) {
+          const dirDrafts = [...(acc[draftPayload.parentId] || [])];
+          if (dirDrafts.indexOf(createdAt) < 0) {
+            dirDrafts.push(createdAt);
+            acc[draftPayload.parentId] = dirDrafts;
+          }
         }
         return acc;
-      },
-      structure[directory] || []
-    );
-    const userItemIds = Object.keys(this.props.rawItems).reduce(
-      (acc: string[], uuid) => {
+      }, structure)
+    };
+
+    partialStructure = {
+      ...partialStructure,
+      ...Object.keys(this.props.rawItems).reduce((acc, uuid) => {
         const rawItem = this.props.rawItems[uuid];
-        if (
-          rawItem &&
-          !rawItem.deleted &&
-          uuid in processedItems &&
-          acc.indexOf(uuid) < 0
-        ) {
-          acc.push(uuid);
+        if (rawItem && !rawItem.deleted) {
+          const pKey = (rawItem.parent && rawItem.parent.uuid) || userRootDir;
+          const dirItems = [...(acc[pKey] || [])];
+          if (dirItems.indexOf(uuid) < 0) {
+            dirItems.push(uuid);
+            acc[pKey] = dirItems;
+          }
         }
         return acc;
-      },
-      draftItemIds || []
-    );
-    const fileStructureIds = userItemIds.sort(this.itemIdCompareFunction);
-    dispatch(setStructure(directory, fileStructureIds));
+      }, partialStructure)
+    };
+
+    Object.keys(partialStructure).forEach(structureKey => {
+      const fileStructureIds = partialStructure[structureKey].sort(
+        this.itemIdCompareFunction
+      );
+      dispatch(setStructure(structureKey, fileStructureIds));
+    });
     if (!selectedItemId) {
-      dispatch(setSelectedItemId(fileStructureIds[0]));
+      dispatch(setSelectedItemId((partialStructure[userRootDir] || [])[0]));
     }
   };
 

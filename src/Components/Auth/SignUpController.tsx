@@ -21,7 +21,6 @@ import {
 } from "../../Modules/Reducers/Auth/Actions";
 import { setBase64AK, setBase64MK } from "../../Modules/Reducers/Secrets/Actions";
 import { addAlert } from "../../Modules/Reducers/Transient/Actions";
-import { isMountable } from "../../Types";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
 import SignUpView from "./SignUpView";
 
@@ -49,14 +48,14 @@ interface IState {
   showPassword: boolean;
 }
 
-class SignUpController extends Component<IProps, IState>
-  implements isMountable {
-  public isMountableMounted = false;
+class SignUpController extends Component<IProps, IState>{
+  private isMountableMounted: boolean;
 
   constructor(props: IProps) {
     super(props);
     document.title = "Sign Up - UDIA";
     const errors: string[] = [];
+    this.isMountableMounted = false;
     let cryptoManager: CryptoManager | null = null;
     try {
       cryptoManager = new CryptoManager();

@@ -8,11 +8,11 @@ import React, {
 } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "../AppStyles";
-import { Button } from "../Helpers/Button";
 import GridTemplateLoadingOverlay from "../Helpers/GridTemplateLoadingOverlay";
 import HorizontalLine from "../Helpers/HorizontalLine";
 import MutedSpan from "../Helpers/MutedSpan";
 import { ThemedAnchor } from "../Helpers/ThemedLinkAnchor";
+import { DiscardDraftButton, EditItemTitle, EditorActions, ProcessDraftButton, SaveDraftButton } from "./ItemFileShared";
 
 const downloadRaw = (raw: Item | DecryptedNote, type: "ENC" | "DEC") => () => {
   const elem = document.createElement("a");
@@ -78,18 +78,6 @@ const NoteFileEditorContainer = styled.div`
   height: 100%;
 `;
 
-const EditNoteTitle = styled.textarea`
-  background: transparent;
-  font-family: monospace;
-  color: ${props => props.theme.primaryColor};
-  border: 0px;
-  padding: 0;
-  margin: 0;
-  font-size: 2em;
-  height: auto;
-  width: 100%;
-`;
-
 const EditNoteContent = styled.textarea`
   background: transparent;
   font-family: monospace;
@@ -99,25 +87,6 @@ const EditNoteContent = styled.textarea`
   margin: 0;
   width: 100%;
   height: 100%;
-`;
-
-const EditorActions = styled.div`
-  width: 100%;
-  text-align: right;
-`;
-
-const ProcessDraftButton = styled(Button)`
-  margin: auto;
-  padding: 0.3em 0.1em;
-  width: 8em;
-`;
-
-const DiscardDraftButton = styled(ProcessDraftButton)`
-  border-color: ${props => props.theme.red};
-`;
-
-const SaveDraftButton = styled(ProcessDraftButton)`
-  border-color: ${props => props.theme.green};
 `;
 
 const HiddenPointerAnchor = styled(ThemedAnchor)`
@@ -146,7 +115,7 @@ interface IProps {
   contentRef: RefObject<HTMLTextAreaElement>;
 }
 
-const NoteFileEditorView = ({
+const NoteItemEditorView = ({
   loading,
   loadingText,
   isEditing,
@@ -179,7 +148,7 @@ const NoteFileEditorView = ({
           {titleValue || <MutedSpan>Untitled</MutedSpan>}
         </ViewNoteTitle>
       ) : (
-        <EditNoteTitle
+        <EditItemTitle
           id="edit-note-title"
           key="edit-note-title"
           rows={1}
@@ -291,4 +260,4 @@ const NoteFileEditorView = ({
   </NoteEditorLoadingGrid>
 );
 
-export default NoteFileEditorView;
+export default NoteItemEditorView;

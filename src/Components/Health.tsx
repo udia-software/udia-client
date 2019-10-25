@@ -9,7 +9,6 @@ import { APP_VERSION } from "../Constants";
 import CryptoManager, {
   IMasterKeyBuffers
 } from "../Modules/Crypto/CryptoManager";
-import { isMountable } from "../Types";
 import styled, { IThemeInterface } from "./AppStyles";
 import { Button } from "./Helpers/Button";
 import { ThemedAnchor } from "./Helpers/ThemedLinkAnchor";
@@ -78,12 +77,13 @@ interface IState {
 
 const WARN_SKEW_MS = 4000;
 
-class Health extends Component<IProps, IState> implements isMountable {
-  public isMountableMounted = false;
+class Health extends Component<IProps, IState> {
+  private isMountableMounted: boolean;
 
   constructor(props: IProps) {
     super(props);
     document.title = "Health - UDIA";
+    this.isMountableMounted = false;
     this.state = {
       intervalId: setInterval(this.intervalCallback, 1000),
       timerHeartbeat: new Date()

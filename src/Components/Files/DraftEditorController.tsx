@@ -3,7 +3,8 @@ import React, {
   Component,
   createRef,
   FocusEventHandler,
-  MouseEventHandler
+  MouseEventHandler,
+  RefObject
 } from "react";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { connect } from "react-redux";
@@ -27,19 +28,21 @@ import {
   setSelectedItemId
 } from "../../Modules/Reducers/Transient/Actions";
 import parseGraphQLError from "../Helpers/ParseGraphQLError";
+import DirectoryItemEditorView from "./DirectoryItemEditorView";
 import {
   CREATE_ITEM_MUTATION,
   DELETE_ITEM_MUTATION,
+  findOrInitDraft,
   ICreateItemMutationResponse,
   IDeleteItemResponseData,
   IUpdateItemMutationResponse,
   UPDATE_ITEM_MUTATION
 } from "./ItemFileShared";
-import NoteFileEditorView from "./NoteFileEditorView";
+import NoteItemEditorView from "./NoteItemEditorView";
 
 interface IProps {
   dispatch: Dispatch;
-  editItemId?: string;
+  itemOrDraftId?: string;
   user: FullUser;
   secrets: ISecretsState;
   draftItems: IDraftItemsState;
@@ -58,17 +61,19 @@ interface IState {
 /**
  * Controller should handle new items, editing existing items.
  */
-class NoteFileEditorController extends Component<
+class DraftEditorController extends Component<
   WithApolloClient<IProps>,
   IState
 > {
-  private titleTextareaRef: React.RefObject<HTMLTextAreaElement>;
-  private contentTextareaRef: React.RefObject<HTMLTextAreaElement>;
+  private titleTextareaRef: RefObject<HTMLTextAreaElement>;
+  private contentTextareaRef: RefObject<HTMLTextAreaElement>;
+  private dirNameTextareaRef: RefObject<HTMLTextAreaElement>;
 
   constructor(props: WithApolloClient<IProps>) {
     super(props);
     this.titleTextareaRef = createRef();
     this.contentTextareaRef = createRef();
+    this.dirNameTextareaRef = createRef();
     this.state = {
       isPreview: false,
       loading: false
@@ -78,28 +83,43 @@ class NoteFileEditorController extends Component<
   public componentDidMount() {
     this.processEditorFocus();
     this.processTitleScrollHeight();
+    this.processResetPreview();
   }
 
   public componentDidUpdate() {
     this.processEditorFocus();
     this.processTitleScrollHeight();
+    this.processResetPreview();
   }
 
   public render() {
-    const [draftId, draft] = this.getCurrentDraft();
-    const { draftItems, rawItems, processedItems } = this.props;
+    const {
+      user,
+      itemOrDraftId,
+      draftItems,
+      rawItems,
+      processedItems,
+      structure
+    } = this.props;
     const { loading, loadingText, isPreview } = this.state;
-
+    const { draftId, draft } = findOrInitDraft(
+      user,
+      itemOrDraftId,
+      processedItems,
+      draftItems,
+      structure
+    );
     if (draft.contentType === "note") {
       const rawItem = draft.uuid ? rawItems[draft.uuid] : undefined;
       const processedItem = draft.uuid
         ? (processedItems[draft.uuid] as ProcessedNotePayload)
         : undefined;
       const { title, content, noteType } = draft.draftContent;
-      const protocolVersion = rawItem && rawItem.content ? rawItem.content.split(":")[0] : undefined;
+      const protocolVersion =
+        rawItem && rawItem.content ? rawItem.content.split(":")[0] : undefined;
 
       return (
-        <NoteFileEditorView
+        <NoteItemEditorView
           loading={loading}
           loadingText={loadingText}
           hasDraft={draftId in draftItems}
@@ -115,10 +135,25 @@ class NoteFileEditorController extends Component<
           handleDraftFocus={this.handleDraftFocus}
           handleDraftChange={this.handleDraftChange}
           handleDiscardDraft={this.handleDiscardDraft}
-          handleSaveDraft={this.handleSaveDraftNote}
-          handleDeleteNote={this.handleDeleteNote}
+          handleSaveDraft={this.handleSaveDraft}
+          handleDeleteNote={this.handleDeleteItem}
           titleRef={this.titleTextareaRef}
           contentRef={this.contentTextareaRef}
+        />
+      );
+    } else if (draft.contentType === "directory") {
+      return (
+        <DirectoryItemEditorView
+          loading={false}
+          titleValue={draft.draftContent.dirName}
+          hasDraft={draftId in draftItems}
+          isEditing={!!draft.uuid}
+          handleDraftChange={this.handleDraftChange}
+          handleDraftFocus={this.handleDraftFocus}
+          handleDiscardDraft={this.handleDiscardDraft}
+          handleSaveDraft={this.handleSaveDraft}
+          handleDeleteDirectory={this.handleDeleteItem}
+          dirNameRef={this.dirNameTextareaRef}
         />
       );
     }
@@ -142,16 +177,31 @@ class NoteFileEditorController extends Component<
 
   protected handleDiscardDraft: MouseEventHandler<HTMLElement> = e => {
     e.preventDefault();
-    const [draftId, draftPayload] = this.getCurrentDraft();
-    const { structure, dispatch } = this.props;
+    const {
+      structure,
+      dispatch,
+      user,
+      itemOrDraftId,
+      processedItems,
+      draftItems
+    } = this.props;
+    const { draftId, draft: draftPayload } = findOrInitDraft(
+      user,
+      itemOrDraftId,
+      processedItems,
+      draftItems,
+      structure
+    );
     dispatch(clearDraftItem(draftId));
     dispatch(
       addAlert({
         type: "info",
         timestamp: Date.now(),
-        content: `Discarded draft '${(draftPayload.contentType === "note" &&
-          draftPayload.draftContent.title) ||
-          "Untitled"}'.`
+        content: `Discarded draft ${
+          draftPayload.contentType
+        } '${(draftPayload.contentType === "note"
+          ? draftPayload.draftContent.title
+          : draftPayload.draftContent.dirName) || "Untitled"}'.`
       })
     );
     const newStructure = [...structure[draftPayload.parentId]];
@@ -169,34 +219,47 @@ class NoteFileEditorController extends Component<
 
   protected handleDraftChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
     e.preventDefault();
-    const { dispatch } = this.props;
-    const [draftId, draftPayload] = this.getCurrentDraft();
-    if (draftPayload.contentType === "note") {
-      const draftContent = {
-        ...draftPayload.draftContent,
-        [e.currentTarget.name]: e.currentTarget.value
-      };
-      // dispatch(setSelectedItemId(draftId));
-      dispatch(
-        upsertDraftItem(
-          draftId,
-          "note",
-          draftContent,
-          draftPayload.parentId,
-          draftPayload.uuid,
-          draftPayload.errors
-        )
-      );
-    }
+    const {
+      dispatch,
+      user,
+      itemOrDraftId,
+      processedItems,
+      draftItems,
+      structure
+    } = this.props;
+    const { draftId, draft } = findOrInitDraft(
+      user,
+      itemOrDraftId,
+      processedItems,
+      draftItems,
+      structure
+    );
+    const draftContent: DecryptedNote | DecryptedDirectory = {
+      ...draft.draftContent,
+      [e.currentTarget.name]: e.currentTarget.value
+    };
+    dispatch(
+      upsertDraftItem(
+        draftId,
+        draft.contentType,
+        draftContent,
+        draft.parentId,
+        draft.uuid,
+        draft.errors
+      )
+    );
   };
 
-  protected handleSaveDraftNote: MouseEventHandler<
+  protected handleSaveDraft: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
     try {
       const {
         dispatch,
         client,
+        itemOrDraftId,
+        processedItems,
+        draftItems,
         user,
         secrets: { akB64, mkB64 },
         structure
@@ -204,22 +267,17 @@ class NoteFileEditorController extends Component<
       if (!akB64 || !mkB64) {
         throw new Error("Encryption secrets not set! Please re-authenticate.");
       }
-      const [draftId, currentDraft] = this.getCurrentDraft();
-      if (currentDraft.contentType !== "note") {
-        throw new Error(
-          `Cannot submit note item of type ${currentDraft.contentType}!`
-        );
-      }
-      if (!currentDraft.draftContent.content) {
-        throw new Error("Content cannot be empty!");
-      }
+      const { draftId, draft } = findOrInitDraft(
+        user,
+        itemOrDraftId,
+        processedItems,
+        draftItems,
+        structure
+      );
       const cryptoManager = new CryptoManager();
       this.setState({ loading: true });
-      const {
-        encNoteContent,
-        encItemKey
-      } = await cryptoManager.encryptNoteToItem(
-        currentDraft.draftContent,
+      const { encNoteContent, encItemKey } = await cryptoManager.encryptToItem(
+        draft.draftContent,
         user.encPrivateSignKey,
         user.encSecretKey,
         akB64,
@@ -227,35 +285,31 @@ class NoteFileEditorController extends Component<
         (loadingText: string) => this.setState({ loadingText })
       );
       this.setState({ loadingText: "Communicating with server..." });
-      const mutation = !!currentDraft.uuid
+      const mutation = !!draft.uuid
         ? UPDATE_ITEM_MUTATION
         : CREATE_ITEM_MUTATION;
       const variables: any = {
-        id: currentDraft.uuid,
+        id: draft.uuid,
         params: {
           content: encNoteContent,
-          contentType: currentDraft.contentType,
+          contentType: draft.contentType,
           encItemKey,
           parentId:
-            currentDraft.parentId === user.username
-              ? undefined
-              : currentDraft.parentId
+            draft.parentId === user.username ? undefined : draft.parentId
         }
       };
       const mutationResponse = await client.mutate<
         ICreateItemMutationResponse | IUpdateItemMutationResponse
       >({ mutation, variables });
       let item: Item;
-      if (!!currentDraft.uuid) {
-        const {
-          updateItem
-        } = mutationResponse.data as IUpdateItemMutationResponse;
-        item = updateItem;
+      if (!!draft.uuid) {
+        ({
+          updateItem: item
+        } = mutationResponse.data as IUpdateItemMutationResponse);
       } else {
-        const {
-          createItem
-        } = mutationResponse.data as ICreateItemMutationResponse;
-        item = createItem;
+        ({
+          createItem: item
+        } = mutationResponse.data as ICreateItemMutationResponse);
       }
       this.setState({
         loading: false,
@@ -268,11 +322,11 @@ class NoteFileEditorController extends Component<
         upsertProcessedItem(
           item.uuid,
           Date.now(),
-          "note",
-          currentDraft.draftContent
+          draft.contentType,
+          draft.draftContent
         )
       );
-      let updatedStructure = [...structure[currentDraft.parentId]];
+      let updatedStructure = [...(structure[draft.parentId] || [])];
       const itemIdx = updatedStructure.indexOf(item.uuid);
       if (itemIdx < 0) {
         updatedStructure = [item.uuid, ...updatedStructure];
@@ -281,44 +335,49 @@ class NoteFileEditorController extends Component<
       if (draftIdx >= 0) {
         updatedStructure.splice(draftIdx, 1);
       }
-      dispatch(setStructure(currentDraft.parentId, updatedStructure));
+      dispatch(setStructure(draft.parentId, updatedStructure));
+      if (item.contentType === "directory") {
+        dispatch(setStructure(item.uuid, [...(structure[item.uuid] || [])]));
+      }
       dispatch(clearDraftItem(draftId));
       dispatch(
         addAlert({
           type: "success",
           timestamp: item.updatedAt,
-          content: `${
-            currentDraft.uuid ? "Updated" : "Created"
-          } note '${currentDraft.draftContent.title || "Untitled"}'.`
+          content: `${draft.uuid ? "Updated" : "Created"} ${
+            draft.contentType
+          } '${(draft.contentType === "note"
+            ? draft.draftContent.title
+            : draft.draftContent.dirName) || "Untitled"}'.`
         })
       );
       dispatch(setSelectedItemId(item.uuid));
     } catch (err) {
-      const { errors } = parseGraphQLError(err, "Failed saving note!");
+      const { errors } = parseGraphQLError(err, "Failed saving item!");
       this.setState({ loading: false, loadingText: undefined });
       this.props.dispatch(
         addAlert({
           type: "error",
           timestamp: Date.now(),
-          content: errors[0] || "Failed saving note!"
+          content: errors[0] || "Failed saving item!"
         })
       );
     }
   };
 
-  protected handleDeleteNote = async () => {
+  protected handleDeleteItem = async () => {
     try {
-      const { client, user, editItemId, structure, dispatch } = this.props;
-      if (!editItemId) {
+      const { client, user, itemOrDraftId, structure, dispatch } = this.props;
+      if (!itemOrDraftId) {
         throw new Error("Cannot delete unidentified item!");
       }
       this.setState({
         loading: true,
-        loadingText: "Deleting note from the server..."
+        loadingText: "Deleting item from the server..."
       });
       const response = await client.mutate({
         mutation: DELETE_ITEM_MUTATION,
-        variables: { id: editItemId }
+        variables: { id: itemOrDraftId }
       });
       const { deleteItem } = response.data as IDeleteItemResponseData;
       const dirId =
@@ -327,7 +386,7 @@ class NoteFileEditorController extends Component<
         loading: false,
         loadingText: undefined
       });
-      const updatedStructure = [...structure[dirId]];
+      const updatedStructure = [...(structure[dirId] || [])];
       const delIdx = updatedStructure.indexOf(deleteItem.uuid);
       if (delIdx >= 0) {
         updatedStructure.splice(delIdx, 1);
@@ -340,6 +399,9 @@ class NoteFileEditorController extends Component<
         })
       );
       dispatch(setStructure(dirId, updatedStructure));
+      if (deleteItem.uuid in structure) {
+        dispatch(setStructure(deleteItem.uuid, []));
+      }
       dispatch(upsertRawItem(deleteItem));
       dispatch(
         upsertProcessedItem(deleteItem.uuid, deleteItem.updatedAt, null, null)
@@ -363,7 +425,7 @@ class NoteFileEditorController extends Component<
     const ref =
       focusOn === "title"
         ? this.titleTextareaRef.current
-        : this.contentTextareaRef.current;
+        : this.dirNameTextareaRef.current || this.contentTextareaRef.current;
     if (ref) {
       const curFocusId = document.activeElement.id;
       if (curFocusId !== "search-input" && ref.id !== curFocusId) {
@@ -373,67 +435,25 @@ class NoteFileEditorController extends Component<
   };
 
   private processTitleScrollHeight = () => {
-    const ref = this.titleTextareaRef.current;
+    const ref =
+      this.titleTextareaRef.current || this.dirNameTextareaRef.current;
     if (ref) {
+      ref.rows = 1;
       while (ref.scrollHeight > ref.clientHeight) {
         ref.rows = ref.rows + 1;
       }
     }
   };
 
-  private getCurrentDraft = (): [string, DraftItemPayload] => {
-    const {
-      editItemId,
-      processedItems,
-      draftItems,
-      structure,
-      user
-    } = this.props;
-    let parentId = user.username;
-
-    // Editing an existing item
-    if (editItemId) {
-      // Check if a draft already exists, if so return the draft
-      for (const draftedAt of Object.keys(draftItems)) {
-        const draft = draftItems[draftedAt];
-        if (draft && (draft.uuid === editItemId || draftedAt === editItemId)) {
-          return [draftedAt, draft];
-        }
-      }
-
-      const processedItem = processedItems[editItemId];
-      // Find the parent of the item (defaults to username)
-      for (const dirId of Object.keys(structure)) {
-        const itemIds = structure[dirId];
-        if (editItemId in itemIds) {
-          parentId = dirId;
-        }
-      }
-      if (processedItem && processedItem.contentType === "note") {
-        return [
-          `${Date.now()}`,
-          {
-            contentType: processedItem.contentType,
-            draftContent: processedItem.processedContent,
-            parentId,
-            uuid: editItemId
-          }
-        ];
+  private processResetPreview = () => {
+    const { itemOrDraftId, draftItems } = this.props;
+    const { isPreview } = this.state;
+    if (itemOrDraftId) {
+      const draft = draftItems[itemOrDraftId];
+      if (isPreview && draft && !draft.uuid) {
+        this.setState({ isPreview: false });
       }
     }
-    // Not editing. Probably creating a new item (or fallback edit item not found)
-    return [
-      `${Date.now()}`,
-      {
-        contentType: "note",
-        draftContent: {
-          title: "",
-          content: "",
-          noteType: "markdown"
-        },
-        parentId
-      }
-    ];
   };
 }
 
@@ -452,4 +472,4 @@ const mapStateToProps = (state: IRootState) => {
   };
 };
 
-export default connect(mapStateToProps)(withApollo(NoteFileEditorController));
+export default connect(mapStateToProps)(withApollo(DraftEditorController));
