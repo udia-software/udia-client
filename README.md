@@ -26,6 +26,11 @@ To test your react app:
 
 - Run the test with `yarn test`
 
+## Deploy 
+
+- move `build` to `docs`
+- `surge --domain https://udia.ca`
+
 ## License
 
 This is [free software](https://www.gnu.org/philosophy/free-sw.en.html), licensed under **GNU Affero General Public License v3 (AGPL-3.0)**.
